@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import CalculatorLayout from '@/components/CalculatorLayout';
 import EmailResultsForm from '@/components/EmailResultsForm';
 import { calculateRefinance } from '@/lib/calculators';
@@ -30,11 +31,86 @@ export default function RefinanceCalculator() {
     setResult(calculatedResult);
   };
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I know if refinancing my mortgage is worth it?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Refinancing is worth it when your total savings exceed closing costs before you sell or refinance again. Calculate your break-even point by dividing closing costs by monthly savings. If you'll stay past that point, refinancing likely makes sense."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a good break-even point for refinancing?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A break-even point under 24 months is generally considered good. Under 18 months is excellent. If your break-even exceeds 36 months, carefully consider whether you'll stay in the home long enough to benefit."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Should I refinance if I'm planning to move in 3 years?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Only if your break-even point is well under 3 years. Calculate your exact break-even, then add a buffer for uncertainty. If break-even is 30+ months and you might move in 36 months, the risk may not be worth it."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is it worth refinancing for 0.5% lower rate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "It depends on your loan balance and closing costs. On a $400,000 loan, 0.5% saves roughly $115/month. With $6,000 in closing costs, you'd break even in about 52 months. Use this calculator to see your exact numbers."
+        }
+      }
+    ]
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dett.io" },
+      { "@type": "ListItem", "position": 2, "name": "Calculators", "item": "https://dett.io/calculators" },
+      { "@type": "ListItem", "position": 3, "name": "Refinance Calculator", "item": "https://dett.io/calculators/refinance" }
+    ]
+  };
+
   return (
     <CalculatorLayout
-      title="Refinance Break-Even Calculator"
-      description="Compare your current loan vs refinancing. See when you break even on closing costs, total savings over time, and whether refinancing makes sense."
+      title="Is Refinancing Your Mortgage Worth It? | Free Calculator"
+      description="Calculate your refinance break-even point instantly. See exactly how long until closing costs pay off, total savings over time, and whether refinancing makes sense for your situation."
     >
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
+      {/* Breadcrumb Navigation */}
+      <nav className="text-sm text-slate-500 mb-6">
+        <Link href="/" className="hover:text-slate-700">Home</Link>
+        <span className="mx-2">›</span>
+        <Link href="/calculators" className="hover:text-slate-700">Calculators</Link>
+        <span className="mx-2">›</span>
+        <span className="text-slate-900">Refinance Calculator</span>
+      </nav>
+
+      {/* Primary H1 - Matches Search Intent */}
+      <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+        Is Refinancing Your Mortgage Worth It?
+      </h1>
+      <p className="text-lg text-slate-600 mb-8 max-w-3xl">
+        Enter your current loan details and the new rate you've been quoted. This calculator shows your exact break-even point and total savings—no guessing required.
+      </p>
       <div className="grid lg:grid-cols-2 gap-8">
         <div className="space-y-6">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
@@ -302,6 +378,121 @@ export default function RefinanceCalculator() {
               </p>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* SEO Content Section */}
+      <div className="mt-16 max-w-4xl">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          What This Calculator Answers
+        </h2>
+        <p className="text-slate-700 mb-4">
+          The refinance decision comes down to one question: <strong>Will you stay in your home long enough to recover closing costs?</strong> This calculator gives you the exact answer by computing your break-even point—the number of months until your monthly savings exceed what you paid to refinance.
+        </p>
+        <p className="text-slate-700 mb-8">
+          Unlike generic calculators that only show monthly payment changes, this tool factors in your remaining loan term, total interest paid over time, and the true cost of resetting your amortization schedule. You'll see whether refinancing actually saves money or just feels like it does.
+        </p>
+
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          When Refinancing Makes Sense
+        </h2>
+        <ul className="space-y-3 text-slate-700 mb-8">
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>Rate drop of 0.75% or more</strong> — Generally produces a break-even under 2 years on most loan sizes.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>You'll stay 3+ years past break-even</strong> — The longer you stay, the more you save. Refinancing right before selling is almost always a loss.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>You're early in your loan</strong> — Refinancing in years 1-10 captures more interest savings than refinancing in year 20.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>You can get closing costs under 2%</strong> — Shop aggressively. Every dollar in closing costs extends your break-even.</span>
+          </li>
+        </ul>
+
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          Common Refinancing Mistakes
+        </h2>
+        <ul className="space-y-3 text-slate-700 mb-8">
+          <li className="flex items-start gap-3">
+            <span className="text-red-600 font-bold">✗</span>
+            <span><strong>Ignoring the term reset</strong> — Refinancing a 25-year-old loan into a new 30-year adds 5 years of payments. Compare total cost, not just monthly payment.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-red-600 font-bold">✗</span>
+            <span><strong>Rolling closing costs into the loan</strong> — This hides the true cost and means you're paying interest on your closing costs for 30 years.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-red-600 font-bold">✗</span>
+            <span><strong>Refinancing too often</strong> — Each refi resets your amortization. Serial refinancers often pay more total interest than people who never refinance.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-red-600 font-bold">✗</span>
+            <span><strong>Chasing small rate drops</strong> — A 0.25% rate drop rarely justifies $5,000+ in closing costs unless you have a very large loan balance.</span>
+          </li>
+        </ul>
+
+        {/* FAQ Section */}
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-6 mb-12">
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">How do I know if refinancing my mortgage is worth it?</h3>
+            <p className="text-slate-700">Refinancing is worth it when your total savings exceed closing costs before you sell or refinance again. Calculate your break-even point by dividing closing costs by monthly savings. If you'll stay past that point, refinancing likely makes sense.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">What is a good break-even point for refinancing?</h3>
+            <p className="text-slate-700">A break-even point under 24 months is generally considered good. Under 18 months is excellent. If your break-even exceeds 36 months, carefully consider whether you'll stay in the home long enough to benefit.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">Should I refinance if I'm planning to move in 3 years?</h3>
+            <p className="text-slate-700">Only if your break-even point is well under 3 years. Calculate your exact break-even, then add a buffer for uncertainty. If break-even is 30+ months and you might move in 36 months, the risk may not be worth it.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">Is it worth refinancing for 0.5% lower rate?</h3>
+            <p className="text-slate-700">It depends on your loan balance and closing costs. On a $400,000 loan, 0.5% saves roughly $115/month. With $6,000 in closing costs, you'd break even in about 52 months. Use this calculator to see your exact numbers.</p>
+          </div>
+        </div>
+
+        {/* Internal Links */}
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          Related Decisions
+        </h2>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Link 
+            href="/calculators/extra-payment" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">Extra Payments vs Investing</h3>
+            <p className="text-sm text-slate-600">Should you pay down your mortgage faster or invest the difference?</p>
+          </Link>
+          <Link 
+            href="/calculators/rent-vs-buy" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">Rent vs Buy Calculator</h3>
+            <p className="text-sm text-slate-600">Considering selling? See if renting makes more sense for your next move.</p>
+          </Link>
+          <Link 
+            href="/calculators/cash-out-refi" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">Cash-Out Refinance Analyzer</h3>
+            <p className="text-sm text-slate-600">Need cash? See the true cost of pulling equity from your home.</p>
+          </Link>
+          <Link 
+            href="/calculators/points-buydown" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">Points & Buydown Optimizer</h3>
+            <p className="text-sm text-slate-600">Should you pay points on your new loan? Find the optimal strategy.</p>
+          </Link>
         </div>
       </div>
     </CalculatorLayout>

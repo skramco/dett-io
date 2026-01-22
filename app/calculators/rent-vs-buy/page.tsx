@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import CalculatorLayout from '@/components/CalculatorLayout';
 import EmailResultsForm from '@/components/EmailResultsForm';
 import { calculateRentVsBuy } from '@/lib/calculators';
@@ -37,11 +38,87 @@ export default function RentVsBuyCalculator() {
     setResult(calculatedResult);
   };
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is it better to rent or buy a house right now?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "It depends on how long you'll stay, local price-to-rent ratios, and your opportunity cost. Generally, buying makes sense if you'll stay 5+ years and the monthly cost of owning (including all hidden costs) is within 1.5x your rent. Use this calculator to see your specific breakeven timeline."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How long do you need to own a home for buying to make sense?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Typically 5-7 years minimum. Transaction costs (closing costs when buying, 6% agent fees when selling) eat into any appreciation. The exact breakeven depends on your market's appreciation rate, your mortgage rate, and what rent would cost instead."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What hidden costs make buying more expensive than renting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Property taxes (1-2% of home value annually), homeowners insurance, maintenance (budget 1% of home value per year), HOA fees, and opportunity cost on your down payment. These often add $500-1,500/month beyond your mortgage payment."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Should I buy a house if I might move in 3 years?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Probably not. With typical 3% closing costs and 6% selling costs, you need roughly 9% appreciation just to break even. In a flat or declining market, you could lose money. Renting provides flexibility without the transaction cost risk."
+        }
+      }
+    ]
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dett.io" },
+      { "@type": "ListItem", "position": 2, "name": "Calculators", "item": "https://dett.io/calculators" },
+      { "@type": "ListItem", "position": 3, "name": "Rent vs Buy Calculator", "item": "https://dett.io/calculators/rent-vs-buy" }
+    ]
+  };
+
   return (
     <CalculatorLayout
-      title="Rent vs Buy Truth Model"
-      description="Full comparison including rent inflation, home appreciation, opportunity cost, and transaction costs. See net worth crossover year in best, base, and worst case scenarios."
+      title="Should I Rent or Buy? | Honest Calculator With All Costs"
+      description="Compare renting vs buying with ALL hidden costs included: opportunity cost, maintenance, transaction fees, and appreciation. See exactly when buying beats renting for your situation."
     >
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
+      {/* Breadcrumb Navigation */}
+      <nav className="text-sm text-slate-500 mb-6">
+        <Link href="/" className="hover:text-slate-700">Home</Link>
+        <span className="mx-2">›</span>
+        <Link href="/calculators" className="hover:text-slate-700">Calculators</Link>
+        <span className="mx-2">›</span>
+        <span className="text-slate-900">Rent vs Buy Calculator</span>
+      </nav>
+
+      {/* Primary H1 - Matches Search Intent */}
+      <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+        Should I Rent or Buy a House?
+      </h1>
+      <p className="text-lg text-slate-600 mb-8 max-w-3xl">
+        This isn't a simple "multiply rent by 200" calculator. We model rent inflation, home appreciation, opportunity cost on your down payment, maintenance, and transaction costs to show you the real crossover point.
+      </p>
+
       <div className="grid lg:grid-cols-2 gap-8">
         <div className="space-y-6">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
@@ -275,6 +352,121 @@ export default function RentVsBuyCalculator() {
               </p>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* SEO Content Section */}
+      <div className="mt-16 max-w-4xl">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          What This Calculator Answers
+        </h2>
+        <p className="text-slate-700 mb-4">
+          Most rent vs buy calculators oversimplify. They compare your rent to a mortgage payment and declare a winner. But that ignores <strong>opportunity cost</strong>—what your down payment could earn if invested—and the <strong>hidden costs of ownership</strong> that add 30-50% to your monthly housing expense.
+        </p>
+        <p className="text-slate-700 mb-8">
+          This calculator models the full picture: rent inflation over time, home appreciation (or depreciation), maintenance costs, property taxes, insurance, transaction costs when you eventually sell, and what your down payment would grow to if invested instead. The result is a year-by-year net worth comparison showing exactly when—and if—buying pulls ahead.
+        </p>
+
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          When Buying Makes Sense
+        </h2>
+        <ul className="space-y-3 text-slate-700 mb-8">
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>You'll stay 7+ years</strong> — Transaction costs (buying + selling) typically eat 8-10% of home value. You need time to recover that.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>Price-to-rent ratio under 20</strong> — If a $400k home rents for $2,000/month (ratio = 16.7), buying is likely favorable. Above 25, renting usually wins.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>You want stability</strong> — Owning locks in your housing cost (mostly). Renters face unpredictable increases and potential displacement.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>Local appreciation is strong</strong> — In markets with 4%+ annual appreciation, buying builds wealth faster than renting and investing.</span>
+          </li>
+        </ul>
+
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          When Renting Makes More Sense
+        </h2>
+        <ul className="space-y-3 text-slate-700 mb-8">
+          <li className="flex items-start gap-3">
+            <span className="text-blue-600 font-bold">→</span>
+            <span><strong>You might move in under 5 years</strong> — Job changes, relationship changes, or life uncertainty make renting's flexibility valuable.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-blue-600 font-bold">→</span>
+            <span><strong>Price-to-rent ratio exceeds 25</strong> — In expensive markets like SF or NYC, renting and investing the difference often wins mathematically.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-blue-600 font-bold">→</span>
+            <span><strong>You'd drain your emergency fund for a down payment</strong> — Buying with no cushion is risky. One major repair could force you to sell at a loss.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-blue-600 font-bold">→</span>
+            <span><strong>Your career is location-flexible</strong> — Remote workers who might relocate for opportunity shouldn't anchor themselves to a property.</span>
+          </li>
+        </ul>
+
+        {/* FAQ Section */}
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-6 mb-12">
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">Is it better to rent or buy a house right now?</h3>
+            <p className="text-slate-700">It depends on how long you'll stay, local price-to-rent ratios, and your opportunity cost. Generally, buying makes sense if you'll stay 5+ years and the monthly cost of owning (including all hidden costs) is within 1.5x your rent. Use this calculator to see your specific breakeven timeline.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">How long do you need to own a home for buying to make sense?</h3>
+            <p className="text-slate-700">Typically 5-7 years minimum. Transaction costs (closing costs when buying, 6% agent fees when selling) eat into any appreciation. The exact breakeven depends on your market's appreciation rate, your mortgage rate, and what rent would cost instead.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">What hidden costs make buying more expensive than renting?</h3>
+            <p className="text-slate-700">Property taxes (1-2% of home value annually), homeowners insurance, maintenance (budget 1% of home value per year), HOA fees, and opportunity cost on your down payment. These often add $500-1,500/month beyond your mortgage payment.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">Should I buy a house if I might move in 3 years?</h3>
+            <p className="text-slate-700">Probably not. With typical 3% closing costs and 6% selling costs, you need roughly 9% appreciation just to break even. In a flat or declining market, you could lose money. Renting provides flexibility without the transaction cost risk.</p>
+          </div>
+        </div>
+
+        {/* Internal Links */}
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          Related Decisions
+        </h2>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Link 
+            href="/calculators/affordability" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">How Much House Can I Afford?</h3>
+            <p className="text-sm text-slate-600">Decided to buy? See what price range fits your income and debts.</p>
+          </Link>
+          <Link 
+            href="/calculators/down-payment" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">Down Payment Strategy</h3>
+            <p className="text-sm text-slate-600">Compare 3%, 5%, 10%, and 20% down to find your optimal amount.</p>
+          </Link>
+          <Link 
+            href="/calculators/mortgage-cost" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">True Monthly Cost Calculator</h3>
+            <p className="text-sm text-slate-600">See your real monthly payment including taxes, insurance, and PMI.</p>
+          </Link>
+          <Link 
+            href="/calculators/refinance" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">Refinance Calculator</h3>
+            <p className="text-sm text-slate-600">Already own? See if refinancing to a lower rate makes sense.</p>
+          </Link>
         </div>
       </div>
     </CalculatorLayout>

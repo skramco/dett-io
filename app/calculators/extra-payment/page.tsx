@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import CalculatorLayout from '@/components/CalculatorLayout';
 import EmailResultsForm from '@/components/EmailResultsForm';
 import { calculateExtraPayment } from '@/lib/calculators';
@@ -29,11 +30,87 @@ export default function ExtraPaymentCalculator() {
     setResult(calculatedResult);
   };
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Should I pay extra on my mortgage or invest the money?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Compare your mortgage rate to expected investment returns after taxes. If your mortgage is 6.5% and you expect 7% returns (5% after taxes), paying down the mortgage wins. But if you expect 10% returns, investing likely wins mathematically—though debt payoff offers guaranteed returns and peace of mind."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much does an extra $200/month save on a mortgage?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "On a $300,000 loan at 6.5% for 30 years, an extra $200/month saves approximately $82,000 in interest and pays off the loan 7 years early. The exact savings depend on your specific loan terms."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is it better to make extra payments monthly or annually?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Monthly extra payments save slightly more interest because they reduce principal sooner. However, annual lump sums (like tax refunds or bonuses) are easier for many people to budget. The difference is usually small—consistency matters more than timing."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What's the best way to pay off a mortgage early?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The most effective strategies are: 1) Add a fixed extra amount monthly, 2) Make one extra payment per year, 3) Round up your payment to the nearest $100, or 4) Apply windfalls like bonuses directly to principal. All reduce interest significantly over time."
+        }
+      }
+    ]
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dett.io" },
+      { "@type": "ListItem", "position": 2, "name": "Calculators", "item": "https://dett.io/calculators" },
+      { "@type": "ListItem", "position": 3, "name": "Extra Payment Calculator", "item": "https://dett.io/calculators/extra-payment" }
+    ]
+  };
+
   return (
     <CalculatorLayout
-      title="Extra Payment Impact Calculator"
-      description="See how extra payments save interest and shorten your loan. Compare paying down debt vs investing the money to make the smartest choice."
+      title="Should I Pay Extra on My Mortgage or Invest? | Free Calculator"
+      description="Calculate exactly how much you'll save with extra mortgage payments vs investing. See interest saved, years cut off your loan, and which strategy builds more wealth."
     >
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
+      {/* Breadcrumb Navigation */}
+      <nav className="text-sm text-slate-500 mb-6">
+        <Link href="/" className="hover:text-slate-700">Home</Link>
+        <span className="mx-2">›</span>
+        <Link href="/calculators" className="hover:text-slate-700">Calculators</Link>
+        <span className="mx-2">›</span>
+        <span className="text-slate-900">Extra Payment Calculator</span>
+      </nav>
+
+      {/* Primary H1 - Matches Search Intent */}
+      <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+        Should I Pay Extra on My Mortgage or Invest?
+      </h1>
+      <p className="text-lg text-slate-600 mb-8 max-w-3xl">
+        Enter your loan details and see exactly how much extra payments save in interest. Then compare that to what you'd earn by investing the same money instead.
+      </p>
+
       <div className="grid lg:grid-cols-2 gap-8">
         <div className="space-y-6">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
@@ -334,6 +411,121 @@ export default function ExtraPaymentCalculator() {
               </p>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* SEO Content Section */}
+      <div className="mt-16 max-w-4xl">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          What This Calculator Answers
+        </h2>
+        <p className="text-slate-700 mb-4">
+          Every extra dollar you put toward your mortgage is a dollar that can't be invested elsewhere. This calculator answers the fundamental question: <strong>Does paying down your mortgage faster build more wealth than investing that money?</strong>
+        </p>
+        <p className="text-slate-700 mb-8">
+          The math depends on your mortgage rate, expected investment returns, tax situation, and risk tolerance. This tool runs both scenarios side-by-side so you can see the actual dollar difference—not just theory.
+        </p>
+
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          When Extra Payments Make Sense
+        </h2>
+        <ul className="space-y-3 text-slate-700 mb-8">
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>Your mortgage rate exceeds 6%</strong> — At higher rates, the guaranteed return from debt payoff often beats uncertain market returns after taxes.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>You value certainty over potential</strong> — Debt payoff is a guaranteed return. Markets can drop 30% in a year. If that would stress you, prioritize the mortgage.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>You're approaching retirement</strong> — Entering retirement debt-free provides flexibility and reduces required income.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-green-600 font-bold">✓</span>
+            <span><strong>You've maxed tax-advantaged accounts</strong> — If your 401(k) and IRA are full, extra mortgage payments may beat taxable brokerage investing.</span>
+          </li>
+        </ul>
+
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          When Investing Makes More Sense
+        </h2>
+        <ul className="space-y-3 text-slate-700 mb-8">
+          <li className="flex items-start gap-3">
+            <span className="text-blue-600 font-bold">→</span>
+            <span><strong>Your mortgage rate is under 4%</strong> — Low-rate mortgages from 2020-2021 are essentially cheap money. Investing likely wins.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-blue-600 font-bold">→</span>
+            <span><strong>You have decades until retirement</strong> — Time in market matters. A 30-year-old with a 3.5% mortgage should probably invest.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-blue-600 font-bold">→</span>
+            <span><strong>You haven't maxed retirement accounts</strong> — 401(k) matches and tax-advantaged growth usually beat mortgage payoff.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-blue-600 font-bold">→</span>
+            <span><strong>You need liquidity</strong> — Money in your home is trapped. Investments can be accessed in emergencies.</span>
+          </li>
+        </ul>
+
+        {/* FAQ Section */}
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-6 mb-12">
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">Should I pay extra on my mortgage or invest the money?</h3>
+            <p className="text-slate-700">Compare your mortgage rate to expected investment returns after taxes. If your mortgage is 6.5% and you expect 7% returns (5% after taxes), paying down the mortgage wins. But if you expect 10% returns, investing likely wins mathematically—though debt payoff offers guaranteed returns and peace of mind.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">How much does an extra $200/month save on a mortgage?</h3>
+            <p className="text-slate-700">On a $300,000 loan at 6.5% for 30 years, an extra $200/month saves approximately $82,000 in interest and pays off the loan 7 years early. The exact savings depend on your specific loan terms.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">Is it better to make extra payments monthly or annually?</h3>
+            <p className="text-slate-700">Monthly extra payments save slightly more interest because they reduce principal sooner. However, annual lump sums (like tax refunds or bonuses) are easier for many people to budget. The difference is usually small—consistency matters more than timing.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 mb-2">What's the best way to pay off a mortgage early?</h3>
+            <p className="text-slate-700">The most effective strategies are: 1) Add a fixed extra amount monthly, 2) Make one extra payment per year, 3) Round up your payment to the nearest $100, or 4) Apply windfalls like bonuses directly to principal. All reduce interest significantly over time.</p>
+          </div>
+        </div>
+
+        {/* Internal Links */}
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          Related Decisions
+        </h2>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Link 
+            href="/calculators/refinance" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">Refinance Calculator</h3>
+            <p className="text-sm text-slate-600">Could refinancing to a lower rate save more than extra payments?</p>
+          </Link>
+          <Link 
+            href="/calculators/biweekly" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">Biweekly Payment Calculator</h3>
+            <p className="text-sm text-slate-600">See if biweekly payments are worth it vs DIY extra payments.</p>
+          </Link>
+          <Link 
+            href="/calculators/acceleration" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">Mortgage Acceleration Planner</h3>
+            <p className="text-sm text-slate-600">Compare all payoff strategies: prepay, recast, or invest.</p>
+          </Link>
+          <Link 
+            href="/calculators/rent-vs-buy" 
+            className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-400 transition-colors"
+          >
+            <h3 className="font-semibold text-slate-900 mb-1">Rent vs Buy Calculator</h3>
+            <p className="text-sm text-slate-600">Wondering if you should even have a mortgage? Run the numbers.</p>
+          </Link>
         </div>
       </div>
     </CalculatorLayout>
