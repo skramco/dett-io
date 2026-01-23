@@ -2,15 +2,12 @@ import { HTMLAttributes } from 'react';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  hover?: boolean;
 }
 
-export function Card({ children, hover = false, className = '', ...props }: CardProps) {
-  const hoverStyles = hover ? 'hover:border-slate-300 transition-colors cursor-pointer' : '';
-  
+export function Card({ children, className = '', ...props }: CardProps) {
   return (
     <div
-      className={`bg-surface rounded-lg border border-border p-6 ${hoverStyles} ${className}`}
+      className={`block bg-surface rounded-lg border border-border p-6 ${className}`}
       {...props}
     >
       {children}
@@ -24,7 +21,7 @@ interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
 
 export function CardHeader({ children, className = '', ...props }: CardHeaderProps) {
   return (
-    <div className={`mb-4 ${className}`} {...props}>
+    <div className={className} {...props}>
       {children}
     </div>
   );

@@ -1,232 +1,146 @@
 'use client';
 
-import { useState } from 'react';
-import CalculatorLayout from '@/components/CalculatorLayout';
-import EmailResultsForm from '@/components/EmailResultsForm';
+import { useState, useMemo } from 'react';
+import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
+import { Timeline, AccountBalance, TrendingUp, CheckCircle, Speed } from '@mui/icons-material';
+import CalculatorLayout from '@/components/mui/CalculatorLayout';
+import { InputSection, CurrencyInput, PercentageInput, NumberInput, SliderInput } from '@/components/mui/calculator/InputPanel';
+import { HeroMetric, MetricCard, InsightCallout, ResultsSection, EmptyResultsState } from '@/components/mui/calculator/ResultsPanel';
+import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/ChartComponents';
 import { calculateTimelineSimulator } from '@/lib/calculators';
-import type { TimelineSimulatorInputs, CalculatorResult } from '@/lib/calculators/types';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import type { TimelineSimulatorInputs } from '@/lib/calculators/types';
 
 export default function TimelineSimulatorCalculator() {
   const [inputs, setInputs] = useState<TimelineSimulatorInputs>({
-    loanAmount: 400000,
-    interestRate: 6.5,
-    expectedMoveYear: 7,
-    refiLikelihood: 50,
-    armInitialRate: 5.75,
-    armFixedPeriod: 7,
-    pointsCost: 8000,
-    pointsRate: 6.25,
+    loanAmount: 360000, interestRate: 6.75, expectedMoveYear: 7, refiLikelihood: 30,
+    armInitialRate: 5.75, armFixedPeriod: 5, pointsCost: 7200, pointsRate: 6.25,
   });
 
-  const [result, setResult] = useState<CalculatorResult | null>(null);
+  const result = useMemo(() => inputs.loanAmount <= 0 ? null : calculateTimelineSimulator(inputs), [inputs]);
+  const handleInputChange = (field: keyof TimelineSimulatorInputs, value: number) => setInputs(prev => ({ ...prev, [field]: value }));
 
-  const handleInputChange = (field: keyof TimelineSimulatorInputs, value: string) => {
-    const numValue = parseFloat(value) || 0;
-    setInputs(prev => ({ ...prev, [field]: numValue }));
-  };
-
-  const handleCalculate = () => {
-    const calculatedResult = calculateTimelineSimulator(inputs);
-    setResult(calculatedResult);
-  };
+  const options = useMemo(() => (result?.chartData || []) as Array<{ option: string; monthlyPayment: number; totalPaid: number; remainingBalance: number }>, [result]);
+  const bestOption = options.reduce((best, current) => current.totalPaid < best.totalPaid ? current : best, options[0] || { option: '', monthlyPayment: 0, totalPaid: 0, remainingBalance: 0 });
 
   return (
-    <CalculatorLayout
-      title="Mortgage Decision Timeline Simulator"
-      description="Find the best mortgage structure based on when you plan to move or refinance. Accounts for refi likelihood and compares 30-year fixed, ARM, points, and 15-year options."
-    >
-      <div className="grid lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">Your Timeline</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Loan Amount</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.loanAmount}
-                    onChange={(e) => handleInputChange('loanAmount', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Expected Move Year</label>
-                <input
-                  type="number"
-                  value={inputs.expectedMoveYear}
-                  onChange={(e) => handleInputChange('expectedMoveYear', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-xs text-slate-500 mt-1">When do you plan to sell or move?</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Refinance Likelihood (%)</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={inputs.refiLikelihood}
-                  onChange={(e) => handleInputChange('refiLikelihood', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-xs text-slate-500 mt-1">How likely are you to refinance before moving?</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">30-Year Fixed Options</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Par Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.125"
-                  value={inputs.interestRate}
-                  onChange={(e) => handleInputChange('interestRate', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Points Cost</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.pointsCost}
-                    onChange={(e) => handleInputChange('pointsCost', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Rate with Points (%)</label>
-                <input
-                  type="number"
-                  step="0.125"
-                  value={inputs.pointsRate}
-                  onChange={(e) => handleInputChange('pointsRate', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">ARM Option</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">ARM Initial Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.125"
-                  value={inputs.armInitialRate}
-                  onChange={(e) => handleInputChange('armInitialRate', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">ARM Fixed Period (years)</label>
-                <select
-                  value={inputs.armFixedPeriod}
-                  onChange={(e) => handleInputChange('armFixedPeriod', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="3">3 years</option>
-                  <option value="5">5 years</option>
-                  <option value="7">7 years</option>
-                  <option value="10">10 years</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={handleCalculate}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all duration-200"
-          >
-            Find Best Option
-          </button>
-        </div>
-
-        <div className="space-y-6">
+    <CalculatorLayout title="Timeline Simulator" description="Find the best mortgage option based on how long you plan to stay. Compare fixed, ARM, and points strategies.">
+      <Grid container spacing={4}>
+        <Grid size={{ xs: 12, lg: 5 }}>
+          <Box sx={{ position: 'sticky', top: 100 }}>
+            <InputSection title="Loan Details" icon={<AccountBalance />}>
+              <CurrencyInput label="Loan Amount" value={inputs.loanAmount} onChange={(v) => handleInputChange('loanAmount', v)} />
+              <PercentageInput label="30-Year Fixed Rate" value={inputs.interestRate} onChange={(v) => handleInputChange('interestRate', v)} step={0.125} />
+            </InputSection>
+            <InputSection title="Your Timeline" icon={<Timeline />} color="secondary">
+              <NumberInput label="Expected Years in Home" value={inputs.expectedMoveYear} onChange={(v) => handleInputChange('expectedMoveYear', v)} suffix="years" />
+              <SliderInput label="Refinance Likelihood (%)" value={inputs.refiLikelihood} onChange={(v) => handleInputChange('refiLikelihood', v)} min={0} max={100} step={10} />
+            </InputSection>
+            <InputSection title="ARM Option" icon={<TrendingUp />}>
+              <PercentageInput label="ARM Initial Rate" value={inputs.armInitialRate} onChange={(v) => handleInputChange('armInitialRate', v)} step={0.125} />
+              <NumberInput label="ARM Fixed Period" value={inputs.armFixedPeriod} onChange={(v) => handleInputChange('armFixedPeriod', v)} suffix="years" />
+            </InputSection>
+            <InputSection title="Points Option" icon={<Speed />}>
+              <CurrencyInput label="Points Cost" value={inputs.pointsCost} onChange={(v) => handleInputChange('pointsCost', v)} />
+              <PercentageInput label="Rate with Points" value={inputs.pointsRate} onChange={(v) => handleInputChange('pointsRate', v)} step={0.125} />
+            </InputSection>
+          </Box>
+        </Grid>
+        <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
-            <>
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">Summary</h3>
-                <p className="text-slate-700">{result.summary}</p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Total Cost Comparison</h3>
-                
-                {result.chartData && (
-                  <div className="h-80 mb-6">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={result.chartData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="option" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="monthlyPayment" fill="#3b82f6" name="Monthly Payment" />
-                        <Bar dataKey="totalPaid" fill="#8b5cf6" name="Total Paid" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-
-                <div className="p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border-2 border-green-200">
-                  <p className="text-sm font-semibold text-green-900 mb-2">Best for Your Timeline</p>
-                  <p className="text-2xl font-bold text-green-900 mb-1">
-                    {result.details.bestOption as string}
-                  </p>
-                  <p className="text-sm text-green-700">
-                    ${(result.details.bestPayment as number).toLocaleString()}/month • Total: ${(result.details.bestTotalCost as number).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              <EmailResultsForm 
-                calculatorName="Mortgage Decision Timeline Simulator"
-                result={result}
-              />
-
-              {result.insights && result.insights.length > 0 && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-blue-900 mb-3">Dett Insights</h3>
-                  <ul className="space-y-2">
-                    {result.insights.map((insight, index) => (
-                      <li key={index} className="flex items-start gap-2 text-sm text-blue-800">
-                        <span className="text-blue-600 mt-0.5">•</span>
-                        <span>{insight}</span>
-                      </li>
+            <Stack spacing={4}>
+              <HeroMetric label={`Best for ${inputs.expectedMoveYear}-Year Hold`} value={result.details.bestOption as string} sublabel={`Total cost: $${(result.details.bestTotalCost as number).toLocaleString()}`} />
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Best Payment" value={`$${(result.details.bestPayment as number).toLocaleString()}`} color="success" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Fixed Payment" value={`$${(result.details.fixedPayment as number).toLocaleString()}`} color="primary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="ARM Payment" value={`$${(result.details.armPayment as number).toLocaleString()}`} color="secondary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Balance at Move" value={`$${(result.details.bestBalance as number).toLocaleString()}`} color="warning" /></Grid>
+              </Grid>
+              <ResultsSection title="All Options Compared" subtitle={`Total cost over ${inputs.expectedMoveYear} years (payments only)`}>
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Stack spacing={2}>
+                    {options.map((opt, i) => (
+                      <Box key={i} sx={{ p: 3, borderRadius: 2, bgcolor: opt.option === bestOption.option ? '#D1FAE5' : '#F9FAFB', border: opt.option === bestOption.option ? '2px solid #22C55E' : '1px solid #E5E7EB' }}>
+                        <Grid container spacing={2} alignItems="center">
+                          <Grid size={{ xs: 12, sm: 4 }}>
+                            <Stack direction="row" alignItems="center" spacing={1}>
+                              {opt.option === bestOption.option && <CheckCircle sx={{ color: '#22C55E', fontSize: 20 }} />}
+                              <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{opt.option}</Typography>
+                            </Stack>
+                            {opt.option === bestOption.option && <Typography variant="caption" sx={{ color: '#065F46', fontWeight: 600 }}>LOWEST COST</Typography>}
+                          </Grid>
+                          <Grid size={{ xs: 4, sm: 2 }}>
+                            <Typography variant="body2" color="text.secondary">Payment</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700 }}>${opt.monthlyPayment.toLocaleString()}</Typography>
+                          </Grid>
+                          <Grid size={{ xs: 4, sm: 3 }}>
+                            <Typography variant="body2" color="text.secondary">Total Paid</Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 600, color: opt.option === bestOption.option ? '#065F46' : 'inherit' }}>${opt.totalPaid.toLocaleString()}</Typography>
+                          </Grid>
+                          <Grid size={{ xs: 4, sm: 3 }}>
+                            <Typography variant="body2" color="text.secondary">Balance Left</Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 600 }}>${opt.remainingBalance.toLocaleString()}</Typography>
+                          </Grid>
+                        </Grid>
+                      </Box>
                     ))}
-                  </ul>
-                </div>
+                  </Stack>
+                </Paper>
+              </ResultsSection>
+              <ResultsSection title="Total Cost Visualization" subtitle="Lower is better">
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  {options.map((opt, i) => <HorizontalBar key={i} label={opt.option} value={opt.totalPaid} maxValue={Math.max(...options.map(o => o.totalPaid))} color={opt.option === bestOption.option ? CHART_COLORS.primary : '#9CA3AF'} />)}
+                </Paper>
+              </ResultsSection>
+              <ResultsSection title="Timeline Considerations" subtitle="Key factors for your decision">
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ p: 3, bgcolor: inputs.expectedMoveYear <= inputs.armFixedPeriod ? '#D1FAE5' : '#FEF3C7', borderRadius: 2 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>ARM Consideration</Typography>
+                        <Typography variant="body2">
+                          {inputs.expectedMoveYear <= inputs.armFixedPeriod 
+                            ? `✓ You'll move before the ARM adjusts (year ${inputs.armFixedPeriod}). ARM is low-risk for you.`
+                            : `⚠️ ARM adjusts in year ${inputs.armFixedPeriod}, but you plan to stay ${inputs.expectedMoveYear} years. Rate risk exists.`}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ p: 3, bgcolor: inputs.refiLikelihood > 50 ? '#EBF5FF' : '#F9FAFB', borderRadius: 2 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>Refi Likelihood: {inputs.refiLikelihood}%</Typography>
+                        <Typography variant="body2">
+                          {inputs.refiLikelihood > 50 
+                            ? `High refi likelihood means points may not pay off. Consider par rate or ARM.`
+                            : `Lower refi likelihood means you'll likely keep this loan. Points could pay off.`}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </ResultsSection>
+              {result.insights?.length > 0 && (
+                <ResultsSection title="Insights">
+                  <Stack spacing={2}>
+                    {result.insights.map((insight, i) => <InsightCallout key={i} type={insight.includes('⚠️') ? 'warning' : insight.includes('💡') ? 'tip' : 'info'} title="Analysis">{insight.replace('⚠️ ', '').replace('💡 ', '')}</InsightCallout>)}
+                  </Stack>
+                </ResultsSection>
               )}
-            </>
-          ) : (
-            <div className="bg-slate-50 rounded-xl p-12 text-center border border-slate-200">
-              <p className="text-slate-600">
-                Enter your information and click "Find Best Option" to see your results.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
+              <Paper elevation={0} sx={{ p: 4, borderRadius: 3, background: 'linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)' }}>
+                <Stack direction="row" spacing={2} alignItems="flex-start">
+                  <Timeline sx={{ fontSize: 32, color: 'success.main' }} />
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: 'success.dark', mb: 1 }}>The Bottom Line</Typography>
+                    <Typography variant="body1" sx={{ color: 'success.dark' }}>
+                      For a <strong>{inputs.expectedMoveYear}-year</strong> hold, <strong>{result.details.bestOption}</strong> costs the least 
+                      at <strong>${(result.details.bestTotalCost as number).toLocaleString()}</strong> total. 
+                      You'll have <strong>${(result.details.bestBalance as number).toLocaleString()}</strong> remaining when you sell.
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Paper>
+            </Stack>
+          ) : <EmptyResultsState />}
+        </Grid>
+      </Grid>
     </CalculatorLayout>
   );
 }

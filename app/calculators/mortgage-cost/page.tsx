@@ -1,334 +1,568 @@
 'use client';
 
-import { useState } from 'react';
-import CalculatorLayout from '@/components/CalculatorLayout';
-import EmailResultsForm from '@/components/EmailResultsForm';
+import { useState, useEffect, useMemo } from 'react';
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  Stack,
+  Divider,
+  Chip,
+  Alert,
+} from '@mui/material';
+import {
+  Home,
+  AccountBalance,
+  TrendingUp,
+  Savings,
+  Warning,
+  Info,
+} from '@mui/icons-material';
+import CalculatorLayout from '@/components/mui/CalculatorLayout';
+import {
+  InputSection,
+  CurrencyInput,
+  PercentageInput,
+  SelectInput,
+  SliderInput,
+  InputHint,
+} from '@/components/mui/calculator/InputPanel';
+import {
+  HeroMetric,
+  MetricCard,
+  BreakdownRow,
+  InsightCallout,
+  ResultsSection,
+  EmptyResultsState,
+} from '@/components/mui/calculator/ResultsPanel';
+import {
+  DonutChart,
+  ChartLegend,
+  AmortizationChart,
+  HorizontalBar,
+  ComparisonBarChart,
+  CHART_COLORS,
+} from '@/components/mui/calculator/ChartComponents';
 import { calculateMortgageCost } from '@/lib/calculators';
-import type { MortgageCostInputs, CalculatorResult } from '@/lib/calculators/types';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-
-const COLORS = ['#0f172a', '#475569', '#64748b', '#94a3b8', '#cbd5e1'];
+import type { MortgageCostInputs } from '@/lib/calculators/types';
 
 export default function MortgageCostCalculator() {
   const [inputs, setInputs] = useState<MortgageCostInputs>({
-    homePrice: 400000,
-    downPayment: 80000,
-    interestRate: 6.5,
+    homePrice: 450000,
+    downPayment: 90000,
+    interestRate: 6.75,
     loanTerm: 30,
-    propertyTax: 4800,
-    homeInsurance: 1200,
+    propertyTax: 5400,
+    homeInsurance: 1800,
     hoaFees: 0,
     pmi: 0,
   });
 
-  const [result, setResult] = useState<CalculatorResult | null>(null);
+  // Calculate results in real-time
+  const result = useMemo(() => {
+    if (inputs.homePrice <= 0) return null;
+    return calculateMortgageCost(inputs);
+  }, [inputs]);
 
-  const handleInputChange = (field: keyof MortgageCostInputs, value: string) => {
-    const numValue = parseFloat(value) || 0;
-    setInputs(prev => ({ ...prev, [field]: numValue }));
-  };
-
-  const handleCalculate = () => {
-    const calculatedResult = calculateMortgageCost(inputs);
-    setResult(calculatedResult);
-  };
-
+  // Derived values
+  const loanAmount = inputs.homePrice - inputs.downPayment;
   const downPaymentPercent = inputs.homePrice > 0 ? (inputs.downPayment / inputs.homePrice) * 100 : 0;
   const needsPMI = downPaymentPercent < 20;
+
+  // Auto-calculate PMI if needed
+  useEffect(() => {
+    if (needsPMI && (inputs.pmi ?? 0) === 0) {
+      // Estimate PMI at 0.5% of loan amount annually
+      const estimatedPMI = loanAmount * 0.005;
+      setInputs(prev => ({ ...prev, pmi: Math.round(estimatedPMI) }));
+    } else if (!needsPMI && (inputs.pmi ?? 0) > 0) {
+      setInputs(prev => ({ ...prev, pmi: 0 }));
+    }
+  }, [needsPMI, loanAmount]);
+
+  const handleInputChange = (field: keyof MortgageCostInputs, value: number) => {
+    setInputs(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Generate amortization data for chart
+  const amortizationData = useMemo(() => {
+    if (!result) return [];
+    const data = [];
+    const monthlyRate = inputs.interestRate / 100 / 12;
+    const numberOfPayments = inputs.loanTerm * 12;
+    let balance = loanAmount;
+    const monthlyPI = result.details.principalAndInterest as number;
+    
+    for (let year = 0; year <= inputs.loanTerm; year += 5) {
+      if (year === 0) {
+        data.push({ year, balance: loanAmount, principal: 0, interest: 0 });
+      } else {
+        const monthsElapsed = year * 12;
+        let totalPrincipal = 0;
+        let totalInterest = 0;
+        let tempBalance = loanAmount;
+        
+        for (let m = 1; m <= monthsElapsed && m <= numberOfPayments; m++) {
+          const interestPayment = tempBalance * monthlyRate;
+          const principalPayment = monthlyPI - interestPayment;
+          totalInterest += interestPayment;
+          totalPrincipal += principalPayment;
+          tempBalance -= principalPayment;
+        }
+        
+        data.push({
+          year,
+          balance: Math.max(0, tempBalance),
+          principal: totalPrincipal,
+          interest: totalInterest,
+        });
+      }
+    }
+    return data;
+  }, [result, inputs, loanAmount]);
+
+  // Chart data for donut
+  const chartData = useMemo(() => {
+    if (!result?.chartData) return [];
+    return result.chartData.map((item, index) => ({
+      name: item.name as string,
+      value: item.value as number,
+      color: CHART_COLORS.gradient[index % CHART_COLORS.gradient.length],
+    }));
+  }, [result]);
+
+  // Legend items
+  const legendItems = useMemo(() => {
+    if (!result?.chartData) return [];
+    const total = result.details.totalMonthlyPayment as number;
+    return result.chartData.map((item, index) => ({
+      name: item.name as string,
+      value: `$${(item.value as number).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
+      color: CHART_COLORS.gradient[index % CHART_COLORS.gradient.length],
+      percentage: ((item.value as number) / total) * 100,
+    }));
+  }, [result]);
+
+  // Principal vs Interest over loan lifetime
+  const principalVsInterestData = useMemo(() => {
+    if (!result) return [];
+    return [
+      { name: 'Principal', current: loanAmount, new: 0 },
+      { name: 'Interest', current: result.details.totalInterest as number, new: 0 },
+    ];
+  }, [result, loanAmount]);
+
+  // Annual cost breakdown
+  const annualCostData = useMemo(() => {
+    if (!result) return { principal: 0, interest: 0, taxes: 0, insurance: 0, other: 0, total: 0 };
+    const monthlyPI = result.details.principalAndInterest as number;
+    const monthlyTax = result.details.monthlyPropertyTax as number;
+    const monthlyIns = result.details.monthlyInsurance as number;
+    const monthlyHOA = result.details.monthlyHOA as number;
+    const monthlyPMI = result.details.monthlyPMI as number;
+    
+    // Estimate first year principal (rough - interest heavy early)
+    const firstYearInterest = loanAmount * (inputs.interestRate / 100);
+    const firstYearPrincipal = (monthlyPI * 12) - firstYearInterest;
+    
+    return {
+      principal: Math.max(0, firstYearPrincipal),
+      interest: firstYearInterest,
+      taxes: monthlyTax * 12,
+      insurance: monthlyIns * 12,
+      other: (monthlyHOA + monthlyPMI) * 12,
+      total: (result.details.totalMonthlyPayment as number) * 12,
+    };
+  }, [result, loanAmount, inputs.interestRate]);
 
   return (
     <CalculatorLayout
       title="True Monthly Mortgage Cost"
-      description="See your real monthly payment including PITI (Principal, Interest, Taxes, Insurance), HOA fees, and PMI. Most calculators only show principal and interest."
+      description="See your real monthly payment including PITI (Principal, Interest, Taxes, Insurance), HOA fees, and PMI. Most calculators only show principal and interest—we show you the full picture."
     >
-      <div className="grid lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">Loan Details</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Home Price
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.homePrice}
-                    onChange={(e) => handleInputChange('homePrice', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Down Payment ({downPaymentPercent.toFixed(1)}%)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.downPayment}
-                    onChange={(e) => handleInputChange('downPayment', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                  />
-                </div>
+      <Grid container spacing={4}>
+        {/* LEFT SIDE - INPUTS */}
+        <Grid size={{ xs: 12, lg: 5 }}>
+          <Box sx={{ position: 'sticky', top: 100 }}>
+            <InputSection title="Home & Loan" icon={<Home />}>
+              <CurrencyInput
+                label="Home Price"
+                value={inputs.homePrice}
+                onChange={(v) => handleInputChange('homePrice', v)}
+              />
+              
+              <Box>
+                <SliderInput
+                  label="Down Payment"
+                  value={inputs.downPayment}
+                  onChange={(v) => handleInputChange('downPayment', v)}
+                  min={0}
+                  max={inputs.homePrice * 0.5}
+                  step={5000}
+                  valueLabelFormat={(v) => `$${(v / 1000).toFixed(0)}k (${((v / inputs.homePrice) * 100).toFixed(0)}%)`}
+                />
                 {needsPMI && (
-                  <p className="text-sm text-amber-600 mt-1">
-                    ⚠️ Less than 20% down - PMI required
-                  </p>
+                  <Alert severity="warning" sx={{ mt: 1 }}>
+                    Less than 20% down requires PMI
+                  </Alert>
                 )}
-              </div>
+              </Box>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Interest Rate
-                </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={inputs.interestRate}
-                    onChange={(e) => handleInputChange('interestRate', e.target.value)}
-                    className="w-full pr-8 pl-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">%</span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Loan Term
-                </label>
-                <select
-                  value={inputs.loanTerm}
-                  onChange={(e) => handleInputChange('loanTerm', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                >
-                  <option value="15">15 years</option>
-                  <option value="20">20 years</option>
-                  <option value="30">30 years</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">Additional Costs</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Annual Property Tax
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.propertyTax}
-                    onChange={(e) => handleInputChange('propertyTax', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                  />
-                </div>
-                <p className="text-xs text-slate-500 mt-1">Typically 1-2% of home value per year</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Annual Home Insurance
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.homeInsurance}
-                    onChange={(e) => handleInputChange('homeInsurance', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Monthly HOA Fees
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.hoaFees}
-                    onChange={(e) => handleInputChange('hoaFees', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              {needsPMI && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Annual PMI
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                    <input
-                      type="number"
-                      value={inputs.pmi}
-                      onChange={(e) => handleInputChange('pmi', e.target.value)}
-                      className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent"
-                    />
-                  </div>
-                  <p className="text-xs text-slate-500 mt-1">Usually 0.5-1% of loan amount per year</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <button
-            onClick={handleCalculate}
-            className="w-full bg-slate-900 text-white py-3 px-6 rounded-lg font-semibold hover:bg-slate-800 transition-colors"
-          >
-            Calculate True Cost
-          </button>
-        </div>
-
-        <div className="space-y-6">
-          {result ? (
-            <>
-              <div className="bg-slate-900 text-white rounded-xl p-6 shadow-lg">
-                <h2 className="text-sm font-medium text-slate-300 mb-2">Your True Monthly Payment</h2>
-                <p className="text-4xl font-bold mb-4">
-                  ${result.details.totalMonthlyPayment.toLocaleString()}
-                </p>
-                <p className="text-slate-300 text-sm leading-relaxed">
-                  {result.summary}
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Monthly Payment Breakdown</h3>
-                
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-                    <span className="text-slate-600">Principal & Interest</span>
-                    <span className="font-semibold text-slate-900">
-                      ${result.details.principalAndInterest.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-                    <span className="text-slate-600">Property Tax</span>
-                    <span className="font-semibold text-slate-900">
-                      ${result.details.monthlyPropertyTax.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-                    <span className="text-slate-600">Home Insurance</span>
-                    <span className="font-semibold text-slate-900">
-                      ${result.details.monthlyInsurance.toLocaleString()}
-                    </span>
-                  </div>
-                  {(result.details.monthlyHOA as number) > 0 && (
-                    <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-                      <span className="text-slate-600">HOA Fees</span>
-                      <span className="font-semibold text-slate-900">
-                        ${result.details.monthlyHOA.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-                  {(result.details.monthlyPMI as number) > 0 && (
-                    <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-                      <span className="text-slate-600">PMI</span>
-                      <span className="font-semibold text-slate-900">
-                        ${result.details.monthlyPMI.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {result.chartData && result.chartData.length > 0 && (
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={result.chartData}
-                          dataKey="value"
-                          nameKey="name"
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={80}
-                          label={(entry: any) => `${((entry.percent || 0) * 100).toFixed(0)}%`}
-                        >
-                          {result.chartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(value: number | undefined) => value ? `$${value.toFixed(2)}` : '$0'} />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Key Numbers</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-slate-600 mb-1">Loan Amount</p>
-                    <p className="text-xl font-semibold text-slate-900">
-                      ${result.details.loanAmount.toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600 mb-1">Down Payment</p>
-                    <p className="text-xl font-semibold text-slate-900">
-                      {result.details.downPaymentPercent}%
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600 mb-1">Total Interest</p>
-                    <p className="text-xl font-semibold text-slate-900">
-                      ${result.details.totalInterest.toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-600 mb-1">Total Paid</p>
-                    <p className="text-xl font-semibold text-slate-900">
-                      ${result.details.totalPaid.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <EmailResultsForm 
-                calculatorName="True Monthly Mortgage Cost"
-                result={result}
+              <PercentageInput
+                label="Interest Rate"
+                value={inputs.interestRate}
+                onChange={(v) => handleInputChange('interestRate', v)}
+                step={0.125}
               />
 
-              {result.insights && result.insights.length > 0 && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-blue-900 mb-3">Insights</h3>
-                  <ul className="space-y-2">
-                    {result.insights.map((insight, index) => (
-                      <li key={index} className="flex items-start gap-2 text-sm text-blue-800">
-                        <span className="text-blue-600 mt-0.5">•</span>
-                        <span>{insight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <SelectInput
+                label="Loan Term"
+                value={inputs.loanTerm}
+                onChange={(v) => handleInputChange('loanTerm', v as number)}
+                options={[
+                  { value: 15, label: '15 years' },
+                  { value: 20, label: '20 years' },
+                  { value: 30, label: '30 years' },
+                ]}
+              />
+            </InputSection>
+
+            <InputSection title="Additional Costs" icon={<AccountBalance />} color="secondary">
+              <CurrencyInput
+                label="Annual Property Tax"
+                value={inputs.propertyTax}
+                onChange={(v) => handleInputChange('propertyTax', v)}
+                helperText="Typically 1-2% of home value per year"
+              />
+
+              <CurrencyInput
+                label="Annual Home Insurance"
+                value={inputs.homeInsurance}
+                onChange={(v) => handleInputChange('homeInsurance', v)}
+              />
+
+              <CurrencyInput
+                label="Monthly HOA Fees"
+                value={inputs.hoaFees}
+                onChange={(v) => handleInputChange('hoaFees', v)}
+              />
+
+              {needsPMI && (
+                <CurrencyInput
+                  label="Annual PMI"
+                  value={inputs.pmi ?? 0}
+                  onChange={(v) => handleInputChange('pmi', v)}
+                  helperText="Usually 0.5-1% of loan amount per year"
+                />
               )}
-            </>
+            </InputSection>
+          </Box>
+        </Grid>
+
+        {/* RIGHT SIDE - RESULTS */}
+        <Grid size={{ xs: 12, lg: 7 }}>
+          {result ? (
+            <Stack spacing={4}>
+              {/* Hero Metric */}
+              <HeroMetric
+                label="Your True Monthly Payment"
+                value={`$${(result.details.totalMonthlyPayment as number).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                sublabel={`That's $${((result.details.totalMonthlyPayment as number) - (result.details.principalAndInterest as number)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} more than just P&I`}
+              />
+
+              {/* Key Metrics Grid */}
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <MetricCard
+                    label="Loan Amount"
+                    value={`$${(result.details.loanAmount as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                    color="primary"
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <MetricCard
+                    label="Down Payment"
+                    value={`${(result.details.downPaymentPercent as number).toFixed(0)}%`}
+                    sublabel={`$${inputs.downPayment.toLocaleString()}`}
+                    color={needsPMI ? 'warning' : 'success'}
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <MetricCard
+                    label="Total Interest"
+                    value={`$${((result.details.totalInterest as number) / 1000).toFixed(0)}k`}
+                    sublabel={`Over ${inputs.loanTerm} years`}
+                    color="warning"
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <MetricCard
+                    label="Total Cost"
+                    value={`$${((result.details.totalPaid as number) / 1000).toFixed(0)}k`}
+                    sublabel="All payments combined"
+                    color="error"
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Payment Breakdown */}
+              <ResultsSection 
+                title="Monthly Payment Breakdown" 
+                subtitle="Where your money goes each month"
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Grid container spacing={4}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <DonutChart
+                        data={chartData}
+                        centerLabel="per month"
+                        centerValue={`$${(result.details.totalMonthlyPayment as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <ChartLegend items={legendItems} />
+                      
+                      <Divider sx={{ my: 3 }} />
+                      
+                      <Stack spacing={1}>
+                        <Stack direction="row" justifyContent="space-between">
+                          <Typography variant="body2" color="text.secondary">
+                            P&I Only (what most show)
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            ${(result.details.principalAndInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                          </Typography>
+                        </Stack>
+                        <Stack direction="row" justifyContent="space-between">
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                            True Total (what you pay)
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                            ${(result.details.totalMonthlyPayment as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                          </Typography>
+                        </Stack>
+                        <Stack direction="row" justifyContent="space-between">
+                          <Typography variant="body2" color="error.main">
+                            Hidden costs
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: 'error.main' }}>
+                            +${((result.details.totalMonthlyPayment as number) - (result.details.principalAndInterest as number)).toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </ResultsSection>
+
+              {/* Loan Balance Over Time */}
+              <ResultsSection 
+                title="Loan Balance Over Time" 
+                subtitle="Watch your mortgage shrink as you make payments"
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <AmortizationChart data={amortizationData} height={280} />
+                  
+                  <Divider sx={{ my: 3 }} />
+                  
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 4 }}>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        After 5 years
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        ${(amortizationData[1]?.balance || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        remaining
+                      </Typography>
+                    </Grid>
+                    <Grid size={{ xs: 4 }}>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        After 10 years
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        ${(amortizationData[2]?.balance || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        remaining
+                      </Typography>
+                    </Grid>
+                    <Grid size={{ xs: 4 }}>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        After 15 years
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        ${(amortizationData[3]?.balance || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        remaining
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </ResultsSection>
+
+              {/* First Year Cost Breakdown */}
+              <ResultsSection 
+                title="First Year Cost Breakdown" 
+                subtitle="Where your money goes in year one"
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Box sx={{ mb: 3 }}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        Annual Housing Cost
+                      </Typography>
+                      <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                        ${annualCostData.total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </Typography>
+                    </Stack>
+                  </Box>
+                  
+                  <HorizontalBar
+                    label="Interest (Year 1)"
+                    value={annualCostData.interest}
+                    maxValue={annualCostData.total}
+                    color={CHART_COLORS.quaternary}
+                  />
+                  <HorizontalBar
+                    label="Principal (Year 1)"
+                    value={annualCostData.principal}
+                    maxValue={annualCostData.total}
+                    color={CHART_COLORS.primary}
+                  />
+                  <HorizontalBar
+                    label="Property Taxes"
+                    value={annualCostData.taxes}
+                    maxValue={annualCostData.total}
+                    color={CHART_COLORS.tertiary}
+                  />
+                  <HorizontalBar
+                    label="Insurance"
+                    value={annualCostData.insurance}
+                    maxValue={annualCostData.total}
+                    color={CHART_COLORS.secondary}
+                  />
+                  {annualCostData.other > 0 && (
+                    <HorizontalBar
+                      label="HOA + PMI"
+                      value={annualCostData.other}
+                      maxValue={annualCostData.total}
+                      color="#9CA3AF"
+                    />
+                  )}
+                  
+                  <Divider sx={{ my: 3 }} />
+                  
+                  <Alert severity="info" sx={{ borderRadius: 2 }}>
+                    <Typography variant="body2">
+                      <strong>Why so much interest?</strong> In year one, {((annualCostData.interest / (annualCostData.interest + annualCostData.principal)) * 100).toFixed(0)}% of your P&I payment goes to interest. 
+                      This ratio improves over time as you pay down the principal.
+                    </Typography>
+                  </Alert>
+                </Paper>
+              </ResultsSection>
+
+              {/* Lifetime Cost Analysis */}
+              <ResultsSection 
+                title="Lifetime Cost Analysis" 
+                subtitle="The true cost of your mortgage over {inputs.loanTerm} years"
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#F9FAFB', borderRadius: 2 }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                          TOTAL AMOUNT BORROWED
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: CHART_COLORS.primary, my: 1 }}>
+                          ${loanAmount.toLocaleString()}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Your original loan amount
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#FEF3C7', borderRadius: 2 }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                          TOTAL INTEREST PAID
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: CHART_COLORS.quaternary, my: 1 }}>
+                          ${(result.details.totalInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {(((result.details.totalInterest as number) / loanAmount) * 100).toFixed(0)}% of loan amount
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                  
+                  <Box sx={{ mt: 3, p: 3, bgcolor: '#FEE2E2', borderRadius: 2, textAlign: 'center' }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                      TOTAL COST OF HOMEOWNERSHIP
+                    </Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 700, color: '#DC2626', my: 1 }}>
+                      ${(result.details.totalPaid as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Principal + Interest + Taxes + Insurance over {inputs.loanTerm} years
+                    </Typography>
+                  </Box>
+                </Paper>
+              </ResultsSection>
+
+              {/* Insights */}
+              {result.insights && result.insights.length > 0 && (
+                <ResultsSection title="Key Insights" subtitle="What these numbers mean for you">
+                  <Stack spacing={2}>
+                    {result.insights.map((insight, index) => (
+                      <InsightCallout
+                        key={index}
+                        type={insight.includes('PMI') ? 'warning' : insight.includes('interest') ? 'info' : 'tip'}
+                        title={insight.includes('PMI') ? 'PMI Alert' : insight.includes('interest') ? 'Interest Impact' : 'Did You Know?'}
+                      >
+                        {insight}
+                      </InsightCallout>
+                    ))}
+                  </Stack>
+                </ResultsSection>
+              )}
+
+              {/* Bottom Line Summary */}
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 4,
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)',
+                  border: '1px solid',
+                  borderColor: 'success.light',
+                }}
+              >
+                <Stack direction="row" spacing={2} alignItems="flex-start">
+                  <Savings sx={{ fontSize: 32, color: 'success.main' }} />
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: 'success.dark', mb: 1 }}>
+                      The Bottom Line
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'success.dark' }}>
+                      Your true monthly housing cost is <strong>${(result.details.totalMonthlyPayment as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong>, 
+                      not the ${(result.details.principalAndInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })} that most calculators show. 
+                      Over {inputs.loanTerm} years, you'll pay a total of <strong>${(result.details.totalPaid as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> — 
+                      that's ${(result.details.totalInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })} in interest alone.
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Paper>
+            </Stack>
           ) : (
-            <div className="bg-slate-50 rounded-xl p-12 text-center border border-slate-200">
-              <p className="text-slate-600">
-                Enter your information and click "Calculate True Cost" to see your results.
-              </p>
-            </div>
+            <EmptyResultsState />
           )}
-        </div>
-      </div>
+        </Grid>
+      </Grid>
     </CalculatorLayout>
   );
 }

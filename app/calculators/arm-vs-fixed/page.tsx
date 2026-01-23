@@ -1,238 +1,417 @@
 'use client';
 
-import { useState } from 'react';
-import CalculatorLayout from '@/components/CalculatorLayout';
-import EmailResultsForm from '@/components/EmailResultsForm';
+import { useState, useMemo } from 'react';
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  Stack,
+  Divider,
+  Alert,
+} from '@mui/material';
+import {
+  TrendingUp,
+  TrendingDown,
+  Lock,
+  Warning,
+  CompareArrows,
+} from '@mui/icons-material';
+import CalculatorLayout from '@/components/mui/CalculatorLayout';
+import {
+  InputSection,
+  CurrencyInput,
+  PercentageInput,
+  SelectInput,
+  NumberInput,
+} from '@/components/mui/calculator/InputPanel';
+import {
+  HeroMetric,
+  MetricCard,
+  InsightCallout,
+  ResultsSection,
+  EmptyResultsState,
+} from '@/components/mui/calculator/ResultsPanel';
+import {
+  HorizontalBar,
+  TimelineChart,
+  CHART_COLORS,
+} from '@/components/mui/calculator/ChartComponents';
 import { calculateArmVsFixed } from '@/lib/calculators';
-import type { ArmVsFixedInputs, CalculatorResult } from '@/lib/calculators/types';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import type { ArmVsFixedInputs } from '@/lib/calculators/types';
 
 export default function ArmVsFixedCalculator() {
   const [inputs, setInputs] = useState<ArmVsFixedInputs>({
-    loanAmount: 400000,
-    fixedRate: 6.5,
+    loanAmount: 360000,
+    fixedRate: 6.75,
     armInitialRate: 5.75,
-    armFixedPeriod: 7,
+    armFixedPeriod: 5,
     armAdjustmentCap: 2,
     armLifetimeCap: 5,
-    armMargin: 2.5,
+    armMargin: 2.75,
     loanTerm: 30,
-    expectedIndexRate: 4,
+    expectedIndexRate: 5,
   });
 
-  const [result, setResult] = useState<CalculatorResult | null>(null);
+  // Calculate results in real-time
+  const result = useMemo(() => {
+    if (inputs.loanAmount <= 0) return null;
+    return calculateArmVsFixed(inputs);
+  }, [inputs]);
 
-  const handleInputChange = (field: keyof ArmVsFixedInputs, value: string) => {
-    const numValue = parseFloat(value) || 0;
-    setInputs(prev => ({ ...prev, [field]: numValue }));
+  const handleInputChange = (field: keyof ArmVsFixedInputs, value: number) => {
+    setInputs(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleCalculate = () => {
-    const calculatedResult = calculateArmVsFixed(inputs);
-    setResult(calculatedResult);
-  };
+  // Timeline data for payment comparison
+  const timelineData = useMemo(() => {
+    if (!result?.chartData) return [];
+    return (result.chartData as Array<{ year: number; armPayment: number; fixedPayment: number }>).map(item => ({
+      month: item.year * 12,
+      optionA: item.fixedPayment,
+      optionB: item.armPayment,
+    }));
+  }, [result]);
+
+  // Derived values
+  const armWins = result ? (result.details.armTotalPaid as number) < (result.details.fixedTotalPaid as number) : false;
+  const initialSavings = result ? (result.details.fixedPayment as number) - (result.details.armInitialPayment as number) : 0;
 
   return (
     <CalculatorLayout
-      title="ARM vs Fixed Reality Check"
-      description="Model rate caps, adjustment timelines, and worst-case scenarios. See probability-weighted cost comparison with payment volatility warnings."
+      title="ARM vs Fixed Rate Calculator"
+      description="Compare adjustable-rate mortgages (ARM) to fixed-rate loans. See initial savings, rate adjustment scenarios, and worst-case payment projections."
     >
-      <div className="grid lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">Loan Details</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Loan Amount</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.loanAmount}
-                    onChange={(e) => handleInputChange('loanAmount', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
+      <Grid container spacing={4}>
+        {/* LEFT SIDE - INPUTS */}
+        <Grid size={{ xs: 12, lg: 5 }}>
+          <Box sx={{ position: 'sticky', top: 100 }}>
+            <InputSection title="Loan Details" icon={<CompareArrows />}>
+              <CurrencyInput
+                label="Loan Amount"
+                value={inputs.loanAmount}
+                onChange={(v) => handleInputChange('loanAmount', v)}
+              />
+              
+              <SelectInput
+                label="Loan Term"
+                value={inputs.loanTerm}
+                onChange={(v) => handleInputChange('loanTerm', v as number)}
+                options={[
+                  { value: 15, label: '15 years' },
+                  { value: 30, label: '30 years' },
+                ]}
+              />
+            </InputSection>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Fixed Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.125"
-                  value={inputs.fixedRate}
-                  onChange={(e) => handleInputChange('fixedRate', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-          </div>
+            <InputSection title="Fixed Rate Option" icon={<Lock />} color="secondary">
+              <PercentageInput
+                label="Fixed Interest Rate"
+                value={inputs.fixedRate}
+                onChange={(v) => handleInputChange('fixedRate', v)}
+                step={0.125}
+              />
+            </InputSection>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">ARM Details</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">ARM Initial Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.125"
-                  value={inputs.armInitialRate}
-                  onChange={(e) => handleInputChange('armInitialRate', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Fixed Period (years)</label>
-                <select
-                  value={inputs.armFixedPeriod}
-                  onChange={(e) => handleInputChange('armFixedPeriod', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="3">3 years</option>
-                  <option value="5">5 years</option>
-                  <option value="7">7 years</option>
-                  <option value="10">10 years</option>
-                </select>
-                <p className="text-xs text-slate-500 mt-1">Rate is fixed for this period</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Adjustment Cap (%)</label>
-                <input
-                  type="number"
-                  step="0.25"
-                  value={inputs.armAdjustmentCap}
-                  onChange={(e) => handleInputChange('armAdjustmentCap', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-xs text-slate-500 mt-1">Max rate increase per adjustment</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Lifetime Cap (%)</label>
-                <input
-                  type="number"
-                  step="0.25"
-                  value={inputs.armLifetimeCap}
-                  onChange={(e) => handleInputChange('armLifetimeCap', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-xs text-slate-500 mt-1">Max rate increase over life of loan</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">ARM Margin (%)</label>
-                <input
-                  type="number"
-                  step="0.125"
-                  value={inputs.armMargin}
-                  onChange={(e) => handleInputChange('armMargin', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Expected Index Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.125"
-                  value={inputs.expectedIndexRate}
-                  onChange={(e) => handleInputChange('expectedIndexRate', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-xs text-slate-500 mt-1">Your best guess for future rates</p>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={handleCalculate}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all duration-200"
-          >
-            Compare ARM vs Fixed
-          </button>
-        </div>
-
-        <div className="space-y-6">
-          {result ? (
-            <>
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">Summary</h3>
-                <p className="text-slate-700">{result.summary}</p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Payment Comparison Over Time</h3>
-                
-                {result.chartData && (
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={result.chartData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="year" label={{ value: 'Year', position: 'insideBottom', offset: -5 }} />
-                        <YAxis label={{ value: 'Monthly Payment ($)', angle: -90, position: 'insideLeft' }} />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="monotone" dataKey="fixedPayment" stroke="#3b82f6" strokeWidth={2} name="Fixed Rate" />
-                        <Line type="monotone" dataKey="armPayment" stroke="#ef4444" strokeWidth={2} name="ARM" />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-3 gap-4 mt-6">
-                  <div className="p-4 bg-blue-50 rounded-lg text-center">
-                    <p className="text-sm text-blue-700 mb-1">Fixed Payment</p>
-                    <p className="text-xl font-bold text-blue-900">
-                      ${(result.details.fixedPayment as number).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-green-50 rounded-lg text-center">
-                    <p className="text-sm text-green-700 mb-1">ARM Start</p>
-                    <p className="text-xl font-bold text-green-900">
-                      ${(result.details.armPayment as number).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-red-50 rounded-lg text-center">
-                    <p className="text-sm text-red-700 mb-1">Worst Case</p>
-                    <p className="text-xl font-bold text-red-900">
-                      ${(result.details.worstCasePayment as number).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <EmailResultsForm 
-                calculatorName="ARM vs Fixed Reality Check"
-                result={result}
+            <InputSection title="ARM Option" icon={<TrendingUp />}>
+              <PercentageInput
+                label="Initial ARM Rate"
+                value={inputs.armInitialRate}
+                onChange={(v) => handleInputChange('armInitialRate', v)}
+                step={0.125}
               />
 
+              <SelectInput
+                label="Fixed Period"
+                value={inputs.armFixedPeriod}
+                onChange={(v) => handleInputChange('armFixedPeriod', v as number)}
+                options={[
+                  { value: 3, label: '3 years (3/1 ARM)' },
+                  { value: 5, label: '5 years (5/1 ARM)' },
+                  { value: 7, label: '7 years (7/1 ARM)' },
+                  { value: 10, label: '10 years (10/1 ARM)' },
+                ]}
+              />
+
+              <PercentageInput
+                label="Expected Index Rate"
+                value={inputs.expectedIndexRate}
+                onChange={(v) => handleInputChange('expectedIndexRate', v)}
+                step={0.25}
+                helperText="Future rate prediction (SOFR/Treasury)"
+              />
+
+              <PercentageInput
+                label="ARM Margin"
+                value={inputs.armMargin}
+                onChange={(v) => handleInputChange('armMargin', v)}
+                step={0.25}
+                helperText="Added to index rate after fixed period"
+              />
+            </InputSection>
+          </Box>
+        </Grid>
+
+        {/* RIGHT SIDE - RESULTS */}
+        <Grid size={{ xs: 12, lg: 7 }}>
+          {result ? (
+            <Stack spacing={4}>
+              {/* Hero Metric */}
+              <HeroMetric
+                label="Initial Monthly Savings with ARM"
+                value={`$${initialSavings.toLocaleString()}/mo`}
+                sublabel={`Save $${(result.details.savingsInFixedPeriod as number).toLocaleString()} in first ${inputs.armFixedPeriod} years`}
+              />
+
+              {/* Key Metrics Grid */}
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <MetricCard
+                    label="Fixed Payment"
+                    value={`$${(result.details.fixedPayment as number).toLocaleString()}`}
+                    sublabel={`${inputs.fixedRate}% for ${inputs.loanTerm} years`}
+                    color="primary"
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <MetricCard
+                    label="ARM Initial"
+                    value={`$${(result.details.armInitialPayment as number).toLocaleString()}`}
+                    sublabel={`${inputs.armInitialRate}% for ${inputs.armFixedPeriod} years`}
+                    color="success"
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <MetricCard
+                    label="ARM Worst Case"
+                    value={`$${(result.details.worstCasePayment as number).toLocaleString()}`}
+                    sublabel={`At ${result.details.worstCaseRate}% rate`}
+                    color="error"
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <MetricCard
+                    label="Expected Winner"
+                    value={armWins ? 'ARM' : 'Fixed'}
+                    sublabel={`Saves $${Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)).toLocaleString()}`}
+                    color={armWins ? 'success' : 'primary'}
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Side by Side Comparison */}
+              <ResultsSection 
+                title="Payment Comparison" 
+                subtitle="Fixed vs ARM initial payments"
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2, textAlign: 'center', height: '100%' }}>
+                        <Lock sx={{ fontSize: 40, color: '#006397', mb: 1 }} />
+                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                          FIXED RATE
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#004B73', my: 1 }}>
+                          ${(result.details.fixedPayment as number).toLocaleString()}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {inputs.fixedRate}% for entire {inputs.loanTerm} years
+                        </Typography>
+                        <Divider sx={{ my: 2 }} />
+                        <Typography variant="body2" sx={{ color: '#004B73' }}>
+                          ✓ Predictable payments<br />
+                          ✓ No rate risk<br />
+                          ✓ Peace of mind
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2, textAlign: 'center', height: '100%' }}>
+                        <TrendingDown sx={{ fontSize: 40, color: '#22C55E', mb: 1 }} />
+                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                          ARM (INITIAL)
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>
+                          ${(result.details.armInitialPayment as number).toLocaleString()}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {inputs.armInitialRate}% for first {inputs.armFixedPeriod} years
+                        </Typography>
+                        <Divider sx={{ my: 2 }} />
+                        <Typography variant="body2" sx={{ color: '#065F46' }}>
+                          ✓ Lower initial payment<br />
+                          ✓ Good if moving/refi soon<br />
+                          ⚠️ Rate adjusts after {inputs.armFixedPeriod} years
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+
+                  <Divider sx={{ my: 3 }} />
+
+                  <Box sx={{ p: 3, bgcolor: '#F0FDF4', borderRadius: 2, textAlign: 'center' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: '#065F46' }}>
+                      ARM saves ${initialSavings.toLocaleString()}/month initially
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      That's ${(result.details.savingsInFixedPeriod as number).toLocaleString()} over the {inputs.armFixedPeriod}-year fixed period
+                    </Typography>
+                  </Box>
+                </Paper>
+              </ResultsSection>
+
+              {/* Payment Over Time */}
+              <ResultsSection 
+                title="Payment Projection" 
+                subtitle="How payments may change over time (expected scenario)"
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <TimelineChart 
+                    data={timelineData}
+                    labels={{ optionA: 'Fixed Rate', optionB: 'ARM' }}
+                    height={280}
+                  />
+                  
+                  <Divider sx={{ my: 3 }} />
+                  
+                  <Alert severity="info" sx={{ borderRadius: 2 }}>
+                    <Typography variant="body2">
+                      <strong>After year {inputs.armFixedPeriod}:</strong> ARM rate adjusts annually based on market conditions. 
+                      This projection assumes the index rate stays around {inputs.expectedIndexRate}%.
+                    </Typography>
+                  </Alert>
+                </Paper>
+              </ResultsSection>
+
+              {/* Risk Analysis */}
+              <ResultsSection 
+                title="Risk Analysis" 
+                subtitle="What happens if rates rise?"
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <HorizontalBar
+                    label="Fixed Payment (guaranteed)"
+                    value={result.details.fixedPayment as number}
+                    maxValue={result.details.worstCasePayment as number}
+                    color={CHART_COLORS.primary}
+                  />
+                  <HorizontalBar
+                    label="ARM Initial Payment"
+                    value={result.details.armInitialPayment as number}
+                    maxValue={result.details.worstCasePayment as number}
+                    color={CHART_COLORS.secondary}
+                  />
+                  <HorizontalBar
+                    label="ARM Worst Case"
+                    value={result.details.worstCasePayment as number}
+                    maxValue={result.details.worstCasePayment as number}
+                    color="#EF4444"
+                  />
+                  
+                  <Divider sx={{ my: 3 }} />
+                  
+                  <Alert severity="warning" icon={<Warning />} sx={{ borderRadius: 2 }}>
+                    <Typography variant="body2">
+                      <strong>Worst case scenario:</strong> If rates spike, your ARM payment could reach 
+                      <strong> ${(result.details.worstCasePayment as number).toLocaleString()}/month</strong> at a 
+                      <strong> {result.details.worstCaseRate}%</strong> rate. That's 
+                      <strong> ${((result.details.worstCasePayment as number) - (result.details.fixedPayment as number)).toLocaleString()}/month more</strong> than the fixed option.
+                    </Typography>
+                  </Alert>
+                </Paper>
+              </ResultsSection>
+
+              {/* When ARM Makes Sense */}
+              <ResultsSection 
+                title="When Does ARM Make Sense?" 
+                subtitle="Key factors to consider"
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ p: 2, bgcolor: '#D1FAE5', borderRadius: 2 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#065F46', mb: 1 }}>
+                          ✓ ARM may be better if:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#065F46' }}>
+                          • You plan to move within {inputs.armFixedPeriod} years<br />
+                          • You expect to refinance before adjustments<br />
+                          • You expect rates to stay flat or drop<br />
+                          • You can handle payment increases
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ p: 2, bgcolor: '#EBF5FF', borderRadius: 2 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#004B73', mb: 1 }}>
+                          ✓ Fixed may be better if:
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#004B73' }}>
+                          • You plan to stay long-term<br />
+                          • You value payment predictability<br />
+                          • Rates are historically low<br />
+                          • Your budget is tight
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </ResultsSection>
+
+              {/* Insights */}
               {result.insights && result.insights.length > 0 && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-blue-900 mb-3">Dett Insights</h3>
-                  <ul className="space-y-2">
+                <ResultsSection title="Key Insights" subtitle="What these numbers mean for you">
+                  <Stack spacing={2}>
                     {result.insights.map((insight, index) => (
-                      <li key={index} className="flex items-start gap-2 text-sm text-blue-800">
-                        <span className="text-blue-600 mt-0.5">•</span>
-                        <span>{insight}</span>
-                      </li>
+                      <InsightCallout
+                        key={index}
+                        type={insight.includes('⚠️') ? 'warning' : insight.includes('💡') ? 'tip' : 'info'}
+                        title={insight.includes('Fixed') ? 'Fixed Rate' : insight.includes('ARM') ? 'ARM' : 'Analysis'}
+                      >
+                        {insight.replace('⚠️ ', '').replace('💡 ', '')}
+                      </InsightCallout>
                     ))}
-                  </ul>
-                </div>
+                  </Stack>
+                </ResultsSection>
               )}
-            </>
+
+              {/* Bottom Line */}
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 4,
+                  borderRadius: 3,
+                  background: armWins 
+                    ? 'linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)'
+                    : 'linear-gradient(135deg, #EBF5FF 0%, #DBEAFE 100%)',
+                  border: '1px solid',
+                  borderColor: armWins ? 'success.light' : 'primary.light',
+                }}
+              >
+                <Stack direction="row" spacing={2} alignItems="flex-start">
+                  <CompareArrows sx={{ fontSize: 32, color: armWins ? 'success.main' : 'primary.main' }} />
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: armWins ? 'success.dark' : 'primary.dark', mb: 1 }}>
+                      The Bottom Line
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: armWins ? 'success.dark' : 'primary.dark' }}>
+                      The {inputs.armFixedPeriod}/1 ARM saves <strong>${initialSavings.toLocaleString()}/month</strong> initially 
+                      (<strong>${(result.details.savingsInFixedPeriod as number).toLocaleString()}</strong> over {inputs.armFixedPeriod} years). 
+                      {armWins 
+                        ? ` Based on expected rates, the ARM saves $${Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)).toLocaleString()} total. Good choice if you'll move or refinance within ${inputs.armFixedPeriod} years.`
+                        : ` However, if rates rise as expected, the fixed rate saves $${Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)).toLocaleString()} over the life of the loan.`
+                      }
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Paper>
+            </Stack>
           ) : (
-            <div className="bg-slate-50 rounded-xl p-12 text-center border border-slate-200">
-              <p className="text-slate-600">
-                Enter your information and click "Compare ARM vs Fixed" to see your results.
-              </p>
-            </div>
+            <EmptyResultsState />
           )}
-        </div>
-      </div>
+        </Grid>
+      </Grid>
     </CalculatorLayout>
   );
 }

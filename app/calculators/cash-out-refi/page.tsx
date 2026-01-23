@@ -1,244 +1,126 @@
 'use client';
 
-import { useState } from 'react';
-import CalculatorLayout from '@/components/CalculatorLayout';
-import EmailResultsForm from '@/components/EmailResultsForm';
+import { useState, useMemo } from 'react';
+import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
+import { AttachMoney, AccountBalance, TrendingUp, Warning, CompareArrows } from '@mui/icons-material';
+import CalculatorLayout from '@/components/mui/CalculatorLayout';
+import { InputSection, CurrencyInput, PercentageInput, SelectInput, NumberInput } from '@/components/mui/calculator/InputPanel';
+import { HeroMetric, MetricCard, InsightCallout, ResultsSection, EmptyResultsState } from '@/components/mui/calculator/ResultsPanel';
+import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/ChartComponents';
 import { calculateCashOutRefi } from '@/lib/calculators';
-import type { CashOutRefinanceInputs, CalculatorResult } from '@/lib/calculators/types';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import type { CashOutRefinanceInputs } from '@/lib/calculators/types';
 
 export default function CashOutRefiCalculator() {
   const [inputs, setInputs] = useState<CashOutRefinanceInputs>({
-    currentBalance: 300000,
-    currentRate: 6.5,
-    yearsRemaining: 25,
-    homeValue: 450000,
-    cashOutAmount: 50000,
-    newRate: 6.75,
-    newTerm: 30,
-    closingCosts: 8000,
-    alternativeRate: 8.5,
+    currentBalance: 280000, currentRate: 4.5, yearsRemaining: 25, homeValue: 500000,
+    cashOutAmount: 50000, newRate: 6.75, newTerm: 30, closingCosts: 8000, alternativeRate: 10,
   });
 
-  const [result, setResult] = useState<CalculatorResult | null>(null);
+  const result = useMemo(() => inputs.currentBalance <= 0 ? null : calculateCashOutRefi(inputs), [inputs]);
+  const handleInputChange = (field: keyof CashOutRefinanceInputs, value: number) => setInputs(prev => ({ ...prev, [field]: value }));
 
-  const handleInputChange = (field: keyof CashOutRefinanceInputs, value: string) => {
-    const numValue = parseFloat(value) || 0;
-    setInputs(prev => ({ ...prev, [field]: numValue }));
-  };
-
-  const handleCalculate = () => {
-    const calculatedResult = calculateCashOutRefi(inputs);
-    setResult(calculatedResult);
-  };
+  const scenarios = useMemo(() => (result?.chartData || []) as Array<{ scenario: string; payment: number; totalInterest: number }>, [result]);
 
   return (
-    <CalculatorLayout
-      title="Cash-Out Refinance Analyzer"
-      description="Understand the true cost of pulling cash from your home. Compare cash-out refi vs HELOC and other alternatives to see which makes financial sense."
-    >
-      <div className="grid lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">Current Mortgage</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Current Balance</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.currentBalance}
-                    onChange={(e) => handleInputChange('currentBalance', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Current Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.125"
-                  value={inputs.currentRate}
-                  onChange={(e) => handleInputChange('currentRate', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Years Remaining</label>
-                <input
-                  type="number"
-                  value={inputs.yearsRemaining}
-                  onChange={(e) => handleInputChange('yearsRemaining', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">Cash-Out Details</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Home Value</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.homeValue}
-                    onChange={(e) => handleInputChange('homeValue', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Cash Out Amount</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.cashOutAmount}
-                    onChange={(e) => handleInputChange('cashOutAmount', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">New Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.125"
-                  value={inputs.newRate}
-                  onChange={(e) => handleInputChange('newRate', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">New Term (years)</label>
-                <select
-                  value={inputs.newTerm}
-                  onChange={(e) => handleInputChange('newTerm', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="15">15 years</option>
-                  <option value="20">20 years</option>
-                  <option value="30">30 years</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Closing Costs</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    value={inputs.closingCosts}
-                    onChange={(e) => handleInputChange('closingCosts', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Alternative Rate (HELOC/Loan %)</label>
-                <input
-                  type="number"
-                  step="0.125"
-                  value={inputs.alternativeRate}
-                  onChange={(e) => handleInputChange('alternativeRate', e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-xs text-slate-500 mt-1">For comparison: HELOC or personal loan rate</p>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={handleCalculate}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all duration-200"
-          >
-            Analyze Cash-Out Refi
-          </button>
-        </div>
-
-        <div className="space-y-6">
+    <CalculatorLayout title="Cash-Out Refinance Calculator" description="Analyze the true cost of accessing your home equity through a cash-out refinance.">
+      <Grid container spacing={4}>
+        <Grid size={{ xs: 12, lg: 5 }}>
+          <Box sx={{ position: 'sticky', top: 100 }}>
+            <InputSection title="Current Mortgage" icon={<AccountBalance />}>
+              <CurrencyInput label="Current Balance" value={inputs.currentBalance} onChange={(v) => handleInputChange('currentBalance', v)} />
+              <PercentageInput label="Current Rate" value={inputs.currentRate} onChange={(v) => handleInputChange('currentRate', v)} step={0.125} />
+              <NumberInput label="Years Remaining" value={inputs.yearsRemaining} onChange={(v) => handleInputChange('yearsRemaining', v)} suffix="years" />
+              <CurrencyInput label="Home Value" value={inputs.homeValue} onChange={(v) => handleInputChange('homeValue', v)} />
+            </InputSection>
+            <InputSection title="Cash-Out Details" icon={<AttachMoney />} color="secondary">
+              <CurrencyInput label="Cash Out Amount" value={inputs.cashOutAmount} onChange={(v) => handleInputChange('cashOutAmount', v)} />
+              <PercentageInput label="New Rate" value={inputs.newRate} onChange={(v) => handleInputChange('newRate', v)} step={0.125} />
+              <SelectInput label="New Term" value={inputs.newTerm} onChange={(v) => handleInputChange('newTerm', v as number)} options={[{ value: 15, label: '15 years' }, { value: 30, label: '30 years' }]} />
+              <CurrencyInput label="Closing Costs" value={inputs.closingCosts} onChange={(v) => handleInputChange('closingCosts', v)} />
+            </InputSection>
+            <InputSection title="Alternative" icon={<TrendingUp />}>
+              <PercentageInput label="Alternative Loan Rate" value={inputs.alternativeRate} onChange={(v) => handleInputChange('alternativeRate', v)} step={0.5} helperText="HELOC or personal loan rate" />
+            </InputSection>
+          </Box>
+        </Grid>
+        <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
-            <>
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">Summary</h3>
-                <p className="text-slate-700">{result.summary}</p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Cost Comparison</h3>
-                
-                {result.chartData && (
-                  <div className="h-80 mb-6">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={result.chartData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="scenario" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="payment" fill="#3b82f6" name="Monthly Payment" />
-                        <Bar dataKey="totalInterest" fill="#ef4444" name="Total Interest" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-blue-50 rounded-lg">
-                    <p className="text-sm text-blue-700 mb-1">New Payment</p>
-                    <p className="text-2xl font-bold text-blue-900">
-                      ${(result.details.newPayment as number).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-red-50 rounded-lg">
-                    <p className="text-sm text-red-700 mb-1">Effective Rate</p>
-                    <p className="text-2xl font-bold text-red-900">
-                      {(result.details.effectiveRate as number).toFixed(2)}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <EmailResultsForm 
-                calculatorName="Cash-Out Refinance Analyzer"
-                result={result}
-              />
-
-              {result.insights && result.insights.length > 0 && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-blue-900 mb-3">Dett Insights</h3>
-                  <ul className="space-y-2">
-                    {result.insights.map((insight, index) => (
-                      <li key={index} className="flex items-start gap-2 text-sm text-blue-800">
-                        <span className="text-blue-600 mt-0.5">•</span>
-                        <span>{insight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <Stack spacing={4}>
+              <HeroMetric label="Effective Cost of Cash" value={`${result.details.effectiveRate}%`} sublabel={`Getting $${inputs.cashOutAmount.toLocaleString()} costs you this rate over ${inputs.newTerm} years`} />
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={`$${(result.details.currentPayment as number).toLocaleString()}`} color="primary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New Payment" value={`$${(result.details.newPayment as number).toLocaleString()}`} color="warning" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New LTV" value={`${result.details.newLTV}%`} color={(result.details.newLTV as number) > 80 ? 'error' : 'success'} /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Extra Interest" value={`$${(result.details.totalInterestIncrease as number).toLocaleString()}`} color="error" /></Grid>
+              </Grid>
+              <ResultsSection title="Payment Comparison" subtitle="Current vs cash-out refi">
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2, textAlign: 'center' }}>
+                        <Typography variant="caption" color="text.secondary">CURRENT MORTGAGE</Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>${(result.details.currentPayment as number).toLocaleString()}/mo</Typography>
+                        <Typography variant="body2" color="text.secondary">{inputs.currentRate}% • {inputs.yearsRemaining} years left</Typography>
+                      </Box>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Box sx={{ p: 3, bgcolor: '#FEF3C7', borderRadius: 2, textAlign: 'center' }}>
+                        <Typography variant="caption" color="text.secondary">CASH-OUT REFI</Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#92400E', my: 1 }}>${(result.details.newPayment as number).toLocaleString()}/mo</Typography>
+                        <Typography variant="body2" color="text.secondary">{inputs.newRate}% • {inputs.newTerm} years</Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                  <Divider sx={{ my: 3 }} />
+                  <Alert severity={inputs.newRate > inputs.currentRate ? 'warning' : 'info'} sx={{ borderRadius: 2 }}>
+                    <Typography variant="body2">
+                      {inputs.newRate > inputs.currentRate 
+                        ? `You're trading a ${inputs.currentRate}% rate for ${inputs.newRate}%. This is an expensive way to access cash.`
+                        : `Your new rate (${inputs.newRate}%) is lower than current (${inputs.currentRate}%). This could make sense.`}
+                    </Typography>
+                  </Alert>
+                </Paper>
+              </ResultsSection>
+              <ResultsSection title="Total Interest Comparison" subtitle="How much more will you pay?">
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  {scenarios.map((s, i) => <HorizontalBar key={i} label={s.scenario} value={s.totalInterest} maxValue={Math.max(...scenarios.map(x => x.totalInterest))} color={i === 0 ? CHART_COLORS.primary : i === 1 ? CHART_COLORS.quaternary : CHART_COLORS.secondary} />)}
+                  <Divider sx={{ my: 3 }} />
+                  <Box sx={{ p: 3, bgcolor: '#FEE2E2', borderRadius: 2, textAlign: 'center' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#DC2626' }}>Extra Interest Cost: ${(result.details.totalInterestIncrease as number).toLocaleString()}</Typography>
+                    <Typography variant="body2" color="text.secondary">This is the true cost of your ${inputs.cashOutAmount.toLocaleString()} cash</Typography>
+                  </Box>
+                </Paper>
+              </ResultsSection>
+              {(result.details.newLTV as number) > 80 && (
+                <Alert severity="warning" icon={<Warning />} sx={{ borderRadius: 3 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>High LTV Warning</Typography>
+                  <Typography variant="body2">Your new LTV is {result.details.newLTV}%. Above 80% may require PMI or result in higher rates.</Typography>
+                </Alert>
               )}
-            </>
-          ) : (
-            <div className="bg-slate-50 rounded-xl p-12 text-center border border-slate-200">
-              <p className="text-slate-600">
-                Enter your information and click "Analyze Cash-Out Refi" to see your results.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
+              {result.insights?.length > 0 && (
+                <ResultsSection title="Insights">
+                  <Stack spacing={2}>
+                    {result.insights.map((insight, i) => <InsightCallout key={i} type={insight.includes('⚠️') ? 'warning' : insight.includes('💡') ? 'tip' : 'info'} title="Analysis">{insight.replace('⚠️ ', '').replace('💡 ', '')}</InsightCallout>)}
+                  </Stack>
+                </ResultsSection>
+              )}
+              <Paper elevation={0} sx={{ p: 4, borderRadius: 3, background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)' }}>
+                <Stack direction="row" spacing={2} alignItems="flex-start">
+                  <CompareArrows sx={{ fontSize: 32, color: '#92400E' }} />
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: '#92400E', mb: 1 }}>The Bottom Line</Typography>
+                    <Typography variant="body1" sx={{ color: '#92400E' }}>
+                      Getting <strong>${inputs.cashOutAmount.toLocaleString()}</strong> via cash-out refi costs you an effective <strong>{result.details.effectiveRate}%</strong> rate 
+                      and <strong>${(result.details.totalInterestIncrease as number).toLocaleString()}</strong> in extra interest. Your payment increases by 
+                      <strong> ${((result.details.newPayment as number) - (result.details.currentPayment as number)).toLocaleString()}/month</strong>.
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Paper>
+            </Stack>
+          ) : <EmptyResultsState />}
+        </Grid>
+      </Grid>
     </CalculatorLayout>
   );
 }
