@@ -1,0 +1,9 @@
+# Template reference (not needed for deployment)
+saasable-template/
+
+# Node modules (handled by Netlify build)
+node_modules/
+
+# Local development
+.next/
+.git/
