@@ -124,13 +124,25 @@ interface CurrencyInputProps {
 }
 
 export function CurrencyInput({ label, value, onChange, helperText, min, max }: CurrencyInputProps) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let inputValue = e.target.value;
+    
+    // Remove leading zeros (except for "0" or "0.")
+    if (inputValue.length > 1 && inputValue.startsWith('0') && inputValue[1] !== '.') {
+      inputValue = inputValue.replace(/^0+/, '');
+    }
+    
+    const numValue = parseFloat(inputValue) || 0;
+    onChange(numValue);
+  };
+
   return (
     <TextField
       fullWidth
       label={label}
       type="number"
       value={value}
-      onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
+      onChange={handleChange}
       inputProps={{ min, max }}
       InputProps={{
         startAdornment: (
@@ -159,13 +171,25 @@ interface PercentageInputProps {
 }
 
 export function PercentageInput({ label, value, onChange, helperText, step = 0.125, min = 0, max = 100 }: PercentageInputProps) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let inputValue = e.target.value;
+    
+    // Remove leading zeros (except for "0" or "0.")
+    if (inputValue.length > 1 && inputValue.startsWith('0') && inputValue[1] !== '.') {
+      inputValue = inputValue.replace(/^0+/, '');
+    }
+    
+    const numValue = parseFloat(inputValue) || 0;
+    onChange(numValue);
+  };
+
   return (
     <TextField
       fullWidth
       label={label}
       type="number"
       value={value}
-      onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
+      onChange={handleChange}
       inputProps={{ step, min, max }}
       InputProps={{
         endAdornment: (

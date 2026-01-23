@@ -26,7 +26,7 @@ export default function TimelineSimulatorCalculator() {
     <CalculatorLayout title="Timeline Simulator" description="Find the best mortgage option based on how long you plan to stay. Compare fixed, ARM, and points strategies.">
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, lg: 5 }}>
-          <Box sx={{ position: 'sticky', top: 100 }}>
+          <Box className="calculator-inputs">
             <InputSection title="Loan Details" icon={<AccountBalance />}>
               <CurrencyInput label="Loan Amount" value={inputs.loanAmount} onChange={(v) => handleInputChange('loanAmount', v)} />
               <PercentageInput label="30-Year Fixed Rate" value={inputs.interestRate} onChange={(v) => handleInputChange('interestRate', v)} step={0.125} />

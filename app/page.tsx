@@ -47,76 +47,292 @@ export default function Home() {
             borderBottomLeftRadius: { xs: 24, md: 40 },
             borderBottomRightRadius: { xs: 24, md: 40 },
             ...dottedBackground,
+            overflow: 'hidden',
           }}
         >
-          <Container maxWidth="md">
-            <Stack spacing={3} alignItems="center" textAlign="center">
-              <Chip
-                label="100% Free • No Signup • No Spam"
-                variant="outlined"
-                sx={{ 
-                  px: 2, 
-                  py: 2.5,
-                  bgcolor: 'background.paper',
-                  '& .MuiChip-label': {
-                    fontSize: '0.8125rem',
-                    fontWeight: 500,
-                    color: 'text.secondary',
-                  }
-                }}
-              />
-              
-              <Typography 
-                variant="h1" 
-                component="h1"
-                sx={{ 
-                  maxWidth: 700,
-                  fontSize: { xs: 36, sm: 48, md: 56 },
-                }}
-              >
-                Make Smarter{' '}
-                <Box component="span" sx={{ color: 'primary.main' }}>
-                  Mortgage Decisions
-                </Box>
-              </Typography>
-              
-              <Typography 
-                variant="h6" 
-                color="text.secondary" 
-                sx={{ maxWidth: 560, fontWeight: 400 }}
-              >
-                Crystal-clear calculators. No hidden fees. No email required. Just honest math to help you decide.
-              </Typography>
-              
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ pt: 2 }}>
-                <Button
-                  component={Link}
-                  href="/calculators"
-                  variant="contained"
-                  size="large"
-                  endIcon={<ArrowForward />}
-                >
-                  Start Calculating
-                </Button>
-                <Button
-                  component={Link}
-                  href="/learn"
-                  variant="outlined"
-                  size="large"
-                  sx={{ 
-                    borderColor: 'grey.300', 
-                    color: 'text.primary',
-                    bgcolor: 'background.paper',
-                    '&:hover': {
-                      borderColor: 'primary.main',
+          {/* Decorative floating elements */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '10%',
+              right: '5%',
+              width: { xs: 80, md: 120 },
+              height: { xs: 80, md: 120 },
+              borderRadius: '50%',
+              bgcolor: 'primary.light',
+              opacity: 0.3,
+              display: { xs: 'none', md: 'block' },
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: '15%',
+              left: '8%',
+              width: { xs: 60, md: 100 },
+              height: { xs: 60, md: 100 },
+              borderRadius: '50%',
+              bgcolor: 'secondary.light',
+              opacity: 0.3,
+              display: { xs: 'none', md: 'block' },
+            }}
+          />
+
+          <Container maxWidth="lg">
+            <Grid container spacing={4} alignItems="center">
+              {/* Left side - Text content */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Stack spacing={3} alignItems={{ xs: 'center', md: 'flex-start' }} textAlign={{ xs: 'center', md: 'left' }}>
+                  <Chip
+                    label="100% Free • No Signup • No Spam"
+                    variant="outlined"
+                    sx={{ 
+                      px: 2, 
+                      py: 2.5,
                       bgcolor: 'background.paper',
-                    }
+                      '& .MuiChip-label': {
+                        fontSize: '0.8125rem',
+                        fontWeight: 500,
+                        color: 'text.secondary',
+                      }
+                    }}
+                  />
+                  
+                  <Typography 
+                    variant="h1" 
+                    component="h1"
+                    sx={{ 
+                      fontSize: { xs: 36, sm: 48, md: 56 },
+                    }}
+                  >
+                    Make Smarter{' '}
+                    <Box component="span" sx={{ color: 'primary.main' }}>
+                      Mortgage Decisions
+                    </Box>
+                  </Typography>
+                  
+                  <Typography 
+                    variant="h6" 
+                    color="text.secondary" 
+                    sx={{ fontWeight: 400 }}
+                  >
+                    Crystal-clear calculators. No hidden fees. No email required. Just honest math to help you decide.
+                  </Typography>
+                  
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ pt: 2 }}>
+                    <Button
+                      component={Link}
+                      href="/calculators"
+                      variant="contained"
+                      size="large"
+                      endIcon={<ArrowForward />}
+                    >
+                      Start Calculating
+                    </Button>
+                    <Button
+                      component={Link}
+                      href="/learn"
+                      variant="outlined"
+                      size="large"
+                      sx={{ 
+                        borderColor: 'grey.300', 
+                        color: 'text.primary',
+                        bgcolor: 'background.paper',
+                        '&:hover': {
+                          borderColor: 'primary.main',
+                          bgcolor: 'background.paper',
+                        }
+                      }}
+                    >
+                      Learn the Basics
+                    </Button>
+                  </Stack>
+                </Stack>
+              </Grid>
+
+              {/* Right side - Visual representation */}
+              <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+                <Box
+                  sx={{
+                    position: 'relative',
+                    height: 400,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
-                  Learn the Basics
-                </Button>
-              </Stack>
-            </Stack>
+                  {/* Central calculator card mockup */}
+                  <Card
+                    sx={{
+                      width: '100%',
+                      maxWidth: 400,
+                      p: 3,
+                      boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+                      transform: 'rotate(-2deg)',
+                      transition: 'transform 0.3s ease',
+                      '&:hover': {
+                        transform: 'rotate(0deg) scale(1.02)',
+                      },
+                    }}
+                  >
+                    <Stack spacing={2}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Avatar sx={{ bgcolor: 'primary.main', width: 40, height: 40 }}>
+                          <AttachMoney />
+                        </Avatar>
+                        <Typography variant="h6" fontWeight={600}>
+                          Mortgage Calculator
+                        </Typography>
+                      </Box>
+                      
+                      <Box sx={{ bgcolor: 'grey.100', p: 2, borderRadius: 2 }}>
+                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                          Loan Amount
+                        </Typography>
+                        <Typography variant="h5" fontWeight={600}>
+                          $450,000
+                        </Typography>
+                      </Box>
+
+                      <Grid container spacing={2}>
+                        <Grid size={6}>
+                          <Box sx={{ bgcolor: 'grey.100', p: 1.5, borderRadius: 2 }}>
+                            <Typography variant="caption" color="text.secondary">
+                              Rate
+                            </Typography>
+                            <Typography variant="body1" fontWeight={600}>
+                              6.5%
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid size={6}>
+                          <Box sx={{ bgcolor: 'grey.100', p: 1.5, borderRadius: 2 }}>
+                            <Typography variant="caption" color="text.secondary">
+                              Term
+                            </Typography>
+                            <Typography variant="body1" fontWeight={600}>
+                              30 years
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      </Grid>
+
+                      <Box 
+                        sx={{ 
+                          bgcolor: 'primary.main', 
+                          color: 'white', 
+                          p: 2, 
+                          borderRadius: 2,
+                          textAlign: 'center',
+                        }}
+                      >
+                        <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                          Monthly Payment
+                        </Typography>
+                        <Typography variant="h4" fontWeight={700}>
+                          $2,844
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Card>
+
+                  {/* Floating icon badges */}
+                  <Avatar
+                    sx={{
+                      position: 'absolute',
+                      top: 20,
+                      right: 40,
+                      bgcolor: 'secondary.main',
+                      width: 60,
+                      height: 60,
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                      animation: 'float 3s ease-in-out infinite',
+                      '@keyframes float': {
+                        '0%, 100%': { transform: 'translateY(0px)' },
+                        '50%': { transform: 'translateY(-10px)' },
+                      },
+                    }}
+                  >
+                    <BarChart sx={{ fontSize: 32 }} />
+                  </Avatar>
+
+                  <Avatar
+                    sx={{
+                      position: 'absolute',
+                      bottom: 40,
+                      left: 20,
+                      bgcolor: 'primary.light',
+                      color: 'primary.main',
+                      width: 50,
+                      height: 50,
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                      animation: 'float 3s ease-in-out infinite 1s',
+                      '@keyframes float': {
+                        '0%, 100%': { transform: 'translateY(0px)' },
+                        '50%': { transform: 'translateY(-10px)' },
+                      },
+                    }}
+                  >
+                    <CheckCircle sx={{ fontSize: 28 }} />
+                  </Avatar>
+                </Box>
+              </Grid>
+            </Grid>
+          </Container>
+        </Box>
+
+        {/* Social Proof Section */}
+        <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: 'background.paper' }}>
+          <Container maxWidth="lg">
+            <Grid container spacing={4} alignItems="center">
+              <Grid size={{ xs: 12, md: 5 }}>
+                <Stack spacing={2}>
+                  <Typography variant="overline" color="primary.main" fontWeight={600}>
+                    Trusted by Home Buyers
+                  </Typography>
+                  <Typography variant="h3" sx={{ fontSize: { xs: 28, md: 36 } }}>
+                    Real people making smarter decisions
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.125rem' }}>
+                    Join thousands who've used our calculators to understand their mortgage options before talking to a lender.
+                  </Typography>
+                </Stack>
+              </Grid>
+              <Grid size={{ xs: 12, md: 7 }}>
+                <Grid container spacing={2}>
+                  {[
+                    { name: 'Sarah M.', role: 'First-time buyer', initial: 'S', color: 'primary.main' },
+                    { name: 'James K.', role: 'Refinancing', initial: 'J', color: 'secondary.main' },
+                    { name: 'Maria R.', role: 'Investment property', initial: 'M', color: 'primary.main' },
+                    { name: 'David L.', role: 'Home upgrade', initial: 'D', color: 'secondary.main' },
+                  ].map((person, index) => (
+                    <Grid size={{ xs: 6, sm: 3 }} key={index}>
+                      <Stack alignItems="center" spacing={1}>
+                        <Avatar
+                          sx={{
+                            width: { xs: 60, md: 80 },
+                            height: { xs: 60, md: 80 },
+                            bgcolor: person.color,
+                            fontSize: { xs: '1.5rem', md: '2rem' },
+                            fontWeight: 600,
+                          }}
+                        >
+                          {person.initial}
+                        </Avatar>
+                        <Box textAlign="center">
+                          <Typography variant="body2" fontWeight={600}>
+                            {person.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {person.role}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            </Grid>
           </Container>
         </Box>
 

@@ -85,7 +85,7 @@ export default function ArmVsFixedCalculator() {
       <Grid container spacing={4}>
         {/* LEFT SIDE - INPUTS */}
         <Grid size={{ xs: 12, lg: 5 }}>
-          <Box sx={{ position: 'sticky', top: 100 }}>
+          <Box className="calculator-inputs">
             <InputSection title="Loan Details" icon={<CompareArrows />}>
               <CurrencyInput
                 label="Loan Amount"

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from "next/link";
 import {
   Box,
@@ -11,6 +12,15 @@ import {
   Avatar,
   Stack,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material';
 import {
   Calculate,
@@ -26,9 +36,70 @@ import {
   Schedule,
   BarChart,
   CalendarMonth,
+  CheckCircle,
+  ArrowForward,
 } from '@mui/icons-material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
+
+const calculatorDetails = {
+  affordability: {
+    outputs: ['Maximum home price you can afford', 'Recommended monthly payment range', 'Down payment needed', 'Estimated closing costs', 'Debt-to-income ratio analysis'],
+    value: 'Prevents you from overextending financially and helps you shop within a realistic budget. Shows exactly how much house you can afford based on your income, debts, and down payment.',
+  },
+  'down-payment': {
+    outputs: ['Monthly payment comparison at different down payment levels', 'PMI costs and when it drops off', 'Total interest paid over loan life', 'Break-even analysis for larger down payments'],
+    value: 'Helps you decide whether to put down 5%, 10%, or 20%. Shows the real cost of PMI and how much you save in interest with a larger down payment.',
+  },
+  'rent-vs-buy': {
+    outputs: ['5-year cost comparison', 'Break-even timeline', 'Wealth accumulation projection', 'Tax benefit analysis', 'Opportunity cost of down payment'],
+    value: 'Answers the biggest question: should you rent or buy? Includes rent inflation, home appreciation, maintenance costs, and investment alternatives.',
+  },
+  'mortgage-cost': {
+    outputs: ['True monthly payment (PITI + HOA + PMI)', 'Principal and interest breakdown', 'Annual housing costs', 'Percentage of income going to housing'],
+    value: 'Shows your REAL monthly payment including all the costs lenders don\'t emphasize. No surprises when you see your first mortgage statement.',
+  },
+  refinance: {
+    outputs: ['Monthly payment savings', 'Break-even point in months', 'Total interest saved over loan life', 'Closing cost analysis', 'Net benefit calculation'],
+    value: 'Tells you if refinancing is worth it. Shows exactly when you\'ll break even on closing costs and how much you\'ll save long-term.',
+  },
+  'cash-out-refi': {
+    outputs: ['New monthly payment', 'Cash received', 'True cost of cash (APR)', 'Comparison to HELOC or personal loan', 'Long-term cost analysis'],
+    value: 'Shows the real cost of pulling equity from your home. Helps you decide if cash-out refinancing beats other borrowing options.',
+  },
+  'recast-vs-refi': {
+    outputs: ['Monthly payment reduction for each option', 'Total costs comparison', 'Interest savings analysis', 'Best option recommendation based on your timeline'],
+    value: 'Compares three ways to use a lump sum: (1) Recast - make a large principal payment and have your lender recalculate a lower monthly payment for a small fee (~$250), (2) Refinance - get a new loan with better terms but pay closing costs (~2-5% of loan), or (3) Prepay Only - make principal-only payments to save interest without changing your monthly payment. Shows which strategy saves you the most money based on your situation.',
+  },
+  'points-buydown': {
+    outputs: ['Break-even timeline for buying points', 'Total interest saved', 'Effective interest rate', 'Comparison: points vs. lender credits'],
+    value: 'Answers whether you should pay points to lower your rate. Shows exactly when you\'ll break even and if it\'s worth the upfront cost.',
+  },
+  'arm-vs-fixed': {
+    outputs: ['Payment comparison over time', 'Worst-case scenario with rate caps', 'Break-even analysis', 'Total cost comparison at different timelines'],
+    value: 'Models how an ARM could adjust over time vs. a fixed rate. Shows if the lower initial rate is worth the risk based on how long you\'ll keep the loan.',
+  },
+  'timeline-simulator': {
+    outputs: ['Best loan structure for your timeline', 'Cost comparison: 15-year vs. 30-year vs. ARM', 'Total interest paid', 'Optimal strategy recommendation'],
+    value: 'Matches your loan structure to your life plans. If you\'re moving in 5 years, you need different advice than someone staying 30 years.',
+  },
+  'extra-payment': {
+    outputs: ['Years saved on loan term', 'Total interest saved', 'New payoff date', 'Monthly vs. annual extra payment comparison'],
+    value: 'Shows the dramatic impact of extra payments. See how paying just $200 extra per month can save you years and tens of thousands in interest.',
+  },
+  acceleration: {
+    outputs: ['Comparison of prepayment strategies', 'Optimal acceleration plan', 'Interest savings for each strategy', 'Payoff timeline comparison'],
+    value: 'Compares different ways to pay off your mortgage faster: extra monthly payments, annual lump sums, biweekly payments, or refinancing to a shorter term.',
+  },
+  biweekly: {
+    outputs: ['True savings from biweekly payments', 'Comparison to monthly extra payments', 'Program fee analysis', 'DIY biweekly strategy'],
+    value: 'Exposes the truth about biweekly payment programs. Shows you can get the same benefit by making one extra payment per year without paying fees.',
+  },
+  'interest-sensitivity': {
+    outputs: ['Payment change per 0.25% rate change', 'Total cost at different rates', 'Rate lock decision analysis', 'Refinance trigger points'],
+    value: 'Shows how sensitive your payment is to rate changes. Helps you decide if you should lock your rate now or wait, and when refinancing makes sense.',
+  },
+};
 
 const calculatorCategories = [
   {
@@ -162,6 +233,36 @@ const calculatorCategories = [
 ];
 
 export default function CalculatorsPage() {
+  const [selectedCalculator, setSelectedCalculator] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleCalculatorClick = (calcId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    setSelectedCalculator(calcId);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedCalculator(null);
+  };
+
+  const handleProceed = () => {
+    if (selectedCalculator) {
+      const calc = calculatorCategories
+        .flatMap(cat => cat.calculators)
+        .find(c => c.id === selectedCalculator);
+      if (calc) {
+        window.location.href = calc.href;
+      }
+    }
+  };
+
+  const currentCalcDetails = selectedCalculator ? calculatorDetails[selectedCalculator as keyof typeof calculatorDetails] : null;
+  const currentCalc = selectedCalculator ? calculatorCategories
+    .flatMap(cat => cat.calculators)
+    .find(c => c.id === selectedCalculator) : null;
+
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
@@ -211,11 +312,66 @@ export default function CalculatorsPage() {
           </Container>
         </Box>
 
+        {/* Happy Homeowners Visual */}
+        <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: 'background.paper' }}>
+          <Container maxWidth="lg">
+            <Grid container spacing={4} alignItems="center">
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Stack spacing={2}>
+                  <Typography variant="overline" color="primary.main" fontWeight={600}>
+                    Calculate with Confidence
+                  </Typography>
+                  <Typography variant="h3" sx={{ fontSize: { xs: 28, md: 36 } }}>
+                    Know your numbers before you commit
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.125rem' }}>
+                    Join thousands who've used our calculators to make informed decisions about their biggest investment.
+                  </Typography>
+                </Stack>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Grid container spacing={2}>
+                  {[
+                    { emoji: '🏡', label: 'Happy in their home', color: 'primary.light' },
+                    { emoji: '✨', label: 'Clear on the numbers', color: 'secondary.light' },
+                    { emoji: '💪', label: 'Confident in their choice', color: 'primary.light' },
+                    { emoji: '🎯', label: 'On track financially', color: 'secondary.light' },
+                  ].map((item, index) => (
+                    <Grid size={{ xs: 6 }} key={index}>
+                      <Card 
+                        sx={{ 
+                          p: 3, 
+                          textAlign: 'center',
+                          bgcolor: item.color,
+                          border: 'none',
+                        }}
+                      >
+                        <Typography sx={{ fontSize: '3rem', mb: 1 }}>
+                          {item.emoji}
+                        </Typography>
+                        <Typography variant="body2" fontWeight={600}>
+                          {item.label}
+                        </Typography>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            </Grid>
+          </Container>
+        </Box>
+
         {/* Calculator Categories */}
-        <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
-          <Stack spacing={8}>
-            {calculatorCategories.map((category, categoryIndex) => (
-              <Box key={categoryIndex}>
+        <Box>
+          {calculatorCategories.map((category, categoryIndex) => (
+            <Box 
+              key={categoryIndex}
+              sx={{ 
+                py: { xs: 6, md: 8 },
+                bgcolor: categoryIndex % 2 === 0 ? 'background.paper' : 'grey.50',
+              }}
+            >
+              <Container maxWidth="lg">
                 <Box sx={{ mb: 4 }}>
                   <Typography variant="h2" sx={{ fontSize: { xs: 28, md: 36 }, mb: 1 }}>
                     {category.category}
@@ -230,7 +386,7 @@ export default function CalculatorsPage() {
                     const Icon = calc.icon;
                     return (
                       <Grid size={{ xs: 12, sm: 6, md: 4 }} key={calc.id}>
-                        <Link href={calc.href} style={{ textDecoration: 'none' }}>
+                        <Box onClick={(e) => handleCalculatorClick(calc.id, e)} style={{ textDecoration: 'none', cursor: 'pointer' }}>
                           <Card 
                             sx={{ 
                               height: '100%', 
@@ -268,15 +424,15 @@ export default function CalculatorsPage() {
                               </Typography>
                             </CardContent>
                           </Card>
-                        </Link>
+                        </Box>
                       </Grid>
                     );
                   })}
                 </Grid>
-              </Box>
-            ))}
-          </Stack>
-        </Container>
+              </Container>
+            </Box>
+          ))}
+        </Box>
 
         {/* CTA Section */}
         <Box 
@@ -332,6 +488,77 @@ export default function CalculatorsPage() {
       </Box>
       
       <Footer />
+
+      {/* Calculator Details Modal */}
+      <Dialog 
+        open={modalOpen} 
+        onClose={handleCloseModal}
+        maxWidth="md"
+        fullWidth
+      >
+        {currentCalc && currentCalcDetails && (
+          <>
+            <DialogTitle>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Avatar sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>
+                  {currentCalc.icon && <currentCalc.icon />}
+                </Avatar>
+                <Box>
+                  <Typography variant="h5" fontWeight={600}>
+                    {currentCalc.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {currentCalc.description}
+                  </Typography>
+                </Box>
+              </Stack>
+            </DialogTitle>
+            <DialogContent>
+              <Stack spacing={3} sx={{ pt: 2 }}>
+                <Box>
+                  <Typography variant="h6" gutterBottom color="primary.main" fontWeight={600}>
+                    What You'll Get:
+                  </Typography>
+                  <List dense>
+                    {currentCalcDetails.outputs.map((output, index) => (
+                      <ListItem key={index} sx={{ py: 0.5 }}>
+                        <ListItemIcon sx={{ minWidth: 36 }}>
+                          <CheckCircle sx={{ color: 'primary.main', fontSize: 20 }} />
+                        </ListItemIcon>
+                        <ListItemText 
+                          primary={output}
+                          primaryTypographyProps={{ variant: 'body2' }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+                <Box>
+                  <Typography variant="h6" gutterBottom color="primary.main" fontWeight={600}>
+                    Why It's Valuable:
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    {currentCalcDetails.value}
+                  </Typography>
+                </Box>
+              </Stack>
+            </DialogContent>
+            <DialogActions sx={{ p: 3, pt: 2 }}>
+              <Button onClick={handleCloseModal} variant="outlined">
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleProceed} 
+                variant="contained" 
+                endIcon={<ArrowForward />}
+                size="large"
+              >
+                Open Calculator
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
     </Box>
   );
 }

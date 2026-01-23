@@ -151,7 +151,7 @@ export default function CalculatorLayout({ children, title, description }: Calcu
           </Container>
         </Box>
 
-        {/* Calculator content with enhanced styling */}
+        {/* Calculator content with enhanced styling and scrollable inputs */}
         <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
           <Box
             sx={{
@@ -163,6 +163,29 @@ export default function CalculatorLayout({ children, title, description }: Calcu
               },
               '& input, & select': {
                 borderRadius: 2,
+              },
+              // Make input panels scrollable
+              '& .calculator-inputs': {
+                maxHeight: { xs: 'none', lg: 'calc(100vh - 280px)' },
+                overflowY: { xs: 'visible', lg: 'auto' },
+                overflowX: 'hidden',
+                position: { xs: 'relative', lg: 'sticky' },
+                top: { lg: 100 },
+                pr: { lg: 2 },
+                '&::-webkit-scrollbar': {
+                  width: '8px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: '#f1f1f1',
+                  borderRadius: '4px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: '#888',
+                  borderRadius: '4px',
+                  '&:hover': {
+                    background: '#555',
+                  },
+                },
               },
             }}
           >

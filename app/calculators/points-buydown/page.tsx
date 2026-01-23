@@ -26,7 +26,7 @@ export default function PointsBuydownCalculator() {
     <CalculatorLayout title="Points & Buydown Calculator" description="Compare buying points, taking lender credits, or temporary buydowns.">
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, lg: 5 }}>
-          <Box sx={{ position: 'sticky', top: 100 }}>
+          <Box className="calculator-inputs">
             <InputSection title="Loan Details" icon={<AccountBalance />}>
               <CurrencyInput label="Loan Amount" value={inputs.loanAmount} onChange={(v) => handleInputChange('loanAmount', v)} />
               <PercentageInput label="Par Rate" value={inputs.parRate} onChange={(v) => handleInputChange('parRate', v)} step={0.125} />

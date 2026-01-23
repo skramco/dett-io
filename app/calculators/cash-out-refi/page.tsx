@@ -25,7 +25,7 @@ export default function CashOutRefiCalculator() {
     <CalculatorLayout title="Cash-Out Refinance Calculator" description="Analyze the true cost of accessing your home equity through a cash-out refinance.">
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, lg: 5 }}>
-          <Box sx={{ position: 'sticky', top: 100 }}>
+          <Box className="calculator-inputs">
             <InputSection title="Current Mortgage" icon={<AccountBalance />}>
               <CurrencyInput label="Current Balance" value={inputs.currentBalance} onChange={(v) => handleInputChange('currentBalance', v)} />
               <PercentageInput label="Current Rate" value={inputs.currentRate} onChange={(v) => handleInputChange('currentRate', v)} step={0.125} />
