@@ -23,7 +23,7 @@ export default function TimelineSimulatorCalculator() {
   const bestOption = options.reduce((best, current) => current.totalPaid < best.totalPaid ? current : best, options[0] || { option: '', monthlyPayment: 0, totalPaid: 0, remainingBalance: 0 });
 
   return (
-    <CalculatorLayout title="Timeline Simulator" description="Find the best mortgage option based on how long you plan to stay. Compare fixed, ARM, and points strategies.">
+    <CalculatorLayout calculatorSlug="timeline-simulator" title="Timeline Simulator" description="Find the best mortgage option based on how long you plan to stay. Compare fixed, ARM, and points strategies." relatedCalculators={[{ slug: 'arm-vs-fixed', name: 'ARM vs Fixed Rate' }, { slug: 'refinance', name: 'Should I Refinance?' }, { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' }]} actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}>
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, lg: 5 }}>
           <Box className="calculator-inputs">

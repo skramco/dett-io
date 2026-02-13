@@ -38,9 +38,11 @@ import {
   CalendarMonth,
   CheckCircle,
   ArrowForward,
+  Shield,
 } from '@mui/icons-material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
+import { CalculatorWizard } from '@/components/mui/calculator/CalculatorWizard';
 
 const calculatorDetails = {
   affordability: {
@@ -99,6 +101,38 @@ const calculatorDetails = {
     outputs: ['Payment change per 0.25% rate change', 'Total cost at different rates', 'Rate lock decision analysis', 'Refinance trigger points'],
     value: 'Shows how sensitive your payment is to rate changes. Helps you decide if you should lock your rate now or wait, and when refinancing makes sense.',
   },
+  amortization: {
+    outputs: ['Complete month-by-month payment schedule', 'Principal vs interest breakdown per payment', 'Yearly summary with running balance', 'Impact of extra payments on payoff timeline', 'Cumulative interest and principal totals'],
+    value: 'See exactly where every dollar of your mortgage payment goes. The full amortization table shows how your balance decreases over time and how much of each payment is interest vs principal.',
+  },
+  dti: {
+    outputs: ['Front-end DTI ratio (housing only)', 'Back-end DTI ratio (all debts)', 'Qualification status for Conventional, FHA, VA loans', 'Debt breakdown visualization', 'Maximum housing payment at each DTI threshold'],
+    value: 'DTI is the #1 factor lenders use to determine how much mortgage you qualify for. See both your front-end and back-end ratios and understand exactly what lenders see.',
+  },
+  'closing-costs': {
+    outputs: ['Itemized closing cost estimate', 'Lender fees vs third-party fees', 'Prepaid items breakdown', 'Total cash needed at closing', 'Seller credit scenarios'],
+    value: 'Closing costs are 2-5% of your home price and often catch buyers off guard. Get a detailed estimate so you know exactly how much cash you need beyond your down payment.',
+  },
+  pmi: {
+    outputs: ['Monthly PMI cost by credit score', 'When PMI drops off automatically', 'PMI at different down payment levels', 'Total lifetime PMI cost', 'How to request early PMI removal'],
+    value: 'PMI is required when you put less than 20% down. See exactly how much it costs, when it drops off, and whether a larger down payment is worth it to avoid PMI.',
+  },
+  fha: {
+    outputs: ['Total monthly FHA payment with MIP', 'Upfront & monthly MIP costs', 'FHA eligibility check (credit, DTI, down payment)', 'FHA vs Conventional comparison', 'MIP duration and total cost'],
+    value: 'FHA loans allow as little as 3.5% down with a 580+ credit score. See your full payment including mortgage insurance and whether FHA or conventional is the better deal.',
+  },
+  va: {
+    outputs: ['Total monthly VA payment (no PMI)', 'VA funding fee calculation', 'VA vs FHA vs Conventional comparison', 'DTI and residual income check', 'Funding fee by down payment tier'],
+    value: 'VA loans offer $0 down and no PMI — the best mortgage benefit available. See your funding fee, compare loan types, and understand the full financial advantage of your VA benefit.',
+  },
+};
+
+const categoryColors: Record<string, { bg: string; fg: string }> = {
+  'Buying a Home': { bg: '#EBF5FF', fg: '#006397' },
+  'Current Homeowners': { bg: '#FFF7ED', fg: '#C2410C' },
+  'Rate & Structure': { bg: '#F0FDF4', fg: '#15803D' },
+  'Payoff Strategy': { bg: '#FAF5FF', fg: '#7E22CE' },
+  'Advanced Analysis': { bg: '#FEF2F2', fg: '#B91C1C' },
 };
 
 const calculatorCategories = [
@@ -126,6 +160,41 @@ const calculatorCategories = [
         description: "Full comparison including rent inflation and home appreciation.",
         icon: TrendingUp,
         href: "/calculators/rent-vs-buy",
+      },
+      {
+        id: "dti",
+        name: "DTI Calculator",
+        description: "Check your debt-to-income ratio — the #1 number lenders care about.",
+        icon: BarChart,
+        href: "/calculators/dti",
+      },
+      {
+        id: "closing-costs",
+        name: "Closing Cost Estimator",
+        description: "Estimate your total closing costs and cash needed at the table.",
+        icon: AttachMoney,
+        href: "/calculators/closing-costs",
+      },
+      {
+        id: "pmi",
+        name: "PMI Calculator",
+        description: "See your PMI cost and when it drops off based on credit score.",
+        icon: AccountBalance,
+        href: "/calculators/pmi",
+      },
+      {
+        id: "fha",
+        name: "FHA Loan Calculator",
+        description: "Calculate your FHA payment with MIP and check eligibility.",
+        icon: AccountBalance,
+        href: "/calculators/fha",
+      },
+      {
+        id: "va",
+        name: "VA Loan Calculator",
+        description: "$0 down, no PMI — calculate your VA loan payment and funding fee.",
+        icon: Shield,
+        href: "/calculators/va",
       },
     ],
   },
@@ -160,6 +229,13 @@ const calculatorCategories = [
         description: "Compare lump-sum recast, refinance, and simple prepayment.",
         icon: TrackChanges,
         href: "/calculators/recast-vs-refi",
+      },
+      {
+        id: "amortization",
+        name: "Amortization Schedule",
+        description: "See every payment broken down month by month.",
+        icon: BarChart,
+        href: "/calculators/amortization",
       },
     ],
   },
@@ -405,11 +481,11 @@ export default function CalculatorsPage() {
                                 sx={{
                                   width: 56,
                                   height: 56,
-                                  bgcolor: 'primary.light',
+                                  bgcolor: categoryColors[category.category]?.bg || 'primary.light',
                                   mb: 3,
                                 }}
                               >
-                                <Icon sx={{ color: 'primary.main' }} />
+                                <Icon sx={{ color: categoryColors[category.category]?.fg || 'primary.main' }} />
                               </Avatar>
                               <Typography 
                                 variant="h4" 
@@ -434,7 +510,7 @@ export default function CalculatorsPage() {
           ))}
         </Box>
 
-        {/* CTA Section */}
+        {/* Calculator Wizard */}
         <Box 
           sx={{ 
             py: { xs: 8, md: 10 }, 
@@ -444,7 +520,12 @@ export default function CalculatorsPage() {
           }}
         >
           <Container maxWidth="md">
-            <Stack spacing={3} alignItems="center" textAlign="center">
+            <Stack spacing={1} alignItems="center" textAlign="center" sx={{ mb: 5 }}>
+              <Chip
+                label="Interactive Guide"
+                size="small"
+                sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'white', fontWeight: 600 }}
+              />
               <Typography 
                 variant="h2" 
                 sx={{ color: 'white', fontSize: { xs: 32, md: 40 } }}
@@ -453,36 +534,12 @@ export default function CalculatorsPage() {
               </Typography>
               <Typography 
                 variant="h6" 
-                sx={{ color: 'primary.light', maxWidth: 500, fontWeight: 400 }}
+                sx={{ color: 'rgba(255,255,255,0.7)', maxWidth: 500, fontWeight: 400 }}
               >
-                Learn the fundamentals of debt, interest, and how lenders think about your money.
+                Answer a couple questions and we'll point you to the right calculator.
               </Typography>
-              <Link href="/learn" style={{ textDecoration: 'none' }}>
-                <Box
-                  component="button"
-                  sx={{
-                    mt: 2,
-                    px: 4,
-                    py: 1.75,
-                    bgcolor: 'white',
-                    color: 'primary.main',
-                    border: 'none',
-                    borderRadius: 3,
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                    '&:hover': {
-                      bgcolor: 'grey.100',
-                      boxShadow: '0 6px 16px rgba(0, 0, 0, 0.2)',
-                    },
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  Learn About Debt
-                </Box>
-              </Link>
             </Stack>
+            <CalculatorWizard />
           </Container>
         </Box>
       </Box>

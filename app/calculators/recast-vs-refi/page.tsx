@@ -23,7 +23,7 @@ export default function RecastVsRefiCalculator() {
   const bestOption = options.slice(1).reduce((best, current) => current.totalInterest < best.totalInterest ? current : best, options[1] || { option: '', payment: 0, totalInterest: 0 });
 
   return (
-    <CalculatorLayout title="Recast vs Refinance Calculator" description="Compare recasting your mortgage vs refinancing when you have a lump sum to apply.">
+    <CalculatorLayout calculatorSlug="recast-vs-refi" title="Recast vs Refinance Calculator" description="Compare recasting your mortgage vs refinancing when you have a lump sum to apply." relatedCalculators={[{ slug: 'refinance', name: 'Should I Refinance?' }, { slug: 'extra-payment', name: 'Extra Payment Impact' }, { slug: 'cash-out-refi', name: 'Cash-Out Refinance' }]} actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}>
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, lg: 5 }}>
           <Box className="calculator-inputs">

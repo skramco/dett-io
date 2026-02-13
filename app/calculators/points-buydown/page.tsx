@@ -23,7 +23,7 @@ export default function PointsBuydownCalculator() {
   const bestOption = options.reduce((best, current) => current.totalCost < best.totalCost ? current : best, options[0] || { option: '', monthlyPayment: 0, upfrontCost: 0, totalCost: 0 });
 
   return (
-    <CalculatorLayout title="Points & Buydown Calculator" description="Compare buying points, taking lender credits, or temporary buydowns.">
+    <CalculatorLayout calculatorSlug="points-buydown" title="Points & Buydown Calculator" description="Compare buying points, taking lender credits, or temporary buydowns." relatedCalculators={[{ slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' }, { slug: 'arm-vs-fixed', name: 'ARM vs Fixed Rate' }, { slug: 'interest-sensitivity', name: 'Rate Sensitivity' }]} actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}>
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, lg: 5 }}>
           <Box className="calculator-inputs">

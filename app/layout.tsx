@@ -14,8 +14,43 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dett - Free Mortgage Calculators & Decision Tools",
+  title: {
+    default: "Dett - Free Mortgage Calculators & Decision Tools",
+    template: "%s",
+  },
   description: "Make smarter mortgage decisions with crystal-clear calculators. No hidden fees. No email required. Just honest math to help you decide.",
+  keywords: [
+    'mortgage calculator',
+    'mortgage payment calculator',
+    'home affordability calculator',
+    'refinance calculator',
+    'free mortgage calculator',
+    'how much house can I afford',
+  ],
+  metadataBase: new URL('https://dett.io'),
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    siteName: 'Dett',
+    title: 'Dett - Free Mortgage Calculators & Decision Tools',
+    description: 'Make smarter mortgage decisions with crystal-clear calculators. No hidden fees. No email required. Just honest math to help you decide.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Dett - Free Mortgage Calculators & Decision Tools',
+    description: 'Make smarter mortgage decisions with crystal-clear calculators. No hidden fees. No email required.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({

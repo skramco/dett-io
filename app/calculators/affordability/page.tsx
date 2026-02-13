@@ -88,8 +88,15 @@ export default function AffordabilityCalculator() {
 
   return (
     <CalculatorLayout
+      calculatorSlug="affordability"
       title="How Much House Can I Afford?"
       description="Calculate your maximum home price based on income, debts, and down payment. See conservative, moderate, and aggressive affordability ranges with DTI analysis."
+      relatedCalculators={[
+        { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
+        { slug: 'down-payment', name: 'Down Payment Strategy' },
+        { slug: 'rent-vs-buy', name: 'Rent vs Buy Analysis' },
+      ]}
+      actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
     >
       <Grid container spacing={4}>
         {/* LEFT SIDE - INPUTS */}

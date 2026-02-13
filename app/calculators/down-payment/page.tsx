@@ -80,8 +80,15 @@ export default function DownPaymentCalculator() {
 
   return (
     <CalculatorLayout
+      calculatorSlug="down-payment"
       title="Down Payment Comparison"
       description="Compare different down payment amounts to see how they affect your monthly payment, PMI costs, and total cash needed at closing."
+      relatedCalculators={[
+        { slug: 'affordability', name: 'How Much House Can I Afford?' },
+        { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
+        { slug: 'rent-vs-buy', name: 'Rent vs Buy Analysis' },
+      ]}
+      actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
     >
       <Grid container spacing={4}>
         {/* LEFT SIDE - INPUTS */}

@@ -69,8 +69,15 @@ export default function ExtraPaymentCalculator() {
 
   return (
     <CalculatorLayout
+      calculatorSlug="extra-payment"
       title="Extra Payment Calculator"
       description="See how extra payments accelerate your mortgage payoff. Compare the impact of monthly vs annual extra payments and whether to prepay or invest."
+      relatedCalculators={[
+        { slug: 'biweekly', name: 'Biweekly Payments' },
+        { slug: 'acceleration', name: 'Acceleration Planner' },
+        { slug: 'refinance', name: 'Should I Refinance?' },
+      ]}
+      actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
     >
       <Grid container spacing={4}>
         {/* LEFT SIDE - INPUTS */}

@@ -13,11 +13,30 @@ import {
 import { ArrowBack, Calculate } from '@mui/icons-material';
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { RelatedCalculators } from './calculator/RelatedCalculators';
+import { LoanKnowCTA } from './calculator/LoanKnowCTA';
+import { ActionBar } from './calculator/ActionBar';
+import { ShowMeTheMath } from './calculator/ShowMeTheMath';
+
+interface RelatedCalculator {
+  slug: string;
+  name: string;
+}
+
+interface ActionBarData {
+  summary: string;
+  details: Record<string, number | string>;
+  insights: string[];
+  inputs: Record<string, unknown>;
+}
 
 interface CalculatorLayoutProps {
   children: ReactNode;
   title: string;
   description: string;
+  relatedCalculators?: RelatedCalculator[];
+  actionBarData?: ActionBarData;
+  calculatorSlug?: string;
 }
 
 // Dotted background pattern
@@ -26,7 +45,7 @@ const dottedBackground = {
   backgroundSize: '24px 24px',
 };
 
-export default function CalculatorLayout({ children, title, description }: CalculatorLayoutProps) {
+export default function CalculatorLayout({ children, title, description, relatedCalculators, actionBarData, calculatorSlug }: CalculatorLayoutProps) {
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
@@ -189,8 +208,38 @@ export default function CalculatorLayout({ children, title, description }: Calcu
               },
             }}
           >
-            {children}
+            <Box data-pdf-capture>
+              {children}
+            </Box>
           </Box>
+        </Container>
+
+        {/* Show Me the Math */}
+        {calculatorSlug && actionBarData && actionBarData.details && (
+          <Container maxWidth="lg" sx={{ pb: 2 }}>
+            <ShowMeTheMath calculatorSlug={calculatorSlug} details={actionBarData.details} />
+          </Container>
+        )}
+
+        {/* Action Bar */}
+        {actionBarData && actionBarData.summary && (
+          <Container maxWidth="lg" sx={{ pb: 2 }}>
+            <ActionBar
+              calculatorName={title}
+              summary={actionBarData.summary}
+              details={actionBarData.details}
+              insights={actionBarData.insights}
+              inputs={actionBarData.inputs}
+            />
+          </Container>
+        )}
+
+        {/* Related Calculators & LoanKnow CTA */}
+        <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 } }}>
+          {relatedCalculators && relatedCalculators.length > 0 && (
+            <RelatedCalculators calculators={relatedCalculators} />
+          )}
+          <LoanKnowCTA />
         </Container>
       </Box>
 

@@ -78,7 +78,7 @@ export default function CalculatorResultsEmail({
               Want to explore more calculators or learn about debt?
             </Text>
             <Text style={footerText}>
-              Visit <strong>Dett</strong> at your-domain.com
+              Visit <strong>Dett</strong> at dett.io
             </Text>
             <Text style={footerDisclaimer}>
               This is an educational tool. Results are estimates and should not be considered financial advice.

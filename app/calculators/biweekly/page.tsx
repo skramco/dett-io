@@ -59,8 +59,15 @@ export default function BiweeklyCalculator() {
 
   return (
     <CalculatorLayout
+      calculatorSlug="biweekly"
       title="Biweekly Payment Calculator"
       description="See how biweekly payments can pay off your mortgage faster. Learn the difference between true biweekly and fake biweekly programs, plus a free DIY alternative."
+      relatedCalculators={[
+        { slug: 'extra-payment', name: 'Extra Payment Impact' },
+        { slug: 'acceleration', name: 'Acceleration Planner' },
+        { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
+      ]}
+      actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
     >
       <Grid container spacing={4}>
         {/* LEFT SIDE - INPUTS */}

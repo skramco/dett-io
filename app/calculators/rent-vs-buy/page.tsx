@@ -86,8 +86,15 @@ export default function RentVsBuyCalculator() {
 
   return (
     <CalculatorLayout
+      calculatorSlug="rent-vs-buy"
       title="Rent vs Buy Calculator"
       description="Compare the long-term financial impact of renting vs buying. See net worth projections, break-even timelines, and scenario analysis."
+      relatedCalculators={[
+        { slug: 'affordability', name: 'How Much House Can I Afford?' },
+        { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
+        { slug: 'down-payment', name: 'Down Payment Strategy' },
+      ]}
+      actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
     >
       <Grid container spacing={4}>
         {/* LEFT SIDE - INPUTS */}

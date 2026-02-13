@@ -79,8 +79,15 @@ export default function ArmVsFixedCalculator() {
 
   return (
     <CalculatorLayout
+      calculatorSlug="arm-vs-fixed"
       title="ARM vs Fixed Rate Calculator"
       description="Compare adjustable-rate mortgages (ARM) to fixed-rate loans. See initial savings, rate adjustment scenarios, and worst-case payment projections."
+      relatedCalculators={[
+        { slug: 'points-buydown', name: 'Points & Buydown' },
+        { slug: 'timeline-simulator', name: 'Decision Timeline' },
+        { slug: 'interest-sensitivity', name: 'Rate Sensitivity' },
+      ]}
+      actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
     >
       <Grid container spacing={4}>
         {/* LEFT SIDE - INPUTS */}

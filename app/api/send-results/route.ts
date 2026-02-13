@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     );
 
     const { data, error } = await resend.emails.send({
-      from: 'Dett <noreply@yourdomain.com>',
+      from: 'Dett <noreply@dett.io>',
       to: [email],
       subject: `${calculatorName} - Your Results from Dett`,
       html: emailHtml,

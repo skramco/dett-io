@@ -75,8 +75,15 @@ export default function AccelerationCalculator() {
 
   return (
     <CalculatorLayout
+      calculatorSlug="acceleration"
       title="Mortgage Acceleration Calculator"
       description="See how extra payments can pay off your mortgage faster and save thousands in interest. Compare prepaying vs investing the difference."
+      relatedCalculators={[
+        { slug: 'extra-payment', name: 'Extra Payment Impact' },
+        { slug: 'biweekly', name: 'Biweekly Payments' },
+        { slug: 'recast-vs-refi', name: 'Recast vs Refinance' },
+      ]}
+      actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
     >
       <Grid container spacing={4}>
         {/* LEFT SIDE - INPUTS */}

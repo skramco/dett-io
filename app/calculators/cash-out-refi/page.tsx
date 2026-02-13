@@ -22,7 +22,7 @@ export default function CashOutRefiCalculator() {
   const scenarios = useMemo(() => (result?.chartData || []) as Array<{ scenario: string; payment: number; totalInterest: number }>, [result]);
 
   return (
-    <CalculatorLayout title="Cash-Out Refinance Calculator" description="Analyze the true cost of accessing your home equity through a cash-out refinance.">
+    <CalculatorLayout calculatorSlug="cash-out-refi" title="Cash-Out Refinance Calculator" description="Analyze the true cost of accessing your home equity through a cash-out refinance." relatedCalculators={[{ slug: 'refinance', name: 'Should I Refinance?' }, { slug: 'recast-vs-refi', name: 'Recast vs Refinance' }, { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' }]} actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}>
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, lg: 5 }}>
           <Box className="calculator-inputs">

@@ -86,8 +86,15 @@ export default function RefinanceCalculator() {
 
   return (
     <CalculatorLayout
+      calculatorSlug="refinance"
       title="Should I Refinance?"
       description="Compare your current mortgage to a new loan. See monthly savings, break-even timeline, and total cost comparison to make an informed decision."
+      relatedCalculators={[
+        { slug: 'cash-out-refi', name: 'Cash-Out Refinance' },
+        { slug: 'recast-vs-refi', name: 'Recast vs Refinance' },
+        { slug: 'interest-sensitivity', name: 'Rate Sensitivity' },
+      ]}
+      actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
     >
       <Grid container spacing={4}>
         {/* LEFT SIDE - INPUTS */}
