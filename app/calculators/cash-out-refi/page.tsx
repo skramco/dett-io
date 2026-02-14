@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { AttachMoney, AccountBalance, TrendingUp, Warning, CompareArrows } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
 import { InputSection, CurrencyInput, PercentageInput, SelectInput, NumberInput } from '@/components/mui/calculator/InputPanel';
 import { HeroMetric, MetricCard, InsightCallout, ResultsSection, EmptyResultsState } from '@/components/mui/calculator/ResultsPanel';
-import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/ChartComponents';
+import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/LazyCharts';
 import { calculateCashOutRefi } from '@/lib/calculators';
 import type { CashOutRefinanceInputs } from '@/lib/calculators/types';
 
@@ -15,6 +16,7 @@ export default function CashOutRefiCalculator() {
     currentBalance: 280000, currentRate: 4.5, yearsRemaining: 25, homeValue: 500000,
     cashOutAmount: 50000, newRate: 6.75, newTerm: 30, closingCosts: 8000, alternativeRate: 10,
   });
+  useUrlInputs(inputs, setInputs);
 
   const result = useMemo(() => inputs.currentBalance <= 0 ? null : calculateCashOutRefi(inputs), [inputs]);
   const handleInputChange = (field: keyof CashOutRefinanceInputs, value: number) => setInputs(prev => ({ ...prev, [field]: value }));

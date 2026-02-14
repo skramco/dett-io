@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import {
   Box,
   Grid,
@@ -35,10 +36,10 @@ import {
   EmptyResultsState,
 } from '@/components/mui/calculator/ResultsPanel';
 import {
-  DonutChart,
+  LazyDonutChart as DonutChart,
   ChartLegend,
   CHART_COLORS,
-} from '@/components/mui/calculator/ChartComponents';
+} from '@/components/mui/calculator/LazyCharts';
 import { calculateDTI } from '@/lib/calculators';
 import type { DTIInputs } from '@/lib/calculators/dti';
 
@@ -80,6 +81,7 @@ export default function DTICalculator() {
     childSupport: 0,
     otherDebts: 0,
   });
+  useUrlInputs(inputs, setInputs);
 
   const result = useMemo(() => {
     if (inputs.monthlyGrossIncome <= 0) return null;

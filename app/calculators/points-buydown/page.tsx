@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { Percent, AttachMoney, Timeline, CheckCircle, AccountBalance } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
 import { InputSection, CurrencyInput, PercentageInput, SelectInput, NumberInput } from '@/components/mui/calculator/InputPanel';
 import { HeroMetric, MetricCard, InsightCallout, ResultsSection, EmptyResultsState } from '@/components/mui/calculator/ResultsPanel';
-import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/ChartComponents';
+import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/LazyCharts';
 import { calculatePointsBuydown } from '@/lib/calculators';
 import type { PointsBuydownInputs } from '@/lib/calculators/types';
 
@@ -15,6 +16,7 @@ export default function PointsBuydownCalculator() {
     loanAmount: 360000, parRate: 6.75, loanTerm: 30, pointsCost: 7200, pointsRate: 6.25,
     lenderCredit: 3600, lenderCreditRate: 7.0, buydownType: 'none', buydownCost: 0, yearsToHold: 7,
   });
+  useUrlInputs(inputs, setInputs);
 
   const result = useMemo(() => inputs.loanAmount <= 0 ? null : calculatePointsBuydown(inputs), [inputs]);
   const handleInputChange = (field: keyof PointsBuydownInputs, value: number | string) => setInputs(prev => ({ ...prev, [field]: value }));

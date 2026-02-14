@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import {
   Box,
   Grid,
@@ -34,9 +35,9 @@ import {
 } from '@/components/mui/calculator/ResultsPanel';
 import {
   HorizontalBar,
-  ComparisonBarChart,
+  LazyComparisonBarChart as ComparisonBarChart,
   CHART_COLORS,
-} from '@/components/mui/calculator/ChartComponents';
+} from '@/components/mui/calculator/LazyCharts';
 import { calculateDownPayment } from '@/lib/calculators';
 import type { DownPaymentInputs } from '@/lib/calculators/types';
 
@@ -50,6 +51,7 @@ export default function DownPaymentCalculator() {
     homeInsuranceAnnual: 1800,
     pmiRate: 0.5,
   });
+  useUrlInputs(inputs, setInputs);
 
   // Calculate results in real-time
   const result = useMemo(() => {

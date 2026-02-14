@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import {
   Box,
   Grid,
@@ -33,10 +34,10 @@ import {
   EmptyResultsState,
 } from '@/components/mui/calculator/ResultsPanel';
 import {
-  TimelineChart,
+  LazyTimelineChart as TimelineChart,
   HorizontalBar,
   CHART_COLORS,
-} from '@/components/mui/calculator/ChartComponents';
+} from '@/components/mui/calculator/LazyCharts';
 import { calculateRentVsBuy } from '@/lib/calculators';
 import type { RentVsBuyInputs } from '@/lib/calculators/types';
 
@@ -57,6 +58,7 @@ export default function RentVsBuyCalculator() {
     investmentReturn: 7,
     yearsToAnalyze: 10,
   });
+  useUrlInputs(inputs, setInputs);
 
   // Calculate results in real-time
   const result = useMemo(() => {

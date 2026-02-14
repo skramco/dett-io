@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import {
   Box,
   Grid,
@@ -35,11 +36,11 @@ import {
   EmptyResultsState,
 } from '@/components/mui/calculator/ResultsPanel';
 import {
-  DonutChart,
+  LazyDonutChart as DonutChart,
   ChartLegend,
   HorizontalBar,
   CHART_COLORS,
-} from '@/components/mui/calculator/ChartComponents';
+} from '@/components/mui/calculator/LazyCharts';
 import { calculateClosingCosts } from '@/lib/calculators';
 import type { ClosingCostInputs } from '@/lib/calculators/closingCosts';
 
@@ -72,6 +73,7 @@ export default function ClosingCostCalculator() {
     prepaidInterestDays: 15,
     prepaidInsurance: 1800,
   });
+  useUrlInputs(inputs, setInputs);
 
   const result = useMemo(() => {
     if (inputs.homePrice <= 0) return null;

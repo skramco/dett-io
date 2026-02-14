@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import {
   Box,
   Grid,
@@ -42,7 +43,7 @@ import {
 import {
   HorizontalBar,
   CHART_COLORS,
-} from '@/components/mui/calculator/ChartComponents';
+} from '@/components/mui/calculator/LazyCharts';
 import { calculateAmortization } from '@/lib/calculators';
 import type { AmortizationInputs } from '@/lib/calculators/amortization';
 
@@ -55,6 +56,7 @@ export default function AmortizationCalculator() {
     loanTerm: 30,
     extraMonthlyPayment: 0,
   });
+  useUrlInputs(inputs, setInputs);
 
   const [viewMode, setViewMode] = useState<'yearly' | 'monthly'>('yearly');
 

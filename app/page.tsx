@@ -24,7 +24,11 @@ import {
 } from '@mui/icons-material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
-import { CalculatorWizard } from '@/components/mui/calculator/CalculatorWizard';
+import dynamic from 'next/dynamic';
+const CalculatorWizard = dynamic(
+  () => import('@/components/mui/calculator/CalculatorWizard').then((mod) => ({ default: mod.CalculatorWizard })),
+  { ssr: false }
+);
 import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/JsonLd';
 
 // SaaSable-inspired dotted background pattern

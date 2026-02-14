@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import {
   Box,
   Grid,
@@ -35,10 +36,10 @@ import {
   EmptyResultsState,
 } from '@/components/mui/calculator/ResultsPanel';
 import {
-  DonutChart,
+  LazyDonutChart as DonutChart,
   ChartLegend,
   CHART_COLORS,
-} from '@/components/mui/calculator/ChartComponents';
+} from '@/components/mui/calculator/LazyCharts';
 import { calculateVA } from '@/lib/calculators';
 import type { VAInputs } from '@/lib/calculators/va';
 
@@ -58,6 +59,7 @@ export default function VACalculator() {
     monthlyGrossIncome: 7000,
     monthlyDebts: 400,
   });
+  useUrlInputs(inputs, setInputs);
 
   const result = useMemo(() => {
     if (inputs.homePrice <= 0) return null;

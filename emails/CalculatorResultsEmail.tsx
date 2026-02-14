@@ -41,10 +41,13 @@ export default function CalculatorResultsEmail({
               <Img
                 src="https://dett.io/logo.png"
                 alt="dett.io"
+                width="140"
                 height="36"
                 style={{ margin: '0 auto', display: 'block' }}
               />
             </Link>
+            {/* Text fallback for Outlook and clients that block images */}
+            <Text style={logoFallback}>dett.io</Text>
           </Section>
 
           {/* Calculator Name Badge */}
@@ -114,13 +117,15 @@ export default function CalculatorResultsEmail({
 
           {/* Footer */}
           <Section style={footer}>
-            <Link href="https://dett.io" style={{ textDecoration: 'none' }}>
+            <Link href="https://dett.io" style={footerLogoLink}>
               <Img
                 src="https://dett.io/logo.png"
                 alt="dett.io"
+                width="100"
                 height="24"
-                style={{ margin: '0 auto 12px', display: 'block', opacity: 0.6 }}
+                style={{ margin: '0 auto 4px', display: 'block' }}
               />
+              <Text style={footerLogoText}>dett.io</Text>
             </Link>
             <Text style={footerLinks}>
               <Link href="https://dett.io/calculators" style={footerLink}>Calculators</Link>
@@ -185,6 +190,15 @@ const headerSection = {
   backgroundColor: '#ffffff',
   padding: '32px 40px 24px',
   textAlign: 'center' as const,
+};
+
+const logoFallback = {
+  color: '#2563eb',
+  fontSize: '20px',
+  fontWeight: '800' as const,
+  textAlign: 'center' as const,
+  margin: '8px 0 0',
+  lineHeight: '1',
 };
 
 const badgeSection = {
@@ -299,7 +313,7 @@ const insightText = {
 
 const prefilledSection = {
   backgroundColor: '#eff6ff',
-  margin: '24px 24px 0',
+  margin: '24px 40px 0',
   padding: '24px',
   borderRadius: '12px',
   border: '1px solid #bfdbfe',
@@ -364,6 +378,21 @@ const footerDivider = {
 const footer = {
   padding: '24px 40px 32px',
   backgroundColor: '#f8fafc',
+};
+
+const footerLogoLink = {
+  textDecoration: 'none',
+  display: 'block' as const,
+  textAlign: 'center' as const,
+  marginBottom: '12px',
+};
+
+const footerLogoText = {
+  color: '#94a3b8',
+  fontSize: '14px',
+  fontWeight: '700' as const,
+  textAlign: 'center' as const,
+  margin: '0',
 };
 
 const footerLinks = {

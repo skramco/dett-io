@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { Timeline, AccountBalance, TrendingUp, CheckCircle, Speed } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
 import { InputSection, CurrencyInput, PercentageInput, NumberInput, SliderInput } from '@/components/mui/calculator/InputPanel';
 import { HeroMetric, MetricCard, InsightCallout, ResultsSection, EmptyResultsState } from '@/components/mui/calculator/ResultsPanel';
-import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/ChartComponents';
+import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/LazyCharts';
 import { calculateTimelineSimulator } from '@/lib/calculators';
 import type { TimelineSimulatorInputs } from '@/lib/calculators/types';
 
@@ -15,6 +16,7 @@ export default function TimelineSimulatorCalculator() {
     loanAmount: 360000, interestRate: 6.75, expectedMoveYear: 7, refiLikelihood: 30,
     armInitialRate: 5.75, armFixedPeriod: 5, pointsCost: 7200, pointsRate: 6.25,
   });
+  useUrlInputs(inputs, setInputs);
 
   const result = useMemo(() => inputs.loanAmount <= 0 ? null : calculateTimelineSimulator(inputs), [inputs]);
   const handleInputChange = (field: keyof TimelineSimulatorInputs, value: number) => setInputs(prev => ({ ...prev, [field]: value }));

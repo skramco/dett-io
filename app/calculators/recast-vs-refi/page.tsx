@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { Refresh, AccountBalance, Speed, CheckCircle, CompareArrows } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
 import { InputSection, CurrencyInput, PercentageInput, SelectInput, NumberInput } from '@/components/mui/calculator/InputPanel';
 import { HeroMetric, MetricCard, InsightCallout, ResultsSection, EmptyResultsState } from '@/components/mui/calculator/ResultsPanel';
-import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/ChartComponents';
+import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/LazyCharts';
 import { calculateRecastVsRefi } from '@/lib/calculators';
 import type { RecastVsRefinanceInputs } from '@/lib/calculators/types';
 
@@ -15,6 +16,7 @@ export default function RecastVsRefiCalculator() {
     currentBalance: 320000, currentRate: 6.5, yearsRemaining: 27, lumpSumAmount: 50000,
     recastFee: 250, newRate: 6.0, newTerm: 30, closingCosts: 6000,
   });
+  useUrlInputs(inputs, setInputs);
 
   const result = useMemo(() => inputs.currentBalance <= 0 ? null : calculateRecastVsRefi(inputs), [inputs]);
   const handleInputChange = (field: keyof RecastVsRefinanceInputs, value: number) => setInputs(prev => ({ ...prev, [field]: value }));
