@@ -48,7 +48,7 @@ export default function TermsOfUsePage() {
         >
           <Stack spacing={0}>
             <h2>1. Acceptance of Terms</h2>
-            <p>These Terms of Use (&quot;Terms&quot;) constitute a legally binding agreement between you (&quot;you,&quot; &quot;your,&quot; or &quot;User&quot;) and Skramco Holdings LLC, a Florida limited liability company, doing business as Dett.io (&quot;Dett,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;). By accessing or using the website located at dett.io (the &quot;Site&quot;) and any services, features, content, calculators, tools, or applications offered on or through the Site (collectively, the &quot;Services&quot;), you agree to be bound by these Terms.</p>
+            <p>These Terms of Use (&quot;Terms&quot;) constitute a legally binding agreement between you (&quot;you,&quot; &quot;your,&quot; or &quot;User&quot;) and Skramco Holdings LLC, a Delaware limited liability company, doing business as Dett.io (&quot;Dett,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;). By accessing or using the website located at dett.io (the &quot;Site&quot;) and any services, features, content, calculators, tools, or applications offered on or through the Site (collectively, the &quot;Services&quot;), you agree to be bound by these Terms.</p>
             <p>If you do not agree to all of these Terms, you must not access or use the Site or Services. We reserve the right to modify these Terms at any time. Your continued use of the Site following the posting of revised Terms constitutes your acceptance of such changes.</p>
 
             <h2>2. Description of Services</h2>
