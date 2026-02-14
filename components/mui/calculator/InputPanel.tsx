@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -124,16 +124,29 @@ interface CurrencyInputProps {
 }
 
 export function CurrencyInput({ label, value, onChange, helperText, min, max }: CurrencyInputProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let inputValue = e.target.value;
-    
-    // Remove leading zeros (except for "0" or "0.")
-    if (inputValue.length > 1 && inputValue.startsWith('0') && inputValue[1] !== '.') {
-      inputValue = inputValue.replace(/^0+/, '');
+  const [display, setDisplay] = useState(String(value));
+
+  useEffect(() => {
+    const num = parseFloat(display);
+    if (isNaN(num) || num !== value) {
+      setDisplay(value === 0 && display === '' ? '' : String(value));
     }
-    
-    const numValue = parseFloat(inputValue) || 0;
-    onChange(numValue);
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setDisplay(raw);
+    const num = parseFloat(raw);
+    if (!isNaN(num)) {
+      onChange(num);
+    }
+  };
+
+  const handleBlur = () => {
+    if (display === '' || isNaN(parseFloat(display))) {
+      setDisplay('0');
+      onChange(0);
+    }
   };
 
   return (
@@ -141,8 +154,9 @@ export function CurrencyInput({ label, value, onChange, helperText, min, max }: 
       fullWidth
       label={label}
       type="number"
-      value={value}
+      value={display}
       onChange={handleChange}
+      onBlur={handleBlur}
       inputProps={{ min, max }}
       InputProps={{
         startAdornment: (
@@ -171,16 +185,29 @@ interface PercentageInputProps {
 }
 
 export function PercentageInput({ label, value, onChange, helperText, step = 0.125, min = 0, max = 100 }: PercentageInputProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let inputValue = e.target.value;
-    
-    // Remove leading zeros (except for "0" or "0.")
-    if (inputValue.length > 1 && inputValue.startsWith('0') && inputValue[1] !== '.') {
-      inputValue = inputValue.replace(/^0+/, '');
+  const [display, setDisplay] = useState(String(value));
+
+  useEffect(() => {
+    const num = parseFloat(display);
+    if (isNaN(num) || num !== value) {
+      setDisplay(value === 0 && display === '' ? '' : String(value));
     }
-    
-    const numValue = parseFloat(inputValue) || 0;
-    onChange(numValue);
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setDisplay(raw);
+    const num = parseFloat(raw);
+    if (!isNaN(num)) {
+      onChange(num);
+    }
+  };
+
+  const handleBlur = () => {
+    if (display === '' || isNaN(parseFloat(display))) {
+      setDisplay('0');
+      onChange(0);
+    }
   };
 
   return (
@@ -188,8 +215,9 @@ export function PercentageInput({ label, value, onChange, helperText, step = 0.1
       fullWidth
       label={label}
       type="number"
-      value={value}
+      value={display}
       onChange={handleChange}
+      onBlur={handleBlur}
       inputProps={{ step, min, max }}
       InputProps={{
         endAdornment: (
@@ -219,13 +247,39 @@ interface NumberInputProps {
 }
 
 export function NumberInput({ label, value, onChange, helperText, suffix, step = 1, min, max }: NumberInputProps) {
+  const [display, setDisplay] = useState(String(value));
+
+  useEffect(() => {
+    const num = parseFloat(display);
+    if (isNaN(num) || num !== value) {
+      setDisplay(value === 0 && display === '' ? '' : String(value));
+    }
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setDisplay(raw);
+    const num = parseFloat(raw);
+    if (!isNaN(num)) {
+      onChange(num);
+    }
+  };
+
+  const handleBlur = () => {
+    if (display === '' || isNaN(parseFloat(display))) {
+      setDisplay('0');
+      onChange(0);
+    }
+  };
+
   return (
     <TextField
       fullWidth
       label={label}
       type="number"
-      value={value}
-      onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
+      value={display}
+      onChange={handleChange}
+      onBlur={handleBlur}
       inputProps={{ step, min, max }}
       InputProps={{
         endAdornment: suffix ? (
