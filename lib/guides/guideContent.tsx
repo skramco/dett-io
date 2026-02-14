@@ -33,6 +33,56 @@ function Callout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AffordHouse40K() {
+  return (
+    <>
+      <h2>The Quick Answer</h2>
+      <p>On a $40,000 salary, you can likely afford a home in the <strong>$120,000 to $170,000</strong> range. It's tight, but absolutely possible — especially with FHA loans, down payment assistance, and smart location choices.</p>
+
+      <h2>Your Numbers at a Glance</h2>
+      <SalaryTable salary="$40,000" monthly="$3,333" maxHome28="$140,000" maxHome36="$170,000" downPayment5="$7,000" downPayment10="$14,000" downPayment20="$28,000" />
+
+      <h2>What Lenders See</h2>
+      <p>At $40K, your gross monthly income is about $3,333. The 28% front-end DTI rule gives you a maximum housing payment of roughly <strong>$933 per month</strong>. That's your ceiling for principal, interest, taxes, insurance, and any PMI or HOA fees combined.</p>
+      <p>The challenge at this income level isn't qualification — it's finding a home in your price range that doesn't need major repairs. Lenders will approve you, but the real question is whether the housing stock in your area works at $120K-$170K.</p>
+
+      <h2>Loan Programs That Help</h2>
+      <p>At $40K, government-backed loans are your best friend:</p>
+      <ul>
+        <li><strong>FHA loans:</strong> 3.5% down with a 580+ credit score. On a $140K home, that's just $4,900 down.</li>
+        <li><strong>USDA loans:</strong> 0% down in eligible rural and suburban areas. Income limits vary by county, but $40K typically qualifies.</li>
+        <li><strong>VA loans:</strong> 0% down, no PMI if you're a veteran or active military.</li>
+        <li><strong>State/local programs:</strong> Many states offer $5,000-$15,000 in down payment assistance for buyers under median income.</li>
+      </ul>
+
+      <Callout>USDA loans are underrated at this income level. If you're open to suburban or rural areas, you can buy with zero down payment and no PMI — a massive advantage.</Callout>
+
+      <h2>The Real Monthly Cost</h2>
+      <p>On a $140,000 home with 3.5% down (FHA) at 6.75%:</p>
+      <ul>
+        <li><strong>Principal & Interest:</strong> ~$876/month</li>
+        <li><strong>Property Taxes:</strong> ~$145/month (varies by location)</li>
+        <li><strong>Insurance:</strong> ~$100/month</li>
+        <li><strong>FHA MIP:</strong> ~$80/month</li>
+        <li><strong>Total:</strong> ~$1,200/month</li>
+      </ul>
+      <p>That's about 36% of gross income — above the ideal 28% but within FHA's allowable limits. You'll need minimal other debt to make this work.</p>
+
+      <h2>Strategies to Make It Work</h2>
+      <ol>
+        <li><strong>Eliminate all other debt first.</strong> At $40K, every dollar of monthly debt directly competes with your mortgage qualification.</li>
+        <li><strong>Target USDA-eligible areas.</strong> Zero down payment changes the math completely.</li>
+        <li><strong>Apply for down payment assistance.</strong> Many programs are specifically designed for your income level.</li>
+        <li><strong>Consider a fixer-upper with an FHA 203(k) loan.</strong> Buy below market and finance the repairs into the mortgage.</li>
+        <li><strong>Get a roommate.</strong> $400-600/month in rental income makes the payment very manageable.</li>
+      </ol>
+
+      <h2>The Bottom Line</h2>
+      <p>$40K is the entry point for homeownership, and it requires discipline and creativity. But thousands of people buy homes at this income level every year. The key is using every advantage available — government loans, assistance programs, and strategic location choices. Don't let anyone tell you it's impossible.</p>
+    </>
+  );
+}
+
 function AffordHouse50K() {
   return (
     <>
@@ -112,6 +162,59 @@ function AffordHouse60K() {
 
       <h2>The Bottom Line</h2>
       <p>$60K puts you in a solid position to buy in many markets. The key is keeping your total housing cost under 30% of gross income and having a realistic plan for the down payment and closing costs. Run the numbers with our calculators before you start shopping.</p>
+    </>
+  );
+}
+
+function AffordHouse65K() {
+  return (
+    <>
+      <h2>The Quick Answer</h2>
+      <p>On a $65,000 salary, you can likely afford a home in the <strong>$215,000 to $270,000</strong> range. You're past the entry-level squeeze and into territory where conventional loans with reasonable terms are well within reach.</p>
+
+      <h2>Your Numbers at a Glance</h2>
+      <SalaryTable salary="$65,000" monthly="$5,417" maxHome28="$230,000" maxHome36="$270,000" downPayment5="$11,500" downPayment10="$23,000" downPayment20="$46,000" />
+
+      <h2>The $65K Advantage</h2>
+      <p>At $65K gross, your monthly income is $5,417. The 28% rule gives you a housing budget of <strong>$1,517 per month</strong>. That's a comfortable step above the $50-60K range — enough to access homes in the low-to-mid $200s in most non-coastal markets.</p>
+      <p>You're also in a strong position for conventional loans with as little as 3-5% down, and your income is high enough that FHA's mortgage insurance premium becomes less attractive compared to conventional PMI that drops off at 20% equity.</p>
+
+      <h2>What Your Payment Looks Like</h2>
+      <p>On a $230,000 home with 10% down at 6.75%:</p>
+      <Box component="table">
+        <thead><tr><th>Component</th><th>Monthly Cost</th></tr></thead>
+        <tbody>
+          <tr><td>Principal & Interest</td><td>$1,343</td></tr>
+          <tr><td>Property Taxes</td><td>$192</td></tr>
+          <tr><td>Insurance</td><td>$130</td></tr>
+          <tr><td>PMI</td><td>$95</td></tr>
+          <tr><td><strong>Total</strong></td><td><strong>$1,760</strong></td></tr>
+        </tbody>
+      </Box>
+      <p>That's about 32% of gross income — slightly above the 28% ideal but well within most lenders' comfort zone if you have minimal other debt.</p>
+
+      <Callout>At $65K, you're in the sweet spot for conventional 97 loans (3% down) if you're a first-time buyer. That's just $6,900 down on a $230K home.</Callout>
+
+      <h2>The Debt Equation</h2>
+      <p>Your existing monthly debts are the biggest swing factor:</p>
+      <ul>
+        <li><strong>$0 in monthly debt:</strong> You can comfortably target $250K+</li>
+        <li><strong>$300/month (car payment):</strong> Reduces buying power by ~$45,000</li>
+        <li><strong>$500/month (car + student loans):</strong> Reduces buying power by ~$75,000</li>
+      </ul>
+      <p>If you're carrying significant debt, paying it down before buying is the single most powerful thing you can do.</p>
+
+      <h2>Strategies at $65K</h2>
+      <ol>
+        <li><strong>Compare conventional vs FHA carefully.</strong> At this income, conventional with PMI often beats FHA's lifetime MIP.</li>
+        <li><strong>Target 10% down if possible.</strong> It significantly reduces your PMI rate and monthly payment.</li>
+        <li><strong>Don't forget closing costs.</strong> Budget $5,000-$12,000 on top of your down payment.</li>
+        <li><strong>Shop multiple lenders.</strong> Rate differences of 0.25% save thousands over the life of the loan.</li>
+        <li><strong>Consider buying in an up-and-coming area.</strong> Your budget goes further, and you build equity as the area appreciates.</li>
+      </ol>
+
+      <h2>The Bottom Line</h2>
+      <p>$65K is a solid income for home buying. You have enough to qualify for good loan terms without being stretched thin. The key is keeping your total debt manageable and not buying at the absolute top of your approval range. Leave yourself a cushion.</p>
     </>
   );
 }
@@ -207,6 +310,58 @@ function AffordHouse80K() {
   );
 }
 
+function AffordHouse90K() {
+  return (
+    <>
+      <h2>The Quick Answer</h2>
+      <p>On a $90,000 salary, you can likely afford a home in the <strong>$325,000 to $400,000</strong> range. At this income, you have real flexibility — the question shifts from "can I buy?" to "how much should I buy?"</p>
+
+      <h2>Your Numbers at a Glance</h2>
+      <SalaryTable salary="$90,000" monthly="$7,500" maxHome28="$325,000" maxHome36="$400,000" downPayment5="$16,250" downPayment10="$32,500" downPayment20="$65,000" />
+
+      <h2>The $90K Sweet Spot</h2>
+      <p>At $90K gross, your monthly income is $7,500. The 28% rule gives you <strong>$2,100 per month</strong> for housing — enough to comfortably afford homes in the mid-$300s in most markets, and even higher if you have minimal debt.</p>
+      <p>This is the income level where you start having real choices: newer construction vs. established neighborhoods, 3-bedroom vs. 4-bedroom, suburbs vs. closer to the city center.</p>
+
+      <h2>Payment Breakdown</h2>
+      <p>On a $350,000 home with 10% down at 6.75%:</p>
+      <Box component="table">
+        <thead><tr><th>Component</th><th>Monthly Cost</th></tr></thead>
+        <tbody>
+          <tr><td>Principal & Interest</td><td>$2,043</td></tr>
+          <tr><td>Property Taxes</td><td>$292</td></tr>
+          <tr><td>Insurance</td><td>$165</td></tr>
+          <tr><td>PMI</td><td>$130</td></tr>
+          <tr><td><strong>Total</strong></td><td><strong>$2,630</strong></td></tr>
+        </tbody>
+      </Box>
+      <p>That's 35% of gross income — manageable if you have low other debt, but consider targeting $300K-$325K for more breathing room.</p>
+
+      <h2>The Rate Buydown Opportunity</h2>
+      <p>At $90K, you're in a strong position to consider buying down your interest rate with points. Here's why:</p>
+      <ul>
+        <li><strong>1 point (1% of loan amount):</strong> ~$3,150 on a $315K loan, typically reduces your rate by 0.25%</li>
+        <li><strong>Monthly savings:</strong> ~$50-60/month</li>
+        <li><strong>Break-even:</strong> About 4-5 years</li>
+      </ul>
+      <p>If you plan to stay in the home 5+ years, buying points is often a smart move at this price range.</p>
+
+      <Callout>At $90K, you're likely better off with a conventional loan than FHA. Conventional PMI drops off at 20% equity, while FHA's MIP lasts the life of the loan (for loans with less than 10% down).</Callout>
+
+      <h2>Common Mistakes at $90K</h2>
+      <ol>
+        <li><strong>Buying at the top of approval.</strong> Lenders may approve you for $400K+, but that doesn't mean you should spend it. Target 3x-3.5x your income.</li>
+        <li><strong>Ignoring the full cost.</strong> A $350K home costs $2,600+/month when you include everything — not just the $2,043 P&I.</li>
+        <li><strong>Skipping the rate comparison.</strong> At this loan size, a 0.25% rate difference saves $15,000+ over 30 years.</li>
+        <li><strong>Forgetting maintenance reserves.</strong> Budget 1% of home value per year ($3,500) for repairs and upkeep.</li>
+      </ol>
+
+      <h2>The Bottom Line</h2>
+      <p>$90K gives you genuine buying power in most U.S. markets. The smartest move is to buy comfortably below your maximum — aim for a payment that's 25-28% of gross income, not 35%. The financial flexibility you preserve is worth more than the extra square footage.</p>
+    </>
+  );
+}
+
 function AffordHouse100K() {
   return (
     <>
@@ -278,6 +433,51 @@ function AffordHouse120K() {
   );
 }
 
+function AffordHouse125K() {
+  return (
+    <>
+      <h2>The Quick Answer</h2>
+      <p>On a $125,000 salary, you can likely afford a home in the <strong>$425,000 to $550,000</strong> range. You're in a strong financial position — the challenge isn't qualifying, it's avoiding the temptation to overbuy.</p>
+
+      <h2>Your Numbers at a Glance</h2>
+      <SalaryTable salary="$125,000" monthly="$10,417" maxHome28="$450,000" maxHome36="$550,000" downPayment5="$22,500" downPayment10="$45,000" downPayment20="$90,000" />
+
+      <h2>The Comfort Zone</h2>
+      <p>At $125K gross, your monthly income is $10,417. The 28% rule gives you <strong>$2,917 per month</strong> for housing. That's enough to comfortably afford a home in the mid-$400s — and potentially higher if you have zero other debt.</p>
+      <p>But here's the trap: lenders may approve you for $550K or more. Just because you can borrow that much doesn't mean you should. The difference between a $450K home and a $550K home is roughly $650/month in total housing costs — money that could go toward retirement, investments, or an emergency fund.</p>
+
+      <h2>Payment Comparison</h2>
+      <Box component="table">
+        <thead><tr><th>Home Price</th><th>Down (10%)</th><th>Monthly Payment</th><th>% of Gross Income</th></tr></thead>
+        <tbody>
+          <tr><td>$400,000</td><td>$40,000</td><td>$2,870</td><td>27.6%</td></tr>
+          <tr><td>$450,000</td><td>$45,000</td><td>$3,225</td><td>31.0%</td></tr>
+          <tr><td>$500,000</td><td>$50,000</td><td>$3,580</td><td>34.4%</td></tr>
+          <tr><td>$550,000</td><td>$55,000</td><td>$3,935</td><td>37.8%</td></tr>
+        </tbody>
+      </Box>
+
+      <Callout>The sweet spot at $125K is a home priced at 3x-3.5x your income ($375K-$437K). This keeps your housing costs under 30% and leaves room for everything else.</Callout>
+
+      <h2>Tax Considerations</h2>
+      <p>At $125K, you're in the 22-24% federal tax bracket. Mortgage interest is deductible, but only if you itemize — and the standard deduction ($14,600 single / $29,200 married in 2024) is high enough that many buyers at this level don't benefit from itemizing.</p>
+      <p>Don't buy a more expensive home just for the tax deduction. Run the numbers — the deduction rarely makes up for the higher payment.</p>
+
+      <h2>Smart Strategies at $125K</h2>
+      <ol>
+        <li><strong>Target 15-20% down.</strong> At this income, saving $45K-$90K is achievable. Putting 20% down eliminates PMI entirely.</li>
+        <li><strong>Consider a 15-year mortgage.</strong> Your income supports the higher payment, and you'll save $150K+ in interest over the life of the loan.</li>
+        <li><strong>Don't neglect retirement.</strong> Max out your 401(k) match before stretching for a bigger house.</li>
+        <li><strong>Build a 6-month emergency fund first.</strong> At $125K, that's $30K-$40K in liquid savings before you buy.</li>
+        <li><strong>Shop for rates aggressively.</strong> On a $400K loan, a 0.25% rate difference saves $20,000+ over 30 years.</li>
+      </ol>
+
+      <h2>The Bottom Line</h2>
+      <p>At $125K, you have the luxury of choice. Use it wisely — buy a home that fits your life, not one that impresses your friends. The wealthiest homeowners are often the ones who bought well below their maximum and invested the difference.</p>
+    </>
+  );
+}
+
 function AffordHouse150K() {
   return (
     <>
@@ -311,6 +511,119 @@ function AffordHouse150K() {
 
       <h2>The Bottom Line</h2>
       <p>$150K gives you excellent buying power. Use it wisely. The wealthiest homeowners often buy below their means and invest the difference. Don't let your mortgage be the reason you can't build long-term wealth.</p>
+    </>
+  );
+}
+
+function AffordHouse175K() {
+  return (
+    <>
+      <h2>The Quick Answer</h2>
+      <p>On a $175,000 salary, you can likely afford a home in the <strong>$600,000 to $750,000</strong> range. At this income, you have access to premium loan products and significant negotiating power — but the stakes of overbuying are higher too.</p>
+
+      <h2>Your Numbers at a Glance</h2>
+      <SalaryTable salary="$175,000" monthly="$14,583" maxHome28="$625,000" maxHome36="$750,000" downPayment5="$31,250" downPayment10="$62,500" downPayment20="$125,000" />
+
+      <h2>Conforming vs. Jumbo Territory</h2>
+      <p>In most U.S. counties, the conforming loan limit is $766,550 (2024). At $175K income, you're right at the edge. Homes priced above this threshold may require a jumbo loan, which typically means:</p>
+      <ul>
+        <li><strong>Higher credit score requirements</strong> (usually 700+)</li>
+        <li><strong>Larger down payment</strong> (10-20% minimum)</li>
+        <li><strong>More reserves required</strong> (6-12 months of payments in savings)</li>
+        <li><strong>Slightly higher rates</strong> (though the gap has narrowed)</li>
+      </ul>
+      <p>If you can stay under the conforming limit, you'll get better terms. In high-cost areas (parts of CA, NY, MA, etc.), the limit is higher — up to $1,149,825.</p>
+
+      <h2>Payment Scenarios</h2>
+      <Box component="table">
+        <thead><tr><th>Home Price</th><th>Down (15%)</th><th>Monthly Payment</th><th>% of Gross Income</th></tr></thead>
+        <tbody>
+          <tr><td>$550,000</td><td>$82,500</td><td>$3,730</td><td>25.6%</td></tr>
+          <tr><td>$625,000</td><td>$93,750</td><td>$4,240</td><td>29.1%</td></tr>
+          <tr><td>$700,000</td><td>$105,000</td><td>$4,750</td><td>32.6%</td></tr>
+          <tr><td>$750,000</td><td>$112,500</td><td>$5,090</td><td>34.9%</td></tr>
+        </tbody>
+      </Box>
+
+      <Callout>At $175K, the optimal home price is 3x-3.5x your income ($525K-$612K). This keeps your housing costs comfortable and preserves your ability to invest aggressively elsewhere.</Callout>
+
+      <h2>The Wealth-Building Perspective</h2>
+      <p>At $175K, you're in a position where your investment decisions matter as much as your housing decision. Consider:</p>
+      <ul>
+        <li><strong>Buying a $550K home instead of $700K</strong> saves ~$1,000/month — that's $12,000/year into investments</li>
+        <li><strong>$12,000/year invested at 8% for 30 years</strong> = ~$1.4 million in additional wealth</li>
+        <li><strong>The "extra" house</strong> might appreciate, but historically stocks outperform real estate</li>
+      </ul>
+
+      <h2>ARM vs. Fixed at This Level</h2>
+      <p>At higher loan amounts, adjustable-rate mortgages (ARMs) become more attractive:</p>
+      <ul>
+        <li><strong>5/1 ARM:</strong> Typically 0.5-1% lower than 30-year fixed for the first 5 years</li>
+        <li><strong>On a $530K loan:</strong> That's $250-500/month in savings for 5 years</li>
+        <li><strong>Best for:</strong> Buyers who plan to move or refinance within 5-7 years</li>
+      </ul>
+      <p>If you're confident you'll stay 10+ years, a fixed rate provides certainty. If there's any chance you'll move in 5-7 years, an ARM is worth serious consideration.</p>
+
+      <h2>The Bottom Line</h2>
+      <p>$175K puts you in an enviable position. The smartest move is to resist lifestyle inflation, buy a home that's comfortable (not maximal), and deploy the savings into investments that compound over decades. Your future self will thank you.</p>
+    </>
+  );
+}
+
+function AffordHouse200K() {
+  return (
+    <>
+      <h2>The Quick Answer</h2>
+      <p>On a $200,000 salary, you can likely afford a home in the <strong>$700,000 to $875,000</strong> range — and potentially higher in high-cost markets. At this income, you're in the top 10% of U.S. earners and have access to premium loan products.</p>
+
+      <h2>Your Numbers at a Glance</h2>
+      <SalaryTable salary="$200,000" monthly="$16,667" maxHome28="$725,000" maxHome36="$875,000" downPayment5="$36,250" downPayment10="$72,500" downPayment20="$145,000" />
+
+      <h2>Jumbo Loan Territory</h2>
+      <p>At $200K income, you're likely shopping in jumbo loan territory (above $766,550 in most counties). Here's what that means:</p>
+      <Box component="table">
+        <thead><tr><th>Factor</th><th>Conforming Loan</th><th>Jumbo Loan</th></tr></thead>
+        <tbody>
+          <tr><td>Max Loan Amount</td><td>$766,550</td><td>$1M-$3M+</td></tr>
+          <tr><td>Min Credit Score</td><td>620</td><td>700-720</td></tr>
+          <tr><td>Min Down Payment</td><td>3-5%</td><td>10-20%</td></tr>
+          <tr><td>Reserve Requirements</td><td>0-2 months</td><td>6-12 months</td></tr>
+          <tr><td>Interest Rate</td><td>Market rate</td><td>+0.1-0.3%</td></tr>
+        </tbody>
+      </Box>
+
+      <Callout>In high-cost areas (San Francisco, NYC, LA, etc.), conforming limits are higher — up to $1,149,825. Check your county's limit before assuming you need a jumbo loan.</Callout>
+
+      <h2>The $200K Paradox</h2>
+      <p>Here's what most $200K earners don't realize: the more you earn, the more important it is to buy <em>below</em> your maximum. Why?</p>
+      <ul>
+        <li><strong>Taxes take a bigger bite.</strong> At $200K, your effective federal + state tax rate is 30-35%. Your take-home is closer to $130K-$140K.</li>
+        <li><strong>Lifestyle inflation is real.</strong> Higher income often means higher spending on cars, dining, travel, and childcare.</li>
+        <li><strong>Opportunity cost is massive.</strong> Every $100K in extra home price is $100K not invested in the market.</li>
+      </ul>
+      <p>A $200K earner buying a $600K home and investing the difference will almost certainly build more wealth than one buying a $850K home.</p>
+
+      <h2>Tax Strategy</h2>
+      <p>At $200K, mortgage interest deduction becomes more relevant:</p>
+      <ul>
+        <li><strong>Interest on a $600K loan at 6.75%:</strong> ~$40,000/year in the early years</li>
+        <li><strong>Plus property taxes:</strong> $7,000-$15,000/year depending on location</li>
+        <li><strong>Combined:</strong> Likely exceeds the standard deduction, making itemizing worthwhile</li>
+        <li><strong>Tax savings:</strong> Roughly $10,000-$15,000/year in the 24-32% bracket</li>
+      </ul>
+      <p>But remember: you're spending $47,000-$55,000 to save $10,000-$15,000 in taxes. The deduction reduces the cost of homeownership — it doesn't make it free.</p>
+
+      <h2>Smart Strategies at $200K</h2>
+      <ol>
+        <li><strong>Put 20% down to avoid PMI.</strong> At this price range, PMI costs $200-400/month. Eliminating it saves $2,400-$4,800/year.</li>
+        <li><strong>Consider a 15-year mortgage.</strong> Your income supports it, and you'll save $200K-$400K in interest.</li>
+        <li><strong>Max out all tax-advantaged accounts first.</strong> 401(k), IRA, HSA — before stretching for a bigger house.</li>
+        <li><strong>Keep 6-12 months of expenses liquid.</strong> At $200K lifestyle, that's $50K-$100K in accessible savings.</li>
+        <li><strong>Don't forget the "hidden" costs.</strong> A $750K home costs $7,500-$15,000/year in maintenance alone.</li>
+      </ol>
+
+      <h2>The Bottom Line</h2>
+      <p>At $200K, you can afford a very nice home. The question is whether that home should cost $600K or $850K. The financially optimal answer is almost always the lower number. Buy for comfort and quality of life, not for status — and invest the difference. That's how $200K earners become millionaires.</p>
     </>
   );
 }
@@ -605,13 +918,19 @@ function TrueMonthlyPayment() {
 }
 
 export const guideContent: Record<string, React.FC> = {
+  'afford-house-40k-salary': AffordHouse40K,
   'afford-house-50k-salary': AffordHouse50K,
   'afford-house-60k-salary': AffordHouse60K,
+  'afford-house-65k-salary': AffordHouse65K,
   'afford-house-75k-salary': AffordHouse75K,
   'afford-house-80k-salary': AffordHouse80K,
+  'afford-house-90k-salary': AffordHouse90K,
   'afford-house-100k-salary': AffordHouse100K,
   'afford-house-120k-salary': AffordHouse120K,
+  'afford-house-125k-salary': AffordHouse125K,
   'afford-house-150k-salary': AffordHouse150K,
+  'afford-house-175k-salary': AffordHouse175K,
+  'afford-house-200k-salary': AffordHouse200K,
   'should-i-refinance': ShouldIRefinance,
   'rent-vs-buy-guide': RentVsBuyGuide,
   'fha-vs-conventional': FHAvsConventional,

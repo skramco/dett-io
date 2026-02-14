@@ -38,46 +38,12 @@ export function Header() {
           <Toolbar disableGutters sx={{ justifyContent: 'space-between', minHeight: { xs: 64, md: 72 } }}>
             {/* Logo */}
             <Link href="/" style={{ textDecoration: 'none' }}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Box
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 2,
-                    bgcolor: 'primary.main',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: 'white',
-                      fontWeight: 800,
-                      fontSize: '1.1rem',
-                      lineHeight: 1,
-                      letterSpacing: -1,
-                    }}
-                  >
-                    D
-                  </Typography>
-                </Box>
-                <Typography
-                  variant="h5"
-                  component="span"
-                  sx={{
-                    fontWeight: 800,
-                    color: 'text.primary',
-                    letterSpacing: -0.5,
-                    fontSize: '1.35rem',
-                  }}
-                >
-                  Dett
-                  <Box component="span" sx={{ color: 'primary.main', fontSize: '0.5rem', verticalAlign: 'super', ml: 0.25 }}>
-                    .io
-                  </Box>
-                </Typography>
-              </Stack>
+              <Box
+                component="img"
+                src="/logo.png"
+                alt="dett.io"
+                sx={{ height: { xs: 32, md: 36 }, display: 'block' }}
+              />
             </Link>
 
             {/* Desktop Nav */}

@@ -20,7 +20,8 @@ import {
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
 import type { Guide } from '@/lib/guides/guideData';
-import { ArticleJsonLd } from '@/components/JsonLd';
+import { ArticleJsonLd, FAQJsonLd } from '@/components/JsonLd';
+import { guideFaqs } from '@/lib/guides/guideFaqs';
 
 interface GuideLayoutProps {
   guide: Guide;
@@ -51,6 +52,9 @@ export function GuideLayout({ guide, children }: GuideLayoutProps) {
         datePublished="2026-02-13"
         readTime={guide.readTime}
       />
+      {guideFaqs[guide.slug] && (
+        <FAQJsonLd questions={guideFaqs[guide.slug]} />
+      )}
       <Header />
 
       <Box component="main" sx={{ flex: 1 }}>

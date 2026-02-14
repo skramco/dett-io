@@ -17,7 +17,7 @@ export function OrganizationJsonLd() {
         name: 'Dett.io',
         legalName: 'Skramco Holdings LLC',
         url: 'https://dett.io',
-        logo: 'https://dett.io/icon.png',
+        logo: 'https://dett.io/logo.png',
         description:
           'Free mortgage calculators and educational guides. No ads, no lead capture, no signup required.',
         sameAs: [],

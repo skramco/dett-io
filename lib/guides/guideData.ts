@@ -10,6 +10,18 @@ export interface Guide {
 export const guides: Guide[] = [
   // Salary-based
   {
+    slug: 'afford-house-40k-salary',
+    title: 'Can I Afford a House on a $40K Salary?',
+    description: 'Is homeownership possible on $40,000 a year? Here\'s what you can realistically afford, which loan programs help, and how to make it happen.',
+    category: 'salary',
+    readTime: '6 min',
+    calculators: [
+      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
+      { name: 'FHA Loan Calculator', href: '/calculators/fha' },
+      { name: 'Down Payment Strategy', href: '/calculators/down-payment' },
+    ],
+  },
+  {
     slug: 'afford-house-50k-salary',
     title: 'Can I Afford a House on a $50K Salary?',
     description: 'A realistic look at homeownership on a $50,000 income — what you can afford, what to expect, and how to make it work.',
@@ -31,6 +43,18 @@ export const guides: Guide[] = [
       { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
       { name: 'Down Payment Strategy', href: '/calculators/down-payment' },
       { name: 'DTI Calculator', href: '/calculators/dti' },
+    ],
+  },
+  {
+    slug: 'afford-house-65k-salary',
+    title: 'Can I Afford a House on a $65K Salary?',
+    description: 'A practical guide to home buying on a $65,000 salary — price ranges, monthly payments, and tips to stretch your budget.',
+    category: 'salary',
+    readTime: '6 min',
+    calculators: [
+      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
+      { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
+      { name: 'FHA Loan Calculator', href: '/calculators/fha' },
     ],
   },
   {
@@ -58,6 +82,18 @@ export const guides: Guide[] = [
     ],
   },
   {
+    slug: 'afford-house-90k-salary',
+    title: 'Can I Afford a House on a $90K Salary?',
+    description: 'At $90,000 a year, you have serious buying power. Here\'s how to use it wisely — price ranges, payment breakdowns, and common mistakes.',
+    category: 'salary',
+    readTime: '6 min',
+    calculators: [
+      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
+      { name: 'Points & Buydown', href: '/calculators/points-buydown' },
+      { name: 'PMI Calculator', href: '/calculators/pmi' },
+    ],
+  },
+  {
     slug: 'afford-house-100k-salary',
     title: 'Can I Afford a House on a $100K Salary?',
     description: 'What $100,000 in income really buys you — home price ranges, monthly payment scenarios, and smart strategies.',
@@ -82,6 +118,18 @@ export const guides: Guide[] = [
     ],
   },
   {
+    slug: 'afford-house-125k-salary',
+    title: 'Can I Afford a House on a $125K Salary?',
+    description: 'At $125,000 a year, you\'re in a strong position — but the difference between a smart buy and an overstretch is smaller than you think.',
+    category: 'salary',
+    readTime: '6 min',
+    calculators: [
+      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
+      { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
+      { name: 'DTI Calculator', href: '/calculators/dti' },
+    ],
+  },
+  {
     slug: 'afford-house-150k-salary',
     title: 'Can I Afford a House on a $150K Salary?',
     description: 'High income doesn\'t always mean easy approval. See what $150K really gets you and the traps to avoid.',
@@ -91,6 +139,30 @@ export const guides: Guide[] = [
       { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
       { name: 'Closing Cost Estimator', href: '/calculators/closing-costs' },
       { name: 'ARM vs Fixed Rate', href: '/calculators/arm-vs-fixed' },
+    ],
+  },
+  {
+    slug: 'afford-house-175k-salary',
+    title: 'Can I Afford a House on a $175K Salary?',
+    description: 'At $175,000 a year, you can afford a lot of house — but should you? Here\'s how to avoid overbuying and build wealth instead.',
+    category: 'salary',
+    readTime: '6 min',
+    calculators: [
+      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
+      { name: 'ARM vs Fixed Rate', href: '/calculators/arm-vs-fixed' },
+      { name: 'Points & Buydown', href: '/calculators/points-buydown' },
+    ],
+  },
+  {
+    slug: 'afford-house-200k-salary',
+    title: 'Can I Afford a House on a $200K Salary?',
+    description: 'A $200K income puts you in the top tier of buyers. Here\'s how to maximize your position without overextending — jumbo loans, tax strategy, and smart budgeting.',
+    category: 'salary',
+    readTime: '7 min',
+    calculators: [
+      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
+      { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
+      { name: 'Closing Cost Estimator', href: '/calculators/closing-costs' },
     ],
   },
   // Decision articles

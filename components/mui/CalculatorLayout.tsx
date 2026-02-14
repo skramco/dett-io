@@ -15,6 +15,7 @@ import { ArrowBack, Calculate } from '@mui/icons-material';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { RelatedCalculators } from './calculator/RelatedCalculators';
+import { RelatedGuides } from './calculator/RelatedGuides';
 import { LoanKnowCTA } from './calculator/LoanKnowCTA';
 import { ActionBar } from './calculator/ActionBar';
 import { ShowMeTheMath } from './calculator/ShowMeTheMath';
@@ -248,10 +249,13 @@ export default function CalculatorLayout({ children, title, description, related
           </Container>
         )}
 
-        {/* Related Calculators & LoanKnow CTA */}
+        {/* Related Calculators, Related Guides & LoanKnow CTA */}
         <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 } }}>
           {relatedCalculators && relatedCalculators.length > 0 && (
             <RelatedCalculators calculators={relatedCalculators} />
+          )}
+          {calculatorSlug && (
+            <RelatedGuides calculatorSlug={calculatorSlug} />
           )}
           <LoanKnowCTA />
         </Container>

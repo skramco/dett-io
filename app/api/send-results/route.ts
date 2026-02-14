@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const resend = new Resend(process.env.RESEND_API_KEY);
     
     const body = await request.json();
-    const { email, calculatorName, summary, details, insights } = body;
+    const { email, calculatorName, summary, details, insights, inputs, calculatorPath } = body;
 
     if (!email || !calculatorName || !summary || !details) {
       return NextResponse.json(
@@ -32,12 +32,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Build prefilled calculator URL
+    let calculatorUrl = `https://dett.io${calculatorPath || '/calculators'}`;
+    if (inputs && typeof inputs === 'object') {
+      const params = new URLSearchParams();
+      Object.entries(inputs).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          params.set(key, String(value));
+        }
+      });
+      const qs = params.toString();
+      if (qs) calculatorUrl += `?${qs}`;
+    }
+
     const emailHtml = await render(
       CalculatorResultsEmail({
         calculatorName,
         summary,
         details,
         insights: insights || [],
+        calculatorUrl,
       })
     );
 

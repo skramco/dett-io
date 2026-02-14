@@ -48,7 +48,7 @@ export default function PrivacyPolicyPage() {
         >
           <Stack spacing={0}>
             <h2>1. Introduction</h2>
-            <p>Dett.io (&quot;Dett,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) is a website operated by Skramco Holdings LLC, a limited liability company organized under the laws of the State of Florida. This Privacy Policy describes how we collect, use, disclose, and protect your information when you visit our website at dett.io (the &quot;Site&quot;) and use our free mortgage calculators, educational guides, and related services (collectively, the &quot;Services&quot;).</p>
+            <p>Dett.io (&quot;Dett,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) is a website operated by Skramco Holdings LLC, a limited liability company organized under the laws of the State of Delaware. This Privacy Policy describes how we collect, use, disclose, and protect your information when you visit our website at dett.io (the &quot;Site&quot;) and use our free mortgage calculators, educational guides, and related services (collectively, the &quot;Services&quot;).</p>
             <p>By accessing or using the Site, you acknowledge that you have read, understood, and agree to be bound by this Privacy Policy. If you do not agree with this Privacy Policy, please do not access or use the Site.</p>
 
             <h2>2. Information We Collect</h2>
@@ -170,7 +170,7 @@ export default function PrivacyPolicyPage() {
             <p>We will make every reasonable effort to respond to your inquiry within thirty (30) days.</p>
 
             <h2>14. Governing Law</h2>
-            <p>This Privacy Policy shall be governed by and construed in accordance with the laws of the State of Florida, without regard to its conflict of law provisions. Any disputes arising under or in connection with this Privacy Policy shall be subject to the exclusive jurisdiction of the state and federal courts located in the State of Florida.</p>
+            <p>This Privacy Policy shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict of law provisions. Any disputes arising under or in connection with this Privacy Policy shall be subject to the exclusive jurisdiction of the state and federal courts located in the State of Delaware.</p>
           </Stack>
         </Container>
       </Box>

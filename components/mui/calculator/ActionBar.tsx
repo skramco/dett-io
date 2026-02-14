@@ -109,6 +109,8 @@ export function ActionBar({
           summary,
           details,
           insights,
+          inputs,
+          calculatorPath: window.location.pathname,
         }),
       });
 

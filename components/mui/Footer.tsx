@@ -34,12 +34,12 @@ export function Footer() {
       <Container maxWidth="lg">
         <Grid container spacing={4}>
           <Grid size={{ xs: 12, md: 4 }}>
-            <Typography 
-              variant="h5" 
-              sx={{ fontWeight: 700, color: 'primary.main', mb: 2 }}
-            >
-              Dett
-            </Typography>
+            <Box
+              component="img"
+              src="/logo.png"
+              alt="dett.io"
+              sx={{ height: 32, display: 'block', mb: 2 }}
+            />
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 280 }}>
               Free mortgage calculators. No ads, no lead capture, no BS. Built to help, not to sell.
             </Typography>
