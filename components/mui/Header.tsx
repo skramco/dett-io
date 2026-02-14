@@ -23,6 +23,7 @@ import {
   Close,
   Calculate,
   MenuBook,
+  Article,
   ArrowForward,
 } from '@mui/icons-material';
 import Link from 'next/link';
@@ -93,6 +94,18 @@ export function Header() {
                   Calculators
                 </Button>
               </Link>
+              <Link href="/guides" style={{ textDecoration: 'none' }}>
+                <Button
+                  color="inherit"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 500,
+                    '&:hover': { color: 'primary.main', bgcolor: 'transparent' },
+                  }}
+                >
+                  Guides
+                </Button>
+              </Link>
               <Link href="/learn" style={{ textDecoration: 'none' }}>
                 <Button
                   color="inherit"
@@ -160,6 +173,24 @@ export function Header() {
               <ListItemText
                 primary="Calculators"
                 secondary="20 free mortgage tools"
+                primaryTypographyProps={{ fontWeight: 600 }}
+                secondaryTypographyProps={{ variant: 'caption' }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              component={Link}
+              href="/guides"
+              onClick={() => setDrawerOpen(false)}
+              sx={{ borderRadius: 2, mb: 0.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <Article sx={{ color: 'primary.main' }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Guides"
+                secondary="Salary, decision & cost guides"
                 primaryTypographyProps={{ fontWeight: 600 }}
                 secondaryTypographyProps={{ variant: 'caption' }}
               />

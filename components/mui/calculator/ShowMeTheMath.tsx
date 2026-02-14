@@ -18,6 +18,7 @@ import {
   ArrowForward,
 } from '@mui/icons-material';
 import { calculatorFormulas, type FormulaSet } from '@/lib/calculators/formulas';
+import { trackEvent } from '@/lib/analytics';
 
 interface ShowMeTheMathProps {
   calculatorSlug: string;
@@ -29,6 +30,9 @@ export function ShowMeTheMath({ calculatorSlug, details }: ShowMeTheMathProps) {
 
   const generator = calculatorFormulas[calculatorSlug];
   if (!generator) return null;
+
+  // Don't render until the calculator has produced results
+  if (!details || Object.keys(details).length === 0) return null;
 
   const formulaSets = generator(details);
   if (!formulaSets || formulaSets.length === 0) return null;
@@ -46,7 +50,10 @@ export function ShowMeTheMath({ calculatorSlug, details }: ShowMeTheMathProps) {
     >
       <Button
         fullWidth
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          if (!open) trackEvent('show_me_the_math_opened', { calculator_slug: calculatorSlug });
+          setOpen(!open);
+        }}
         sx={{
           py: 2,
           px: 3,

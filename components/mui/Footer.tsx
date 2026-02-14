@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Container, Typography, Grid, Stack } from '@mui/material';
+import { Box, Container, Typography, Grid, Stack, Divider } from '@mui/material';
 import Link from 'next/link';
 
 const footerLinks = {
@@ -10,12 +10,13 @@ const footerLinks = {
     { label: 'Rent vs Buy', href: '/calculators/rent-vs-buy' },
     { label: 'View All', href: '/calculators' },
   ],
-  learn: [
-    { label: 'About Debt', href: '/learn' },
+  resources: [
+    { label: 'Mortgage Guides', href: '/guides' },
+    { label: 'Learn About Debt', href: '/learn' },
   ],
   legal: [
-    { label: 'Privacy', href: '/privacy' },
-    { label: 'Terms', href: '/terms' },
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Use', href: '/terms' },
   ],
 };
 
@@ -72,10 +73,10 @@ export function Footer() {
           
           <Grid size={{ xs: 6, sm: 4, md: 2 }}>
             <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-              Learn
+              Resources
             </Typography>
             <Stack spacing={1.5}>
-              {footerLinks.learn.map((link) => (
+              {footerLinks.resources.map((link) => (
                 <Link 
                   key={link.href} 
                   href={link.href}
@@ -122,11 +123,20 @@ export function Footer() {
             </Stack>
           </Grid>
         </Grid>
+
+        {/* Legal Disclaimer */}
+        <Box sx={{ mt: 5, pt: 4, borderTop: '1px solid', borderColor: 'divider' }}>
+          <Typography variant="caption" color="text.disabled" sx={{ display: 'block', lineHeight: 1.7, maxWidth: 900 }}>
+            <strong>Disclaimer:</strong> Dett.io is an educational resource operated by Skramco Holdings LLC. Dett.io is not a mortgage lender, broker, financial advisor, or licensed professional of any kind. All calculator results, estimates, and content are for informational and educational purposes only and do not constitute financial, legal, or tax advice. Actual mortgage terms, rates, and eligibility are determined by lenders based on your complete financial profile. Consult qualified professionals before making financial decisions. See our{' '}
+            <Link href="/terms" style={{ color: 'inherit' }}>Terms of Use</Link>{' '}and{' '}
+            <Link href="/privacy" style={{ color: 'inherit' }}>Privacy Policy</Link>{' '}for full details.
+          </Typography>
+        </Box>
         
         <Box 
           sx={{ 
-            mt: 6, 
-            pt: 4, 
+            mt: 3, 
+            pt: 3, 
             borderTop: '1px solid', 
             borderColor: 'divider',
             display: 'flex',
@@ -136,12 +146,21 @@ export function Footer() {
             gap: 2,
           }}
         >
-          <Typography variant="body2" color="text.secondary">
-            © {new Date().getFullYear()} Dett. All rights reserved.
+          <Typography variant="caption" color="text.disabled">
+            © {new Date().getFullYear()} Skramco Holdings LLC d/b/a Dett.io. All rights reserved.
           </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Made with clarity in mind.
-          </Typography>
+          <Stack direction="row" spacing={2}>
+            <Link href="/privacy" style={{ textDecoration: 'none' }}>
+              <Typography variant="caption" sx={{ color: 'text.disabled', '&:hover': { color: 'text.secondary' } }}>
+                Privacy
+              </Typography>
+            </Link>
+            <Link href="/terms" style={{ textDecoration: 'none' }}>
+              <Typography variant="caption" sx={{ color: 'text.disabled', '&:hover': { color: 'text.secondary' } }}>
+                Terms
+              </Typography>
+            </Link>
+          </Stack>
         </Box>
       </Container>
     </Box>

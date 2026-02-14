@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
+import { trackEvent } from '@/lib/analytics';
 import {
   Box,
   Stack,
@@ -112,6 +113,7 @@ export function ActionBar({
       });
 
       if (response.ok) {
+        trackEvent('calculator_result_emailed', { calculator_slug: calculatorName });
         setSnackbar({ open: true, message: `Results sent to ${emailAddress}!`, severity: 'success' });
         setEmailDialogOpen(false);
         setEmailAddress('');

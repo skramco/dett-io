@@ -80,8 +80,15 @@ export default function CalculatorResultsEmail({
             <Text style={footerText}>
               Visit <strong>Dett</strong> at dett.io
             </Text>
+            <Hr style={hr} />
             <Text style={footerDisclaimer}>
-              This is an educational tool. Results are estimates and should not be considered financial advice.
+              <strong>Important:</strong> This calculator provides estimates for educational purposes only. Results are not a loan offer, pre-qualification, pre-approval, or commitment to lend. Actual rates, terms, payments, and eligibility are determined by mortgage lenders based on your complete financial profile, credit history, property appraisal, and current market conditions.
+            </Text>
+            <Text style={footerDisclaimer}>
+              Dett.io is not a mortgage lender, broker, financial advisor, or licensed professional of any kind. All calculator results, estimates, and content are for informational and educational purposes only and do not constitute financial, legal, or tax advice. Consult qualified professionals before making financial decisions.
+            </Text>
+            <Text style={footerDisclaimer}>
+              © {new Date().getFullYear()} Skramco Holdings LLC d/b/a Dett.io. All rights reserved. Privacy Policy: dett.io/privacy | Terms of Use: dett.io/terms
             </Text>
           </Section>
         </Container>

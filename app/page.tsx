@@ -25,6 +25,7 @@ import {
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
 import { CalculatorWizard } from '@/components/mui/calculator/CalculatorWizard';
+import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/JsonLd';
 
 // SaaSable-inspired dotted background pattern
 const dottedBackground = {
@@ -35,6 +36,8 @@ const dottedBackground = {
 export default function Home() {
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <OrganizationJsonLd />
+      <WebSiteJsonLd />
       <Header />
       
       <Box component="main" sx={{ flex: 1 }}>

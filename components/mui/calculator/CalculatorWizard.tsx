@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { trackEvent } from '@/lib/analytics';
 import {
   Box,
   Typography,
@@ -295,12 +296,18 @@ export function CalculatorWizard() {
   const step = wizardSteps[currentStep];
 
   const handleOptionClick = (option: typeof step.options[0]) => {
+    if (currentStep === 'start') {
+      trackEvent('wizard_started', { wizard_path: option.label });
+    }
     if (option.next) {
       setHistory(prev => [...prev, currentStep]);
       setCurrentStep(option.next);
     } else if (option.result) {
       setHistory(prev => [...prev, currentStep]);
       setResult(option.result);
+      trackEvent('wizard_completed', {
+        wizard_path: [...history, currentStep].join(' > '),
+      });
     }
   };
 

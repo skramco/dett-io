@@ -18,8 +18,8 @@ export interface FormulaSet {
 
 type FormulaGenerator = (details: Record<string, number | string>) => FormulaSet[];
 
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-const fmtDec = (v: number, d = 2) => v.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmt = (v: number) => (Number.isFinite(v) ? v : 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+const fmtDec = (v: number, d = 2) => (Number.isFinite(v) ? v : 0).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
 
 export const calculatorFormulas: Record<string, FormulaGenerator> = {
   affordability: (d) => [
