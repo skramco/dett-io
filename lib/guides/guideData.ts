@@ -12,7 +12,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-40k-salary',
     title: 'Can I Afford a House on a $40K Salary?',
-    description: 'Is homeownership possible on $40,000 a year? Here\'s what you can realistically afford, which loan programs help, and how to make it happen.',
+    description: 'On a $40,000 salary, you can afford a home in the $120,000 to $170,000 range using FHA or USDA loans with 3.5% or 0% down. Here\'s the full breakdown of what lenders look for and how to make it work.',
     category: 'salary',
     readTime: '6 min',
     calculators: [
@@ -24,7 +24,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-50k-salary',
     title: 'Can I Afford a House on a $50K Salary?',
-    description: 'A realistic look at homeownership on a $50,000 income — what you can afford, what to expect, and how to make it work.',
+    description: 'On a $50,000 salary, you can afford a home in the $150,000 to $215,000 range. Your max monthly housing payment is about $1,167 using the 28% DTI rule. Here\'s what to expect.',
     category: 'salary',
     readTime: '6 min',
     calculators: [
@@ -36,7 +36,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-60k-salary',
     title: 'Can I Afford a House on a $60K Salary?',
-    description: 'What a $60,000 income means for your home buying budget, monthly payments, and loan options.',
+    description: 'On a $60,000 salary, you can afford a home in the $180,000 to $260,000 range with a max housing payment of about $1,400/month. Here\'s how loan type and down payment affect your budget.',
     category: 'salary',
     readTime: '6 min',
     calculators: [
@@ -48,7 +48,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-65k-salary',
     title: 'Can I Afford a House on a $65K Salary?',
-    description: 'A practical guide to home buying on a $65,000 salary — price ranges, monthly payments, and tips to stretch your budget.',
+    description: 'On a $65,000 salary, you can afford a home in the $195,000 to $280,000 range. Your max monthly payment is about $1,517 at the 28% DTI threshold. Here\'s how to stretch your budget.',
     category: 'salary',
     readTime: '6 min',
     calculators: [
@@ -60,7 +60,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-75k-salary',
     title: 'Can I Afford a House on a $75K Salary?',
-    description: 'A detailed breakdown of home buying power at $75,000 per year — including taxes, insurance, and real monthly costs.',
+    description: 'On a $75,000 salary, you can afford a home in the $225,000 to $325,000 range with a max housing payment of about $1,750/month. Here\'s the real cost including taxes, insurance, and PMI.',
     category: 'salary',
     readTime: '7 min',
     calculators: [
@@ -72,7 +72,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-80k-salary',
     title: 'Can I Afford a House on an $80K Salary?',
-    description: 'How far $80,000 a year goes in today\'s housing market — realistic budgets, loan scenarios, and what lenders look for.',
+    description: 'On an $80,000 salary, you can afford a home in the $240,000 to $345,000 range. Your max housing payment is about $1,867/month. Here\'s what lenders look for and how to maximize your budget.',
     category: 'salary',
     readTime: '6 min',
     calculators: [
@@ -84,7 +84,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-90k-salary',
     title: 'Can I Afford a House on a $90K Salary?',
-    description: 'At $90,000 a year, you have serious buying power. Here\'s how to use it wisely — price ranges, payment breakdowns, and common mistakes.',
+    description: 'On a $90,000 salary, you can afford a home in the $270,000 to $390,000 range with a max housing payment of about $2,100/month. Here\'s how to use that buying power wisely.',
     category: 'salary',
     readTime: '6 min',
     calculators: [
@@ -96,7 +96,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-100k-salary',
     title: 'Can I Afford a House on a $100K Salary?',
-    description: 'What $100,000 in income really buys you — home price ranges, monthly payment scenarios, and smart strategies.',
+    description: 'On a $100,000 salary, you can afford a home in the $300,000 to $430,000 range with a max housing payment of about $2,333/month. Here\'s how to optimize your purchase.',
     category: 'salary',
     readTime: '7 min',
     calculators: [
@@ -108,7 +108,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-120k-salary',
     title: 'Can I Afford a House on a $120K Salary?',
-    description: 'A $120K household income opens doors — but how much house is too much? Here\'s the math.',
+    description: 'On a $120,000 salary, you can afford a home in the $360,000 to $515,000 range with a max housing payment of about $2,800/month. Here\'s where the line is between smart buy and overstretch.',
     category: 'salary',
     readTime: '6 min',
     calculators: [
@@ -120,7 +120,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-125k-salary',
     title: 'Can I Afford a House on a $125K Salary?',
-    description: 'At $125,000 a year, you\'re in a strong position — but the difference between a smart buy and an overstretch is smaller than you think.',
+    description: 'On a $125,000 salary, you can afford a home in the $375,000 to $540,000 range with a max housing payment of about $2,917/month. The gap between smart buy and overstretch is smaller than you think.',
     category: 'salary',
     readTime: '6 min',
     calculators: [
@@ -132,7 +132,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-150k-salary',
     title: 'Can I Afford a House on a $150K Salary?',
-    description: 'High income doesn\'t always mean easy approval. See what $150K really gets you and the traps to avoid.',
+    description: 'On a $150,000 salary, you can afford a home in the $450,000 to $650,000 range with a max housing payment of about $3,500/month. High income doesn\'t guarantee easy approval — here\'s what to watch for.',
     category: 'salary',
     readTime: '6 min',
     calculators: [
@@ -144,7 +144,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-175k-salary',
     title: 'Can I Afford a House on a $175K Salary?',
-    description: 'At $175,000 a year, you can afford a lot of house — but should you? Here\'s how to avoid overbuying and build wealth instead.',
+    description: 'On a $175,000 salary, you can afford a home in the $525,000 to $755,000 range with a max housing payment of about $4,083/month. Here\'s how to avoid overbuying and build wealth instead.',
     category: 'salary',
     readTime: '6 min',
     calculators: [
@@ -156,7 +156,7 @@ export const guides: Guide[] = [
   {
     slug: 'afford-house-200k-salary',
     title: 'Can I Afford a House on a $200K Salary?',
-    description: 'A $200K income puts you in the top tier of buyers. Here\'s how to maximize your position without overextending — jumbo loans, tax strategy, and smart budgeting.',
+    description: 'On a $200,000 salary, you can afford a home in the $600,000 to $860,000 range with a max housing payment of about $4,667/month. Here\'s how to maximize your position with jumbo loans, tax strategy, and smart budgeting.',
     category: 'salary',
     readTime: '7 min',
     calculators: [
@@ -169,7 +169,7 @@ export const guides: Guide[] = [
   {
     slug: 'should-i-refinance',
     title: 'Should I Refinance My Mortgage?',
-    description: 'A clear framework for deciding whether refinancing makes sense — break-even analysis, rate thresholds, and hidden costs.',
+    description: 'Refinancing is worth it if you can lower your rate by at least 0.75%, plan to stay past the break-even point (typically 2-4 years), and the closing costs don\'t exceed your savings. Here\'s the full framework.',
     category: 'decision',
     readTime: '8 min',
     calculators: [
@@ -181,7 +181,7 @@ export const guides: Guide[] = [
   {
     slug: 'rent-vs-buy-guide',
     title: 'Rent vs Buy: The Complete Guide',
-    description: 'The honest math behind renting vs buying — when each makes sense, what most advice gets wrong, and how to decide.',
+    description: 'Buying beats renting if you\'ll stay at least 5-7 years. Below that, renting is usually cheaper after closing costs, selling costs, and opportunity cost. Here\'s the honest math.',
     category: 'decision',
     readTime: '9 min',
     calculators: [
@@ -193,7 +193,7 @@ export const guides: Guide[] = [
   {
     slug: 'fha-vs-conventional',
     title: 'FHA vs Conventional: Which Loan Is Right for You?',
-    description: 'Compare FHA and conventional loans side by side — down payments, mortgage insurance, credit requirements, and total cost.',
+    description: 'FHA loans require 3.5% down with a 580 credit score; conventional loans require 3-5% down with a 620+ score. FHA has lifetime mortgage insurance; conventional PMI drops at 80% LTV. Here\'s the full comparison.',
     category: 'decision',
     readTime: '8 min',
     calculators: [
@@ -206,7 +206,7 @@ export const guides: Guide[] = [
   {
     slug: 'what-are-closing-costs',
     title: 'What Are Closing Costs? A Complete Breakdown',
-    description: 'Every fee explained — lender charges, third-party costs, prepaid items, and how to negotiate them down.',
+    description: 'Closing costs are 2-5% of the purchase price and include lender fees, title insurance, appraisal, and prepaid taxes/insurance. On a $400K home, expect $8,000-$20,000. Here\'s every fee explained.',
     category: 'cost',
     readTime: '7 min',
     calculators: [
@@ -217,7 +217,7 @@ export const guides: Guide[] = [
   {
     slug: 'how-much-is-pmi',
     title: 'How Much Is PMI and How to Avoid It',
-    description: 'What PMI costs, when it drops off, and five strategies to eliminate it — including one most people don\'t know about.',
+    description: 'PMI costs $50-$450/month depending on your loan amount and credit score. It\'s required with less than 20% down and drops off at 80% LTV. Here are five strategies to eliminate it.',
     category: 'cost',
     readTime: '6 min',
     calculators: [
@@ -229,7 +229,7 @@ export const guides: Guide[] = [
   {
     slug: 'true-monthly-mortgage-payment',
     title: 'Understanding Your True Monthly Mortgage Payment',
-    description: 'Why your real payment is higher than the number your lender quoted — PITI, HOA, PMI, and the costs nobody mentions.',
+    description: 'Your true monthly mortgage payment is 25-40% higher than the principal and interest your lender quotes. Property taxes, insurance, PMI, and HOA fees add $500-$1,500/month. Here\'s the full breakdown.',
     category: 'cost',
     readTime: '7 min',
     calculators: [

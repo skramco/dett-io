@@ -81,6 +81,7 @@ export function ActionBar({
     try {
       await navigator.clipboard.writeText(shareURL);
       setLinkCopied(true);
+      trackEvent('calculator_link_shared', { calculator_slug: calculatorName });
       setSnackbar({ open: true, message: 'Link copied to clipboard!', severity: 'success' });
       setTimeout(() => setLinkCopied(false), 3000);
     } catch {
@@ -232,6 +233,7 @@ export function ActionBar({
       // Download
       const filename = `${calculatorName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-dett.pdf`;
       pdf.save(filename);
+      trackEvent('calculator_pdf_downloaded', { calculator_slug: calculatorName });
       setSnackbar({ open: true, message: 'PDF downloaded!', severity: 'success' });
     } catch (err) {
       console.error('PDF generation error:', err);

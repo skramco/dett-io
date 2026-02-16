@@ -104,7 +104,7 @@ export function GuideLayout({ guide, children }: GuideLayoutProps) {
                 {guide.title}
               </Typography>
 
-              <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 400 }}>
+              <Typography variant="h6" color="text.secondary" data-speakable sx={{ fontWeight: 400 }}>
                 {guide.description}
               </Typography>
             </Stack>

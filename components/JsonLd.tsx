@@ -46,6 +46,10 @@ export function WebSiteJsonLd() {
           '@type': 'Organization',
           name: 'Skramco Holdings LLC',
         },
+        speakable: {
+          '@type': 'SpeakableSpecification',
+          cssSelector: ['h1', 'h2', '[data-speakable]'],
+        },
       }}
     />
   );
@@ -125,6 +129,38 @@ export function ArticleJsonLd({
           '@id': `https://dett.io/guides/${slug}`,
         },
         wordCount: parseInt(readTime) * 250,
+      }}
+    />
+  );
+}
+
+// DefinitionPage schema — for glossary/definition pages (AI citation optimized)
+export function DefinitionJsonLd({
+  term,
+  definition,
+  slug,
+}: {
+  term: string;
+  definition: string;
+  slug: string;
+}) {
+  return (
+    <JsonLd
+      data={{
+        '@context': 'https://schema.org',
+        '@type': 'DefinedTerm',
+        name: term,
+        description: definition,
+        url: `https://dett.io/learn/${slug}`,
+        inDefinedTermSet: {
+          '@type': 'DefinedTermSet',
+          name: 'Dett.io Mortgage Glossary',
+          url: 'https://dett.io/learn',
+        },
+        speakable: {
+          '@type': 'SpeakableSpecification',
+          cssSelector: ['h1', '[data-speakable]'],
+        },
       }}
     />
   );

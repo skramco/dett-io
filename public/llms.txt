@@ -1,0 +1,70 @@
+# Dett.io
+
+> Free mortgage calculators and educational guides. No ads, no lead capture, no signup required.
+
+Dett.io is a free mortgage education platform built by Skramco Holdings LLC. It provides 20 interactive calculators, side-by-side loan comparisons, salary-based affordability guides, and a mortgage glossary — all designed to help consumers make smarter mortgage decisions with transparent math.
+
+## Calculators
+
+- [Affordability Calculator](https://dett.io/calculators/affordability): How much house can I afford based on income, debts, and down payment
+- [True Monthly Mortgage Cost](https://dett.io/calculators/mortgage-cost): Full PITI breakdown including taxes, insurance, PMI, and HOA
+- [Down Payment Strategy](https://dett.io/calculators/down-payment): Compare 5%, 10%, and 20% down payment scenarios
+- [Rent vs Buy Analysis](https://dett.io/calculators/rent-vs-buy): 5-year cost comparison with appreciation, rent inflation, and investment alternatives
+- [Refinance Calculator](https://dett.io/calculators/refinance): Break-even analysis for refinancing your mortgage
+- [FHA Loan Calculator](https://dett.io/calculators/fha): FHA payment with upfront and annual MIP
+- [VA Loan Calculator](https://dett.io/calculators/va): VA payment with funding fee calculation
+- [PMI Calculator](https://dett.io/calculators/pmi): PMI costs and when it drops off
+- [DTI Calculator](https://dett.io/calculators/dti): Debt-to-income ratio analysis for mortgage qualification
+- [Closing Cost Estimator](https://dett.io/calculators/closing-costs): Estimate closing costs by loan type and location
+- [ARM vs Fixed Rate](https://dett.io/calculators/arm-vs-fixed): Compare adjustable and fixed-rate mortgages with rate cap modeling
+- [Extra Payment Calculator](https://dett.io/calculators/extra-payment): See years saved and interest avoided with extra payments
+- [Biweekly Payment Calculator](https://dett.io/calculators/biweekly): Biweekly vs monthly payment comparison
+- [Acceleration Planner](https://dett.io/calculators/acceleration): Compare prepaying vs investing the difference
+- [Amortization Schedule](https://dett.io/calculators/amortization): Month-by-month payment breakdown
+- [Rate Sensitivity Calculator](https://dett.io/calculators/interest-sensitivity): See how rate changes affect your payment
+- [Points & Buydown](https://dett.io/calculators/points-buydown): Compare buying points, lender credits, and temporary buydowns
+- [Decision Timeline](https://dett.io/calculators/timeline-simulator): Find the best loan option based on how long you'll stay
+- [Cash-Out Refinance](https://dett.io/calculators/cash-out-refi): Cost analysis for pulling cash from home equity
+- [Recast vs Refinance](https://dett.io/calculators/recast-vs-refi): Compare recasting ($250 fee) vs refinancing (closing costs)
+
+## Comparisons
+
+- [FHA vs Conventional](https://dett.io/compare/fha-vs-conventional): Side-by-side comparison of FHA and conventional loans
+- [ARM vs Fixed Rate](https://dett.io/compare/arm-vs-fixed): Adjustable-rate vs fixed-rate mortgage comparison
+- [15-Year vs 30-Year](https://dett.io/compare/15-vs-30-year): Compare mortgage term lengths
+- [Rent vs Buy](https://dett.io/compare/rent-vs-buy): The real math behind renting vs buying
+- [Recast vs Refinance](https://dett.io/compare/recast-vs-refinance): Two ways to lower your payment
+- [VA vs FHA vs Conventional](https://dett.io/compare/va-vs-fha-vs-conventional): Three loan types compared
+- [Biweekly vs Extra Payments](https://dett.io/compare/biweekly-vs-extra-payments): Two strategies to pay off faster
+
+## Guides
+
+- [Salary-based affordability guides](https://dett.io/guides): "Can I afford a house on a $40K-$200K salary?"
+- [Should I Refinance?](https://dett.io/guides/should-i-refinance): Framework for refinancing decisions
+- [Rent vs Buy Guide](https://dett.io/guides/rent-vs-buy-guide): Complete guide to the rent vs buy decision
+- [What Are Closing Costs?](https://dett.io/guides/what-are-closing-costs): Every closing cost fee explained
+- [How Much Is PMI?](https://dett.io/guides/how-much-is-pmi): PMI costs and elimination strategies
+- [True Monthly Payment](https://dett.io/guides/true-monthly-mortgage-payment): Why your real payment is higher than quoted
+
+## Glossary
+
+- [Mortgage Glossary](https://dett.io/learn): 50+ mortgage and debt terms defined
+- [What is PMI?](https://dett.io/learn/pmi): Private Mortgage Insurance explained — costs, cancellation, and how to avoid it
+- [What is DTI?](https://dett.io/learn/dti): Debt-to-Income Ratio explained — how lenders use it and what's a good DTI
+- [What is Amortization?](https://dett.io/learn/amortization): How mortgage amortization works — why early payments are mostly interest
+- [What are Closing Costs?](https://dett.io/learn/closing-costs): Every closing cost fee explained — typically 2-5% of purchase price
+- [What is APR?](https://dett.io/learn/apr): Annual Percentage Rate explained — why APR is higher than your interest rate
+- [What is LTV?](https://dett.io/learn/ltv): Loan-to-Value Ratio explained — why 80% LTV matters for PMI
+- [What is Escrow?](https://dett.io/learn/escrow): Escrow accounts explained — how taxes and insurance are collected monthly
+- [What is a Mortgage Recast?](https://dett.io/learn/mortgage-recast): Recasting explained — the $250 alternative to refinancing
+- [What is an FHA Loan?](https://dett.io/learn/fha-loan): FHA loans explained — 3.5% down, 580 credit score minimum
+- [What is a VA Loan?](https://dett.io/learn/va-loan): VA loans explained — zero down, no PMI for eligible veterans
+- [What is a Conventional Loan?](https://dett.io/learn/conventional-loan): Conventional loans explained — PMI cancellation at 80% LTV
+- [What are Mortgage Points?](https://dett.io/learn/mortgage-points): Discount points explained — pay upfront to lower your rate
+- [What is Home Equity?](https://dett.io/learn/equity): Home equity explained — how it builds and how to access it
+- [What is PITI?](https://dett.io/learn/piti): PITI explained — the four components of your real monthly payment
+- [What is Refinancing?](https://dett.io/learn/refinance): Mortgage refinance explained — when it makes sense and break-even analysis
+
+## About
+
+Dett.io is operated by Skramco Holdings LLC. The site is free to use, requires no account creation, and does not sell user data. All calculators run client-side with no data sent to servers. Dett.io is not a lender, broker, or financial advisor.

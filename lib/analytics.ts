@@ -6,6 +6,8 @@ export const GTM_ID = 'GTM-NCF9263G';
 export type AnalyticsEvent =
   | 'calculator_used'
   | 'calculator_result_emailed'
+  | 'calculator_link_shared'
+  | 'calculator_pdf_downloaded'
   | 'wizard_started'
   | 'wizard_completed'
   | 'guide_read'

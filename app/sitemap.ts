@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { guides } from '@/lib/guides/guideData';
 import { comparisons } from '@/lib/comparisons/comparisonData';
+import { definitions } from '@/lib/definitions/definitionData';
 
 const BASE_URL = 'https://dett.io';
 
@@ -96,5 +97,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   ];
 
-  return [...staticPages, ...calculatorPages, ...guidePages, ...comparePages];
+  const definitionPages: MetadataRoute.Sitemap = definitions.map((def) => ({
+    url: `${BASE_URL}/learn/${def.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...calculatorPages, ...guidePages, ...comparePages, ...definitionPages];
 }
