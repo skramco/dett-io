@@ -35,7 +35,7 @@ interface RelatedGuidesProps {
 }
 
 export function RelatedGuides({ calculatorSlug }: RelatedGuidesProps) {
-  const relatedGuides = getGuidesForCalculator(calculatorSlug);
+  const relatedGuides = getGuidesForCalculator(calculatorSlug).slice(0, 3);
   if (relatedGuides.length === 0) return null;
 
   return (
