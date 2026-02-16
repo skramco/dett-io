@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { guides } from '@/lib/guides/guideData';
+import { comparisons } from '@/lib/comparisons/comparisonData';
 
 const BASE_URL = 'https://dett.io';
 
@@ -80,5 +81,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...calculatorPages, ...guidePages];
+  const comparePages: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/compare`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    ...comparisons.map((comp) => ({
+      url: `${BASE_URL}/compare/${comp.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
+  ];
+
+  return [...staticPages, ...calculatorPages, ...guidePages, ...comparePages];
 }
