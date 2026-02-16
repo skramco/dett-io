@@ -49,12 +49,12 @@ export function Footer() {
             <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
               Calculators
             </Typography>
-            <Stack spacing={1.5}>
+            <Stack spacing={0}>
               {footerLinks.calculators.map((link) => (
                 <Link 
                   key={link.href} 
                   href={link.href}
-                  style={{ textDecoration: 'none' }}
+                  style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', minHeight: 44 }}
                 >
                   <Typography 
                     variant="body2" 
@@ -75,12 +75,12 @@ export function Footer() {
             <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
               Resources
             </Typography>
-            <Stack spacing={1.5}>
+            <Stack spacing={0}>
               {footerLinks.resources.map((link) => (
                 <Link 
                   key={link.href} 
                   href={link.href}
-                  style={{ textDecoration: 'none' }}
+                  style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', minHeight: 44 }}
                 >
                   <Typography 
                     variant="body2" 
@@ -101,12 +101,12 @@ export function Footer() {
             <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
               Legal
             </Typography>
-            <Stack spacing={1.5}>
+            <Stack spacing={0}>
               {footerLinks.legal.map((link) => (
                 <Link 
                   key={link.href} 
                   href={link.href}
-                  style={{ textDecoration: 'none' }}
+                  style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', minHeight: 44 }}
                 >
                   <Typography 
                     variant="body2" 

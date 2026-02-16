@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -54,12 +55,13 @@ export default function ArmVsFixedCalculator() {
     expectedIndexRate: 5,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   // Calculate results in real-time
   const result = useMemo(() => {
-    if (inputs.loanAmount <= 0) return null;
-    return calculateArmVsFixed(inputs);
-  }, [inputs]);
+    if (deferredInputs.loanAmount <= 0) return null;
+    return calculateArmVsFixed(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof ArmVsFixedInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));

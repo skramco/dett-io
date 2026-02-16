@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -56,11 +57,12 @@ export default function PMICalculator() {
     pmiType: 'borrower-paid',
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   const result = useMemo(() => {
-    if (inputs.homePrice <= 0) return null;
-    return calculatePMI(inputs);
-  }, [inputs]);
+    if (deferredInputs.homePrice <= 0) return null;
+    return calculatePMI(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof PMIInputs, value: number | string) => {
     setInputs(prev => ({ ...prev, [field]: value }));

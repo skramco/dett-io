@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { AttachMoney, AccountBalance, TrendingUp, Warning, CompareArrows } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
@@ -17,8 +18,9 @@ export default function CashOutRefiCalculator() {
     cashOutAmount: 50000, newRate: 6.75, newTerm: 30, closingCosts: 8000, alternativeRate: 10,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
-  const result = useMemo(() => inputs.currentBalance <= 0 ? null : calculateCashOutRefi(inputs), [inputs]);
+  const result = useMemo(() => deferredInputs.currentBalance <= 0 ? null : calculateCashOutRefi(deferredInputs), [deferredInputs]);
   const handleInputChange = (field: keyof CashOutRefinanceInputs, value: number) => setInputs(prev => ({ ...prev, [field]: value }));
 
   const scenarios = useMemo(() => (result?.chartData || []) as Array<{ scenario: string; payment: number; totalInterest: number }>, [result]);

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -60,11 +61,12 @@ export default function VACalculator() {
     monthlyDebts: 400,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   const result = useMemo(() => {
-    if (inputs.homePrice <= 0) return null;
-    return calculateVA(inputs);
-  }, [inputs]);
+    if (deferredInputs.homePrice <= 0) return null;
+    return calculateVA(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof VAInputs, value: number | string | boolean) => {
     setInputs(prev => ({ ...prev, [field]: value }));

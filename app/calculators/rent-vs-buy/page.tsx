@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -59,12 +60,13 @@ export default function RentVsBuyCalculator() {
     yearsToAnalyze: 10,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   // Calculate results in real-time
   const result = useMemo(() => {
-    if (inputs.homePrice <= 0) return null;
-    return calculateRentVsBuy(inputs);
-  }, [inputs]);
+    if (deferredInputs.homePrice <= 0) return null;
+    return calculateRentVsBuy(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof RentVsBuyInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));

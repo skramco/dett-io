@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -60,12 +61,13 @@ export default function MortgageCostCalculator() {
     pmi: 0,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   // Calculate results in real-time
   const result = useMemo(() => {
-    if (inputs.homePrice <= 0) return null;
-    return calculateMortgageCost(inputs);
-  }, [inputs]);
+    if (deferredInputs.homePrice <= 0) return null;
+    return calculateMortgageCost(deferredInputs);
+  }, [deferredInputs]);
 
   // Derived values
   const loanAmount = inputs.homePrice - inputs.downPayment;

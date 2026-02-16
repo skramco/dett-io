@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -57,11 +58,12 @@ export default function FHACalculator() {
     monthlyDebts: 500,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   const result = useMemo(() => {
-    if (inputs.homePrice <= 0) return null;
-    return calculateFHA(inputs);
-  }, [inputs]);
+    if (deferredInputs.homePrice <= 0) return null;
+    return calculateFHA(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof FHAInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));

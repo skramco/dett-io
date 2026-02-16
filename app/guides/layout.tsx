@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Mortgage Guides | Dett.io',
   description: 'Plain-English mortgage guides — salary-based affordability, refinancing decisions, closing costs, PMI, and more. Free, no signup required.',
+  alternates: {
+    canonical: 'https://dett.io/guides',
+  },
   openGraph: {
     title: 'Mortgage Guides | Dett.io',
     description: 'Plain-English mortgage guides — salary-based affordability, refinancing decisions, closing costs, PMI, and more.',

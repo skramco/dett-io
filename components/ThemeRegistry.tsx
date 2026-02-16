@@ -1,7 +1,7 @@
 'use client';
 
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 
 // SaaSable-inspired theme for Dett
 const theme = createTheme({
@@ -208,16 +208,6 @@ const theme = createTheme({
 });
 
 export function ThemeRegistry({ children }: { children: ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

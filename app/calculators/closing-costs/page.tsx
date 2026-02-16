@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -74,11 +75,12 @@ export default function ClosingCostCalculator() {
     prepaidInsurance: 1800,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   const result = useMemo(() => {
-    if (inputs.homePrice <= 0) return null;
-    return calculateClosingCosts(inputs);
-  }, [inputs]);
+    if (deferredInputs.homePrice <= 0) return null;
+    return calculateClosingCosts(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof ClosingCostInputs, value: number | string | boolean) => {
     setInputs(prev => ({ ...prev, [field]: value }));

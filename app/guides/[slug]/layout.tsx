@@ -11,6 +11,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${guide.title} | Dett.io`,
     description: guide.description,
+    alternates: {
+      canonical: `https://dett.io/guides/${slug}`,
+    },
     openGraph: {
       title: `${guide.title} | Dett.io`,
       description: guide.description,

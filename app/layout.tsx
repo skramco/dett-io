@@ -29,6 +29,9 @@ export const metadata: Metadata = {
     'how much house can I afford',
   ],
   metadataBase: new URL('https://dett.io'),
+  alternates: {
+    canonical: 'https://dett.io',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',

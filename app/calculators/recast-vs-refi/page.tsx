@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { Refresh, AccountBalance, Speed, CheckCircle, CompareArrows } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
@@ -17,8 +18,9 @@ export default function RecastVsRefiCalculator() {
     recastFee: 250, newRate: 6.0, newTerm: 30, closingCosts: 6000,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
-  const result = useMemo(() => inputs.currentBalance <= 0 ? null : calculateRecastVsRefi(inputs), [inputs]);
+  const result = useMemo(() => deferredInputs.currentBalance <= 0 ? null : calculateRecastVsRefi(deferredInputs), [deferredInputs]);
   const handleInputChange = (field: keyof RecastVsRefinanceInputs, value: number) => setInputs(prev => ({ ...prev, [field]: value }));
 
   const options = useMemo(() => (result?.chartData || []) as Array<{ option: string; payment: number; totalInterest: number }>, [result]);

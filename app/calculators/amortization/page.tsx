@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -60,10 +61,12 @@ export default function AmortizationCalculator() {
 
   const [viewMode, setViewMode] = useState<'yearly' | 'monthly'>('yearly');
 
+  const deferredInputs = useDeferredInputs(inputs);
+
   const result = useMemo(() => {
-    if (inputs.loanAmount <= 0) return null;
-    return calculateAmortization(inputs);
-  }, [inputs]);
+    if (deferredInputs.loanAmount <= 0) return null;
+    return calculateAmortization(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof AmortizationInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));

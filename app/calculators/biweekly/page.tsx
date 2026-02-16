@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -48,12 +49,13 @@ export default function BiweeklyCalculator() {
     biweeklyFee: 300,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   // Calculate results in real-time
   const result = useMemo(() => {
-    if (inputs.loanAmount <= 0) return null;
-    return calculateBiweekly(inputs);
-  }, [inputs]);
+    if (deferredInputs.loanAmount <= 0) return null;
+    return calculateBiweekly(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof BiweeklyInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));

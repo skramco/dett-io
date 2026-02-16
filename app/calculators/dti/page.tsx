@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -82,11 +83,12 @@ export default function DTICalculator() {
     otherDebts: 0,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   const result = useMemo(() => {
-    if (inputs.monthlyGrossIncome <= 0) return null;
-    return calculateDTI(inputs);
-  }, [inputs]);
+    if (deferredInputs.monthlyGrossIncome <= 0) return null;
+    return calculateDTI(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof DTIInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));

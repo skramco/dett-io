@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { Timeline, AccountBalance, TrendingUp, CheckCircle, Speed } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
@@ -17,8 +18,9 @@ export default function TimelineSimulatorCalculator() {
     armInitialRate: 5.75, armFixedPeriod: 5, pointsCost: 7200, pointsRate: 6.25,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
-  const result = useMemo(() => inputs.loanAmount <= 0 ? null : calculateTimelineSimulator(inputs), [inputs]);
+  const result = useMemo(() => deferredInputs.loanAmount <= 0 ? null : calculateTimelineSimulator(deferredInputs), [deferredInputs]);
   const handleInputChange = (field: keyof TimelineSimulatorInputs, value: number) => setInputs(prev => ({ ...prev, [field]: value }));
 
   const options = useMemo(() => (result?.chartData || []) as Array<{ option: string; monthlyPayment: number; totalPaid: number; remainingBalance: number }>, [result]);

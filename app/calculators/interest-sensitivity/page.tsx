@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -47,12 +48,13 @@ export default function InterestSensitivityCalculator() {
     homeInsuranceAnnual: 1800,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   // Calculate results in real-time
   const result = useMemo(() => {
-    if (inputs.loanAmount <= 0) return null;
-    return calculateInterestSensitivity(inputs);
-  }, [inputs]);
+    if (deferredInputs.loanAmount <= 0) return null;
+    return calculateInterestSensitivity(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof InterestSensitivityInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));

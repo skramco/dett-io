@@ -42,7 +42,8 @@ const inputStyles = {
   '& .MuiInputBase-input': {
     fontWeight: 500,
     fontSize: '1rem',
-    py: 1.5,
+    py: 1.75,
+    minHeight: '1.5em',
   },
   '& .MuiInputLabel-root': {
     fontWeight: 500,

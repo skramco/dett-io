@@ -29,7 +29,7 @@ const CalculatorWizard = dynamic(
   () => import('@/components/mui/calculator/CalculatorWizard').then((mod) => ({ default: mod.CalculatorWizard })),
   { ssr: false }
 );
-import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/JsonLd';
+import { OrganizationJsonLd, WebSiteJsonLd, FAQJsonLd } from '@/components/JsonLd';
 
 // SaaSable-inspired dotted background pattern
 const dottedBackground = {
@@ -42,6 +42,15 @@ export default function Home() {
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <OrganizationJsonLd />
       <WebSiteJsonLd />
+      <FAQJsonLd
+        questions={[
+          { question: 'How accurate are these mortgage calculators?', answer: 'Our calculators use the same amortization formulas that lenders use. Results are estimates based on the inputs you provide — actual rates, taxes, and insurance will vary by lender and location. Use our tools to get a realistic range before shopping for a loan.' },
+          { question: 'Do I need to create an account?', answer: 'No. Every calculator on Dett.io works instantly with zero signup. You can optionally email yourself a copy of your results, but it is never required.' },
+          { question: 'What is a good debt-to-income ratio for a mortgage?', answer: 'Most lenders prefer a total DTI below 43%, though FHA loans allow up to 50% in some cases. Use our DTI calculator to check where you stand before applying.' },
+          { question: 'How much house can I afford on my salary?', answer: 'A common guideline is 3 to 4.5 times your annual gross income, but the real answer depends on your debts, down payment, interest rate, and local property taxes. Our affordability calculator factors in all of these variables.' },
+          { question: 'Should I put 20% down on a house?', answer: 'Putting 20% down eliminates PMI, which saves hundreds per month. But it is not always the best strategy — our down payment calculator compares 5%, 10%, and 20% scenarios so you can see the tradeoffs.' },
+        ]}
+      />
       <Header />
       
       <Box component="main" sx={{ flex: 1 }}>
@@ -482,6 +491,68 @@ export default function Home() {
                 </Button>
               </Box>
             </Stack>
+          </Container>
+        </Box>
+
+        {/* About / SEO Content Section */}
+        <Box sx={{ py: { xs: 8, md: 12 } }}>
+          <Container maxWidth="lg">
+            <Grid container spacing={{ xs: 5, md: 8 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="h2" gutterBottom sx={{ fontSize: { xs: 28, md: 36 } }}>
+                  Why Free Mortgage Calculators Matter
+                </Typography>
+                <Stack spacing={2}>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8 }}>
+                    A mortgage is the largest financial commitment most people will ever make. The difference between a 6.5% and 7% interest rate on a $400,000 loan is over $40,000 in total interest — yet most borrowers never run the numbers before signing. Dett.io exists to change that.
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8 }}>
+                    Our free mortgage calculators help you understand the true cost of homeownership before you talk to a lender. Calculate your monthly mortgage payment with taxes, insurance, PMI, and HOA fees included. Check how much house you can afford based on your income and debts. Compare refinancing scenarios to see if switching loans actually saves money after closing costs.
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8 }}>
+                    Unlike most mortgage sites, we don't collect your information or sell leads. There are no email gates, no phone number forms, and no sales calls. Every calculator is completely free, works instantly in your browser, and gives you honest results you can trust.
+                  </Typography>
+                </Stack>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="h2" gutterBottom sx={{ fontSize: { xs: 28, md: 36 } }}>
+                  Frequently Asked Questions
+                </Typography>
+                <Stack spacing={3}>
+                  {[
+                    {
+                      q: 'How accurate are these mortgage calculators?',
+                      a: 'Our calculators use the same amortization formulas that lenders use. Results are estimates based on the inputs you provide — actual rates, taxes, and insurance will vary by lender and location. Use our tools to get a realistic range before shopping for a loan.',
+                    },
+                    {
+                      q: 'Do I need to create an account?',
+                      a: 'No. Every calculator on Dett.io works instantly with zero signup. You can optionally email yourself a copy of your results, but it is never required.',
+                    },
+                    {
+                      q: 'What is a good debt-to-income ratio for a mortgage?',
+                      a: 'Most lenders prefer a total DTI below 43%, though FHA loans allow up to 50% in some cases. Use our DTI calculator to check where you stand before applying.',
+                    },
+                    {
+                      q: 'How much house can I afford on my salary?',
+                      a: 'A common guideline is 3 to 4.5 times your annual gross income, but the real answer depends on your debts, down payment, interest rate, and local property taxes. Our affordability calculator factors in all of these variables.',
+                    },
+                    {
+                      q: 'Should I put 20% down on a house?',
+                      a: 'Putting 20% down eliminates PMI, which saves hundreds per month. But it is not always the best strategy — our down payment calculator compares 5%, 10%, and 20% scenarios so you can see the tradeoffs.',
+                    },
+                  ].map((faq, i) => (
+                    <Box key={i}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
+                        {faq.q}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.8 }}>
+                        {faq.a}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Stack>
+              </Grid>
+            </Grid>
           </Container>
         </Box>
 

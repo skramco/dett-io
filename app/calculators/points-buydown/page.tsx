@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { Percent, AttachMoney, Timeline, CheckCircle, AccountBalance } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
@@ -17,8 +18,9 @@ export default function PointsBuydownCalculator() {
     lenderCredit: 3600, lenderCreditRate: 7.0, buydownType: 'none', buydownCost: 0, yearsToHold: 7,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
-  const result = useMemo(() => inputs.loanAmount <= 0 ? null : calculatePointsBuydown(inputs), [inputs]);
+  const result = useMemo(() => deferredInputs.loanAmount <= 0 ? null : calculatePointsBuydown(deferredInputs), [deferredInputs]);
   const handleInputChange = (field: keyof PointsBuydownInputs, value: number | string) => setInputs(prev => ({ ...prev, [field]: value }));
 
   const options = useMemo(() => (result?.chartData || []) as Array<{ option: string; monthlyPayment: number; upfrontCost: number; totalCost: number }>, [result]);

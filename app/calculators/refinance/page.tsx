@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
   Grid,
@@ -52,12 +53,13 @@ export default function RefinanceCalculator() {
     closingCosts: 8000,
   });
   useUrlInputs(inputs, setInputs);
+  const deferredInputs = useDeferredInputs(inputs);
 
   // Calculate results in real-time
   const result = useMemo(() => {
-    if (inputs.currentBalance <= 0) return null;
-    return calculateRefinance(inputs);
-  }, [inputs]);
+    if (deferredInputs.currentBalance <= 0) return null;
+    return calculateRefinance(deferredInputs);
+  }, [deferredInputs]);
 
   const handleInputChange = (field: keyof RefinanceInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));
