@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
           { key: 'Content-Security-Policy', value: 'frame-ancestors *' },
           // Explicitly unset X-Frame-Options in case the hosting platform injects one
           { key: 'X-Frame-Options', value: '' },
+          // Allow cross-origin embedding (needed when embedder uses COEP: require-corp)
+          { key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' },
         ],
       },
     ];

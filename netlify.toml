@@ -14,3 +14,18 @@
   [headers.values]
     Content-Security-Policy = "frame-ancestors *"
     X-Frame-Options = ""
+    Cross-Origin-Resource-Policy = "cross-origin"
+
+# Allow embed.js to be loaded cross-origin
+[[headers]]
+  for = "/embed.js"
+  [headers.values]
+    Cross-Origin-Resource-Policy = "cross-origin"
+    Access-Control-Allow-Origin = "*"
+
+# Allow favicon to be loaded cross-origin (used in embed buttons)
+[[headers]]
+  for = "/dett_favicon.png"
+  [headers.values]
+    Cross-Origin-Resource-Policy = "cross-origin"
+    Access-Control-Allow-Origin = "*"
