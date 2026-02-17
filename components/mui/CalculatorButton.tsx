@@ -25,10 +25,10 @@ export function CalculatorButton({
         fontWeight: 600,
         fontSize: '1rem',
         ...(variant === 'primary' && {
-          background: 'linear-gradient(135deg, #006397 0%, #004B73 100%)',
+          background: 'linear-gradient(135deg, #196bc0 0%, #0F4F8F 100%)',
           '&:hover': {
-            background: 'linear-gradient(135deg, #004B73 0%, #003554 100%)',
-            boxShadow: '0 6px 20px rgba(0, 99, 151, 0.3)',
+            background: 'linear-gradient(135deg, #0F4F8F 0%, #0A3A6B 100%)',
+            boxShadow: '0 6px 20px rgba(25, 107, 192, 0.3)',
           },
         }),
       }}

@@ -37,7 +37,7 @@ export function HeroMetric({ label, value, sublabel, trend, trendLabel }: HeroMe
       elevation={0}
       sx={{
         p: 4,
-        background: 'linear-gradient(135deg, #006397 0%, #004B73 100%)',
+        background: 'linear-gradient(135deg, #196bc0 0%, #0F4F8F 100%)',
         color: 'white',
         borderRadius: 4,
         position: 'relative',
@@ -117,7 +117,7 @@ interface MetricCardProps {
 
 export function MetricCard({ label, value, sublabel, icon, color = 'primary' }: MetricCardProps) {
   const colorMap = {
-    primary: { bg: '#EBF5FF', border: '#006397', text: '#004B73' },
+    primary: { bg: '#EBF5FF', border: '#196bc0', text: '#0F4F8F' },
     secondary: { bg: '#F0FDF4', border: '#10B981', text: '#059669' },
     success: { bg: '#F0FDF4', border: '#22C55E', text: '#16A34A' },
     warning: { bg: '#FFFBEB', border: '#F59E0B', text: '#D97706' },
@@ -173,7 +173,7 @@ interface BreakdownRowProps {
   color?: string;
 }
 
-export function BreakdownRow({ label, value, percentage, color = '#006397' }: BreakdownRowProps) {
+export function BreakdownRow({ label, value, percentage, color = '#196bc0' }: BreakdownRowProps) {
   return (
     <Box sx={{ mb: 2 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
@@ -214,7 +214,7 @@ interface InsightCalloutProps {
 
 export function InsightCallout({ type, title, children }: InsightCalloutProps) {
   const config = {
-    info: { icon: <Info />, bg: '#EBF5FF', border: '#006397', color: '#004B73' },
+    info: { icon: <Info />, bg: '#EBF5FF', border: '#196bc0', color: '#0F4F8F' },
     success: { icon: <CheckCircle />, bg: '#F0FDF4', border: '#22C55E', color: '#16A34A' },
     warning: { icon: <Warning />, bg: '#FFFBEB', border: '#F59E0B', color: '#D97706' },
     tip: { icon: <Lightbulb />, bg: '#FDF4FF', border: '#A855F7', color: '#7C3AED' },

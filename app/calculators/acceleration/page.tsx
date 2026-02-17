@@ -246,7 +246,7 @@ export default function AccelerationCalculator() {
                   <Divider sx={{ my: 3 }} />
 
                   <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: '#006397' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: '#196bc0' }}>
                       You Save ${(result.details.interestSaved as number).toLocaleString()} + {result.details.yearsSaved} Years
                     </Typography>
                   </Box>
@@ -312,18 +312,18 @@ export default function AccelerationCalculator() {
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2, height: '100%' }}>
-                        <TrendingUp sx={{ fontSize: 32, color: '#006397', mb: 1 }} />
-                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#004B73' }}>
+                        <TrendingUp sx={{ fontSize: 32, color: '#196bc0', mb: 1 }} />
+                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0F4F8F' }}>
                           Invest Instead
                         </Typography>
-                        <Typography variant="h5" sx={{ fontWeight: 700, color: '#004B73', my: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
                           ${(result.details.investPortfolio as number).toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Potential portfolio at {inputs.investmentReturn}% return
                         </Typography>
                         <Divider sx={{ my: 2 }} />
-                        <Typography variant="body2" sx={{ color: '#004B73' }}>
+                        <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
                           ✓ Potentially higher returns<br />
                           ✓ Maintains liquidity<br />
                           ✓ Tax advantages (401k, IRA)

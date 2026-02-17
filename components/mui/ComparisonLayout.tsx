@@ -66,7 +66,7 @@ export default function ComparisonLayout({ data }: ComparisonLayoutProps) {
               width: 300,
               height: 300,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, rgba(0, 99, 151, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
+              background: 'linear-gradient(135deg, rgba(29, 107, 192, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
               filter: 'blur(60px)',
               pointerEvents: 'none',
             }}
@@ -81,7 +81,7 @@ export default function ComparisonLayout({ data }: ComparisonLayoutProps) {
                     color: 'text.secondary',
                     bgcolor: 'background.paper',
                     px: 2,
-                    '&:hover': { color: 'primary.main', bgcolor: 'background.paper', boxShadow: 1 },
+                    '&:hover': { color: '#196bc0', bgcolor: 'background.paper', boxShadow: 1 },
                   }}
                 >
                   All Comparisons
@@ -94,7 +94,7 @@ export default function ComparisonLayout({ data }: ComparisonLayoutProps) {
                 elevation={0}
                 sx={{
                   p: 2,
-                  bgcolor: 'primary.main',
+                  bgcolor: '#196bc0',
                   color: 'white',
                   borderRadius: 3,
                   display: { xs: 'none', sm: 'flex' },
@@ -151,7 +151,7 @@ export default function ComparisonLayout({ data }: ComparisonLayoutProps) {
               <TableHead>
                 <TableRow sx={{ bgcolor: 'grey.50' }}>
                   <TableCell sx={{ fontWeight: 700, width: '30%' }}>Feature</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: 'primary.main' }}>{data.optionAName}</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#196bc0' }}>{data.optionAName}</TableCell>
                   <TableCell sx={{ fontWeight: 700, color: 'secondary.dark' }}>{data.optionBName}</TableCell>
                 </TableRow>
               </TableHead>
@@ -175,7 +175,7 @@ export default function ComparisonLayout({ data }: ComparisonLayoutProps) {
             {/* Option A */}
             <Grid size={{ xs: 12, md: 6 }}>
               <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider', height: '100%' }}>
-                <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, color: 'primary.main' }}>
+                <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, color: '#196bc0' }}>
                   {data.optionAName}
                 </Typography>
                 <Typography variant="subtitle2" sx={{ color: 'success.dark', mb: 1.5, fontWeight: 700 }}>
@@ -247,12 +247,12 @@ export default function ComparisonLayout({ data }: ComparisonLayoutProps) {
                   p: 3,
                   borderRadius: 3,
                   border: '2px solid',
-                  borderColor: 'primary.light',
-                  bgcolor: 'rgba(0, 99, 151, 0.03)',
+                  borderColor: '#196bc0',
+                  bgcolor: 'rgba(29, 107, 192, 0.03)',
                   height: '100%',
                 }}
               >
-                <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: 'primary.main' }}>
+                <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: '#196bc0' }}>
                   Choose {data.optionAName} if...
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8 }}>
@@ -320,23 +320,23 @@ export default function ComparisonLayout({ data }: ComparisonLayoutProps) {
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       '&:hover': {
-                        borderColor: 'primary.main',
-                        boxShadow: '0 4px 16px rgba(0, 99, 151, 0.12)',
+                        borderColor: '#196bc0',
+                        boxShadow: '0 4px 16px rgba(29, 107, 192, 0.12)',
                         transform: 'translateY(-2px)',
                       },
                     }}
                   >
-                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#196bc0', mb: 1 }}>
                       {calc.name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                       {calc.why}
                     </Typography>
                     <Stack direction="row" alignItems="center" spacing={0.5}>
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#196bc0' }}>
                         Try it free
                       </Typography>
-                      <ArrowForward sx={{ fontSize: 16, color: 'primary.main' }} />
+                      <ArrowForward sx={{ fontSize: 16, color: '#196bc0' }} />
                     </Stack>
                   </Paper>
                 </Link>

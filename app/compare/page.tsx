@@ -58,7 +58,7 @@ export default function ComparePage() {
               width: 300,
               height: 300,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, rgba(0, 99, 151, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
+              background: 'linear-gradient(135deg, rgba(25, 107, 192, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
               filter: 'blur(60px)',
               pointerEvents: 'none',
             }}
@@ -69,7 +69,7 @@ export default function ComparePage() {
                 elevation={0}
                 sx={{
                   p: 2,
-                  bgcolor: 'primary.main',
+                  bgcolor: '#196bc0',
                   color: 'white',
                   borderRadius: 3,
                   display: { xs: 'none', sm: 'flex' },
@@ -123,8 +123,8 @@ export default function ComparePage() {
                       display: 'flex',
                       flexDirection: 'column',
                       '&:hover': {
-                        borderColor: 'primary.main',
-                        boxShadow: '0 8px 24px rgba(0, 99, 151, 0.12)',
+                        borderColor: '#196bc0',
+                        boxShadow: '0 8px 24px rgba(25, 107, 192, 0.12)',
                         transform: 'translateY(-2px)',
                       },
                     }}
@@ -133,7 +133,7 @@ export default function ComparePage() {
                       <Chip
                         label={comp.optionAName}
                         size="small"
-                        sx={{ bgcolor: 'primary.light', color: 'primary.dark', fontWeight: 600, fontSize: '0.7rem' }}
+                        sx={{ bgcolor: '#196bc0', color: 'white', fontWeight: 600, fontSize: '0.7rem' }}
                       />
                       <Typography variant="caption" color="text.disabled">vs</Typography>
                       <Chip
@@ -149,10 +149,10 @@ export default function ComparePage() {
                       {comp.subtitle}
                     </Typography>
                     <Stack direction="row" alignItems="center" spacing={0.5}>
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#196bc0' }}>
                         Read comparison
                       </Typography>
-                      <ArrowForward sx={{ fontSize: 16, color: 'primary.main' }} />
+                      <ArrowForward sx={{ fontSize: 16, color: '#196bc0' }} />
                     </Stack>
                   </Paper>
                 </Link>

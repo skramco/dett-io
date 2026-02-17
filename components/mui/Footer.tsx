@@ -14,6 +14,7 @@ const footerLinks = {
     { label: 'Mortgage Guides', href: '/guides' },
     { label: 'Loan Comparisons', href: '/compare' },
     { label: 'Learn About Debt', href: '/learn' },
+    { label: 'Embed Calculators', href: '/partners' },
   ],
   legal: [
     { label: 'Privacy Policy', href: '/privacy' },

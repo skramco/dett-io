@@ -252,11 +252,11 @@ export default function RentVsBuyCalculator() {
                   <Grid container spacing={3}>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2, textAlign: 'center', height: '100%' }}>
-                        <Apartment sx={{ fontSize: 40, color: '#006397', mb: 1 }} />
+                        <Apartment sx={{ fontSize: 40, color: '#196bc0', mb: 1 }} />
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                           RENTING
                         </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#004B73', my: 1 }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
                           ${inputs.monthlyRent.toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -316,14 +316,14 @@ export default function RentVsBuyCalculator() {
                     <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2 }}>
                       <Stack direction="row" justifyContent="space-between" alignItems="center">
                         <Box>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#004B73' }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#0F4F8F' }}>
                             Base Case ({inputs.homeAppreciation}% appreciation)
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
                             Break-even: Year {result.details.baseCrossover}
                           </Typography>
                         </Box>
-                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#004B73' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#0F4F8F' }}>
                           {buyingWins ? 'Buying Wins' : 'Renting Wins'}
                         </Typography>
                       </Stack>

@@ -272,11 +272,11 @@ export default function ExtraPaymentCalculator() {
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2, height: '100%' }}>
-                        <TrendingUp sx={{ fontSize: 32, color: '#006397', mb: 1 }} />
-                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#004B73' }}>
+                        <TrendingUp sx={{ fontSize: 32, color: '#196bc0', mb: 1 }} />
+                        <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0F4F8F' }}>
                           Invest Instead
                         </Typography>
-                        <Typography variant="h5" sx={{ fontWeight: 700, color: '#004B73', my: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
                           ${(result.details.investmentValue as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">

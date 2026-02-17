@@ -331,18 +331,18 @@ export default function BiweeklyCalculator() {
                 title="Free DIY Alternative" 
                 subtitle="Get the same benefit without paying service fees"
               >
-                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '2px solid', borderColor: '#006397', bgcolor: '#EBF5FF' }}>
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '2px solid', borderColor: '#196bc0', bgcolor: '#EBF5FF' }}>
                   <Stack direction="row" spacing={2} alignItems="flex-start">
-                    <Savings sx={{ fontSize: 40, color: '#006397' }} />
+                    <Savings sx={{ fontSize: 40, color: '#196bc0' }} />
                     <Box sx={{ flex: 1 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#004B73', mb: 1 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: '#0F4F8F', mb: 1 }}>
                         Just Add ${(result.details.extraMonthlyEquivalent as number).toLocaleString()} to Your Monthly Payment
                       </Typography>
-                      <Typography variant="body1" sx={{ color: '#004B73', mb: 2 }}>
+                      <Typography variant="body1" sx={{ color: '#0F4F8F', mb: 2 }}>
                         The "magic" of biweekly payments is simple: you make 26 half-payments per year, 
                         which equals 13 full payments instead of 12. That's one extra payment per year.
                       </Typography>
-                      <Typography variant="body1" sx={{ color: '#004B73' }}>
+                      <Typography variant="body1" sx={{ color: '#0F4F8F' }}>
                         <strong>DIY Method:</strong> Add ${(result.details.extraMonthlyEquivalent as number).toLocaleString()} 
                         (1/12 of your payment) to each monthly payment. Same result, zero fees!
                       </Typography>
@@ -363,7 +363,7 @@ export default function BiweeklyCalculator() {
                     <Grid size={{ xs: 6 }}>
                       <Box sx={{ p: 2, bgcolor: '#FFFFFF', borderRadius: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="text.secondary">New Payment (DIY)</Typography>
-                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#006397' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#196bc0' }}>
                           ${((result.details.monthlyPayment as number) + (result.details.extraMonthlyEquivalent as number)).toLocaleString()}
                         </Typography>
                       </Box>

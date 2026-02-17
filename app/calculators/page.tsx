@@ -128,7 +128,7 @@ const calculatorDetails = {
 };
 
 const categoryColors: Record<string, { bg: string; fg: string }> = {
-  'Buying a Home': { bg: '#EBF5FF', fg: '#006397' },
+  'Buying a Home': { bg: '#EBF5FF', fg: '#196bc0' },
   'Current Homeowners': { bg: '#FFF7ED', fg: '#C2410C' },
   'Rate & Structure': { bg: '#F0FDF4', fg: '#15803D' },
   'Payoff Strategy': { bg: '#FAF5FF', fg: '#7E22CE' },

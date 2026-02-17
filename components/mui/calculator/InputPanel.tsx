@@ -30,13 +30,13 @@ const inputStyles = {
       borderColor: '#D1D5DB', // Stronger default border
     },
     '&:hover fieldset': {
-      borderColor: '#006397',
+      borderColor: '#196bc0',
       borderWidth: 2,
     },
     '&.Mui-focused fieldset': {
       borderWidth: 2,
-      borderColor: '#006397',
-      boxShadow: '0 0 0 3px rgba(0, 99, 151, 0.12)',
+      borderColor: '#196bc0',
+      boxShadow: '0 0 0 3px rgba(25, 107, 192, 0.12)',
     },
   },
   '& .MuiInputBase-input': {
@@ -48,7 +48,7 @@ const inputStyles = {
   '& .MuiInputLabel-root': {
     fontWeight: 500,
     '&.Mui-focused': {
-      color: '#006397',
+      color: '#196bc0',
     },
   },
 };
@@ -65,7 +65,7 @@ interface InputSectionProps {
 
 export function InputSection({ title, icon, children, color = 'primary' }: InputSectionProps) {
   const colorMap = {
-    primary: { bg: '#EBF5FF', iconColor: '#006397', border: '#006397' },
+    primary: { bg: '#EBF5FF', iconColor: '#196bc0', border: '#196bc0' },
     secondary: { bg: '#D1FAE5', iconColor: '#059669', border: '#10B981' },
   };
   const colors = colorMap[color];
@@ -309,7 +309,7 @@ interface SelectInputProps {
 export function SelectInput({ label, value, onChange, options, helperText }: SelectInputProps) {
   return (
     <FormControl fullWidth>
-      <InputLabel sx={{ fontWeight: 500, '&.Mui-focused': { color: '#006397' } }}>{label}</InputLabel>
+      <InputLabel sx={{ fontWeight: 500, '&.Mui-focused': { color: '#196bc0' } }}>{label}</InputLabel>
       <Select
         value={value}
         label={label}
@@ -326,13 +326,13 @@ export function SelectInput({ label, value, onChange, options, helperText }: Sel
             borderColor: '#D1D5DB',
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#006397',
+            borderColor: '#196bc0',
             borderWidth: 2,
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
             borderWidth: 2,
-            borderColor: '#006397',
-            boxShadow: '0 0 0 3px rgba(0, 99, 151, 0.12)',
+            borderColor: '#196bc0',
+            boxShadow: '0 0 0 3px rgba(25, 107, 192, 0.12)',
           },
         }}
       >
@@ -368,12 +368,12 @@ export function CheckboxInput({ label, checked, onChange, helperText }: Checkbox
         p: 2,
         bgcolor: checked ? '#EBF5FF' : '#FFFFFF',
         border: '2px solid',
-        borderColor: checked ? '#006397' : '#D1D5DB',
+        borderColor: checked ? '#196bc0' : '#D1D5DB',
         borderRadius: 1.5,
         cursor: 'pointer',
         transition: 'all 0.15s ease',
         '&:hover': {
-          borderColor: '#006397',
+          borderColor: '#196bc0',
         },
       }}
       onClick={() => onChange(!checked)}
@@ -385,7 +385,7 @@ export function CheckboxInput({ label, checked, onChange, helperText }: Checkbox
             onChange={(e) => onChange(e.target.checked)}
             sx={{
               color: '#6B7280',
-              '&.Mui-checked': { color: '#006397' },
+              '&.Mui-checked': { color: '#196bc0' },
               '& .MuiSvgIcon-root': { fontSize: 24 },
             }}
           />
@@ -438,7 +438,7 @@ export function SliderInput({
         border: '2px solid #D1D5DB',
         borderRadius: 1.5,
         '&:hover': {
-          borderColor: '#006397',
+          borderColor: '#196bc0',
         },
       }}
     >
@@ -451,7 +451,7 @@ export function SliderInput({
           size="small"
           sx={{ 
             fontWeight: 700,
-            bgcolor: '#006397',
+            bgcolor: '#196bc0',
             color: '#FFFFFF',
             borderRadius: 1,
           }}
@@ -467,14 +467,14 @@ export function SliderInput({
         valueLabelDisplay="auto"
         valueLabelFormat={valueLabelFormat}
         sx={{
-          color: '#006397',
+          color: '#196bc0',
           '& .MuiSlider-thumb': {
             width: 24,
             height: 24,
             bgcolor: '#FFFFFF',
-            border: '3px solid #006397',
+            border: '3px solid #196bc0',
             '&:hover, &.Mui-focusVisible': {
-              boxShadow: '0 0 0 8px rgba(0, 99, 151, 0.16)',
+              boxShadow: '0 0 0 8px rgba(25, 107, 192, 0.16)',
             },
           },
           '& .MuiSlider-track': {

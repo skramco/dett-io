@@ -23,12 +23,12 @@ import {
 
 // Premium color palette
 const CHART_COLORS = {
-  primary: '#006397',
+  primary: '#196bc0',
   secondary: '#10B981',
   tertiary: '#8B5CF6',
   quaternary: '#F59E0B',
   quinary: '#EF4444',
-  gradient: ['#006397', '#0891B2', '#10B981', '#84CC16', '#F59E0B'],
+  gradient: ['#196bc0', '#0891B2', '#10B981', '#84CC16', '#F59E0B'],
 };
 
 // Loading placeholder

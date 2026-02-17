@@ -30,7 +30,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 const categoryColors: Record<string, { bg: string; fg: string }> = {
-  salary: { bg: '#EBF5FF', fg: '#006397' },
+  salary: { bg: '#EBF5FF', fg: '#196bc0' },
   decision: { bg: '#F0FDF4', fg: '#15803D' },
   cost: { bg: '#FFF7ED', fg: '#C2410C' },
 };

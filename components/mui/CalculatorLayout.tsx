@@ -10,8 +10,9 @@ import {
   Button,
   Paper,
   Chip,
+  Stack,
 } from '@mui/material';
-import { ArrowBack, Calculate } from '@mui/icons-material';
+import { ArrowBack, Calculate, OpenInNew } from '@mui/icons-material';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { RelatedCalculators } from './calculator/RelatedCalculators';
@@ -20,6 +21,7 @@ import { LoanKnowCTA } from './calculator/LoanKnowCTA';
 import { ActionBar } from './calculator/ActionBar';
 import { ShowMeTheMath } from './calculator/ShowMeTheMath';
 import { CalculatorJsonLd } from '@/components/JsonLd';
+import { useIsEmbed } from '@/lib/embedContext';
 
 interface RelatedCalculator {
   slug: string;
@@ -50,14 +52,156 @@ const dottedBackground = {
 
 export default function CalculatorLayout({ children, title, description, relatedCalculators, actionBarData, calculatorSlug }: CalculatorLayoutProps) {
   const hasTracked = useRef(false);
+  const isEmbed = useIsEmbed();
 
   useEffect(() => {
     if (actionBarData?.summary && calculatorSlug && !hasTracked.current) {
       hasTracked.current = true;
-      trackEvent('calculator_used', { calculator_slug: calculatorSlug });
+      trackEvent(isEmbed ? 'embed_calculator_used' : 'calculator_used', {
+        calculator_slug: calculatorSlug,
+        ...(isEmbed && { referrer: typeof window !== 'undefined' ? document.referrer : '' }),
+      });
     }
-  }, [actionBarData?.summary, calculatorSlug]);
+  }, [actionBarData?.summary, calculatorSlug, isEmbed]);
 
+  // ── Embed mode: stripped-down layout with branding bar ──
+  if (isEmbed) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
+        {/* Embed header with title + description */}
+        <Box
+          sx={{
+            px: { xs: 2, md: 3 },
+            py: { xs: 2, md: 2.5 },
+            bgcolor: 'grey.50',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
+            <Stack direction="row" alignItems="flex-start" spacing={1.5} sx={{ flex: 1, minWidth: 0 }}>
+              <Calculate sx={{ fontSize: 28, color: '#196bc0', mt: 0.3, flexShrink: 0 }} />
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '1rem', md: '1.15rem' }, lineHeight: 1.3 }}>
+                  {title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: '0.8rem', lineHeight: 1.4, display: { xs: 'none', sm: '-webkit-box' }, WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {description}
+                </Typography>
+              </Box>
+            </Stack>
+            <Chip
+              label="Powered by Dett.io"
+              size="small"
+              component="a"
+              href={`https://dett.io/calculators/${calculatorSlug}`}
+              target="_blank"
+              rel="noopener"
+              clickable
+              icon={<OpenInNew sx={{ fontSize: '14px !important' }} />}
+              sx={{
+                fontWeight: 600,
+                fontSize: '0.7rem',
+                bgcolor: '#196bc0',
+                color: 'white',
+                flexShrink: 0,
+                mt: 0.3,
+                '& .MuiChip-icon': { color: 'white' },
+                '&:hover': { bgcolor: '#1a4f8f' },
+              }}
+            />
+          </Stack>
+        </Box>
+
+        {/* Calculator content */}
+        <Box component="main" sx={{ flex: 1 }}>
+          <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
+            <Box
+              sx={{
+                '& .MuiPaper-root': {
+                  borderRadius: 3,
+                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                },
+                '& input, & select': { borderRadius: 2 },
+                '& .calculator-inputs': {
+                  maxHeight: { xs: 'none', lg: 'calc(100vh - 200px)' },
+                  overflowY: { xs: 'visible', lg: 'auto' },
+                  overflowX: 'hidden',
+                  position: { xs: 'relative', lg: 'sticky' },
+                  top: { lg: 60 },
+                  pr: { lg: 2 },
+                  '&::-webkit-scrollbar': { width: '6px' },
+                  '&::-webkit-scrollbar-track': { background: '#f1f1f1', borderRadius: '4px' },
+                  '&::-webkit-scrollbar-thumb': { background: '#888', borderRadius: '4px' },
+                },
+              }}
+            >
+              <Box data-pdf-capture>{children}</Box>
+            </Box>
+          </Container>
+
+          {/* Show Me the Math */}
+          {calculatorSlug && actionBarData && actionBarData.details && (
+            <Container maxWidth="lg" sx={{ pb: 2 }}>
+              <ShowMeTheMath calculatorSlug={calculatorSlug} details={actionBarData.details} />
+            </Container>
+          )}
+
+          {/* Action Bar (email, share, PDF) */}
+          {actionBarData && actionBarData.summary && (
+            <Container maxWidth="lg" sx={{ pb: 2 }}>
+              <ActionBar
+                calculatorName={title}
+                summary={actionBarData.summary}
+                details={actionBarData.details}
+                insights={actionBarData.insights}
+                inputs={actionBarData.inputs}
+              />
+            </Container>
+          )}
+        </Box>
+
+        {/* Embed footer branding */}
+        <Box
+          sx={{
+            px: { xs: 2, md: 3 },
+            py: 1.5,
+            bgcolor: 'grey.900',
+            borderTop: '1px solid',
+            borderColor: 'grey.800',
+          }}
+        >
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography variant="caption" sx={{ color: 'grey.500' }}>
+              Free calculator — estimates only, not financial advice
+            </Typography>
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <Typography
+                variant="caption"
+                component="a"
+                href="https://dett.io/calculators"
+                target="_blank"
+                rel="noopener"
+                sx={{
+                  color: 'grey.400',
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                  '&:hover': { color: 'white' },
+                }}
+              >
+                More calculators at dett.io
+              </Typography>
+              <OpenInNew sx={{ fontSize: 12, color: 'grey.500' }} />
+            </Stack>
+          </Stack>
+        </Box>
+      </Box>
+    );
+  }
+
+  // ── Standard (non-embed) layout ──
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {calculatorSlug && (
@@ -88,7 +232,7 @@ export default function CalculatorLayout({ children, title, description, related
               width: 300,
               height: 300,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, rgba(0, 99, 151, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
+              background: 'linear-gradient(135deg, rgba(25, 107, 192, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
               filter: 'blur(60px)',
               pointerEvents: 'none',
             }}
@@ -101,7 +245,7 @@ export default function CalculatorLayout({ children, title, description, related
               width: 250,
               height: 250,
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(0, 99, 151, 0.08) 100%)',
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(25, 107, 192, 0.08) 100%)',
               filter: 'blur(50px)',
               pointerEvents: 'none',
             }}
@@ -119,7 +263,7 @@ export default function CalculatorLayout({ children, title, description, related
                     bgcolor: 'background.paper',
                     px: 2,
                     '&:hover': {
-                      color: 'primary.main',
+                      color: '#196bc0',
                       bgcolor: 'background.paper',
                       boxShadow: 1,
                     },
@@ -136,7 +280,7 @@ export default function CalculatorLayout({ children, title, description, related
                 elevation={0}
                 sx={{
                   p: 2,
-                  bgcolor: 'primary.main',
+                  bgcolor: '#196bc0',
                   color: 'white',
                   borderRadius: 3,
                   display: { xs: 'none', sm: 'flex' },

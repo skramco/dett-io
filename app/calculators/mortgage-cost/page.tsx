@@ -284,7 +284,7 @@ export default function MortgageCostCalculator() {
                 '&:hover': {
                   bgcolor: 'primary.dark',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 12px rgba(0, 99, 151, 0.3)',
+                  boxShadow: '0 4px 12px rgba(25, 107, 192, 0.3)',
                 },
               }}
               onClick={() => {
@@ -530,7 +530,7 @@ export default function MortgageCostCalculator() {
                       </Box>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
-                      <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#FEF3C7', borderRadius: 2 }}>
+                      <Box sx={{ textAlign: 'center', p: 3, bgcolor: '#F9FAFB', borderRadius: 2 }}>
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                           TOTAL INTEREST PAID
                         </Typography>

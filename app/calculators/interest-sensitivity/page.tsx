@@ -193,7 +193,7 @@ export default function InterestSensitivityCalculator() {
                             borderRadius: 2,
                             bgcolor: isBase ? '#EBF5FF' : isLower ? '#D1FAE5' : '#FEF3C7',
                             border: isBase ? '2px solid' : '1px solid',
-                            borderColor: isBase ? '#006397' : 'transparent',
+                            borderColor: isBase ? '#196bc0' : 'transparent',
                           }}
                         >
                           <Grid container spacing={2} alignItems="center">
@@ -209,7 +209,7 @@ export default function InterestSensitivityCalculator() {
                                 </Typography>
                               </Stack>
                               {isBase && (
-                                <Typography variant="caption" sx={{ color: '#006397', fontWeight: 600 }}>
+                                <Typography variant="caption" sx={{ color: '#196bc0', fontWeight: 600 }}>
                                   BASE RATE
                                 </Typography>
                               )}
@@ -297,7 +297,7 @@ export default function InterestSensitivityCalculator() {
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                           CURRENT RATE
                         </Typography>
-                        <Typography variant="h5" sx={{ fontWeight: 700, color: '#004B73', my: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
                           ${(result.details.basePayment as number).toLocaleString()}/mo
                         </Typography>
                         <Typography variant="body2" color="text.secondary">

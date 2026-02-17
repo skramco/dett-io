@@ -100,8 +100,8 @@ export default function RecastVsRefiCalculator() {
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
                       <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2, height: '100%' }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#004B73', mb: 1 }}>Refinance</Typography>
-                        <Typography variant="body2" sx={{ color: '#004B73' }}>✓ New rate ({inputs.newRate}%)<br />✓ Reset term<br />✓ Higher costs (${inputs.closingCosts})<br />✓ More paperwork</Typography>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F4F8F', mb: 1 }}>Refinance</Typography>
+                        <Typography variant="body2" sx={{ color: '#0F4F8F' }}>✓ New rate ({inputs.newRate}%)<br />✓ Reset term<br />✓ Higher costs (${inputs.closingCosts})<br />✓ More paperwork</Typography>
                       </Box>
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>

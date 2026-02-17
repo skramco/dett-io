@@ -219,18 +219,18 @@ export default function ArmVsFixedCalculator() {
                   <Grid container spacing={3}>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2, textAlign: 'center', height: '100%' }}>
-                        <Lock sx={{ fontSize: 40, color: '#006397', mb: 1 }} />
+                        <Lock sx={{ fontSize: 40, color: '#196bc0', mb: 1 }} />
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                           FIXED RATE
                         </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#004B73', my: 1 }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
                           ${(result.details.fixedPayment as number).toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {inputs.fixedRate}% for entire {inputs.loanTerm} years
                         </Typography>
                         <Divider sx={{ my: 2 }} />
-                        <Typography variant="body2" sx={{ color: '#004B73' }}>
+                        <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
                           ✓ Predictable payments<br />
                           ✓ No rate risk<br />
                           ✓ Peace of mind
@@ -355,10 +355,10 @@ export default function ArmVsFixedCalculator() {
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Box sx={{ p: 2, bgcolor: '#EBF5FF', borderRadius: 2 }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#004B73', mb: 1 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F4F8F', mb: 1 }}>
                           ✓ Fixed may be better if:
                         </Typography>
-                        <Typography variant="body2" sx={{ color: '#004B73' }}>
+                        <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
                           • You plan to stay long-term<br />
                           • You value payment predictability<br />
                           • Rates are historically low<br />

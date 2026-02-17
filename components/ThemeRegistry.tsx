@@ -17,9 +17,9 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      light: '#92CCFF',
-      main: '#006397',
-      dark: '#004B73',
+      light: '#6BA3DB',
+      main: '#196bc0',
+      dark: '#0F4F8F',
       contrastText: '#ffffff',
     },
     secondary: {
@@ -140,14 +140,14 @@ const theme = createTheme({
         contained: {
           boxShadow: 'none',
           '&:hover': {
-            boxShadow: '0 4px 12px rgba(0, 99, 151, 0.25)',
+            boxShadow: '0 4px 12px rgba(25, 107, 192, 0.25)',
           },
         },
         outlined: {
           borderWidth: 1.5,
           '&:hover': {
             borderWidth: 1.5,
-            backgroundColor: 'rgba(0, 99, 151, 0.04)',
+            backgroundColor: 'rgba(25, 107, 192, 0.04)',
           },
         },
         sizeLarge: {

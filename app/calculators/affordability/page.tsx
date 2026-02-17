@@ -261,27 +261,27 @@ export default function AffordabilityCalculator() {
                       p: 3, 
                       borderRadius: 3, 
                       border: '2px solid',
-                      borderColor: '#006397',
+                      borderColor: '#196bc0',
                       bgcolor: '#EBF5FF',
                     }}
                   >
                     <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
                       <Box>
                         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                          <TrendingUp sx={{ color: '#006397', fontSize: 20 }} />
-                          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#004B73' }}>
+                          <TrendingUp sx={{ color: '#196bc0', fontSize: 20 }} />
+                          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0F4F8F' }}>
                             Moderate (36% DTI) — Recommended
                           </Typography>
                         </Stack>
-                        <Typography variant="body2" sx={{ color: '#004B73' }}>
+                        <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
                           Balanced approach - most common choice for stable income
                         </Typography>
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#004B73' }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F4F8F' }}>
                           ${(result.details.moderatePrice as number).toLocaleString()}
                         </Typography>
-                        <Typography variant="body2" sx={{ color: '#004B73' }}>
+                        <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
                           ${(result.details.moderatePayment as number).toLocaleString()}/month
                         </Typography>
                       </Box>
@@ -361,7 +361,7 @@ export default function AffordabilityCalculator() {
                     label="Moderate"
                     value={monthlyIncome - (result.details.moderatePayment as number)}
                     maxValue={monthlyIncome}
-                    color="#006397"
+                    color="#196bc0"
                     formatValue={(v) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })} left`}
                   />
                   <HorizontalBar
