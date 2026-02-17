@@ -81,20 +81,38 @@
     var modal = document.createElement('div');
     modal.id = MODAL_ID;
     modal.style.cssText =
-      'position:relative;width:92%;max-width:1200px;height:82vh;' +
+      'position:relative;display:flex;flex-direction:column;width:92%;max-width:1200px;height:82vh;' +
       'background:#fff;border-radius:8px;overflow:hidden;' +
       'box-shadow:0 25px 60px rgba(0,0,0,0.3);' +
       'transform:scale(0.95);transition:transform 0.25s ease;';
+
+    // Header bar with branding + close button
+    var header = document.createElement('div');
+    header.style.cssText =
+      'display:flex;align-items:center;justify-content:space-between;' +
+      'padding:8px 12px;background:#f9fafb;border-bottom:1px solid #e5e7eb;flex-shrink:0;';
+
+    // Powered by badge
+    var badge = document.createElement('a');
+    badge.href = DETT_BASE;
+    badge.target = '_blank';
+    badge.rel = 'noopener noreferrer';
+    badge.textContent = 'Powered by Dett.io';
+    badge.style.cssText =
+      'display:inline-flex;align-items:center;gap:6px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;' +
+      'font-size:12px;color:#6b7280;text-decoration:none;padding:4px 10px;' +
+      'border:1px solid #e5e7eb;border-radius:20px;background:#fff;transition:color 0.2s;';
+    badge.addEventListener('mouseenter', function () { badge.style.color = '#196bc0'; });
+    badge.addEventListener('mouseleave', function () { badge.style.color = '#6b7280'; });
 
     // Close button
     var closeBtn = document.createElement('button');
     closeBtn.innerHTML = '&times;';
     closeBtn.style.cssText =
-      'position:absolute;top:12px;right:16px;z-index:10;' +
       'background:rgba(0,0,0,0.08);border:none;border-radius:50%;' +
-      'width:36px;height:36px;font-size:22px;line-height:1;' +
+      'width:32px;height:32px;font-size:20px;line-height:1;' +
       'cursor:pointer;color:#333;display:flex;align-items:center;justify-content:center;' +
-      'transition:background 0.2s;';
+      'transition:background 0.2s;flex-shrink:0;';
     closeBtn.addEventListener('mouseenter', function () {
       closeBtn.style.background = 'rgba(0,0,0,0.15)';
     });
@@ -102,14 +120,17 @@
       closeBtn.style.background = 'rgba(0,0,0,0.08)';
     });
 
+    header.appendChild(badge);
+    header.appendChild(closeBtn);
+
     // Iframe
     var iframe = document.createElement('iframe');
     iframe.src = DETT_BASE + '/embed/' + slug;
-    iframe.style.cssText = 'width:100%;height:100%;border:none;';
+    iframe.style.cssText = 'width:100%;flex:1;border:none;';
     iframe.setAttribute('title', 'Dett.io Calculator');
     iframe.setAttribute('loading', 'lazy');
 
-    modal.appendChild(closeBtn);
+    modal.appendChild(header);
     modal.appendChild(iframe);
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
