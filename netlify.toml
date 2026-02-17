@@ -7,3 +7,10 @@
 
 [build.environment]
   NODE_VERSION = "20"
+
+# Allow /embed/* routes to be iframed on any domain
+[[headers]]
+  for = "/embed/*"
+  [headers.values]
+    Content-Security-Policy = "frame-ancestors *"
+    X-Frame-Options = ""

@@ -14,8 +14,11 @@ const nextConfig: NextConfig = {
         // Allow /embed routes to be iframed on any domain
         source: '/embed/:path*',
         headers: [
-          { key: 'X-Frame-Options', value: 'ALLOWALL' },
+          // Remove X-Frame-Options entirely — ALLOWALL is non-standard and
+          // browsers only recognize DENY/SAMEORIGIN. Use CSP frame-ancestors instead.
           { key: 'Content-Security-Policy', value: 'frame-ancestors *' },
+          // Explicitly unset X-Frame-Options in case the hosting platform injects one
+          { key: 'X-Frame-Options', value: '' },
         ],
       },
     ];
