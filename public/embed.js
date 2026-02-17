@@ -8,8 +8,9 @@
   // Find all embed triggers
   function init() {
     // Script tag with data-calculator attribute (auto-render button)
-    var scripts = document.querySelectorAll('script[data-calculator]');
+    var scripts = document.querySelectorAll('script[data-calculator]:not([data-dett-init])');
     scripts.forEach(function (script) {
+      script.setAttribute('data-dett-init', '1');
       var slug = script.getAttribute('data-calculator');
       var label = script.getAttribute('data-label') || 'Calculate';
       var color = script.getAttribute('data-color') || '#196bc0';
@@ -54,8 +55,9 @@
     });
 
     // Anchor/button elements with class="dett-embed"
-    var triggers = document.querySelectorAll('.dett-embed[data-calculator]');
+    var triggers = document.querySelectorAll('.dett-embed[data-calculator]:not([data-dett-init])');
     triggers.forEach(function (el) {
+      el.setAttribute('data-dett-init', '1');
       el.addEventListener('click', function (e) {
         e.preventDefault();
         var slug = el.getAttribute('data-calculator');
