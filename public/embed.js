@@ -5,6 +5,19 @@
   var MODAL_ID = 'dett-embed-modal';
   var OVERLAY_ID = 'dett-embed-overlay';
 
+  // Compute relative luminance to pick contrasting text color
+  function isLightColor(hex) {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    var r = parseInt(hex.substr(0, 2), 16) / 255;
+    var g = parseInt(hex.substr(2, 2), 16) / 255;
+    var b = parseInt(hex.substr(4, 2), 16) / 255;
+    r = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+    g = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+    b = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 0.4;
+  }
+
   // Find all embed triggers
   function init() {
     // Script tag with data-calculator attribute (auto-render button)
@@ -20,23 +33,25 @@
 
       // Create button next to the script tag
       var btn = document.createElement('button');
-      btn.textContent = label;
       btn.className = 'dett-embed-btn';
       btn.setAttribute('data-calculator', slug);
       btn.style.cssText =
-        'display:inline-flex;align-items:center;gap:8px;padding:12px 24px;' +
+        'display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:12px 24px;' +
         'background:' + color + ';color:' + textColor + ';border:none;border-radius:8px;' +
         'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;' +
         'font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;' +
         'box-shadow:0 2px 8px rgba(0,0,0,0.15);';
 
-      // Add Dett favicon logo
-      var icon = document.createElement('img');
-      icon.src = DETT_BASE + '/dett_favicon.png';
-      icon.alt = 'D';
-      icon.style.cssText =
-        'width:22px;height:22px;border-radius:4px;object-fit:contain;flex-shrink:0;';
-      btn.insertBefore(icon, btn.firstChild);
+      var labelSpan = document.createElement('span');
+      labelSpan.textContent = label;
+      btn.appendChild(labelSpan);
+
+      var poweredByColor = isLightColor(color) ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)';
+      var poweredBy = document.createElement('span');
+      poweredBy.textContent = 'powered by dett.io';
+      poweredBy.style.cssText =
+        'font-size:9px;font-weight:400;letter-spacing:0.3px;color:' + poweredByColor + ';';
+      btn.appendChild(poweredBy);
 
       btn.addEventListener('mouseenter', function () {
         btn.style.transform = 'translateY(-2px)';

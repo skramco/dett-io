@@ -317,8 +317,9 @@ export default function PartnersPage() {
                     <button
                       style={{
                         display: 'inline-flex',
+                        flexDirection: 'column',
                         alignItems: 'center',
-                        gap: 8,
+                        gap: 2,
                         padding: '12px 24px',
                         background: buttonColor,
                         color: textColor,
@@ -332,18 +333,23 @@ export default function PartnersPage() {
                       }}
                       onClick={() => setPreviewOpen(true)}
                     >
-                      <img
-                        src="/dett_favicon.png"
-                        alt="D"
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: 4,
-                          objectFit: 'contain',
-                          flexShrink: 0,
-                        }}
-                      />
-                      {buttonLabel}
+                      <span>{buttonLabel}</span>
+                      <span style={{
+                        fontSize: 9,
+                        fontWeight: 400,
+                        letterSpacing: 0.3,
+                        color: (() => {
+                          const hex = buttonColor.replace('#', '');
+                          const r = parseInt(hex.substr(0, 2), 16) / 255;
+                          const g = parseInt(hex.substr(2, 2), 16) / 255;
+                          const b = parseInt(hex.substr(4, 2), 16) / 255;
+                          const lr = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+                          const lg = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+                          const lb = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+                          const luminance = 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
+                          return luminance > 0.4 ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)';
+                        })(),
+                      }}>powered by dett.io</span>
                     </button>
                     <Typography variant="caption" color="text.disabled" sx={{ mt: 1.5 }}>
                       Click to preview modal
