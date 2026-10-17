@@ -46,7 +46,8 @@ export default function RefinanceCalculator() {
   const [inputs, setInputs] = useState<RefinanceInputs>({
     currentBalance: 320000,
     currentRate: 7.5,
-    currentMonthlyPayment: 2237,
+    // Amortized P&I for $320k at 7.5% with 27 years remaining (~$2,306)
+    currentMonthlyPayment: 2306,
     yearsRemaining: 27,
     newRate: 6.25,
     newTerm: 30,
@@ -67,7 +68,13 @@ export default function RefinanceCalculator() {
 
   // Derived values
   const monthlySavings = result ? (result.details.monthlySavings as number) : 0;
+  const totalSavings = result ? (result.details.totalSavings as number) : 0;
   const isBeneficial = monthlySavings > 0;
+  const savesTotal = totalSavings > 0;
+  // Refinancing only "makes sense" when it wins on both monthly payment AND lifetime cost
+  const verdict: 'save' | 'mixed' | 'costs-more' =
+    isBeneficial && savesTotal ? 'save' : !isBeneficial && !savesTotal ? 'costs-more' : 'mixed';
+  const paymentMismatch = result ? result.details.paymentMismatch === 1 : false;
 
   // Timeline data for break-even visualization
   const timelineData = useMemo(() => {
@@ -78,7 +85,6 @@ export default function RefinanceCalculator() {
     
     for (let month = 0; month <= maxMonths; month += 6) {
       const savings = monthlySavings * month;
-      const netSavings = savings - (result.details.closingCosts as number);
       data.push({
         month,
         optionA: result.details.closingCosts as number,
@@ -122,7 +128,11 @@ export default function RefinanceCalculator() {
                 label="Current Monthly Payment"
                 value={inputs.currentMonthlyPayment}
                 onChange={(v) => handleInputChange('currentMonthlyPayment', v)}
-                helperText="Principal & interest only"
+                helperText={
+                  result && paymentMismatch
+                    ? `Doesn't match the scheduled P&I of $${(result.details.scheduledCurrentPayment as number).toLocaleString()} for this balance/rate/term — the computed value is used`
+                    : 'Principal & interest only'
+                }
               />
 
               <NumberInput
@@ -156,7 +166,7 @@ export default function RefinanceCalculator() {
                 label="Closing Costs"
                 value={inputs.closingCosts}
                 onChange={(v) => handleInputChange('closingCosts', v)}
-                helperText="Typically 2-5% of loan amount"
+                helperText="Typically 2-5% of loan amount. Financed into the new loan balance."
               />
             </InputSection>
           </Box>
@@ -166,13 +176,31 @@ export default function RefinanceCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
+              {/* Payment validation warning */}
+              {paymentMismatch && (
+                <Alert severity="warning" sx={{ borderRadius: 2 }}>
+                  <Typography variant="body2">
+                    Your entered payment (${(result.details.enteredMonthlyPayment as number).toLocaleString()}) doesn&apos;t
+                    match the scheduled P&amp;I of ${(result.details.scheduledCurrentPayment as number).toLocaleString()} implied
+                    by a ${inputs.currentBalance.toLocaleString()} balance at {inputs.currentRate}% with {inputs.yearsRemaining} years
+                    left. The analysis below uses the computed payment — make sure your entry is principal &amp; interest only
+                    (no taxes, insurance, or extra principal).
+                  </Typography>
+                </Alert>
+              )}
+
               {/* Hero Metric */}
               <HeroMetric
                 label={isBeneficial ? "Monthly Savings" : "Monthly Increase"}
-                value={`${isBeneficial ? '-' : '+'}$${Math.abs(monthlySavings).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
-                sublabel={isBeneficial 
-                  ? `Break-even in ${result.details.breakEvenMonths} months (${(result.details.breakEvenYears as number).toFixed(1)} years)`
-                  : "This refinance may not make financial sense"
+                value={`${isBeneficial ? '' : '+'}$${Math.abs(monthlySavings).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+                sublabel={
+                  verdict === 'save'
+                    ? `Break-even in ${result.details.breakEvenMonths} months (${(result.details.breakEvenYears as number).toFixed(1)} years)`
+                    : verdict === 'mixed'
+                      ? isBeneficial
+                        ? `Lower payment, but $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} more in lifetime cost`
+                        : `Higher payment, but $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} less in lifetime cost`
+                      : 'This refinance does not save you money'
                 }
               />
 
@@ -201,10 +229,10 @@ export default function RefinanceCalculator() {
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
-                    label="Total Savings"
-                    value={`$${Math.abs(result.details.totalSavings as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-                    sublabel={(result.details.totalSavings as number) > 0 ? 'You save' : 'You pay more'}
-                    color={(result.details.totalSavings as number) > 0 ? 'success' : 'error'}
+                    label={savesTotal ? 'Total Savings' : 'Added Lifetime Cost'}
+                    value={`$${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                    sublabel={savesTotal ? 'You save over the life' : 'You pay more over the life'}
+                    color={savesTotal ? 'success' : 'error'}
                   />
                 </Grid>
               </Grid>
@@ -284,11 +312,19 @@ export default function RefinanceCalculator() {
                         <strong>Break-even point: {result.details.breakEvenMonths} months ({(result.details.breakEvenYears as number).toFixed(1)} years)</strong>
                         <br />
                         {Number(result.details.breakEvenMonths) < 36 
-                          ? "This is a reasonable break-even period. If you plan to stay in your home longer than this, refinancing makes sense."
+                          ? "This is a reasonable break-even period. If you plan to stay in your home longer than this, the monthly savings work in your favor."
                           : "This is a longer break-even period. Make sure you plan to stay in your home at least this long to benefit from refinancing."
                         }
                       </Typography>
                     </Alert>
+
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
+                      How we calculate break-even: closing costs (${(result.details.closingCosts as number).toLocaleString()}) ÷ monthly
+                      payment savings (${Math.abs(monthlySavings).toLocaleString()}). Because closing costs are financed into the new
+                      loan (new balance ${(result.details.newLoanAmount as number).toLocaleString()}), this measures when cumulative
+                      payment savings offset the amount added to your balance. It compares payments only — it doesn&apos;t credit the
+                      slower equity build from resetting your term, so check the Lifetime Cost Comparison below for the full picture.
+                    </Typography>
                   </Paper>
                 </ResultsSection>
               )}
@@ -316,18 +352,19 @@ export default function RefinanceCalculator() {
                   
                   <Box sx={{ 
                     p: 3, 
-                    bgcolor: (result.details.totalSavings as number) > 0 ? '#D1FAE5' : '#FEE2E2', 
+                    bgcolor: savesTotal ? '#D1FAE5' : '#FEE2E2', 
                     borderRadius: 2, 
                     textAlign: 'center' 
                   }}>
                     <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
-                      {(result.details.totalSavings as number) > 0 ? 'TOTAL LIFETIME SAVINGS' : 'ADDITIONAL COST'}
+                      {savesTotal ? 'TOTAL LIFETIME SAVINGS' : 'ADDITIONAL LIFETIME COST'}
                     </Typography>
-                    <Typography variant="h3" sx={{ fontWeight: 700, color: (result.details.totalSavings as number) > 0 ? '#065F46' : '#991B1B', my: 1 }}>
-                      ${Math.abs(result.details.totalSavings as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    <Typography variant="h3" sx={{ fontWeight: 700, color: savesTotal ? '#065F46' : '#991B1B', my: 1 }}>
+                      ${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Interest savings: ${(result.details.interestSavings as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      {(result.details.interestSavings as number) >= 0 ? 'Interest savings' : 'Extra interest paid'}: ${Math.abs(result.details.interestSavings as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      {' · '}Totals include the ${(result.details.closingCosts as number).toLocaleString()} closing costs financed into the new loan
                     </Typography>
                   </Box>
                 </Paper>
@@ -356,23 +393,29 @@ export default function RefinanceCalculator() {
                 sx={{
                   p: 4,
                   borderRadius: 3,
-                  background: isBeneficial 
+                  background: verdict === 'save'
                     ? 'linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)'
-                    : 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%)',
+                    : verdict === 'mixed'
+                      ? 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)'
+                      : 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%)',
                   border: '1px solid',
-                  borderColor: isBeneficial ? 'success.light' : 'error.light',
+                  borderColor: verdict === 'save' ? 'success.light' : verdict === 'mixed' ? 'warning.light' : 'error.light',
                 }}
               >
                 <Stack direction="row" spacing={2} alignItems="flex-start">
-                  <Savings sx={{ fontSize: 32, color: isBeneficial ? 'success.main' : 'error.main' }} />
+                  <Savings sx={{ fontSize: 32, color: verdict === 'save' ? 'success.main' : verdict === 'mixed' ? 'warning.main' : 'error.main' }} />
                   <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: isBeneficial ? 'success.dark' : 'error.dark', mb: 1 }}>
-                      {isBeneficial ? 'Refinancing Makes Sense' : 'Consider Carefully'}
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: verdict === 'save' ? 'success.dark' : verdict === 'mixed' ? 'warning.dark' : 'error.dark', mb: 1 }}>
+                      {verdict === 'save' ? 'Refinancing Makes Sense' : verdict === 'mixed' ? 'It\u2019s a Trade-Off' : 'Refinancing Doesn\u2019t Save You Money'}
                     </Typography>
-                    <Typography variant="body1" sx={{ color: isBeneficial ? 'success.dark' : 'error.dark' }}>
-                      {isBeneficial 
-                        ? `By refinancing from ${inputs.currentRate}% to ${inputs.newRate}%, you'll save $${Math.abs(monthlySavings).toLocaleString()}/month. After ${result.details.breakEvenMonths} months, you'll have recovered the $${(result.details.closingCosts as number).toLocaleString()} closing costs and start saving $${Math.abs(monthlySavings).toLocaleString()} every month thereafter.`
-                        : `This refinance would increase your monthly payment by $${Math.abs(monthlySavings).toLocaleString()}. Unless you need to access equity or have other strategic reasons, this refinance may not be in your best interest.`
+                    <Typography variant="body1" sx={{ color: verdict === 'save' ? 'success.dark' : verdict === 'mixed' ? 'warning.dark' : 'error.dark' }}>
+                      {verdict === 'save'
+                        ? `By refinancing from ${inputs.currentRate}% to ${inputs.newRate}%, you'll save $${Math.abs(monthlySavings).toLocaleString()}/month and $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} over the life of the loan. After ${result.details.breakEvenMonths} months, your payment savings will have offset the $${(result.details.closingCosts as number).toLocaleString()} in closing costs financed into the new loan.`
+                        : verdict === 'mixed'
+                          ? isBeneficial
+                            ? `This refinance lowers your payment by $${Math.abs(monthlySavings).toLocaleString()}/month, but because the term resets to ${inputs.newTerm} years you'd pay $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} more in total. It can still make sense if monthly cash flow matters most — just know the trade-off.`
+                            : `This refinance raises your payment by $${Math.abs(monthlySavings).toLocaleString()}/month, but the shorter payoff saves $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} in total. It can make sense if you can afford the higher payment.`
+                          : `This refinance would increase your monthly payment by $${Math.abs(monthlySavings).toLocaleString()} and cost $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} more over the life of the loan. Unless you need to access equity or have other strategic reasons, it is not in your financial interest.`
                       }
                     </Typography>
                   </Box>
