@@ -173,6 +173,8 @@ export interface InterestSensitivityInputs {
   loanTerm: number;
   propertyTaxRate: number;
   homeInsuranceAnnual: number;
+  /** Expected closing date (YYYY-MM-DD) for the lock vs. float helper. */
+  closingDate?: string;
 }
 
 export interface TimelineSimulatorInputs {

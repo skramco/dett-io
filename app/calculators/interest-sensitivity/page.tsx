@@ -21,6 +21,8 @@ import {
   TrendingDown,
   ShowChart,
   AccountBalance,
+  Lock,
+  LockOpen,
 } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
 import {
@@ -28,6 +30,7 @@ import {
   CurrencyInput,
   PercentageInput,
   SelectInput,
+  DateInput,
 } from '@/components/mui/calculator/InputPanel';
 import {
   HeroMetric,
@@ -40,7 +43,7 @@ import {
   HorizontalBar,
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
-import { calculateInterestSensitivity } from '@/lib/calculators';
+import { calculateInterestSensitivity, evaluateLockFloat } from '@/lib/calculators';
 import type { InterestSensitivityInputs } from '@/lib/calculators/types';
 
 export default function InterestSensitivityCalculator() {
@@ -50,6 +53,7 @@ export default function InterestSensitivityCalculator() {
     loanTerm: 30,
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1800,
+    closingDate: '',
   });
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'baseRate' });
@@ -61,9 +65,17 @@ export default function InterestSensitivityCalculator() {
     return calculateInterestSensitivity(deferredInputs);
   }, [deferredInputs]);
 
-  const handleInputChange = (field: keyof InterestSensitivityInputs, value: number) => {
+  const handleInputChange = <K extends keyof InterestSensitivityInputs>(
+    field: K,
+    value: InterestSensitivityInputs[K]
+  ) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
+
+  const lockFloat = useMemo(
+    () => (inputs.closingDate ? evaluateLockFloat(inputs.closingDate) : null),
+    [inputs.closingDate]
+  );
 
   // Rate scenarios from chart data
   const rateScenarios = useMemo(() => {
@@ -132,6 +144,15 @@ export default function InterestSensitivityCalculator() {
                 onChange={(v) => handleInputChange('homeInsuranceAnnual', v)}
               />
             </InputSection>
+
+            <InputSection title="Rate Lock Timing" icon={<Lock />} color="secondary">
+              <DateInput
+                label="Expected Closing Date"
+                value={inputs.closingDate ?? ''}
+                onChange={(v) => handleInputChange('closingDate', v)}
+                helperText="Used to recommend locking vs. floating your rate"
+              />
+            </InputSection>
           </Box>
         </Grid>
 
@@ -178,6 +199,81 @@ export default function InterestSensitivityCalculator() {
                   />
                 </Grid>
               </Grid>
+
+              <ResultsSection
+                title="Lock vs. Float"
+                subtitle="Should you lock this rate before closing?"
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  {!lockFloat ? (
+                    <Typography variant="body2" color="text.secondary">
+                      Enter your expected closing date to see whether a standard 30–45 day lock covers you,
+                      or whether you should keep floating and lock later.
+                    </Typography>
+                  ) : (
+                    <Stack spacing={2}>
+                      <Alert
+                        severity={
+                          lockFloat.recommendation === 'lock'
+                            ? 'success'
+                            : lockFloat.recommendation === 'float'
+                              ? 'warning'
+                              : 'info'
+                        }
+                        icon={lockFloat.recommendation === 'float' ? <LockOpen /> : <Lock />}
+                        sx={{ borderRadius: 2 }}
+                      >
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
+                          {lockFloat.title}
+                        </Typography>
+                        <Typography variant="body2">{lockFloat.rationale}</Typography>
+                      </Alert>
+
+                      <Grid container spacing={2}>
+                        <Grid size={{ xs: 6, sm: 3 }}>
+                          <MetricCard
+                            label="Days to closing"
+                            value={`${lockFloat.daysUntilClosing}`}
+                            color="primary"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 6, sm: 3 }}>
+                          <MetricCard
+                            label="Suggested lock"
+                            value={
+                              lockFloat.recommendedLockDays
+                                ? `${lockFloat.recommendedLockDays} days`
+                                : '—'
+                            }
+                            color="secondary"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 6, sm: 3 }}>
+                          <MetricCard
+                            label="If rates rise 0.25%"
+                            value={`+$${result.details.quarterPctImpact}/mo`}
+                            color="warning"
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 6, sm: 3 }}>
+                          <MetricCard
+                            label="If rates rise 0.50%"
+                            value={`+$${result.details.halfPctImpact}/mo`}
+                            color="error"
+                          />
+                        </Grid>
+                      </Grid>
+
+                      {lockFloat.extensionLikely && (
+                        <Typography variant="body2" color="text.secondary">
+                          Lock extensions often cost about 0.125 points per 15 days. On this loan that is
+                          roughly ${Math.round(inputs.loanAmount * 0.00125).toLocaleString()} if closing slips.
+                        </Typography>
+                      )}
+                    </Stack>
+                  )}
+                </Paper>
+              </ResultsSection>
 
               {/* Rate Scenarios */}
               <ResultsSection 

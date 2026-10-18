@@ -232,6 +232,11 @@ export const calculatorFaqs: Record<string, CalculatorFaq[]> = {
       answer:
         'Often no — many programs hold the first half-payment until the second arrives, then post one monthly payment, which forfeits some of the timing benefit. The savings mostly come from the 13th payment, not the timing, but it is worth confirming how your servicer posts funds.',
     },
+    {
+      question: 'Will my servicer accept true biweekly or partial payments?',
+      answer:
+        'Not always. Some servicers reject half-payments or will not post extra funds until a full monthly amount is in hand, so a "true" 26-payment schedule is not available. If that is your servicer, add 1/12 of the payment as extra principal each month instead — that DIY method is accepted on almost every loan.',
+    },
   ],
   'interest-sensitivity': [
     {
@@ -242,7 +247,7 @@ export const calculatorFaqs: Record<string, CalculatorFaq[]> = {
     {
       question: 'Should I lock my mortgage rate?',
       answer:
-        'A rate lock protects you from increases between quote and closing, typically free for 30-45 days. If a rate rise would break your budget or approval, lock. Floating only pays off if rates fall during your escrow — a bet, not a plan.',
+        'A rate lock protects you from increases between quote and closing, typically free for 30-45 days. If a rate rise would break your budget or approval, lock. Floating only pays off if rates fall during your escrow — a bet, not a plan. Enter your closing date on this page for a lock-versus-float recommendation.',
     },
     {
       question: 'At what rate drop should I consider refinancing?',
@@ -265,6 +270,11 @@ export const calculatorFaqs: Record<string, CalculatorFaq[]> = {
       question: 'When will I reach 20% equity and drop PMI?',
       answer:
         'Follow the balance column to where it hits 80% of your original home value — that is when you can request PMI cancellation (it ends automatically at 78%). With a small down payment and no prepayments, this often takes 5-10 years on a 30-year loan.',
+    },
+    {
+      question: 'Can I download my amortization schedule?',
+      answer:
+        'Yes. Toggle between yearly and monthly views, then use Download CSV to export the table you are looking at. The file opens in Excel, Google Sheets, or any spreadsheet app and includes payment, principal, interest, and remaining balance for each row.',
     },
   ],
   dti: [

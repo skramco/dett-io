@@ -354,6 +354,36 @@ export function SelectInput({ label, value, onChange, options, helperText }: Sel
 }
 
 // ============================================
+// DATE INPUT - ISO calendar date (YYYY-MM-DD)
+// ============================================
+interface DateInputProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  helperText?: string;
+  min?: string;
+  max?: string;
+}
+
+export function DateInput({ label, value, onChange, helperText, min, max }: DateInputProps) {
+  return (
+    <TextField
+      fullWidth
+      label={label}
+      type="date"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      helperText={helperText}
+      slotProps={{
+        htmlInput: { min, max },
+        inputLabel: { shrink: true },
+      }}
+      sx={inputStyles}
+    />
+  );
+}
+
+// ============================================
 // CHECKBOX INPUT - Toggle option
 // ============================================
 interface CheckboxInputProps {

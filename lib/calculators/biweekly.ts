@@ -69,6 +69,10 @@ export function calculateBiweekly(inputs: BiweeklyInputs): CalculatorResult {
   );
 
   insights.push(
+    `⚠️ Servicer limits: Many servicers will not accept half-payments or a true biweekly schedule. Partial payments can be rejected or held until a full monthly amount arrives — confirm before you enroll.`
+  );
+
+  insights.push(
     `💡 DIY alternative: Add $${Math.round(extraMonthlyPayment).toLocaleString()}/month to your payment - same result as true biweekly, no fees`
   );
 

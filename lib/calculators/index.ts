@@ -38,6 +38,14 @@ export { calculateTimelineSimulator } from './timelineSimulator';
 // Category 6: New High-Volume Calculators
 export { calculateAmortization } from './amortization';
 export type { AmortizationInputs, AmortizationRow, AmortizationSchedule } from './amortization';
+export {
+  amortizationCsvFilename,
+  buildAmortizationCsv,
+  triggerCsvDownload,
+} from './amortizationCsv';
+export type { AmortizationCsvView } from './amortizationCsv';
+export { evaluateLockFloat } from './lockFloat';
+export type { LockFloatDecision } from './lockFloat';
 export { calculateDTI } from './dti';
 export type { DTIInputs } from './dti';
 export { calculateClosingCosts } from './closingCosts';
