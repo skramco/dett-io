@@ -36,6 +36,7 @@ import {
 } from '@/components/mui/calculator/InputPanel';
 import {
   HeroMetric,
+  StickyResultAnchor,
   MetricCard,
   InsightCallout,
   ResultsSection,
@@ -141,19 +142,21 @@ export default function PMICalculator() {
             <Stack spacing={4}>
               {/* No PMI Banner */}
               {noPMI ? (
-                <Alert
-                  severity="success"
-                  icon={<CheckCircle sx={{ fontSize: 28 }} />}
-                  sx={{ borderRadius: 3, py: 3 }}
-                >
-                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                    No PMI Required!
-                  </Typography>
-                  <Typography variant="body1">
-                    With {inputs.downPaymentPercent}% down, you exceed the 20% threshold and avoid PMI entirely.
-                    This saves you hundreds per month compared to a lower down payment.
-                  </Typography>
-                </Alert>
+                <StickyResultAnchor label="Monthly PMI Cost" value="$0">
+                  <Alert
+                    severity="success"
+                    icon={<CheckCircle sx={{ fontSize: 28 }} />}
+                    sx={{ borderRadius: 3, py: 3 }}
+                  >
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                      No PMI Required!
+                    </Typography>
+                    <Typography variant="body1">
+                      With {inputs.downPaymentPercent}% down, you exceed the 20% threshold and avoid PMI entirely.
+                      This saves you hundreds per month compared to a lower down payment.
+                    </Typography>
+                  </Alert>
+                </StickyResultAnchor>
               ) : (
                 <>
                   {/* Hero Metric */}

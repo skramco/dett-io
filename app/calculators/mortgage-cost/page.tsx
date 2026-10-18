@@ -269,39 +269,6 @@ export default function MortgageCostCalculator() {
                 />
               )}
             </InputSection>
-
-            {/* Calculate Button */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2,
-                borderRadius: 2,
-                border: '2px solid',
-                borderColor: 'primary.main',
-                bgcolor: 'primary.main',
-                textAlign: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                '&:hover': {
-                  bgcolor: 'primary.dark',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 12px rgba(25, 107, 192, 0.3)',
-                },
-              }}
-              onClick={() => {
-                // Scroll to results on mobile
-                if (window.innerWidth < 1200) {
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-              }}
-            >
-              <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
-                Calculate Results
-              </Typography>
-              <Typography variant="caption" sx={{ color: '#EBF5FF', display: 'block', mt: 0.5 }}>
-                Results update automatically as you type
-              </Typography>
-            </Paper>
           </Box>
         </Grid>
 

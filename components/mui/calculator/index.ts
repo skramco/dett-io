@@ -2,3 +2,4 @@
 export * from './ResultsPanel';
 export * from './ChartComponents';
 export * from './InputPanel';
+export * from './StickyResultBar';

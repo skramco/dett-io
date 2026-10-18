@@ -25,6 +25,8 @@ const inputStyles = {
     borderRadius: 1.5, // Sharper corners (6px)
     bgcolor: '#FFFFFF',
     transition: 'all 0.15s ease',
+    scrollMarginTop: 'calc(72px + env(safe-area-inset-top, 0px))',
+    scrollMarginBottom: 'calc(88px + env(safe-area-inset-bottom, 0px))',
     '& fieldset': {
       borderWidth: 2,
       borderColor: '#D1D5DB', // Stronger default border
@@ -437,6 +439,8 @@ export function SliderInput({
         bgcolor: '#FFFFFF',
         border: '2px solid #D1D5DB',
         borderRadius: 1.5,
+        scrollMarginTop: 'calc(72px + env(safe-area-inset-top, 0px))',
+        scrollMarginBottom: 'calc(88px + env(safe-area-inset-bottom, 0px))',
         '&:hover': {
           borderColor: '#196bc0',
         },

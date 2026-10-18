@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 import {
   Box,
   Paper,
@@ -19,6 +19,7 @@ import {
   Warning,
   Lightbulb,
 } from '@mui/icons-material';
+import { StickyResultBar } from './StickyResultBar';
 
 // ============================================
 // HERO METRIC - The big number that matters most
@@ -32,18 +33,24 @@ interface HeroMetricProps {
 }
 
 export function HeroMetric({ label, value, sublabel, trend, trendLabel }: HeroMetricProps) {
+  const heroRef = useRef<HTMLDivElement>(null);
+
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: 4,
-        background: 'linear-gradient(135deg, #196bc0 0%, #0F4F8F 100%)',
-        color: 'white',
-        borderRadius: 4,
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
+    <Box>
+      <Paper
+        id="calculator-results"
+        ref={heroRef}
+        elevation={0}
+        sx={{
+          p: 4,
+          background: 'linear-gradient(135deg, #196bc0 0%, #0F4F8F 100%)',
+          color: 'white',
+          borderRadius: 4,
+          position: 'relative',
+          overflow: 'hidden',
+          scrollMarginTop: { xs: 88, sm: 100 },
+        }}
+      >
       {/* Decorative circles */}
       <Box
         sx={{
@@ -68,25 +75,27 @@ export function HeroMetric({ label, value, sublabel, trend, trendLabel }: HeroMe
         }}
       />
       
-      <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 500 }}>
-        {label}
-      </Typography>
-      <Typography 
-        variant="h2" 
-        sx={{ 
-          fontWeight: 700, 
-          fontSize: { xs: '2.5rem', md: '3.5rem' },
-          lineHeight: 1.1,
-          mb: 1,
-        }}
-      >
-        {value}
-      </Typography>
-      {sublabel && (
-        <Typography variant="body2" sx={{ color: '#EBF5FF' }}>
-          {sublabel}
+      <Box role="status" aria-live="polite" aria-atomic="true">
+        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 500 }}>
+          {label}
         </Typography>
-      )}
+        <Typography 
+          variant="h2" 
+          sx={{ 
+            fontWeight: 700, 
+            fontSize: { xs: '2.5rem', md: '3.5rem' },
+            lineHeight: 1.1,
+            mb: 1,
+          }}
+        >
+          {value}
+        </Typography>
+        {sublabel && (
+          <Typography variant="body2" sx={{ color: '#EBF5FF' }}>
+            {sublabel}
+          </Typography>
+        )}
+      </Box>
       {trend && trendLabel && (
         <Chip
           icon={trend === 'up' ? <TrendingUp /> : trend === 'down' ? <TrendingDown /> : undefined}
@@ -101,7 +110,32 @@ export function HeroMetric({ label, value, sublabel, trend, trendLabel }: HeroMe
           }}
         />
       )}
-    </Paper>
+      </Paper>
+      <StickyResultBar label={label} value={value} watchRef={heroRef} />
+    </Box>
+  );
+}
+
+/**
+ * Wraps a custom headline (calculators that don't use HeroMetric, e.g. DTI)
+ * so the mobile sticky bar still has a live value and a scroll target.
+ */
+export function StickyResultAnchor({
+  label,
+  value,
+  children,
+}: {
+  label: string;
+  value: string;
+  children: ReactNode;
+}) {
+  const anchorRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <Box id="calculator-results" ref={anchorRef} sx={{ scrollMarginTop: { xs: 88, sm: 100 } }}>
+      {children}
+      <StickyResultBar label={label} value={value} watchRef={anchorRef} />
+    </Box>
   );
 }
 
