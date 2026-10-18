@@ -194,7 +194,7 @@ export function calculatePMI(inputs: PMIInputs): CalculatorResult {
   }
 
   insights.push(
-    `You can request PMI removal when your loan reaches 80% LTV (balance of $${Math.round(homePrice * 0.80).toLocaleString()}). It's automatically removed at 78% LTV.`
+    `Two ways PMI ends: you can request cancellation once your balance reaches 80% LTV ($${Math.round(homePrice * 0.80).toLocaleString()}), or your lender must automatically terminate it at 78% LTV ($${Math.round(homePrice * 0.78).toLocaleString()}). Note that your monthly PMI premium is calculated on the original loan amount, not your current balance.`
   );
 
   return {

@@ -248,10 +248,10 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'PMI Calculation',
       steps: [
-        { label: 'LTV Ratio', formula: 'Loan Amount ÷ Home Value × 100', description: 'Loan-to-Value ratio determines if PMI is required (> 80%).', computedValue: `${fmtDec(d.ltvPercent as number, 1)}%` },
+        { label: 'Starting LTV Ratio', formula: 'Original Loan Amount ÷ Home Value × 100', description: 'Loan-to-Value ratio at closing. PMI is required when LTV is above 80%.', computedValue: `${fmtDec(d.ltv as number, 1)}%` },
         { label: 'Annual PMI Rate', formula: 'Based on LTV and credit score (0.2% - 1.5%)', description: 'Higher LTV and lower credit scores mean higher PMI rates.', computedValue: `${fmtDec(d.pmiRate as number, 2)}%` },
-        { label: 'Monthly PMI', formula: 'Loan Amount × Annual PMI Rate ÷ 12', description: 'Added to your monthly payment until you reach 80% LTV.', computedValue: `$${fmt(d.monthlyPMI as number)}` },
-        { label: 'PMI Removal', formula: 'When LTV reaches 80% (auto-cancels at 78%)', description: 'You can request removal at 80% LTV; it auto-cancels at 78%.', computedValue: d.pmiRemovalMonth ? `Month ${d.pmiRemovalMonth}` : 'N/A' },
+        { label: 'Monthly PMI', formula: 'Original Loan Amount × Annual PMI Rate ÷ 12', description: 'PMI is calculated on your original loan amount — not your current balance — and added to your monthly payment until PMI is removed.', computedValue: `$${fmt(d.monthlyPMI as number)}` },
+        { label: 'PMI Removal', formula: 'Request cancellation at 80% LTV; automatic termination at 78%', description: 'You can request cancellation once your balance reaches 80% of the original home value. Your lender must automatically terminate PMI when the balance is scheduled to reach 78% LTV.', computedValue: (d.noPMI as number) === 1 ? 'Not required (LTV ≤ 80%)' : d.monthsUntilRemoval ? `Month ${d.monthsUntilRemoval} (78% LTV)` : 'N/A' },
       ],
     },
   ],
