@@ -9,6 +9,7 @@ import {
   comparisonsLastUpdated,
   definitionsLastUpdated,
 } from '@/lib/seo/contentDates';
+import { locations, latestLocationUpdate } from '@/lib/locations/locationData';
 
 const BASE_URL = 'https://dett.io';
 
@@ -105,5 +106,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...calculatorPages, ...guidePages, ...comparePages, ...definitionPages];
+  // State pages use the date their figures were last reviewed as lastmod,
+  // so crawlers only see a change when the content actually changed.
+  const locationPages: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/closing-costs`,
+      lastModified: new Date(latestLocationUpdate()),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    },
+    ...locations.map((loc) => ({
+      url: `${BASE_URL}/closing-costs/${loc.slug}`,
+      lastModified: new Date(loc.lastUpdated),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
+  ];
+
+  return [
+    ...staticPages,
+    ...calculatorPages,
+    ...guidePages,
+    ...comparePages,
+    ...definitionPages,
+    ...locationPages,
+  ];
 }
