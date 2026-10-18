@@ -100,7 +100,13 @@ export interface ArmVsFixedInputs {
   fixedRate: number;
   armInitialRate: number;
   armFixedPeriod: number;
+  /** Months between rate adjustments after the fixed period (6 = modern SOFR ARMs, 12 = legacy annual ARMs) */
+  armAdjustmentFrequency: number;
+  /** Max rate increase at the first adjustment (the "2" in 2/1/5 caps) */
+  armInitialCap: number;
+  /** Max rate change at each subsequent adjustment (the "1" in 2/1/5 caps) */
   armAdjustmentCap: number;
+  /** Max total increase above the initial rate over the life of the loan (the "5" in 2/1/5 caps) */
   armLifetimeCap: number;
   armMargin: number;
   loanTerm: number;
