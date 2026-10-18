@@ -1,4 +1,10 @@
 import type { CalculatorResult } from './types';
+import {
+  monthlyPayment,
+  ltvPercent,
+  monthlyMortgageInsurance,
+  monthsUntilLtv,
+} from './mortgageMath';
 
 export interface PMIInputs {
   homePrice: number;
@@ -68,35 +74,19 @@ export function calculatePMI(inputs: PMIInputs): CalculatorResult {
   } = inputs;
 
   const loanAmount = homePrice * (1 - downPaymentPercent / 100);
-  const ltv = (loanAmount / homePrice) * 100;
-  const monthlyRate = interestRate / 100 / 12;
+  const ltv = ltvPercent(loanAmount, homePrice);
   const numberOfPayments = loanTerm * 12;
 
   // Base monthly P&I payment
-  const monthlyPI = monthlyRate === 0
-    ? loanAmount / numberOfPayments
-    : (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  const monthlyPI = monthlyPayment(loanAmount, interestRate, numberOfPayments);
 
   // Current PMI rate
   const pmiRate = getPMIRate(ltv, creditScore);
-  const monthlyPMI = (loanAmount * (pmiRate / 100)) / 12;
+  const monthlyPMI = monthlyMortgageInsurance(loanAmount, pmiRate);
   const annualPMI = loanAmount * (pmiRate / 100);
 
-  // Calculate months until PMI removal (when LTV reaches 78%)
-  let balance = loanAmount;
-  let monthsUntilRemoval = 0;
-  const targetBalance = homePrice * 0.78;
-
-  for (let m = 1; m <= numberOfPayments; m++) {
-    const interestPayment = balance * monthlyRate;
-    const principalPayment = monthlyPI - interestPayment;
-    balance -= principalPayment;
-    if (balance <= targetBalance) {
-      monthsUntilRemoval = m;
-      break;
-    }
-  }
+  // Months until PMI removal (when LTV reaches 78%)
+  const monthsUntilRemoval = monthsUntilLtv(loanAmount, homePrice, interestRate, numberOfPayments, 78);
 
   const totalPMICost = monthlyPMI * monthsUntilRemoval;
 
@@ -107,37 +97,20 @@ export function calculatePMI(inputs: PMIInputs): CalculatorResult {
   // Lender-paid PMI (higher rate, no separate PMI)
   const lenderPaidRateIncrease = pmiRate * 0.035; // Roughly 0.035% rate increase per 0.1% PMI
   const lenderPaidRate = interestRate + lenderPaidRateIncrease;
-  const lenderPaidMonthlyPI = monthlyRate === 0
-    ? loanAmount / numberOfPayments
-    : (loanAmount * (lenderPaidRate / 100 / 12) * Math.pow(1 + lenderPaidRate / 100 / 12, numberOfPayments)) /
-      (Math.pow(1 + lenderPaidRate / 100 / 12, numberOfPayments) - 1);
+  const lenderPaidMonthlyPI = monthlyPayment(loanAmount, lenderPaidRate, numberOfPayments);
 
   // Generate comparison scenarios at different down payments
   const scenarios: PMIScenario[] = [];
   for (const dp of [5, 10, 15, 20]) {
     const scenarioLoan = homePrice * (1 - dp / 100);
-    const scenarioLTV = (scenarioLoan / homePrice) * 100;
+    const scenarioLTV = ltvPercent(scenarioLoan, homePrice);
     const scenarioRate = dp >= 20 ? 0 : getPMIRate(scenarioLTV, creditScore);
-    const scenarioMonthlyPMI = (scenarioLoan * (scenarioRate / 100)) / 12;
-    const scenarioMonthlyPI = monthlyRate === 0
-      ? scenarioLoan / numberOfPayments
-      : (scenarioLoan * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-        (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+    const scenarioMonthlyPMI = monthlyMortgageInsurance(scenarioLoan, scenarioRate);
+    const scenarioMonthlyPI = monthlyPayment(scenarioLoan, interestRate, numberOfPayments);
 
-    let scenarioMonths = 0;
-    if (dp < 20) {
-      let bal = scenarioLoan;
-      const target78 = homePrice * 0.78;
-      for (let m = 1; m <= numberOfPayments; m++) {
-        const intPmt = bal * monthlyRate;
-        const prinPmt = scenarioMonthlyPI - intPmt;
-        bal -= prinPmt;
-        if (bal <= target78) {
-          scenarioMonths = m;
-          break;
-        }
-      }
-    }
+    const scenarioMonths = dp < 20
+      ? monthsUntilLtv(scenarioLoan, homePrice, interestRate, numberOfPayments, 78)
+      : 0;
 
     scenarios.push({
       downPayment: `${dp}%`,

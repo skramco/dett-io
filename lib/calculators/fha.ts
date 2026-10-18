@@ -1,4 +1,5 @@
 import type { CalculatorResult } from './types';
+import { monthlyPayment, ltvPercent, monthlyMortgageInsurance } from './mortgageMath';
 
 export interface FHAInputs {
   homePrice: number;
@@ -34,7 +35,7 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   const totalLoanAmount = baseLoanAmount + upfrontMIP; // FHA rolls upfront MIP into loan
 
   // Annual MIP rate depends on loan term, LTV, and loan amount
-  const ltv = (baseLoanAmount / homePrice) * 100;
+  const ltv = ltvPercent(baseLoanAmount, homePrice);
   let annualMIPRate: number;
   if (loanTerm <= 15) {
     if (ltv <= 90) annualMIPRate = 0.15;
@@ -49,7 +50,7 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
     }
   }
 
-  const monthlyMIP = (baseLoanAmount * (annualMIPRate / 100)) / 12;
+  const monthlyMIP = monthlyMortgageInsurance(baseLoanAmount, annualMIPRate);
 
   // MIP duration
   // For 30-year loans with >10% down: 11 years. Otherwise: life of loan.
@@ -57,12 +58,8 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   const mipDurationMonths = mipDurationYears * 12;
 
   // Monthly P&I on total loan (including financed upfront MIP)
-  const monthlyRate = interestRate / 100 / 12;
   const numberOfPayments = loanTerm * 12;
-  const monthlyPI = monthlyRate === 0
-    ? totalLoanAmount / numberOfPayments
-    : (totalLoanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  const monthlyPI = monthlyPayment(totalLoanAmount, interestRate, numberOfPayments);
 
   const monthlyPropertyTax = propertyTax / 12;
   const monthlyInsurance = homeInsurance / 12;
@@ -92,13 +89,10 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   // Comparison: FHA vs Conventional
   const convDownPayment = homePrice * 0.05; // 5% conventional
   const convLoanAmount = homePrice - convDownPayment;
-  const convMonthlyPI = monthlyRate === 0
-    ? convLoanAmount / numberOfPayments
-    : (convLoanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  const convMonthlyPI = monthlyPayment(convLoanAmount, interestRate, numberOfPayments);
   // Conventional PMI estimate
   const convPMIRate = creditScore >= 740 ? 0.30 : creditScore >= 720 ? 0.47 : creditScore >= 700 ? 0.58 : 0.90;
-  const convMonthlyPMI = (convLoanAmount * (convPMIRate / 100)) / 12;
+  const convMonthlyPMI = monthlyMortgageInsurance(convLoanAmount, convPMIRate);
   const convTotalMonthly = convMonthlyPI + convMonthlyPMI + monthlyPropertyTax + monthlyInsurance;
 
   // Chart data

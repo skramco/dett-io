@@ -1,4 +1,5 @@
 import type { AccelerationInputs, CalculatorResult } from './types';
+import { monthlyPayment, monthlyRate as calcMonthlyRate } from './mortgageMath';
 
 export function calculateAcceleration(inputs: AccelerationInputs): CalculatorResult {
   const {
@@ -14,12 +15,11 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
     recastFee,
   } = inputs;
 
-  const monthlyRate = interestRate / 100 / 12;
+  const monthlyRate = calcMonthlyRate(interestRate);
   const numPayments = loanTerm * 12;
   
   // Base payment
-  const basePayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                     (Math.pow(1 + monthlyRate, numPayments) - 1);
+  const basePayment = monthlyPayment(loanAmount, interestRate, numPayments);
 
   // Scenario 1: Regular payments only
   const regularTotalPaid = basePayment * numPayments;
@@ -71,8 +71,7 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
       recastTotalPaid += recastFee;
       // Recalculate payment based on new balance
       const remainingMonths = numPayments - month;
-      recastPayment = recastBalance * (monthlyRate * Math.pow(1 + monthlyRate, remainingMonths)) / 
-                     (Math.pow(1 + monthlyRate, remainingMonths) - 1);
+      recastPayment = monthlyPayment(recastBalance, interestRate, remainingMonths);
     }
     
     const principal = payment - interest;

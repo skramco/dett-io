@@ -1,4 +1,5 @@
 import type { BiweeklyInputs, CalculatorResult } from './types';
+import { monthlyPayment as calcMonthlyPayment, monthlyRate as calcMonthlyRate } from './mortgageMath';
 
 export function calculateBiweekly(inputs: BiweeklyInputs): CalculatorResult {
   const {
@@ -8,12 +9,11 @@ export function calculateBiweekly(inputs: BiweeklyInputs): CalculatorResult {
     biweeklyFee,
   } = inputs;
 
-  const monthlyRate = interestRate / 100 / 12;
+  const monthlyRate = calcMonthlyRate(interestRate);
   const numPayments = loanTerm * 12;
   
   // Monthly payment
-  const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                        (Math.pow(1 + monthlyRate, numPayments) - 1);
+  const monthlyPayment = calcMonthlyPayment(loanAmount, interestRate, numPayments);
   
   const monthlyTotalPaid = monthlyPayment * numPayments;
   const monthlyTotalInterest = monthlyTotalPaid - loanAmount;

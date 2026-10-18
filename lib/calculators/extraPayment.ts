@@ -1,4 +1,5 @@
 import type { ExtraPaymentInputs, CalculatorResult } from './types';
+import { monthlyPayment, monthlyRate as calcMonthlyRate } from './mortgageMath';
 
 export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorResult {
   const {
@@ -10,14 +11,10 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
     investmentReturn = 7,
   } = inputs;
 
-  const monthlyRate = interestRate / 100 / 12;
+  const monthlyRate = calcMonthlyRate(interestRate);
   const numberOfPayments = loanTerm * 12;
 
-  const regularMonthlyPayment =
-    monthlyRate === 0
-      ? loanAmount / numberOfPayments
-      : (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-        (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  const regularMonthlyPayment = monthlyPayment(loanAmount, interestRate, numberOfPayments);
 
   let balance = loanAmount;
   let totalInterestRegular = 0;

@@ -1,9 +1,9 @@
 import type { RefinanceInputs, CalculatorResult } from './types';
+import { monthlyPayment } from './mortgageMath';
 
 export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
   const {
     currentBalance,
-    currentRate,
     currentMonthlyPayment,
     yearsRemaining,
     newRate,
@@ -11,18 +11,12 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
     closingCosts,
   } = inputs;
 
-  const currentMonthlyRate = currentRate / 100 / 12;
   const currentPaymentsRemaining = yearsRemaining * 12;
 
   const newLoanAmount = currentBalance + closingCosts;
-  const newMonthlyRate = newRate / 100 / 12;
   const newNumberOfPayments = newTerm * 12;
 
-  const newMonthlyPayment =
-    newMonthlyRate === 0
-      ? newLoanAmount / newNumberOfPayments
-      : (newLoanAmount * newMonthlyRate * Math.pow(1 + newMonthlyRate, newNumberOfPayments)) /
-        (Math.pow(1 + newMonthlyRate, newNumberOfPayments) - 1);
+  const newMonthlyPayment = monthlyPayment(newLoanAmount, newRate, newNumberOfPayments);
 
   const monthlySavings = currentMonthlyPayment - newMonthlyPayment;
   const breakEvenMonths = monthlySavings > 0 ? Math.ceil(closingCosts / monthlySavings) : Infinity;

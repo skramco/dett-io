@@ -1,4 +1,5 @@
 import type { CalculatorResult } from './types';
+import { monthlyPayment as calcMonthlyPayment, monthlyRate as calcMonthlyRate } from './mortgageMath';
 
 export interface AmortizationInputs {
   loanAmount: number;
@@ -41,15 +42,11 @@ export function calculateAmortization(inputs: AmortizationInputs): CalculatorRes
     startDate,
   } = inputs;
 
-  const monthlyRate = interestRate / 100 / 12;
+  const monthlyRate = calcMonthlyRate(interestRate);
   const numberOfPayments = loanTerm * 12;
 
-  // Calculate base monthly payment
-  const monthlyPayment =
-    monthlyRate === 0
-      ? loanAmount / numberOfPayments
-      : (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-        (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  // Base monthly payment from the shared reference formula
+  const monthlyPayment = calcMonthlyPayment(loanAmount, interestRate, numberOfPayments);
 
   // Parse start date
   const start = startDate ? new Date(startDate + '-01') : new Date();

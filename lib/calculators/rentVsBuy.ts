@@ -1,4 +1,5 @@
 import type { RentVsBuyInputs, CalculatorResult } from './types';
+import { monthlyPayment, monthlyRate as calcMonthlyRate } from './mortgageMath';
 
 export function calculateRentVsBuy(inputs: RentVsBuyInputs): CalculatorResult {
   const {
@@ -19,12 +20,11 @@ export function calculateRentVsBuy(inputs: RentVsBuyInputs): CalculatorResult {
   } = inputs;
 
   const loanAmount = homePrice - downPayment;
-  const monthlyRate = interestRate / 100 / 12;
+  const monthlyRate = calcMonthlyRate(interestRate);
   const numPayments = loanTerm * 12;
 
   // Calculate monthly mortgage payment
-  const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                   (Math.pow(1 + monthlyRate, numPayments) - 1);
+  const monthlyPI = monthlyPayment(loanAmount, interestRate, numPayments);
 
   const scenarios = ['best', 'base', 'worst'] as const;
   const appreciationRates = {

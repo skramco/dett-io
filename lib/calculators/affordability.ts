@@ -1,4 +1,5 @@
 import type { AffordabilityInputs, CalculatorResult } from './types';
+import { monthlyPayment } from './mortgageMath';
 
 export function calculateAffordability(inputs: AffordabilityInputs): CalculatorResult {
   const {
@@ -13,7 +14,6 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
   } = inputs;
 
   const monthlyIncome = annualIncome / 12;
-  const monthlyRate = interestRate / 100 / 12;
   const numPayments = loanTerm * 12;
 
   // Calculate max home prices at different DTI ratios
@@ -23,7 +23,7 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
     aggressive: 0.43,   // 43% front-end DTI (max for most loans)
   };
 
-  const results: Record<string, any> = {};
+  const results: Record<string, number> = {};
   
   Object.entries(dtiRatios).forEach(([level, dtiRatio]) => {
     const maxMonthlyPayment = monthlyIncome * dtiRatio;
@@ -46,8 +46,7 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
         continue;
       }
       
-      const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                       (Math.pow(1 + monthlyRate, numPayments) - 1);
+      const monthlyPI = monthlyPayment(loanAmount, interestRate, numPayments);
       const monthlyTaxIns = (mid * propertyTaxRate / 100 / 12) + (homeInsuranceAnnual / 12);
       const totalPITI = monthlyPI + monthlyTaxIns;
       
@@ -60,8 +59,7 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
     }
     
     const loanAmount = maxHomePrice - downPayment;
-    const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                     (Math.pow(1 + monthlyRate, numPayments) - 1);
+    const monthlyPI = monthlyPayment(loanAmount, interestRate, numPayments);
     const monthlyTaxIns = (maxHomePrice * propertyTaxRate / 100 / 12) + (homeInsuranceAnnual / 12);
     const totalPITI = monthlyPI + monthlyTaxIns + hoaFees;
     
