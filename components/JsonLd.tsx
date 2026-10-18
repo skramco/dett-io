@@ -19,7 +19,7 @@ export function OrganizationJsonLd() {
         url: 'https://dett.io',
         logo: 'https://dett.io/logo.png',
         description:
-          'Free mortgage calculators and educational guides. No ads, no lead capture, no signup required.',
+          'Independent mortgage calculators and educational guides with documented formulas and cited data sources.',
         sameAs: [],
         contactPoint: {
           '@type': 'ContactPoint',
