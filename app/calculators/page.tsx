@@ -136,7 +136,6 @@ const categoryColors: Record<string, { bg: string; fg: string }> = {
   'Current Homeowners': { bg: '#FFF7ED', fg: '#C2410C' },
   'Rate & Structure': { bg: '#F0FDF4', fg: '#15803D' },
   'Payoff Strategy': { bg: '#FAF5FF', fg: '#7E22CE' },
-  'Advanced Analysis': { bg: '#FEF2F2', fg: '#B91C1C' },
 };
 
 const calculatorCategories = [
@@ -268,6 +267,13 @@ const calculatorCategories = [
         icon: Schedule,
         href: "/calculators/timeline-simulator",
       },
+      {
+        id: "interest-sensitivity",
+        name: "Rate Sensitivity",
+        description: "See how rate changes affect your payment and total cost.",
+        icon: BarChart,
+        href: "/calculators/interest-sensitivity",
+      },
     ],
   },
   {
@@ -294,19 +300,6 @@ const calculatorCategories = [
         description: "See the truth about biweekly payment programs.",
         icon: CalendarMonth,
         href: "/calculators/biweekly",
-      },
-    ],
-  },
-  {
-    category: "Advanced Analysis",
-    description: "Power user tools",
-    calculators: [
-      {
-        id: "interest-sensitivity",
-        name: "Rate Sensitivity",
-        description: "See how rate changes affect your payment and total cost.",
-        icon: BarChart,
-        href: "/calculators/interest-sensitivity",
       },
     ],
   },
