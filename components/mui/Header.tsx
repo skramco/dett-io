@@ -24,7 +24,6 @@ import {
   Calculate,
   MenuBook,
   Article,
-  ArrowForward,
   CompareArrows,
 } from '@mui/icons-material';
 import Link from 'next/link';
@@ -95,16 +94,6 @@ export function Header() {
                   }}
                 >
                   Learn
-                </Button>
-              </Link>
-              <Link href="/calculators" style={{ textDecoration: 'none' }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  sx={{ ml: 1, borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
-                >
-                  Get Started
                 </Button>
               </Link>
             </Stack>
@@ -212,19 +201,6 @@ export function Header() {
             </ListItemButton>
           </ListItem>
         </List>
-        <Box sx={{ px: 2, mt: 'auto', pb: 3 }}>
-          <Button
-            component={Link}
-            href="/calculators"
-            variant="contained"
-            fullWidth
-            endIcon={<ArrowForward />}
-            onClick={() => setDrawerOpen(false)}
-            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, py: 1.25 }}
-          >
-            Get Started
-          </Button>
-        </Box>
       </Drawer>
     </>
   );
