@@ -1,6 +1,73 @@
 import type { ExtraPaymentInputs, CalculatorResult } from './types';
 import { monthlyPayment, toMonthlyRate } from './mortgageMath';
 
+interface PathSimulation {
+  totalInterest: number;
+  payoffMonth: number;
+  portfolioAtHorizon: number;
+}
+
+/**
+ * Simulates one strategy over the full horizon with identical monthly cash
+ * outflow (base payment + extra), so the two paths are directly comparable:
+ * - prepay=true:  extra dollars go to principal; once the loan is paid off,
+ *   the entire freed-up payment is invested until the horizon.
+ * - prepay=false: only the base payment goes to the loan; extra dollars are
+ *   invested every month from day one.
+ * Any cash not needed by the loan in a given month (including the partial
+ * final payment) is invested.
+ */
+function simulatePath(params: {
+  loanAmount: number;
+  monthlyRate: number;
+  basePayment: number;
+  extraMonthly: number;
+  extraAnnual: number;
+  investMonthlyRate: number;
+  horizonMonths: number;
+  prepay: boolean;
+}): PathSimulation {
+  const {
+    loanAmount,
+    monthlyRate,
+    basePayment,
+    extraMonthly,
+    extraAnnual,
+    investMonthlyRate,
+    horizonMonths,
+    prepay,
+  } = params;
+
+  let balance = loanAmount;
+  let totalInterest = 0;
+  let portfolio = 0;
+  let payoffMonth = horizonMonths;
+
+  for (let month = 1; month <= horizonMonths; month++) {
+    portfolio *= 1 + investMonthlyRate;
+
+    const outlay = basePayment + extraMonthly + (month % 12 === 0 ? extraAnnual : 0);
+    let paymentToLoan = 0;
+
+    if (balance > 0) {
+      const interest = balance * monthlyRate;
+      totalInterest += interest;
+      const amountDue = balance + interest;
+      const maxTowardLoan = prepay ? outlay : Math.min(basePayment, outlay);
+      paymentToLoan = Math.min(maxTowardLoan, amountDue);
+      balance = amountDue - paymentToLoan;
+      if (balance <= 1e-6) {
+        balance = 0;
+        payoffMonth = month;
+      }
+    }
+
+    portfolio += outlay - paymentToLoan;
+  }
+
+  return { totalInterest, payoffMonth, portfolioAtHorizon: portfolio };
+}
+
 export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorResult {
   const {
     loanAmount,
@@ -16,56 +83,50 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
 
   const regularMonthlyPayment = monthlyPayment(loanAmount, interestRate, numberOfPayments);
 
-  let balance = loanAmount;
-  let totalInterestRegular = 0;
-  let monthsRegular = 0;
+  const investmentMonthlyRate = toMonthlyRate(investmentReturn);
 
-  for (let month = 1; month <= numberOfPayments; month++) {
-    const interestPayment = balance * monthlyRate;
-    const principalPayment = regularMonthlyPayment - interestPayment;
-    totalInterestRegular += interestPayment;
-    balance -= principalPayment;
-    monthsRegular++;
-    if (balance <= 0) break;
-  }
+  // Both strategies spend the same cash every month and are measured at the
+  // same horizon: the end of the original loan term.
+  const prepayPath = simulatePath({
+    loanAmount,
+    monthlyRate,
+    basePayment: regularMonthlyPayment,
+    extraMonthly: extraMonthlyPayment,
+    extraAnnual: extraAnnualPayment,
+    investMonthlyRate: investmentMonthlyRate,
+    horizonMonths: numberOfPayments,
+    prepay: true,
+  });
 
-  balance = loanAmount;
-  let totalInterestWithExtra = 0;
-  let monthsWithExtra = 0;
-  const totalExtraMonthly = extraMonthlyPayment;
+  const investPath = simulatePath({
+    loanAmount,
+    monthlyRate,
+    basePayment: regularMonthlyPayment,
+    extraMonthly: extraMonthlyPayment,
+    extraAnnual: extraAnnualPayment,
+    investMonthlyRate: investmentMonthlyRate,
+    horizonMonths: numberOfPayments,
+    prepay: false,
+  });
 
-  for (let month = 1; month <= numberOfPayments * 2; month++) {
-    const interestPayment = balance * monthlyRate;
-    let principalPayment = regularMonthlyPayment - interestPayment;
-    
-    principalPayment += totalExtraMonthly;
-    
-    if (month % 12 === 0) {
-      principalPayment += extraAnnualPayment;
-    }
-
-    totalInterestWithExtra += interestPayment;
-    balance -= principalPayment;
-    monthsWithExtra++;
-    
-    if (balance <= 0) break;
-  }
+  const totalInterestRegular = investPath.totalInterest;
+  const totalInterestWithExtra = prepayPath.totalInterest;
+  const monthsRegular = investPath.payoffMonth;
+  const monthsWithExtra = prepayPath.payoffMonth;
 
   const interestSaved = totalInterestRegular - totalInterestWithExtra;
   const monthsSaved = monthsRegular - monthsWithExtra;
   const yearsSaved = monthsSaved / 12;
 
-  const totalExtraPaid = (extraMonthlyPayment * monthsWithExtra) + (extraAnnualPayment * Math.floor(monthsWithExtra / 12));
+  const totalExtraPaid =
+    extraMonthlyPayment * monthsWithExtra +
+    extraAnnualPayment * Math.floor(monthsWithExtra / 12);
 
-  const investmentMonthlyRate = investmentReturn / 100 / 12;
-  let investmentValue = 0;
-  for (let month = 1; month <= monthsRegular; month++) {
-    let monthlyInvestment = extraMonthlyPayment;
-    if (month % 12 === 0) {
-      monthlyInvestment += extraAnnualPayment;
-    }
-    investmentValue = (investmentValue + monthlyInvestment) * (1 + investmentMonthlyRate);
-  }
+  // At the horizon both loans are fully paid off, so the difference in net
+  // worth between the two strategies is exactly the difference in portfolios.
+  const prepayPortfolio = prepayPath.portfolioAtHorizon;
+  const investPortfolio = investPath.portfolioAtHorizon;
+  const netWorthDifference = investPortfolio - prepayPortfolio;
 
   const insights: string[] = [];
 
@@ -73,61 +134,61 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
     insights.push(
       `Making extra payments saves you $${interestSaved.toFixed(0)} in interest and pays off your loan ${yearsSaved.toFixed(1)} years earlier.`
     );
+    insights.push(
+      `Every extra dollar you put toward principal earns a guaranteed return equal to your mortgage rate: ${interestRate}%.`
+    );
   }
 
-  const returnOnExtraPayments = (interestSaved / totalExtraPaid) * 100;
-  insights.push(
-    `Your effective return on extra payments is ${returnOnExtraPayments.toFixed(1)}% (the interest rate you're avoiding).`
-  );
-
-  if (investmentValue > interestSaved) {
-    const difference = investmentValue - interestSaved;
-    insights.push(
-      `If you invested the extra payment at ${investmentReturn}% instead, you'd have $${investmentValue.toFixed(0)} - that's $${difference.toFixed(0)} more than the interest you'd save.`
-    );
-  } else {
-    const difference = interestSaved - investmentValue;
-    insights.push(
-      `Paying down your mortgage saves you $${difference.toFixed(0)} more than investing at ${investmentReturn}% would earn.`
-    );
+  if (extraMonthlyPayment > 0 || extraAnnualPayment > 0) {
+    if (netWorthDifference > 0) {
+      insights.push(
+        `Fair comparison at year ${loanTerm}: investing the extra at ${investmentReturn}% grows to $${investPortfolio.toFixed(0)}, while prepaying (then investing the freed-up payment of $${(regularMonthlyPayment + extraMonthlyPayment).toFixed(0)}/month after payoff) reaches $${prepayPortfolio.toFixed(0)} - investing comes out $${netWorthDifference.toFixed(0)} ahead, but that edge depends on actually earning ${investmentReturn}% every year.`
+      );
+    } else {
+      insights.push(
+        `Fair comparison at year ${loanTerm}: prepaying (then investing the freed-up payment of $${(regularMonthlyPayment + extraMonthlyPayment).toFixed(0)}/month after payoff) reaches $${prepayPortfolio.toFixed(0)}, versus $${investPortfolio.toFixed(0)} from investing the extra at ${investmentReturn}% - prepaying comes out $${Math.abs(netWorthDifference).toFixed(0)} ahead.`
+      );
+    }
   }
 
   if (interestRate < investmentReturn) {
     insights.push(
-      `Your mortgage rate (${interestRate}%) is lower than typical investment returns (${investmentReturn}%). Consider investing extra cash instead.`
+      `Your mortgage rate (${interestRate}%) is lower than your assumed investment return (${investmentReturn}%), so investing has the mathematical edge - but the ${interestRate}% from prepaying is guaranteed, while investment returns are not.`
     );
   } else {
     insights.push(
-      `Your mortgage rate (${interestRate}%) is higher than typical investment returns (${investmentReturn}%). Paying down debt is likely the better choice.`
+      `Your mortgage rate (${interestRate}%) is at or above your assumed investment return (${investmentReturn}%). Prepaying gives you a guaranteed return that the market is not expected to beat.`
     );
   }
 
   const chartData = [];
   let regularBalance = loanAmount;
   let extraBalance = loanAmount;
-  
+
   for (let year = 0; year <= loanTerm; year++) {
     for (let month = 1; month <= 12; month++) {
-      if (regularBalance > 0) {
-        const interest = regularBalance * monthlyRate;
-        const principal = regularMonthlyPayment - interest;
-        regularBalance -= principal;
-      }
-      
-      if (extraBalance > 0) {
-        const interest = extraBalance * monthlyRate;
-        let principal = regularMonthlyPayment - interest + extraMonthlyPayment;
-        if (month === 12) principal += extraAnnualPayment;
-        extraBalance -= principal;
+      if (year > 0) {
+        if (regularBalance > 0) {
+          const interest = regularBalance * monthlyRate;
+          const principal = regularMonthlyPayment - interest;
+          regularBalance -= principal;
+        }
+
+        if (extraBalance > 0) {
+          const interest = extraBalance * monthlyRate;
+          let principal = regularMonthlyPayment - interest + extraMonthlyPayment;
+          if (month === 12) principal += extraAnnualPayment;
+          extraBalance -= principal;
+        }
       }
     }
-    
+
     chartData.push({
       year,
       regularLoan: Math.max(0, parseFloat(regularBalance.toFixed(0))),
       withExtraPayments: Math.max(0, parseFloat(extraBalance.toFixed(0))),
     });
-    
+
     if (regularBalance <= 0 && extraBalance <= 0) break;
   }
 
@@ -145,7 +206,15 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
       monthsWithExtra,
       totalInterestRegular: parseFloat(totalInterestRegular.toFixed(2)),
       totalInterestWithExtra: parseFloat(totalInterestWithExtra.toFixed(2)),
-      investmentValue: parseFloat(investmentValue.toFixed(2)),
+      // Portfolio at the end of the original term if the extra is invested
+      // every month instead of prepaid.
+      investmentValue: parseFloat(investPortfolio.toFixed(2)),
+      // Portfolio at the same horizon under the prepay path: loan is paid off
+      // early, then the entire freed-up payment is invested.
+      prepayPortfolio: parseFloat(prepayPortfolio.toFixed(2)),
+      netWorthDifference: parseFloat(netWorthDifference.toFixed(2)),
+      horizonYears: loanTerm,
+      effectiveReturnRate: interestRate,
       investmentReturn,
     },
     chartData,

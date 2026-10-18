@@ -1,6 +1,84 @@
 import type { AccelerationInputs, CalculatorResult } from './types';
 import { monthlyPayment, toMonthlyRate } from './mortgageMath';
 
+interface PathSimulation {
+  totalInterest: number;
+  totalPaidToLoan: number;
+  payoffMonth: number;
+  portfolioAtHorizon: number;
+}
+
+/**
+ * Simulates one strategy over the full horizon with identical monthly cash
+ * outflow (base payment + extras + lump sum), so the two paths are directly
+ * comparable:
+ * - prepay=true:  extra dollars and the lump sum go to principal; once the
+ *   loan is paid off, the entire freed-up payment is invested until the
+ *   horizon.
+ * - prepay=false: only the base payment goes to the loan; extra dollars and
+ *   the lump sum are invested.
+ * Any cash not needed by the loan in a given month (including the partial
+ * final payment) is invested.
+ */
+function simulatePath(params: {
+  loanAmount: number;
+  monthlyRate: number;
+  basePayment: number;
+  extraMonthly: number;
+  extraAnnual: number;
+  lumpSumAmount: number;
+  lumpSumMonth: number;
+  investMonthlyRate: number;
+  horizonMonths: number;
+  prepay: boolean;
+}): PathSimulation {
+  const {
+    loanAmount,
+    monthlyRate,
+    basePayment,
+    extraMonthly,
+    extraAnnual,
+    lumpSumAmount,
+    lumpSumMonth,
+    investMonthlyRate,
+    horizonMonths,
+    prepay,
+  } = params;
+
+  let balance = loanAmount;
+  let totalInterest = 0;
+  let totalPaidToLoan = 0;
+  let portfolio = 0;
+  let payoffMonth = horizonMonths;
+
+  for (let month = 1; month <= horizonMonths; month++) {
+    portfolio *= 1 + investMonthlyRate;
+
+    const lumpSum = month === lumpSumMonth ? lumpSumAmount : 0;
+    const outlay =
+      basePayment + extraMonthly + (month % 12 === 0 ? extraAnnual : 0) + lumpSum;
+    let paymentToLoan = 0;
+
+    if (balance > 0) {
+      const interest = balance * monthlyRate;
+      totalInterest += interest;
+      const amountDue = balance + interest;
+      const maxTowardLoan = prepay ? outlay : Math.min(basePayment, outlay);
+      paymentToLoan = Math.min(maxTowardLoan, amountDue);
+      balance = amountDue - paymentToLoan;
+      totalPaidToLoan += paymentToLoan;
+      if (balance <= 1e-6) {
+        balance = 0;
+        payoffMonth = month;
+      }
+    }
+
+    portfolio += outlay - paymentToLoan;
+  }
+
+  return { totalInterest, totalPaidToLoan, payoffMonth, portfolioAtHorizon: portfolio };
+}
+
 export function calculateAcceleration(inputs: AccelerationInputs): CalculatorResult {
   const {
     loanAmount,
@@ -17,7 +95,9 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
 
   const monthlyRate = toMonthlyRate(interestRate);
   const numPayments = loanTerm * 12;
-  
+  const investMonthlyRate = toMonthlyRate(investmentReturn);
+  const lumpSumMonth = lumpSumAmount > 0 ? lumpSumYear * 12 : 0;
+
   // Base payment
   const basePayment = monthlyPayment(loanAmount, interestRate, numPayments);
 
@@ -25,31 +105,24 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
   const regularTotalPaid = basePayment * numPayments;
   const regularTotalInterest = regularTotalPaid - loanAmount;
 
-  // Scenario 2: Extra payments (prepay)
-  let prepayBalance = loanAmount;
-  let prepayTotalPaid = 0;
-  let prepayMonths = 0;
-  
-  for (let month = 1; month <= numPayments; month++) {
-    const interest = prepayBalance * monthlyRate;
-    let payment = basePayment + extraMonthly;
-    
-    if (month % 12 === 0) {
-      payment += extraAnnual;
-    }
-    
-    if (month === lumpSumYear * 12) {
-      prepayBalance -= lumpSumAmount;
-    }
-    
-    const principal = payment - interest;
-    prepayBalance -= principal;
-    prepayTotalPaid += payment;
-    prepayMonths++;
-    
-    if (prepayBalance <= 0) break;
-  }
-  const prepayTotalInterest = prepayTotalPaid - loanAmount;
+  // Scenario 2: Extra payments (prepay). After early payoff, the freed-up
+  // payment is invested until the end of the original term so the comparison
+  // with investing is apples-to-apples.
+  const prepayPath = simulatePath({
+    loanAmount,
+    monthlyRate,
+    basePayment,
+    extraMonthly,
+    extraAnnual,
+    lumpSumAmount,
+    lumpSumMonth,
+    investMonthlyRate,
+    horizonMonths: numPayments,
+    prepay: true,
+  });
+  const prepayTotalInterest = prepayPath.totalInterest;
+  const prepayMonths = prepayPath.payoffMonth;
+  const prepayPortfolio = prepayPath.portfolioAtHorizon;
   const prepayYearsSaved = (numPayments - prepayMonths) / 12;
 
   // Scenario 3: Extra payments with recast
@@ -57,62 +130,64 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
   let recastTotalPaid = 0;
   let recastMonths = 0;
   let recastPayment = basePayment;
-  
+
   for (let month = 1; month <= numPayments; month++) {
     const interest = recastBalance * monthlyRate;
     let payment = recastPayment + extraMonthly;
-    
+
     if (month % 12 === 0) {
       payment += extraAnnual;
     }
-    
-    if (month === lumpSumYear * 12 && recastOption) {
+
+    if (month === lumpSumMonth && recastOption) {
       recastBalance -= lumpSumAmount;
       recastTotalPaid += recastFee;
       // Recalculate payment based on new balance
       const remainingMonths = numPayments - month;
       recastPayment = monthlyPayment(recastBalance, interestRate, remainingMonths);
     }
-    
-    const principal = payment - interest;
-    recastBalance -= principal;
+
+    const amountDue = recastBalance + interest;
+    payment = Math.min(payment, amountDue);
+    recastBalance = amountDue - payment;
     recastTotalPaid += payment;
     recastMonths++;
-    
-    if (recastBalance <= 0) break;
+
+    if (recastBalance <= 1e-6) break;
   }
   const recastTotalInterest = recastTotalPaid - loanAmount;
 
-  // Scenario 4: Invest instead
-  let investBalance = loanAmount;
-  let investTotalPaid = 0;
-  let investPortfolio = 0;
-  
-  for (let month = 1; month <= numPayments; month++) {
-    const interest = investBalance * monthlyRate;
-    const principal = basePayment - interest;
-    investBalance -= principal;
-    investTotalPaid += basePayment;
-    
-    // Invest the extra payments
-    const monthlyInvestment = extraMonthly + (month % 12 === 0 ? extraAnnual : 0);
-    investPortfolio = investPortfolio * (1 + investmentReturn / 100 / 12) + monthlyInvestment;
-    
-    if (month === lumpSumYear * 12) {
-      investPortfolio += lumpSumAmount;
-    }
-  }
-  const investTotalInterest = investTotalPaid - loanAmount;
-  const investNetWorth = investPortfolio - investBalance;
+  // Scenario 4: Invest instead - same cash outflow, extras go to a portfolio
+  // while the loan runs its full term.
+  const investPath = simulatePath({
+    loanAmount,
+    monthlyRate,
+    basePayment,
+    extraMonthly,
+    extraAnnual,
+    lumpSumAmount,
+    lumpSumMonth,
+    investMonthlyRate,
+    horizonMonths: numPayments,
+    prepay: false,
+  });
+  const investTotalInterest = investPath.totalInterest;
+  const investPortfolio = investPath.portfolioAtHorizon;
+
+  // At the end of the original term both loans are fully paid off, so the
+  // net-worth difference between the strategies is the portfolio difference.
+  const netWorthDifference = investPortfolio - prepayPortfolio;
+
+  const interestSaved = regularTotalInterest - prepayTotalInterest;
 
   const insights: string[] = [];
-  
+
   insights.push(
     `Regular payments: $${Math.round(basePayment).toLocaleString()}/month, $${Math.round(regularTotalInterest).toLocaleString()} interest over ${loanTerm} years`
   );
-  
+
   insights.push(
-    `Prepay strategy: Pay off in ${(prepayMonths / 12).toFixed(1)} years, save $${Math.round(regularTotalInterest - prepayTotalInterest).toLocaleString()} in interest`
+    `Prepay strategy: Pay off in ${(prepayMonths / 12).toFixed(1)} years, save $${Math.round(interestSaved).toLocaleString()} in interest - a guaranteed ${interestRate}% return on every extra dollar`
   );
 
   if (recastOption && recastMonths < prepayMonths) {
@@ -121,22 +196,23 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
     );
   }
 
-  const investNetGain = investPortfolio - (prepayTotalPaid - investTotalPaid);
-  if (investNetGain > 0) {
-    insights.push(
-      `💡 Investing instead: End with $${Math.round(investPortfolio).toLocaleString()} portfolio vs $${Math.round(regularTotalInterest - prepayTotalInterest).toLocaleString()} interest saved`
-    );
-  } else {
-    insights.push(
-      `Prepaying wins: Guaranteed ${interestRate}% return vs uncertain ${investmentReturn}% investment return`
-    );
+  if (extraMonthly > 0 || extraAnnual > 0 || lumpSumAmount > 0) {
+    if (netWorthDifference > 0) {
+      insights.push(
+        `💡 Fair comparison at year ${loanTerm}: investing the extra at ${investmentReturn}% grows to $${Math.round(investPortfolio).toLocaleString()}, while prepaying (then investing the freed-up $${Math.round(basePayment + extraMonthly).toLocaleString()}/month after payoff) reaches $${Math.round(prepayPortfolio).toLocaleString()} - investing comes out $${Math.round(netWorthDifference).toLocaleString()} ahead, if returns hold`
+      );
+    } else {
+      insights.push(
+        `Fair comparison at year ${loanTerm}: prepaying (then investing the freed-up $${Math.round(basePayment + extraMonthly).toLocaleString()}/month after payoff) reaches $${Math.round(prepayPortfolio).toLocaleString()}, versus $${Math.round(investPortfolio).toLocaleString()} from investing at ${investmentReturn}% - prepaying wins by $${Math.round(Math.abs(netWorthDifference)).toLocaleString()}`
+      );
+    }
   }
 
   insights.push(
-    `The "right" choice depends on: interest rate vs investment returns, risk tolerance, and peace of mind value`
+    `The "right" choice depends on: your guaranteed ${interestRate}% mortgage rate vs uncertain ${investmentReturn}% investment returns, risk tolerance, and peace of mind value`
   );
 
-  const summary = `Prepaying saves $${Math.round(regularTotalInterest - prepayTotalInterest).toLocaleString()} and pays off ${prepayYearsSaved.toFixed(1)} years early.`;
+  const summary = `Prepaying saves $${Math.round(interestSaved).toLocaleString()} and pays off ${prepayYearsSaved.toFixed(1)} years early.`;
 
   return {
     summary,
@@ -147,9 +223,16 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
       regularYears: loanTerm,
       prepayInterest: Math.round(prepayTotalInterest),
       prepayYears: parseFloat((prepayMonths / 12).toFixed(1)),
-      interestSaved: Math.round(regularTotalInterest - prepayTotalInterest),
+      interestSaved: Math.round(interestSaved),
       yearsSaved: parseFloat(prepayYearsSaved.toFixed(1)),
+      recastInterest: Math.round(recastTotalInterest),
+      // Portfolio at the end of the original term under each strategy
+      // (identical monthly cash outflow in both).
+      prepayPortfolio: Math.round(prepayPortfolio),
       investPortfolio: Math.round(investPortfolio),
+      netWorthDifference: Math.round(netWorthDifference),
+      horizonYears: loanTerm,
+      effectiveReturnRate: interestRate,
     },
     chartData: [
       { strategy: 'Regular', totalInterest: Math.round(regularTotalInterest), years: loanTerm },

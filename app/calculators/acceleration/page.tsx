@@ -208,7 +208,7 @@ export default function AccelerationCalculator() {
                   <MetricCard
                     label="Invest Portfolio"
                     value={`$${(result.details.investPortfolio as number).toLocaleString()}`}
-                    sublabel="If invested instead"
+                    sublabel={`If invested instead, at year ${result.details.horizonYears}`}
                     color="secondary"
                   />
                 </Grid>
@@ -292,7 +292,7 @@ export default function AccelerationCalculator() {
               {/* Prepay vs Invest */}
               <ResultsSection 
                 title="Prepay vs Invest" 
-                subtitle="Should you pay down the mortgage or invest?"
+                subtitle={`Net worth at year ${result.details.horizonYears} under each strategy, with identical monthly spending`}
               >
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Grid container spacing={3}>
@@ -303,14 +303,14 @@ export default function AccelerationCalculator() {
                           Prepay Mortgage
                         </Typography>
                         <Typography variant="h5" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>
-                          ${(result.details.interestSaved as number).toLocaleString()}
+                          ${(result.details.prepayPortfolio as number).toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Guaranteed {inputs.interestRate}% return (interest saved)
+                          Portfolio at year {result.details.horizonYears}: payoff in {result.details.prepayYears} years, then the freed-up payment is invested at {inputs.investmentReturn}%
                         </Typography>
                         <Divider sx={{ my: 2 }} />
                         <Typography variant="body2" sx={{ color: '#065F46' }}>
-                          ✓ Risk-free, guaranteed return<br />
+                          ✓ Guaranteed {inputs.interestRate}% return (your loan rate)<br />
                           ✓ Peace of mind, debt freedom<br />
                           ✓ Builds home equity faster
                         </Typography>
@@ -326,7 +326,7 @@ export default function AccelerationCalculator() {
                           ${(result.details.investPortfolio as number).toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Potential portfolio at {inputs.investmentReturn}% return
+                          Portfolio at year {result.details.horizonYears}: extra payments invested at {inputs.investmentReturn}% while the loan runs its full term
                         </Typography>
                         <Divider sx={{ my: 2 }} />
                         <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
@@ -341,13 +341,13 @@ export default function AccelerationCalculator() {
                   <Divider sx={{ my: 3 }} />
 
                   <Alert 
-                    severity={(result.details.investPortfolio as number) > (result.details.interestSaved as number) ? 'info' : 'success'} 
+                    severity={(result.details.netWorthDifference as number) > 0 ? 'info' : 'success'} 
                     sx={{ borderRadius: 2 }}
                   >
                     <Typography variant="body2">
-                      {(result.details.investPortfolio as number) > (result.details.interestSaved as number) 
-                        ? `At ${inputs.investmentReturn}% returns, investing may yield $${((result.details.investPortfolio as number) - (result.details.interestSaved as number)).toLocaleString()} more than prepaying. But remember: investment returns aren't guaranteed, while interest savings are.`
-                        : `At ${inputs.investmentReturn}% returns, prepaying wins by $${((result.details.interestSaved as number) - (result.details.investPortfolio as number)).toLocaleString()}. The guaranteed ${inputs.interestRate}% return from prepaying beats the expected investment return.`
+                      {(result.details.netWorthDifference as number) > 0 
+                        ? `At year ${result.details.horizonYears}, investing ends $${(result.details.netWorthDifference as number).toLocaleString()} ahead of prepaying. But remember: that assumes you earn ${inputs.investmentReturn}% every year, while prepaying's ${inputs.interestRate}% return is guaranteed.`
+                        : `At year ${result.details.horizonYears}, prepaying ends $${Math.abs(result.details.netWorthDifference as number).toLocaleString()} ahead of investing. The guaranteed ${inputs.interestRate}% return from prepaying beats the expected ${inputs.investmentReturn}% investment return.`
                       }
                     </Typography>
                   </Alert>
