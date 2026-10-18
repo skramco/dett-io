@@ -75,6 +75,10 @@ export default function PMICalculator() {
       calculatorSlug="pmi"
       title="PMI Calculator"
       description="Calculate your private mortgage insurance (PMI) cost based on your down payment, credit score, and loan details. See when PMI drops off and how to eliminate it faster."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+        `PMI premium estimated from credit score and down payment`,
+      ]}
       relatedCalculators={[
         { slug: 'down-payment', name: 'Down Payment Strategy' },
         { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },

@@ -86,6 +86,10 @@ export default function ArmVsFixedCalculator() {
       calculatorSlug="arm-vs-fixed"
       title="ARM vs Fixed Rate Calculator"
       description="Compare adjustable-rate mortgages (ARM) to fixed-rate loans. See initial savings, rate adjustment scenarios, and worst-case payment projections."
+      assumptions={[
+        `Fixed option at ${inputs.fixedRate}% vs a ${inputs.armFixedPeriod}-year ARM starting at ${inputs.armInitialRate}%, both on ${inputs.loanTerm}-year terms`,
+        `ARM adjustments capped at ${inputs.armAdjustmentCap}% per adjustment and ${inputs.armLifetimeCap}% over the life of the loan`,
+      ]}
       relatedCalculators={[
         { slug: 'points-buydown', name: 'Points & Buydown' },
         { slug: 'timeline-simulator', name: 'Decision Timeline' },

@@ -156,13 +156,13 @@ export const comparisons: ComparisonData[] = [
     optionBName: '30-Year Mortgage',
     overview: 'A 15-year mortgage has higher monthly payments but saves you tens of thousands in interest and builds equity twice as fast. A 30-year mortgage keeps payments affordable but costs significantly more over time. The right choice depends on your monthly budget, financial goals, and risk tolerance.',
     comparisonTable: [
-      { feature: 'Monthly Payment (on $360K at 6.75%)', optionA: '~$3,181/mo', optionB: '~$2,335/mo' },
+      { feature: 'Monthly Payment (on $360K at a 6.75% interest rate — not an APR; APR will differ with fees)', optionA: '~$3,181/mo (15-year term)', optionB: '~$2,335/mo (30-year term)' },
       { feature: 'Total Interest Paid', optionA: '~$212,500', optionB: '~$480,600' },
       { feature: 'Interest Savings', optionA: 'Save ~$268,000 vs 30-year', optionB: 'N/A — baseline' },
       { feature: 'Interest Rate', optionA: 'Typically 0.5-0.75% lower', optionB: 'Higher rate' },
       { feature: 'Equity Building', optionA: 'Much faster — own home in 15 years', optionB: 'Slower — most early payments go to interest' },
       { feature: 'Payment Flexibility', optionA: 'Less — higher required payment', optionB: 'More — lower required payment' },
-      { feature: 'Qualification', optionA: 'Harder — higher DTI impact', optionB: 'Easier — lower monthly obligation' },
+      { feature: 'Guideline Fit', optionA: 'Tighter — higher DTI impact', optionB: 'Easier — lower monthly obligation' },
       { feature: 'Tax Deduction', optionA: 'Less interest to deduct', optionB: 'More interest deduction (if itemizing)' },
     ],
     prosA: [
@@ -175,13 +175,13 @@ export const comparisons: ComparisonData[] = [
     consA: [
       { text: 'Monthly payment is 30-50% higher' },
       { text: 'Less cash available for investing, emergencies, or lifestyle' },
-      { text: 'Harder to qualify — higher DTI ratio' },
+      { text: 'Tighter fit with typical DTI guidelines — higher required payment' },
       { text: 'Less flexibility if income drops' },
     ],
     prosB: [
       { text: 'Lower monthly payment — more affordable' },
       { text: 'Extra cash can be invested elsewhere (potentially earning more than mortgage rate)' },
-      { text: 'Easier to qualify for a larger loan' },
+      { text: 'A larger loan may fit typical guidelines more easily' },
       { text: 'More financial flexibility for emergencies' },
       { text: 'Can always pay extra to mimic a 15-year schedule' },
     ],

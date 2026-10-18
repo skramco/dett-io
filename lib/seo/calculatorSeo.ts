@@ -368,7 +368,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     slug: 'fha',
     title: 'FHA Loan Calculator - Monthly Payment with MIP | Dett',
     description:
-      'Calculate your FHA mortgage payment including upfront and monthly MIP. Check eligibility, compare FHA vs conventional, and understand the true cost of FHA mortgage insurance.',
+      'Calculate your FHA mortgage payment including upfront and monthly MIP. See how your numbers compare to typical FHA guidelines, compare FHA vs conventional, and understand the true cost of FHA mortgage insurance.',
     keywords: [
       'FHA loan calculator',
       'FHA mortgage calculator',
@@ -444,9 +444,9 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
   },
   dti: {
     slug: 'dti',
-    title: 'Debt-to-Income (DTI) Calculator - Check Your Mortgage Eligibility | Dett',
+    title: 'Debt-to-Income (DTI) Calculator - See What Lenders See | Dett',
     description:
-      'Calculate your front-end and back-end DTI ratios — the key numbers lenders use to qualify you for a mortgage. See if you meet conventional, FHA, and VA loan requirements.',
+      'Calculate your front-end and back-end DTI ratios — the key numbers lenders review on a mortgage application. See how you compare to typical conventional, FHA, and VA guidelines.',
     keywords: [
       'DTI calculator',
       'debt to income ratio calculator',
@@ -464,7 +464,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     jsonLd: {
       name: 'Debt-to-Income (DTI) Calculator',
       description:
-        'Calculate your front-end and back-end DTI ratios to see if you qualify for a mortgage.',
+        'Calculate your front-end and back-end DTI ratios and see how they compare to typical mortgage guidelines.',
       applicationCategory: 'FinanceApplication',
     },
   },

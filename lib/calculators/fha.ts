@@ -117,7 +117,7 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   } else if (creditScore < 580) {
     insights.push(`With a ${creditScore} credit score, FHA requires a minimum 10% down payment. Improving to 580+ would allow just 3.5% down.`);
   } else {
-    insights.push(`With a ${creditScore} credit score, you qualify for FHA's minimum 3.5% down payment. Your actual down payment of ${downPaymentPercent}% ${meetsDownPayment ? 'meets' : 'is below'} this requirement.`);
+    insights.push(`With a ${creditScore} credit score, the typical FHA guideline minimum down payment is 3.5%. Your down payment of ${downPaymentPercent}% ${meetsDownPayment ? 'meets' : 'is below'} this guideline.`);
   }
 
   insights.push(
@@ -145,7 +145,7 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   }
 
   if (totalDTI > 43 && totalDTI <= 57) {
-    insights.push(`Your DTI of ${totalDTI.toFixed(1)}% exceeds the standard 43% limit but FHA may approve up to 57% with compensating factors (cash reserves, minimal payment increase, etc.).`);
+    insights.push(`Your DTI of ${totalDTI.toFixed(1)}% exceeds the standard 43% guideline, but FHA guidelines may allow up to 57% with compensating factors (cash reserves, minimal payment increase, etc.).`);
   } else if (totalDTI > 57) {
     insights.push(`Your DTI of ${totalDTI.toFixed(1)}% exceeds even FHA's maximum of 57%. You'll need to reduce debts or increase income.`);
   }

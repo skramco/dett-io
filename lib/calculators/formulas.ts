@@ -109,7 +109,7 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'New Loan Amount', formula: 'Current Balance + Cash Out + Closing Costs', description: 'Total amount of the new mortgage.', computedValue: `$${fmt(d.newLoanAmount as number)}` },
         { label: 'New Monthly Payment', formula: 'New Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Monthly P&I on the larger loan.', computedValue: `$${fmt(d.newPayment as number)}` },
-        { label: 'Effective Cash-Out Rate', formula: 'Additional Interest ÷ Cash Received × 100', description: 'The true cost of borrowing against your equity.' },
+        { label: 'Effective Annual Cost of Cash', formula: 'Additional Interest ÷ Cash Received ÷ Years × 100', description: 'A simplified annualized measure of what borrowing against your equity costs. This is a cost metric, not an APR or interest rate.' },
       ],
     },
   ],

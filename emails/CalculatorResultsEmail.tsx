@@ -137,7 +137,7 @@ export default function CalculatorResultsEmail({
               <Link href="https://dett.io/terms" style={footerLink}>Terms</Link>
             </Text>
             <Text style={footerDisclaimer}>
-              This calculator provides estimates for educational purposes only. Results are not a loan offer, pre-qualification, or commitment to lend. Dett.io is not a mortgage lender, broker, or financial advisor. Consult qualified professionals before making financial decisions.
+              This calculator provides estimates for educational purposes only. Results are not a loan offer, pre-qualification, or commitment to lend. Payments shown assume the stated interest rate and loan term; interest rates are not APRs — your APR will differ once lender fees and other loan costs are included. Dett.io is not a mortgage lender, broker, or financial advisor. Consult qualified professionals before making financial decisions.
             </Text>
             <Text style={footerCopyright}>
               © {new Date().getFullYear()} Skramco Holdings LLC d/b/a Dett.io. All rights reserved.

@@ -74,6 +74,9 @@ export default function InterestSensitivityCalculator() {
       calculatorSlug="interest-sensitivity"
       title="Interest Rate Sensitivity Calculator"
       description="See how interest rate changes affect your monthly payment and total cost. Understand the impact of rate timing, points, and market movements."
+      assumptions={[
+        `${inputs.loanTerm}-year term applies to every rate scenario shown`,
+      ]}
       relatedCalculators={[
         { slug: 'refinance', name: 'Should I Refinance?' },
         { slug: 'arm-vs-fixed', name: 'ARM vs Fixed Rate' },

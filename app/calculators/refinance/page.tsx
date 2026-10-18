@@ -104,6 +104,9 @@ export default function RefinanceCalculator() {
       calculatorSlug="refinance"
       title="Should I Refinance?"
       description="Compare your current mortgage to a new loan. See monthly savings, break-even timeline, and total cost comparison to make an informed decision."
+      assumptions={[
+        `Current loan at ${inputs.currentRate}% with ${inputs.yearsRemaining} years remaining; new ${inputs.newTerm}-year loan at ${inputs.newRate}%`,
+      ]}
       relatedCalculators={[
         { slug: 'cash-out-refi', name: 'Cash-Out Refinance' },
         { slug: 'recast-vs-refi', name: 'Recast vs Refinance' },

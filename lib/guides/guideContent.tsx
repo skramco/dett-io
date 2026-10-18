@@ -44,7 +44,7 @@ function AffordHouse40K() {
 
       <h2>What Lenders See</h2>
       <p>At $40K, your gross monthly income is about $3,333. The 28% front-end DTI rule gives you a maximum housing payment of roughly <strong>$933 per month</strong>. That's your ceiling for principal, interest, taxes, insurance, and any PMI or HOA fees combined.</p>
-      <p>The challenge at this income level isn't qualification — it's finding a home in your price range that doesn't need major repairs. Lenders will approve you, but the real question is whether the housing stock in your area works at $120K-$170K.</p>
+      <p>The challenge at this income level usually isn't meeting typical lending guidelines — it's finding a home in your price range that doesn't need major repairs. The real question is whether the housing stock in your area works at $120K-$170K.</p>
 
       <h2>Loan Programs That Help</h2>
       <p>At $40K, government-backed loans are your best friend:</p>
@@ -214,7 +214,7 @@ function AffordHouse65K() {
       </ol>
 
       <h2>The Bottom Line</h2>
-      <p>$65K is a solid income for home buying. You have enough to qualify for good loan terms without being stretched thin. The key is keeping your total debt manageable and not buying at the absolute top of your approval range. Leave yourself a cushion.</p>
+      <p>$65K is a solid income for home buying. An income at this level typically fits lending guidelines for good loan terms without being stretched thin. The key is keeping your total debt manageable and not buying at the absolute top of your budget range. Leave yourself a cushion.</p>
     </>
   );
 }

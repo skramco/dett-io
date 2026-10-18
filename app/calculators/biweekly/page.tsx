@@ -66,6 +66,9 @@ export default function BiweeklyCalculator() {
       calculatorSlug="biweekly"
       title="Biweekly Payment Calculator"
       description="See how biweekly payments can pay off your mortgage faster. Learn the difference between true biweekly and fake biweekly programs, plus a free DIY alternative."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+      ]}
       relatedCalculators={[
         { slug: 'extra-payment', name: 'Extra Payment Impact' },
         { slug: 'acceleration', name: 'Acceleration Planner' },

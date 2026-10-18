@@ -380,7 +380,7 @@ export default function ComparisonLayout({ data }: ComparisonLayoutProps) {
           {/* Disclaimer */}
           <Box sx={{ px: 2, py: 2, bgcolor: 'grey.50', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
             <Typography variant="caption" color="text.disabled" sx={{ display: 'block', lineHeight: 1.7 }}>
-              <strong>Disclaimer:</strong> This comparison is for educational purposes only. Loan terms, rates, and eligibility vary by lender and are based on your complete financial profile. Dett.io is not a lender, broker, or financial advisor. Consult qualified professionals before making financial decisions. See our <a href="/terms" style={{ color: 'inherit' }}>Terms of Use</a> for full details.
+              <strong>Disclaimer:</strong> This comparison is for educational purposes only. Loan terms, rates, and eligibility vary by lender and are based on your complete financial profile. Any example payments assume the stated interest rate and loan term; interest rates shown are not APRs — your APR will differ once lender fees and other loan costs are included. Dett.io is not a lender, broker, or financial advisor. Consult qualified professionals before making financial decisions. See our <a href="/terms" style={{ color: 'inherit' }}>Terms of Use</a> for full details.
             </Typography>
           </Box>
         </Container>

@@ -79,6 +79,9 @@ export default function AmortizationCalculator() {
       calculatorSlug="amortization"
       title="Amortization Schedule Calculator"
       description="See a complete month-by-month breakdown of every mortgage payment. Understand exactly how much goes to principal vs interest over the life of your loan."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+      ]}
       relatedCalculators={[
         { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
         { slug: 'extra-payment', name: 'Extra Payment Impact' },

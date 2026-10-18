@@ -113,6 +113,10 @@ export default function ClosingCostCalculator() {
       calculatorSlug="closing-costs"
       title="Closing Cost Estimator"
       description="Get a detailed estimate of your mortgage closing costs. See lender fees, third-party fees, government charges, and prepaid items — so you know exactly how much cash you need at the closing table."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+        `Fee estimates reflect typical ranges — actual charges vary by lender and location`,
+      ]}
       relatedCalculators={[
         { slug: 'affordability', name: 'How Much House Can I Afford?' },
         { slug: 'down-payment', name: 'Down Payment Strategy' },

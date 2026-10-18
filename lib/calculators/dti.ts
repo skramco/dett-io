@@ -92,7 +92,7 @@ export function calculateDTI(inputs: DTIInputs): CalculatorResult {
   } else if (backEndDTI <= 43) {
     insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% is at the upper limit for most conventional loans (43% max). FHA loans may allow up to 50%.`);
   } else if (backEndDTI <= 50) {
-    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% exceeds conventional loan limits (43%). FHA loans may still qualify you at up to 50% with compensating factors.`);
+    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% exceeds typical conventional guidelines (43%). FHA guidelines may allow up to 50% with compensating factors.`);
   } else {
     insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% exceeds most loan program limits. Consider paying down debts before applying for a mortgage.`);
   }

@@ -127,7 +127,10 @@ export default function DTICalculator() {
     <CalculatorLayout
       calculatorSlug="dti"
       title="Debt-to-Income (DTI) Calculator"
-      description="Calculate your front-end and back-end DTI ratios — the key numbers lenders use to determine how much mortgage you can qualify for. See exactly what lenders see."
+      description="Calculate your front-end and back-end DTI ratios — the key numbers lenders review when evaluating a mortgage application. See exactly what lenders see."
+      assumptions={[
+        `Thresholds shown (28% front-end; 36–43% conventional, 43% FHA, 41% VA back-end) are typical industry guidelines — each lender sets its own criteria`,
+      ]}
       relatedCalculators={[
         { slug: 'affordability', name: 'How Much House Can I Afford?' },
         { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
@@ -322,7 +325,7 @@ export default function DTICalculator() {
               </ResultsSection>
 
               {/* Lender Thresholds */}
-              <ResultsSection title="What Lenders See" subtitle="DTI thresholds for different loan programs">
+              <ResultsSection title="What Lenders See" subtitle="How your DTI compares to typical guideline thresholds — actual lender criteria vary">
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Stack spacing={2}>
                     {[
@@ -332,19 +335,19 @@ export default function DTICalculator() {
                       { label: 'VA', threshold: 41, color: DTI_COLORS.acceptable, desc: 'Back-end ≤ 41%, no hard cap with residual income' },
                     ].map((item) => {
                       const backEnd = result.details.backEndDTI as number;
-                      const qualifies = backEnd <= item.threshold;
+                      const withinGuideline = backEnd <= item.threshold;
                       return (
-                        <Box key={item.label} sx={{ p: 2, borderRadius: 2, bgcolor: qualifies ? '#F0FDF4' : '#FEF2F2', border: '1px solid', borderColor: qualifies ? '#BBF7D0' : '#FECACA' }}>
+                        <Box key={item.label} sx={{ p: 2, borderRadius: 2, bgcolor: withinGuideline ? '#F0FDF4' : '#FEF2F2', border: '1px solid', borderColor: withinGuideline ? '#BBF7D0' : '#FECACA' }}>
                           <Stack direction="row" justifyContent="space-between" alignItems="center">
                             <Box>
                               <Stack direction="row" spacing={1} alignItems="center">
-                                {qualifies ? <CheckCircle sx={{ fontSize: 18, color: '#22C55E' }} /> : <ErrorIcon sx={{ fontSize: 18, color: '#EF4444' }} />}
+                                {withinGuideline ? <CheckCircle sx={{ fontSize: 18, color: '#22C55E' }} /> : <ErrorIcon sx={{ fontSize: 18, color: '#EF4444' }} />}
                                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{item.label}</Typography>
                               </Stack>
                               <Typography variant="caption" color="text.secondary">{item.desc}</Typography>
                             </Box>
-                            <Typography variant="body2" sx={{ fontWeight: 700, color: qualifies ? '#22C55E' : '#EF4444' }}>
-                              {qualifies ? 'Likely Qualifies' : 'May Not Qualify'}
+                            <Typography variant="body2" sx={{ fontWeight: 700, color: withinGuideline ? '#22C55E' : '#EF4444' }}>
+                              {withinGuideline ? 'May Meet Typical Guidelines' : 'Above Typical Guidelines'}
                             </Typography>
                           </Stack>
                         </Box>
@@ -395,8 +398,8 @@ export default function DTICalculator() {
                       {' '}After all debts, you have <strong>${fmt(result.details.remainingIncome as number)}</strong> remaining each month
                       ({result.details.remainingPercent}% of gross income).
                       {(result.details.backEndDTI as number) <= 43
-                        ? ' Your DTI is within conventional loan limits.'
-                        : ' You may need to reduce debts or increase income to qualify for most mortgage programs.'}
+                        ? ' Your DTI is within typical conventional loan guidelines.'
+                        : ' You may need to reduce debts or increase income to fit within typical guidelines for most mortgage programs.'}
                     </Typography>
                   </Box>
                 </Stack>

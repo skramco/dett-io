@@ -7,11 +7,11 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
   'afford-house-40k-salary': [
     { question: 'Can I buy a house making $40,000 a year?', answer: 'Yes. On a $40K salary, you can typically afford a home in the $120,000 to $170,000 range, depending on your debts, down payment, and location. FHA and USDA loans make this especially accessible.' },
     { question: 'How much house can I afford on $40K?', answer: 'Following the 28% DTI rule, your maximum housing payment is about $933/month, which supports a home price of roughly $140,000-$170,000 with current interest rates.' },
-    { question: 'What is the best loan for a $40K salary?', answer: 'FHA loans (3.5% down, 580+ credit score) and USDA loans (0% down in eligible areas) are the best options at this income level due to low down payment requirements and flexible qualification.' },
+    { question: 'What is the best loan for a $40K salary?', answer: 'FHA loans (3.5% down, 580+ credit score) and USDA loans (0% down in eligible areas) are the best options at this income level due to low down payment requirements and flexible guidelines.' },
   ],
   'afford-house-50k-salary': [
     { question: 'Can I afford a house on a $50,000 salary?', answer: 'Yes. On $50K, you can typically afford a home in the $150,000 to $200,000 range. Your maximum housing payment at 28% DTI is about $1,167/month.' },
-    { question: 'How much mortgage can I get on a $50K salary?', answer: 'With minimal existing debt, you can qualify for a mortgage of approximately $150,000-$190,000, depending on your credit score, down payment, and interest rate.' },
+    { question: 'How much mortgage can I get on a $50K salary?', answer: 'With minimal existing debt, a mortgage of approximately $150,000-$190,000 may fit typical lending guidelines, depending on your credit score, down payment, and interest rate.' },
     { question: 'What down payment do I need on a $50K salary?', answer: 'With FHA, as little as 3.5% ($5,250-$7,000). Conventional loans require 3-5% ($4,500-$10,000). VA and USDA loans offer 0% down for eligible buyers.' },
   ],
   'afford-house-60k-salary': [
@@ -41,7 +41,7 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
   ],
   'afford-house-100k-salary': [
     { question: 'How much house can I afford on $100K salary?', answer: 'On a $100,000 salary, you can typically afford a home in the $350,000 to $450,000 range, with a maximum housing payment of about $2,333/month at 28% DTI.' },
-    { question: 'What mortgage can I get on $100K income?', answer: 'With good credit and minimal debt, you can qualify for a mortgage of $330,000-$420,000. The exact amount depends on your DTI ratio, credit score, and down payment.' },
+    { question: 'What mortgage can I get on $100K income?', answer: 'With good credit and minimal debt, a mortgage of $330,000-$420,000 may fit typical lending guidelines. The exact amount depends on your DTI ratio, credit score, and down payment.' },
     { question: 'Is $100K a good salary to buy a house?', answer: 'Yes, $100K provides strong buying power. You have access to competitive conventional loan terms and can comfortably afford homes in the mid-$300s to low-$400s in most U.S. markets.' },
   ],
   'afford-house-120k-salary': [

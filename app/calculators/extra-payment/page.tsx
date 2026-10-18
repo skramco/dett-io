@@ -76,6 +76,9 @@ export default function ExtraPaymentCalculator() {
       calculatorSlug="extra-payment"
       title="Extra Payment Calculator"
       description="See how extra payments accelerate your mortgage payoff. Compare the impact of monthly vs annual extra payments and whether to prepay or invest."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+      ]}
       relatedCalculators={[
         { slug: 'biweekly', name: 'Biweekly Payments' },
         { slug: 'acceleration', name: 'Acceleration Planner' },

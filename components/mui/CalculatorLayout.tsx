@@ -19,6 +19,7 @@ import { RelatedCalculators } from './calculator/RelatedCalculators';
 import { RelatedGuides } from './calculator/RelatedGuides';
 import { LoanKnowCTA } from './calculator/LoanKnowCTA';
 import { ActionBar } from './calculator/ActionBar';
+import { AssumptionsBlock } from './calculator/AssumptionsBlock';
 import { ShowMeTheMath } from './calculator/ShowMeTheMath';
 import { CalculatorJsonLd } from '@/components/JsonLd';
 import { useIsEmbed } from '@/lib/embedContext';
@@ -42,6 +43,8 @@ interface CalculatorLayoutProps {
   relatedCalculators?: RelatedCalculator[];
   actionBarData?: ActionBarData;
   calculatorSlug?: string;
+  /** Calculator-specific assumptions shown above the fold (rate, term, guideline thresholds, etc.). */
+  assumptions?: string[];
 }
 
 // Dotted background pattern
@@ -50,7 +53,7 @@ const dottedBackground = {
   backgroundSize: '24px 24px',
 };
 
-export default function CalculatorLayout({ children, title, description, relatedCalculators, actionBarData, calculatorSlug }: CalculatorLayoutProps) {
+export default function CalculatorLayout({ children, title, description, relatedCalculators, actionBarData, calculatorSlug, assumptions }: CalculatorLayoutProps) {
   const hasTracked = useRef(false);
   const isEmbed = useIsEmbed();
 
@@ -138,6 +141,7 @@ export default function CalculatorLayout({ children, title, description, related
                 },
               }}
             >
+              <AssumptionsBlock items={assumptions} compact />
               <Box data-pdf-capture>{children}</Box>
             </Box>
           </Container>
@@ -367,6 +371,7 @@ export default function CalculatorLayout({ children, title, description, related
               },
             }}
           >
+            <AssumptionsBlock items={assumptions} />
             <Box data-pdf-capture>
               {children}
             </Box>
@@ -408,7 +413,7 @@ export default function CalculatorLayout({ children, title, description, related
         <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 } }}>
           <Box sx={{ px: 2, py: 2, bgcolor: 'grey.50', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
             <Typography variant="caption" color="text.disabled" sx={{ display: 'block', lineHeight: 1.7 }}>
-              <strong>Important:</strong> This calculator provides estimates for educational purposes only. Results are not a loan offer, pre-qualification, pre-approval, or commitment to lend. Actual rates, terms, payments, and eligibility are determined by mortgage lenders based on your complete financial profile, credit history, property appraisal, and current market conditions. Dett.io is not a lender, broker, or financial advisor. Consult qualified professionals before making financial decisions. See our <a href="/terms" style={{ color: 'inherit' }}>Terms of Use</a> for full details.
+              <strong>Important:</strong> This calculator provides estimates for educational purposes only. Results are not a loan offer, pre-qualification, pre-approval, or commitment to lend. Payments shown assume the stated interest rate and loan term; interest rates are not APRs — your APR will differ once lender fees and other loan costs are included. Actual rates, terms, payments, and eligibility are determined by mortgage lenders based on your complete financial profile, credit history, property appraisal, and current market conditions. Dett.io is not a lender, broker, or financial advisor. Consult qualified professionals before making financial decisions. See our <a href="/terms" style={{ color: 'inherit' }}>Terms of Use</a> for full details.
             </Typography>
           </Box>
         </Container>

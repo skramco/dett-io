@@ -93,6 +93,10 @@ export default function RentVsBuyCalculator() {
       calculatorSlug="rent-vs-buy"
       title="Rent vs Buy Calculator"
       description="Compare the long-term financial impact of renting vs buying. See net worth projections, break-even timelines, and scenario analysis."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+        `${inputs.homeAppreciation}% annual home appreciation, ${inputs.rentInflation}% rent inflation, ${inputs.investmentReturn}% investment return`,
+      ]}
       relatedCalculators={[
         { slug: 'affordability', name: 'How Much House Can I Afford?' },
         { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },

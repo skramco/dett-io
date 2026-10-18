@@ -84,7 +84,7 @@ const wizardSteps: Record<string, WizardStep> = {
           description: "These calculators will help you figure out your budget and what to expect.",
           calculators: [
             { name: "How Much House Can I Afford?", href: "/calculators/affordability", why: "Your starting point — see your max price based on income" },
-            { name: "DTI Calculator", href: "/calculators/dti", why: "Check if your debt ratios qualify for a mortgage" },
+            { name: "DTI Calculator", href: "/calculators/dti", why: "See how your debt ratios compare to typical mortgage guidelines" },
             { name: "Down Payment Strategy", href: "/calculators/down-payment", why: "Compare 5%, 10%, and 20% down options" },
           ],
         },

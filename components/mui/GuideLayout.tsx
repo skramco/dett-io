@@ -175,6 +175,13 @@ export function GuideLayout({ guide, children }: GuideLayoutProps) {
           >
             {children}
           </Box>
+
+          {/* Rate & payment assumptions note */}
+          <Box sx={{ mt: 4, px: 2, py: 2, bgcolor: 'grey.50', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="caption" color="text.disabled" sx={{ display: 'block', lineHeight: 1.7 }}>
+              <strong>About the numbers:</strong> Payment examples in this guide are educational estimates that assume the stated interest rate on a 30-year loan term unless noted otherwise. Interest rates shown are not APRs — your APR will differ once lender fees and other loan costs are included. Figures are not a loan offer and do not mean you will meet any lender&apos;s criteria. Consult qualified professionals before making financial decisions.
+            </Typography>
+          </Box>
         </Container>
 
         {/* Related Calculators */}

@@ -26,7 +26,7 @@ export default function CashOutRefiCalculator() {
   const scenarios = useMemo(() => (result?.chartData || []) as Array<{ scenario: string; payment: number; totalInterest: number }>, [result]);
 
   return (
-    <CalculatorLayout calculatorSlug="cash-out-refi" title="Cash-Out Refinance Calculator" description="Analyze the true cost of accessing your home equity through a cash-out refinance." relatedCalculators={[{ slug: 'refinance', name: 'Should I Refinance?' }, { slug: 'recast-vs-refi', name: 'Recast vs Refinance' }, { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' }]} actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}>
+    <CalculatorLayout calculatorSlug="cash-out-refi" title="Cash-Out Refinance Calculator" description="Analyze the true cost of accessing your home equity through a cash-out refinance." assumptions={[`Current loan at ${inputs.currentRate}% with ${inputs.yearsRemaining} years remaining; new ${inputs.newTerm}-year loan at ${inputs.newRate}%`, `Closing costs are financed into the new loan`]} relatedCalculators={[{ slug: 'refinance', name: 'Should I Refinance?' }, { slug: 'recast-vs-refi', name: 'Recast vs Refinance' }, { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' }]} actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}>
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, lg: 5 }}>
           <Box className="calculator-inputs">
@@ -50,7 +50,7 @@ export default function CashOutRefiCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric label="Effective Cost of Cash" value={`${result.details.effectiveRate}%`} sublabel={`Getting $${inputs.cashOutAmount.toLocaleString()} costs you this rate over ${inputs.newTerm} years`} />
+              <HeroMetric label="Effective Annual Cost of Cash" value={`${result.details.effectiveAnnualCostPercent}%`} sublabel={`Annualized cost of accessing $${inputs.cashOutAmount.toLocaleString()} over the ${inputs.newTerm}-year term — a cost measure, not an APR or interest rate`} />
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={`$${(result.details.currentPayment as number).toLocaleString()}`} color="primary" /></Grid>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New Payment" value={`$${(result.details.newPayment as number).toLocaleString()}`} color="warning" /></Grid>
@@ -114,8 +114,8 @@ export default function CashOutRefiCalculator() {
                   <Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, color: '#92400E', mb: 1 }}>The Bottom Line</Typography>
                     <Typography variant="body1" sx={{ color: '#92400E' }}>
-                      Getting <strong>${inputs.cashOutAmount.toLocaleString()}</strong> via cash-out refi costs you an effective <strong>{result.details.effectiveRate}%</strong> rate 
-                      and <strong>${(result.details.totalInterestIncrease as number).toLocaleString()}</strong> in extra interest. Your payment increases by 
+                      Getting <strong>${inputs.cashOutAmount.toLocaleString()}</strong> via cash-out refi has an effective annual cost of <strong>{result.details.effectiveAnnualCostPercent}%</strong> (a cost measure, not an APR) 
+                      and adds <strong>${(result.details.totalInterestIncrease as number).toLocaleString()}</strong> in extra interest. Your payment increases by 
                       <strong> ${((result.details.newPayment as number) - (result.details.currentPayment as number)).toLocaleString()}/month</strong>.
                     </Typography>
                   </Box>

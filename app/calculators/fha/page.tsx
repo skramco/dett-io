@@ -95,7 +95,11 @@ export default function FHACalculator() {
     <CalculatorLayout
       calculatorSlug="fha"
       title="FHA Loan Calculator"
-      description="Calculate your FHA mortgage payment including upfront and monthly MIP. See if you qualify, compare FHA vs conventional, and understand the true cost of FHA mortgage insurance."
+      description="Calculate your FHA mortgage payment including upfront and monthly MIP. See how your numbers compare to typical FHA guidelines, compare FHA vs conventional, and understand the true cost of FHA mortgage insurance."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+        `Current FHA MIP schedule: 1.75% upfront premium (financed) plus annual MIP based on loan-to-value and term`,
+      ]}
       relatedCalculators={[
         { slug: 'affordability', name: 'How Much House Can I Afford?' },
         { slug: 'dti', name: 'DTI Calculator' },
@@ -222,7 +226,7 @@ export default function FHACalculator() {
               </Grid>
 
               {/* FHA Eligibility Check */}
-              <ResultsSection title="FHA Eligibility" subtitle="Do you qualify?">
+              <ResultsSection title="FHA Guideline Check" subtitle="How your inputs compare to typical FHA guidelines — actual lender criteria vary">
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Stack spacing={2}>
                     {[
@@ -256,7 +260,7 @@ export default function FHACalculator() {
                           </Box>
                         </Stack>
                         <Typography variant="body2" sx={{ fontWeight: 700, color: check.passes ? '#22C55E' : '#EF4444' }}>
-                          {check.passes ? 'Pass' : 'Fail'}
+                          {check.passes ? 'May Meet Typical Guidelines' : 'Outside Typical Guidelines'}
                         </Typography>
                       </Box>
                     ))}
@@ -346,8 +350,8 @@ export default function FHACalculator() {
                     {result.insights.map((insight, index) => (
                       <InsightCallout
                         key={index}
-                        type={insight.includes('qualify') || insight.includes('meets') ? 'tip' : insight.includes('below') || insight.includes('exceeds') ? 'warning' : 'info'}
-                        title={insight.includes('qualify') || insight.includes('meets') ? 'Eligibility' : insight.includes('below') || insight.includes('exceeds') ? 'Warning' : 'Insight'}
+                        type={insight.includes('guideline') || insight.includes('meets') ? 'tip' : insight.includes('below') || insight.includes('exceeds') ? 'warning' : 'info'}
+                        title={insight.includes('guideline') || insight.includes('meets') ? 'Guideline Check' : insight.includes('below') || insight.includes('exceeds') ? 'Warning' : 'Insight'}
                       >
                         {insight}
                       </InsightCallout>

@@ -66,7 +66,7 @@ const calculatorDetails = {
     value: 'Tells you if refinancing is worth it. Shows exactly when you\'ll break even on closing costs and how much you\'ll save long-term.',
   },
   'cash-out-refi': {
-    outputs: ['New monthly payment', 'Cash received', 'True cost of cash (APR)', 'Comparison to HELOC or personal loan', 'Long-term cost analysis'],
+    outputs: ['New monthly payment', 'Cash received', 'Effective annual cost of cash (not an APR)', 'Comparison to HELOC or personal loan', 'Long-term cost analysis'],
     value: 'Shows the real cost of pulling equity from your home. Helps you decide if cash-out refinancing beats other borrowing options.',
   },
   'recast-vs-refi': {
@@ -106,8 +106,8 @@ const calculatorDetails = {
     value: 'See exactly where every dollar of your mortgage payment goes. The full amortization table shows how your balance decreases over time and how much of each payment is interest vs principal.',
   },
   dti: {
-    outputs: ['Front-end DTI ratio (housing only)', 'Back-end DTI ratio (all debts)', 'Qualification status for Conventional, FHA, VA loans', 'Debt breakdown visualization', 'Maximum housing payment at each DTI threshold'],
-    value: 'DTI is the #1 factor lenders use to determine how much mortgage you qualify for. See both your front-end and back-end ratios and understand exactly what lenders see.',
+    outputs: ['Front-end DTI ratio (housing only)', 'Back-end DTI ratio (all debts)', 'Comparison to typical Conventional, FHA, and VA guidelines', 'Debt breakdown visualization', 'Maximum housing payment at each DTI threshold'],
+    value: 'DTI is the #1 factor lenders review when evaluating a mortgage application. See both your front-end and back-end ratios and understand exactly what lenders see.',
   },
   'closing-costs': {
     outputs: ['Itemized closing cost estimate', 'Lender fees vs third-party fees', 'Prepaid items breakdown', 'Total cash needed at closing', 'Seller credit scenarios'],

@@ -42,9 +42,9 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
   const altTotalPaid = (currentPayment * currentPayments) + (altLoanPayment * 120);
   const altTotalInterest = altTotalPaid - currentBalance - cashOutAmount;
 
-  // Calculate effective cost of cash
+  // Annualized cost of the cash accessed — a simplified cost measure, not an APR
   const cashCostViaRefi = newTotalInterest - currentTotalInterest;
-  const effectiveRate = (cashCostViaRefi / cashOutAmount / newTerm) * 100;
+  const effectiveAnnualCost = (cashCostViaRefi / cashOutAmount / newTerm) * 100;
 
   // LTV check
   const newLTV = (newLoanAmount / homeValue) * 100;
@@ -61,12 +61,12 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
   );
 
   insights.push(
-    `Effective cost of cash: ${effectiveRate.toFixed(2)}% over ${newTerm} years`
+    `Effective annual cost of cash: ${effectiveAnnualCost.toFixed(2)}% over ${newTerm} years (a cost measure, not an APR)`
   );
 
   if (newLTV > maxLTV) {
     insights.push(
-      `⚠️ New LTV is ${newLTV.toFixed(1)}% - you may not qualify or will pay higher rates above 80% LTV`
+      `⚠️ New LTV is ${newLTV.toFixed(1)}% - above 80% LTV is outside typical guidelines and pricing is usually higher`
     );
   }
 
@@ -86,7 +86,7 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
     );
   }
 
-  const summary = `Cash-out refi gives you $${cashOutAmount.toLocaleString()} but costs ${effectiveRate.toFixed(2)}% effective rate and resets your loan to ${newTerm} years.`;
+  const summary = `Cash-out refi gives you $${cashOutAmount.toLocaleString()} at an effective annual cost of ${effectiveAnnualCost.toFixed(2)}% (not an APR) and resets your loan to ${newTerm} years.`;
 
   return {
     summary,
@@ -99,7 +99,7 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
       newPayment: Math.round(newPayment),
       newRate,
       newLTV: Math.round(newLTV),
-      effectiveRate: parseFloat(effectiveRate.toFixed(2)),
+      effectiveAnnualCostPercent: parseFloat(effectiveAnnualCost.toFixed(2)),
       totalInterestIncrease: Math.round(newTotalInterest - currentTotalInterest),
     },
     chartData: [

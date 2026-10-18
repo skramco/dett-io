@@ -49,7 +49,7 @@ const ROLE_BENEFITS: Record<string, { title: string; tagline: string; benefits: 
     title: 'Realtors',
     tagline: 'Help buyers understand their budget before the first showing.',
     benefits: [
-      'Buyers who run affordability numbers first are more serious and better qualified',
+      'Buyers who run affordability numbers first are more serious and better prepared',
       'Add calculators to listing pages so buyers can estimate payments on specific properties',
       'Stand out from other agents by offering real financial tools, not just listings',
       'Rent vs Buy calculator helps convert renters into buyers on your site',

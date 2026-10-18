@@ -84,12 +84,12 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
   );
   
   insights.push(
-    `Aggressive ($${results.aggressivePrice.toLocaleString()}): Maximum qualification - leaves little room for error`
+    `Aggressive ($${results.aggressivePrice.toLocaleString()}): Top of typical guideline range - leaves little room for error`
   );
 
   if (backEndDTI > 43) {
     insights.push(
-      `⚠️ Your total debt payments (${Math.round(backEndDTI)}% DTI) may limit qualification. Consider paying down debts first.`
+      `⚠️ Your total debt payments (${Math.round(backEndDTI)}% DTI) are above typical guidelines and may limit your options. Consider paying down debts first.`
     );
   }
 

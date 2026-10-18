@@ -185,6 +185,10 @@ export default function MortgageCostCalculator() {
       calculatorSlug="mortgage-cost"
       title="True Monthly Mortgage Cost"
       description="See your real monthly payment including PITI (Principal, Interest, Taxes, Insurance), HOA fees, and PMI. Most calculators only show principal and interest—we show you the full picture."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+        `Taxes, insurance, HOA, and PMI as entered`,
+      ]}
       relatedCalculators={[
         { slug: 'affordability', name: 'How Much House Can I Afford?' },
         { slug: 'down-payment', name: 'Down Payment Strategy' },

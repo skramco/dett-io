@@ -82,6 +82,9 @@ export default function AccelerationCalculator() {
       calculatorSlug="acceleration"
       title="Mortgage Acceleration Calculator"
       description="See how extra payments can pay off your mortgage faster and save thousands in interest. Compare prepaying vs investing the difference."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+      ]}
       relatedCalculators={[
         { slug: 'extra-payment', name: 'Extra Payment Impact' },
         { slug: 'biweekly', name: 'Biweekly Payments' },

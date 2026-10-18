@@ -99,6 +99,10 @@ export default function VACalculator() {
       calculatorSlug="va"
       title="VA Loan Calculator"
       description="Calculate your VA mortgage payment with $0 down and no PMI. See your VA funding fee, compare VA vs FHA vs conventional, and understand the financial benefits of your VA loan benefit."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+        `VA funding fee per the current published schedule; no monthly mortgage insurance`,
+      ]}
       relatedCalculators={[
         { slug: 'fha', name: 'FHA Loan Calculator' },
         { slug: 'affordability', name: 'How Much House Can I Afford?' },

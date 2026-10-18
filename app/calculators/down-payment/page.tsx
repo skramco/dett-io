@@ -87,6 +87,10 @@ export default function DownPaymentCalculator() {
       calculatorSlug="down-payment"
       title="Down Payment Comparison"
       description="Compare different down payment amounts to see how they affect your monthly payment, PMI costs, and total cash needed at closing."
+      assumptions={[
+        `${inputs.interestRate}% interest rate on a ${inputs.loanTerm}-year term`,
+        `PMI estimated from down payment size`,
+      ]}
       relatedCalculators={[
         { slug: 'affordability', name: 'How Much House Can I Afford?' },
         { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
