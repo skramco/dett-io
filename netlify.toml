@@ -8,6 +8,11 @@
 [build.environment]
   NODE_VERSION = "20"
 
+[[redirects]]
+  from = "/partners"
+  to = "/embed"
+  status = 301
+
 # Allow /embed/* routes to be iframed on any domain
 [[headers]]
   for = "/embed/*"

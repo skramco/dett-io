@@ -82,6 +82,9 @@ export default function PrivacyPolicyPage() {
             </ul>
             <p>Our Services are entirely free and do not require account creation, login, or payment of any kind.</p>
 
+            <h3>2.4 Embedded Calculators</h3>
+            <p>When a Dett calculator is embedded on a third-party website, the numbers a visitor types stay in that visitor&apos;s browser and are not sent to us. We may record that an embed loaded so we can see which sites use the widgets. That record includes only the calculator identifier and the referring website&apos;s domain — not names, emails, IP addresses stored by us, or calculator inputs.</p>
+
             <h2>3. How We Use Your Information</h2>
             <p>We use the information we collect for the following purposes:</p>
             <ul>

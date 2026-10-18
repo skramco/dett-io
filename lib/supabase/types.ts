@@ -37,6 +37,28 @@ export interface Database {
           anonymous_id?: string | null
           user_id?: string | null
         }
+        Relationships: []
+      }
+      embed_loads: {
+        Row: {
+          id: number
+          created_at: string
+          calculator_slug: string
+          referring_domain: string
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          calculator_slug: string
+          referring_domain: string
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          calculator_slug?: string
+          referring_domain?: string
+        }
+        Relationships: []
       }
       scenarios: {
         Row: {
@@ -63,6 +85,7 @@ export interface Database {
           inputs?: Json
           results?: Json
         }
+        Relationships: []
       }
     }
     Views: {

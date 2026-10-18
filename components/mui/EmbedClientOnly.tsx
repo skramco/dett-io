@@ -2,6 +2,10 @@
 
 import { useState, useEffect, type ComponentType } from 'react';
 import { EmbedProvider } from '@/lib/embedContext';
+import { appearanceFromSearch } from '@/lib/embed/options';
+import { useEmbedResize } from '@/lib/embed/useEmbedResize';
+import { trackEmbedLoad } from '@/lib/embed/trackEmbedLoad';
+import { EmbedThemeProvider } from './EmbedThemeProvider';
 
 const calculatorImports: Record<string, () => Promise<{ default: ComponentType }>> = {
   'mortgage-cost': () => import('@/app/calculators/mortgage-cost/page'),
@@ -26,8 +30,27 @@ const calculatorImports: Record<string, () => Promise<{ default: ComponentType }
   'va': () => import('@/app/calculators/va/page'),
 };
 
+function LoadingSpinner({ color }: { color: string }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh', flexDirection: 'column', gap: 12 }}>
+      <div style={{ width: 36, height: 36, border: '3px solid #e0e0e0', borderTopColor: color, borderRadius: '50%', animation: 'dett-spin 0.8s linear infinite' }} />
+      <style>{`@keyframes dett-spin { to { transform: rotate(360deg); } }`}</style>
+      <span style={{ fontSize: 14, color: '#666' }}>Loading calculator...</span>
+    </div>
+  );
+}
+
 export default function EmbedClientOnly({ slug }: { slug: string }) {
   const [Calculator, setCalculator] = useState<ComponentType | null>(null);
+  const [appearance] = useState(() =>
+    appearanceFromSearch(typeof window === 'undefined' ? '' : window.location.search)
+  );
+
+  useEmbedResize(true);
+
+  useEffect(() => {
+    trackEmbedLoad(slug);
+  }, [slug]);
 
   useEffect(() => {
     const loader = calculatorImports[slug];
@@ -37,18 +60,14 @@ export default function EmbedClientOnly({ slug }: { slug: string }) {
   }, [slug]);
 
   if (!Calculator) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh', flexDirection: 'column', gap: 12 }}>
-        <div style={{ width: 36, height: 36, border: '3px solid #e0e0e0', borderTopColor: '#196bc0', borderRadius: '50%', animation: 'dett-spin 0.8s linear infinite' }} />
-        <style>{`@keyframes dett-spin { to { transform: rotate(360deg); } }`}</style>
-        <span style={{ fontSize: 14, color: '#666' }}>Loading calculator...</span>
-      </div>
-    );
+    return <LoadingSpinner color={appearance.primary} />;
   }
 
   return (
-    <EmbedProvider>
-      <Calculator />
+    <EmbedProvider appearance={appearance} slug={slug}>
+      <EmbedThemeProvider appearance={appearance}>
+        <Calculator />
+      </EmbedThemeProvider>
     </EmbedProvider>
   );
 }

@@ -22,7 +22,8 @@ import { LoanKnowCTA } from './calculator/LoanKnowCTA';
 import { ActionBar } from './calculator/ActionBar';
 import { ShowMeTheMath } from './calculator/ShowMeTheMath';
 import { CalculatorSeoFooter } from './calculator/CalculatorSeoFooter';
-import { useIsEmbed } from '@/lib/embedContext';
+import { EmbedThisCalculator } from './calculator/EmbedThisCalculator';
+import { useEmbedContext, useIsEmbed } from '@/lib/embedContext';
 import { ScenarioBar } from './scenario/ScenarioBar';
 import { calculatorBodySx } from './calculator/calculatorBodySx';
 
@@ -64,6 +65,8 @@ export default function CalculatorLayout({ children, title, description, related
   const hasTracked = useRef(false);
   const isEmbed = useIsEmbed();
   const lastUpdated = calculatorSlug ? getCalculatorLastUpdated(calculatorSlug) : null;
+  const { appearance, slug: embedSlug } = useEmbedContext();
+  const poweredByHref = `https://dett.io/calculators/${calculatorSlug || embedSlug || ''}`;
 
   useEffect(() => {
     if (actionBarData?.summary && calculatorSlug && !hasTracked.current) {
@@ -77,50 +80,61 @@ export default function CalculatorLayout({ children, title, description, related
 
   // ── Embed mode: stripped-down layout with branding bar ──
   if (isEmbed) {
+    const attribution = (
+      <Box
+        component="a"
+        href={poweredByHref}
+        target="_blank"
+        rel="noopener"
+        sx={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 0.5,
+          px: 1.25,
+          py: 0.5,
+          borderRadius: 5,
+          bgcolor: 'primary.main',
+          color: 'primary.contrastText',
+          textDecoration: 'none',
+          fontWeight: 700,
+          fontSize: '0.7rem',
+          flexShrink: 0,
+          '&:hover': { bgcolor: 'primary.dark' },
+        }}
+      >
+        Powered by Dett.io
+        <OpenInNew sx={{ fontSize: 12 }} />
+      </Box>
+    );
+
     return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
-        {/* Embed header with title + description */}
+      <Box sx={{ minHeight: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
         <Box
           sx={{
             px: { xs: 2, md: 3 },
-            py: { xs: 2, md: 2.5 },
-            bgcolor: 'grey.50',
+            py: appearance.showTitle ? { xs: 2, md: 2.5 } : 1.25,
+            bgcolor: 'background.paper',
             borderBottom: '1px solid',
             borderColor: 'divider',
           }}
         >
           <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
-            <Stack direction="row" alignItems="flex-start" spacing={1.5} sx={{ flex: 1, minWidth: 0 }}>
-              <Calculate sx={{ fontSize: 28, color: '#196bc0', mt: 0.3, flexShrink: 0 }} />
-              <Box sx={{ minWidth: 0 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '1rem', md: '1.15rem' }, lineHeight: 1.3 }}>
-                  {title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: '0.8rem', lineHeight: 1.4, display: { xs: 'none', sm: '-webkit-box' }, WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                  {description}
-                </Typography>
-              </Box>
-            </Stack>
-            <Chip
-              label="Powered by Dett.io"
-              size="small"
-              component="a"
-              href={`https://dett.io/calculators/${calculatorSlug}`}
-              target="_blank"
-              rel="noopener"
-              clickable
-              icon={<OpenInNew sx={{ fontSize: '14px !important' }} />}
-              sx={{
-                fontWeight: 600,
-                fontSize: '0.7rem',
-                bgcolor: '#196bc0',
-                color: 'white',
-                flexShrink: 0,
-                mt: 0.3,
-                '& .MuiChip-icon': { color: 'white' },
-                '&:hover': { bgcolor: '#1a4f8f' },
-              }}
-            />
+            {appearance.showTitle ? (
+              <Stack direction="row" alignItems="flex-start" spacing={1.5} sx={{ flex: 1, minWidth: 0 }}>
+                <Calculate sx={{ fontSize: 28, color: 'primary.main', mt: 0.3, flexShrink: 0 }} />
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: '1rem', md: '1.15rem' }, lineHeight: 1.3 }}>
+                    {title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: '0.8rem', lineHeight: 1.4, display: { xs: 'none', sm: '-webkit-box' }, WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    {description}
+                  </Typography>
+                </Box>
+              </Stack>
+            ) : (
+              <Box sx={{ flex: 1 }} />
+            )}
+            {attribution}
           </Stack>
         </Box>
 
@@ -136,33 +150,41 @@ export default function CalculatorLayout({ children, title, description, related
         {/* Calculator content */}
         <Box component="main" sx={{ flex: 1 }}>
           <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
-            <Box sx={calculatorBodySx(16)}>
+            <Box
+              sx={{
+                ...calculatorBodySx(16),
+                '& .MuiPaper-root': {
+                  borderRadius: `${Math.max(8, appearance.radius)}px`,
+                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                },
+                '& input, & select': { borderRadius: `${Math.max(4, appearance.radius - 8)}px` },
+                '& .calculator-inputs': {
+                  maxHeight: 'none',
+                  overflow: 'visible',
+                  position: 'relative',
+                  top: 'auto',
+                  pb: 0,
+                },
+                ...(!appearance.showCharts && {
+                  '& .recharts-responsive-container, & .recharts-wrapper, & [data-dett-chart]': {
+                    display: 'none !important',
+                  },
+                }),
+              }}
+            >
               <Box data-pdf-capture>{children}</Box>
             </Box>
           </Container>
 
-          {/* Show Me the Math */}
           {calculatorSlug && actionBarData && actionBarData.details && (
             <Container maxWidth="lg" sx={{ pb: 2 }}>
               <ShowMeTheMath calculatorSlug={calculatorSlug} details={actionBarData.details} />
             </Container>
           )}
-
-          {/* Action Bar (email, share, PDF) */}
-          {actionBarData && actionBarData.summary && (
-            <Container maxWidth="lg" sx={{ pb: 2 }}>
-              <ActionBar
-                calculatorName={title}
-                summary={actionBarData.summary}
-                details={actionBarData.details}
-                insights={actionBarData.insights}
-                inputs={actionBarData.inputs}
-              />
-            </Container>
-          )}
         </Box>
 
-        {/* Embed footer branding */}
         <Box
           sx={{
             px: { xs: 2, md: 3 },
@@ -172,28 +194,26 @@ export default function CalculatorLayout({ children, title, description, related
             borderColor: 'grey.800',
           }}
         >
-          <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} justifyContent="space-between" spacing={1}>
             <Typography variant="caption" sx={{ color: 'grey.500' }}>
-              Free calculator — estimates only, not financial advice
+              Free calculator — estimates only, not financial advice. Dett.io is owned by Knowe LLC.
             </Typography>
-            <Stack direction="row" alignItems="center" spacing={0.5}>
-              <Typography
-                variant="caption"
-                component="a"
-                href="https://dett.io/calculators"
-                target="_blank"
-                rel="noopener"
-                sx={{
-                  color: 'grey.400',
-                  textDecoration: 'none',
-                  fontWeight: 600,
-                  '&:hover': { color: 'white' },
-                }}
-              >
-                More calculators at dett.io · a Knowe LLC company
-              </Typography>
-              <OpenInNew sx={{ fontSize: 12, color: 'grey.500' }} />
-            </Stack>
+            <Box
+              component="a"
+              href={poweredByHref}
+              target="_blank"
+              rel="noopener"
+              sx={{
+                color: 'grey.300',
+                textDecoration: 'underline',
+                textUnderlineOffset: '2px',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                '&:hover': { color: 'white' },
+              }}
+            >
+              Powered by Dett.io
+            </Box>
           </Stack>
         </Box>
       </Box>
@@ -425,6 +445,7 @@ export default function CalculatorLayout({ children, title, description, related
           {calculatorSlug && (
             <RelatedGuides calculatorSlug={calculatorSlug} />
           )}
+          <EmbedThisCalculator slug={calculatorSlug} name={title} />
           <LoanKnowCTA calculatorSlug={calculatorSlug} />
         </Container>
 

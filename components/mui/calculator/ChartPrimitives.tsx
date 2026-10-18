@@ -89,7 +89,7 @@ export function HorizontalBar({
   const percentage = maxValue > 0 ? (value / maxValue) * 100 : 0;
 
   return (
-    <Box sx={{ mb: 2 }}>
+    <Box sx={{ mb: 2 }} data-dett-chart>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
         <Typography variant="body2" sx={{ fontWeight: 500, color: RESULT_TOKENS.chartTick }}>
           {label}

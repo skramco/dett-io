@@ -10,6 +10,7 @@ export type AnalyticsEvent =
   | 'calculator_pdf_downloaded'
   | 'calculator_csv_downloaded'
   | 'embed_calculator_used'
+  | 'embed_loaded'
   | 'embed_click_through'
   | 'wizard_started'
   | 'wizard_completed'
@@ -20,6 +21,7 @@ export type AnalyticsEvent =
 
 interface EventParams {
   calculator_slug?: string;
+  referring_domain?: string;
   guide_slug?: string;
   wizard_path?: string;
   cta_label?: string;

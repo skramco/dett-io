@@ -10,6 +10,7 @@ import {
   LinearProgress,
   Stack,
   Avatar,
+  useTheme,
 } from '@mui/material';
 import {
   TrendingUp,
@@ -34,6 +35,9 @@ interface HeroMetricProps {
 
 export function HeroMetric({ label, value, sublabel, trend, trendLabel }: HeroMetricProps) {
   const heroRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
+  const primary = theme.palette.primary.main;
+  const dark = theme.palette.primary.dark;
 
   return (
     <Box>
@@ -43,7 +47,7 @@ export function HeroMetric({ label, value, sublabel, trend, trendLabel }: HeroMe
         elevation={0}
         sx={{
           p: 4,
-          background: 'linear-gradient(135deg, #196bc0 0%, #0F4F8F 100%)',
+          background: `linear-gradient(135deg, ${primary} 0%, ${dark} 100%)`,
           color: 'white',
           borderRadius: 4,
           position: 'relative',
