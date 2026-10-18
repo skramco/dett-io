@@ -52,6 +52,16 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
   const prepayTotalInterest = prepayTotalPaid - loanAmount;
   const prepayYearsSaved = (numPayments - prepayMonths) / 12;
 
+  // After early payoff, the prepay path invests the entire freed-up payment
+  // (base payment + extras) until the original loan term ends, so both
+  // strategies are measured as net worth at the same horizon.
+  const investMonthlyRate = investmentReturn / 100 / 12;
+  let prepayPortfolio = 0;
+  for (let month = prepayMonths + 1; month <= numPayments; month++) {
+    const contribution = basePayment + extraMonthly + (month % 12 === 0 ? extraAnnual : 0);
+    prepayPortfolio = prepayPortfolio * (1 + investMonthlyRate) + contribution;
+  }
+
   // Scenario 3: Extra payments with recast
   let recastBalance = loanAmount;
   let recastTotalPaid = 0;
@@ -97,14 +107,13 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
     
     // Invest the extra payments
     const monthlyInvestment = extraMonthly + (month % 12 === 0 ? extraAnnual : 0);
-    investPortfolio = investPortfolio * (1 + investmentReturn / 100 / 12) + monthlyInvestment;
+    investPortfolio = investPortfolio * (1 + investMonthlyRate) + monthlyInvestment;
     
     if (month === lumpSumYear * 12) {
       investPortfolio += lumpSumAmount;
     }
   }
   const investTotalInterest = investTotalPaid - loanAmount;
-  const investNetWorth = investPortfolio - investBalance;
 
   const insights: string[] = [];
   
@@ -122,14 +131,13 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
     );
   }
 
-  const investNetGain = investPortfolio - (prepayTotalPaid - investTotalPaid);
-  if (investNetGain > 0) {
+  if (investPortfolio > prepayPortfolio) {
     insights.push(
-      `💡 Investing instead: End with $${Math.round(investPortfolio).toLocaleString()} portfolio vs $${Math.round(regularTotalInterest - prepayTotalInterest).toLocaleString()} interest saved`
+      `💡 Net worth at year ${loanTerm} (same monthly outlay): investing the extras grows to $${Math.round(investPortfolio).toLocaleString()}, vs $${Math.round(prepayPortfolio).toLocaleString()} from prepaying and then investing the freed-up payment — but the ${investmentReturn}% return isn't guaranteed, while prepaying's ${interestRate}% is`
     );
   } else {
     insights.push(
-      `Prepaying wins: Guaranteed ${interestRate}% return vs uncertain ${investmentReturn}% investment return`
+      `Prepaying wins: at year ${loanTerm}, prepaying and then investing the freed-up payment grows to $${Math.round(prepayPortfolio).toLocaleString()}, vs $${Math.round(investPortfolio).toLocaleString()} from investing the extras at ${investmentReturn}% — and prepaying's ${interestRate}% return is guaranteed`
     );
   }
 
@@ -151,6 +159,10 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
       interestSaved: Math.round(regularTotalInterest - prepayTotalInterest),
       yearsSaved: parseFloat(prepayYearsSaved.toFixed(1)),
       investPortfolio: Math.round(investPortfolio),
+      prepayPortfolio: Math.round(prepayPortfolio),
+      freedUpPayment: Math.round(basePayment + extraMonthly),
+      horizonYears: loanTerm,
+      effectiveReturn: interestRate,
     },
     chartData: [
       { strategy: 'Regular', totalInterest: Math.round(regularTotalInterest), years: loanTerm },

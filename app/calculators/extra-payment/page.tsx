@@ -178,9 +178,9 @@ export default function ExtraPaymentCalculator() {
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
-                    label="Investment Value"
-                    value={`$${(result.details.investmentValue as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-                    sublabel="If invested instead"
+                    label="Effective Return"
+                    value={`${inputs.interestRate}%`}
+                    sublabel="Your mortgage rate, guaranteed"
                     color="secondary"
                   />
                 </Grid>
@@ -252,7 +252,7 @@ export default function ExtraPaymentCalculator() {
               {/* Prepay vs Invest */}
               <ResultsSection 
                 title="Prepay vs Invest" 
-                subtitle="Should you pay down the mortgage or invest?"
+                subtitle={`Net worth at year ${(result.details.horizonYears as number).toFixed(0)} — both paths spend the same each month`}
               >
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Grid container spacing={3}>
@@ -260,13 +260,13 @@ export default function ExtraPaymentCalculator() {
                       <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2, height: '100%' }}>
                         <Savings sx={{ fontSize: 32, color: '#22C55E', mb: 1 }} />
                         <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#065F46' }}>
-                          Prepay Mortgage
+                          Prepay, Then Invest
                         </Typography>
                         <Typography variant="h5" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>
-                          ${(result.details.interestSaved as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                          ${(result.details.prepayFinalValue as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Guaranteed {inputs.interestRate}% return
+                          Pay off in {((result.details.monthsWithExtra as number) / 12).toFixed(1)} years, then invest the freed-up ${(result.details.freedUpPayment as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo. Guaranteed {inputs.interestRate}% while prepaying.
                         </Typography>
                       </Box>
                     </Grid>
@@ -277,10 +277,10 @@ export default function ExtraPaymentCalculator() {
                           Invest Instead
                         </Typography>
                         <Typography variant="h5" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
-                          ${(result.details.investmentValue as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                          ${(result.details.investFinalValue as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Potential at {result.details.investmentReturn}% return
+                          Invest the extras from day one at {result.details.investmentReturn}% (not guaranteed), keep the regular payment for the full term.
                         </Typography>
                       </Box>
                     </Grid>
@@ -289,13 +289,13 @@ export default function ExtraPaymentCalculator() {
                   <Divider sx={{ my: 3 }} />
 
                   <Alert 
-                    severity={(result.details.investmentValue as number) > (result.details.interestSaved as number) ? 'info' : 'success'} 
+                    severity={(result.details.investFinalValue as number) > (result.details.prepayFinalValue as number) ? 'info' : 'success'} 
                     sx={{ borderRadius: 2 }}
                   >
                     <Typography variant="body2">
-                      {(result.details.investmentValue as number) > (result.details.interestSaved as number) 
-                        ? `Investing may yield $${((result.details.investmentValue as number) - (result.details.interestSaved as number)).toLocaleString(undefined, { maximumFractionDigits: 0 })} more than prepaying. However, investment returns aren't guaranteed while interest savings are.`
-                        : `Prepaying wins by $${((result.details.interestSaved as number) - (result.details.investmentValue as number)).toLocaleString(undefined, { maximumFractionDigits: 0 })}. The guaranteed ${inputs.interestRate}% return from prepaying beats the expected ${result.details.investmentReturn}% investment return.`
+                      {(result.details.investFinalValue as number) > (result.details.prepayFinalValue as number) 
+                        ? `At year ${(result.details.horizonYears as number).toFixed(0)}, investing ends $${((result.details.investFinalValue as number) - (result.details.prepayFinalValue as number)).toLocaleString(undefined, { maximumFractionDigits: 0 })} ahead. However, the ${result.details.investmentReturn}% return isn't guaranteed, while prepaying's ${inputs.interestRate}% is.`
+                        : `At year ${(result.details.horizonYears as number).toFixed(0)}, prepaying ends $${((result.details.prepayFinalValue as number) - (result.details.investFinalValue as number)).toLocaleString(undefined, { maximumFractionDigits: 0 })} ahead. Prepaying's guaranteed ${inputs.interestRate}% return beats the expected ${result.details.investmentReturn}% investment return.`
                       }
                     </Typography>
                   </Alert>

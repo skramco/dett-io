@@ -60,15 +60,36 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
 
   const totalExtraPaid = (extraMonthlyPayment * monthsWithExtra) + (extraAnnualPayment * Math.floor(monthsWithExtra / 12));
 
+  // Apples-to-apples comparison: both paths spend the same cash each month
+  // (regular payment + extras) and are measured at the same horizon — the
+  // original payoff date (monthsRegular).
+  //
+  // Invest path: keep the regular mortgage payment, invest the extras every
+  // month until the horizon.
+  //
+  // Prepay path: send the extras to the mortgage until early payoff, then
+  // invest the entire freed-up payment (regular payment + extras) until the
+  // horizon.
+  //
+  // At the horizon both paths own the home outright, so the portfolio values
+  // are directly comparable net worth.
   const investmentMonthlyRate = investmentReturn / 100 / 12;
-  let investmentValue = 0;
+
+  let investFinalValue = 0;
+  let prepayFinalValue = 0;
   for (let month = 1; month <= monthsRegular; month++) {
-    let monthlyInvestment = extraMonthlyPayment;
-    if (month % 12 === 0) {
-      monthlyInvestment += extraAnnualPayment;
+    const extraThisMonth = extraMonthlyPayment + (month % 12 === 0 ? extraAnnualPayment : 0);
+
+    investFinalValue = investFinalValue * (1 + investmentMonthlyRate) + extraThisMonth;
+
+    prepayFinalValue = prepayFinalValue * (1 + investmentMonthlyRate);
+    if (month > monthsWithExtra) {
+      prepayFinalValue += regularMonthlyPayment + extraThisMonth;
     }
-    investmentValue = (investmentValue + monthlyInvestment) * (1 + investmentMonthlyRate);
   }
+
+  const horizonYears = monthsRegular / 12;
+  const freedUpPayment = regularMonthlyPayment + extraMonthlyPayment;
 
   const insights: string[] = [];
 
@@ -78,21 +99,22 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
     );
   }
 
-  const returnOnExtraPayments = (interestSaved / totalExtraPaid) * 100;
   insights.push(
-    `Your effective return on extra payments is ${returnOnExtraPayments.toFixed(1)}% (the interest rate you're avoiding).`
+    `Prepaying earns a guaranteed return equal to your mortgage rate: ${interestRate}%. Every extra dollar avoids ${interestRate}% interest.`
   );
 
-  if (investmentValue > interestSaved) {
-    const difference = investmentValue - interestSaved;
-    insights.push(
-      `If you invested the extra payment at ${investmentReturn}% instead, you'd have $${investmentValue.toFixed(0)} - that's $${difference.toFixed(0)} more than the interest you'd save.`
-    );
-  } else {
-    const difference = interestSaved - investmentValue;
-    insights.push(
-      `Paying down your mortgage saves you $${difference.toFixed(0)} more than investing at ${investmentReturn}% would earn.`
-    );
+  if (monthsWithExtra < monthsRegular) {
+    if (investFinalValue > prepayFinalValue) {
+      const difference = investFinalValue - prepayFinalValue;
+      insights.push(
+        `Both paths cost the same each month. By year ${horizonYears.toFixed(0)}, investing the extras at ${investmentReturn}% grows to $${investFinalValue.toFixed(0)}, vs $${prepayFinalValue.toFixed(0)} if you prepay and then invest the freed-up $${freedUpPayment.toFixed(0)}/month after payoff — investing comes out $${difference.toFixed(0)} ahead, but returns aren't guaranteed.`
+      );
+    } else {
+      const difference = prepayFinalValue - investFinalValue;
+      insights.push(
+        `Both paths cost the same each month. By year ${horizonYears.toFixed(0)}, prepaying and then investing the freed-up $${freedUpPayment.toFixed(0)}/month after payoff grows to $${prepayFinalValue.toFixed(0)}, vs $${investFinalValue.toFixed(0)} if you invested the extras instead — prepaying comes out $${difference.toFixed(0)} ahead.`
+      );
+    }
   }
 
   if (interestRate < investmentReturn) {
@@ -148,7 +170,11 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
       monthsWithExtra,
       totalInterestRegular: parseFloat(totalInterestRegular.toFixed(2)),
       totalInterestWithExtra: parseFloat(totalInterestWithExtra.toFixed(2)),
-      investmentValue: parseFloat(investmentValue.toFixed(2)),
+      investFinalValue: parseFloat(investFinalValue.toFixed(2)),
+      prepayFinalValue: parseFloat(prepayFinalValue.toFixed(2)),
+      freedUpPayment: parseFloat(freedUpPayment.toFixed(2)),
+      horizonYears: parseFloat(horizonYears.toFixed(1)),
+      effectiveReturn: interestRate,
       investmentReturn,
     },
     chartData,

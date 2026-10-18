@@ -200,9 +200,9 @@ export default function AccelerationCalculator() {
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
-                    label="Invest Portfolio"
-                    value={`$${(result.details.investPortfolio as number).toLocaleString()}`}
-                    sublabel="If invested instead"
+                    label="Effective Return"
+                    value={`${inputs.interestRate}%`}
+                    sublabel="Your mortgage rate, guaranteed"
                     color="secondary"
                   />
                 </Grid>
@@ -286,7 +286,7 @@ export default function AccelerationCalculator() {
               {/* Prepay vs Invest */}
               <ResultsSection 
                 title="Prepay vs Invest" 
-                subtitle="Should you pay down the mortgage or invest?"
+                subtitle={`Net worth at year ${result.details.horizonYears} — both paths spend the same each month`}
               >
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Grid container spacing={3}>
@@ -294,19 +294,19 @@ export default function AccelerationCalculator() {
                       <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2, height: '100%' }}>
                         <Savings sx={{ fontSize: 32, color: '#22C55E', mb: 1 }} />
                         <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#065F46' }}>
-                          Prepay Mortgage
+                          Prepay, Then Invest
                         </Typography>
                         <Typography variant="h5" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>
-                          ${(result.details.interestSaved as number).toLocaleString()}
+                          ${(result.details.prepayPortfolio as number).toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Guaranteed {inputs.interestRate}% return (interest saved)
+                          Pay off in {result.details.prepayYears} years, then invest the freed-up ${(result.details.freedUpPayment as number).toLocaleString()}/mo until year {result.details.horizonYears}
                         </Typography>
                         <Divider sx={{ my: 2 }} />
                         <Typography variant="body2" sx={{ color: '#065F46' }}>
-                          ✓ Risk-free, guaranteed return<br />
-                          ✓ Peace of mind, debt freedom<br />
-                          ✓ Builds home equity faster
+                          ✓ Guaranteed {inputs.interestRate}% while prepaying<br />
+                          ✓ Saves ${(result.details.interestSaved as number).toLocaleString()} in interest<br />
+                          ✓ Peace of mind, debt freedom
                         </Typography>
                       </Box>
                     </Grid>
@@ -320,11 +320,11 @@ export default function AccelerationCalculator() {
                           ${(result.details.investPortfolio as number).toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Potential portfolio at {inputs.investmentReturn}% return
+                          Invest the extras from day one at {inputs.investmentReturn}%, portfolio at year {result.details.horizonYears}
                         </Typography>
                         <Divider sx={{ my: 2 }} />
                         <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
-                          ✓ Potentially higher returns<br />
+                          ✓ Potentially higher returns (not guaranteed)<br />
                           ✓ Maintains liquidity<br />
                           ✓ Tax advantages (401k, IRA)
                         </Typography>
@@ -335,13 +335,13 @@ export default function AccelerationCalculator() {
                   <Divider sx={{ my: 3 }} />
 
                   <Alert 
-                    severity={(result.details.investPortfolio as number) > (result.details.interestSaved as number) ? 'info' : 'success'} 
+                    severity={(result.details.investPortfolio as number) > (result.details.prepayPortfolio as number) ? 'info' : 'success'} 
                     sx={{ borderRadius: 2 }}
                   >
                     <Typography variant="body2">
-                      {(result.details.investPortfolio as number) > (result.details.interestSaved as number) 
-                        ? `At ${inputs.investmentReturn}% returns, investing may yield $${((result.details.investPortfolio as number) - (result.details.interestSaved as number)).toLocaleString()} more than prepaying. But remember: investment returns aren't guaranteed, while interest savings are.`
-                        : `At ${inputs.investmentReturn}% returns, prepaying wins by $${((result.details.interestSaved as number) - (result.details.investPortfolio as number)).toLocaleString()}. The guaranteed ${inputs.interestRate}% return from prepaying beats the expected investment return.`
+                      {(result.details.investPortfolio as number) > (result.details.prepayPortfolio as number) 
+                        ? `At year ${result.details.horizonYears}, investing ends $${((result.details.investPortfolio as number) - (result.details.prepayPortfolio as number)).toLocaleString()} ahead. But remember: the ${inputs.investmentReturn}% return isn't guaranteed, while prepaying's ${inputs.interestRate}% is.`
+                        : `At year ${result.details.horizonYears}, prepaying ends $${((result.details.prepayPortfolio as number) - (result.details.investPortfolio as number)).toLocaleString()} ahead. The guaranteed ${inputs.interestRate}% return from prepaying beats the expected ${inputs.investmentReturn}% investment return.`
                       }
                     </Typography>
                   </Alert>
