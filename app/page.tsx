@@ -24,6 +24,9 @@ import {
   EventAvailable,
   Functions,
   VerifiedUser,
+  Home as HomeIcon,
+  TrendingUp,
+  Balance,
 } from '@mui/icons-material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
@@ -452,6 +455,12 @@ export default function Home() {
               <Grid container spacing={3}>
                 {[
                   {
+                    href: '/calculators/affordability',
+                    icon: <HomeIcon />,
+                    title: 'How Much Can I Afford?',
+                    description: 'Find your max home price from income and debts',
+                  },
+                  {
                     href: '/calculators/mortgage-cost',
                     icon: <AttachMoney />,
                     title: 'True Monthly Cost',
@@ -469,8 +478,20 @@ export default function Home() {
                     title: 'Extra Payments',
                     description: 'Pay off faster or invest? See the math',
                   },
+                  {
+                    href: '/calculators/rent-vs-buy',
+                    icon: <Balance />,
+                    title: 'Rent vs Buy',
+                    description: 'Full 5-year comparison with break-even timeline',
+                  },
+                  {
+                    href: '/calculators/dti',
+                    icon: <TrendingUp />,
+                    title: 'DTI Calculator',
+                    description: 'Check the #1 number lenders care about',
+                  },
                 ].map((item, index) => (
-                  <Grid size={{ xs: 12, md: 4 }} key={index}>
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
                     <Link href={item.href} style={{ textDecoration: 'none' }}>
                       <Card 
                         sx={{ 
