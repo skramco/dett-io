@@ -336,7 +336,7 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'VA Loan Math',
       steps: [
-        { label: 'VA Funding Fee Rate', formula: 'Based on down payment %, service type, and first/subsequent use', description: '0% down = 2.15% (first use) or 3.3% (subsequent). 5%+ down = 1.5%. 10%+ = 1.25%.', computedValue: `${d.fundingFeeRate}%` },
+        { label: 'VA Funding Fee Rate', formula: 'Based on loan purpose, down payment %, and first/subsequent use', description: 'Purchase: 0% down = 2.15% (first) or 3.3% (subsequent); 5%+ = 1.5%; 10%+ = 1.25%. Cash-out: 2.15%/3.3% with no equity reduction. IRRRL: 0.5% flat. Reserve/Guard same as active duty. Exempt: disability or eligible surviving spouse.', computedValue: `${d.fundingFeeRate}%` },
         { label: 'Funding Fee Amount', formula: 'Base Loan Amount × Funding Fee Rate', description: 'One-time fee that funds the VA loan program. Can be financed.', computedValue: `$${fmt(d.fundingFee as number)}` },
         { label: 'Total Loan Amount', formula: 'Base Loan + Funding Fee', description: 'VA allows financing the funding fee into the loan.', computedValue: `$${fmt(d.totalLoanAmount as number)}` },
         { label: 'Monthly P&I', formula: 'Total Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Standard amortization on the total loan amount.', computedValue: `$${fmt(d.monthlyPI as number)}` },
