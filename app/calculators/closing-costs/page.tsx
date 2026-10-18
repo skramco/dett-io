@@ -44,6 +44,7 @@ import {
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateClosingCosts } from '@/lib/calculators';
 import type { ClosingCostInputs } from '@/lib/calculators/closingCosts';
+import { US_STATE_OPTIONS } from '@/lib/calculators/stateClosingData';
 
 const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
@@ -61,6 +62,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   prepaid: 'Prepaid Items',
 };
 
+const STATE_OPTIONS = US_STATE_OPTIONS.map(({ value, label }) => ({ value, label: `${label} (${value})` }));
+
 export default function ClosingCostCalculator() {
   const [inputs, setInputs] = useState<ClosingCostInputs>({
     homePrice: 450000,
@@ -70,7 +73,8 @@ export default function ClosingCostCalculator() {
     state: 'CA',
     isNewConstruction: false,
     sellerCreditPercent: 0,
-    prepaidTaxMonths: 6,
+    originationPercent: 1,
+    taxEscrowMonths: 3,
     prepaidInterestDays: 15,
     prepaidInsurance: 1800,
   });
@@ -152,6 +156,23 @@ export default function ClosingCostCalculator() {
                   { value: 30, label: '30 years' },
                 ]}
               />
+              <SelectInput
+                label="State"
+                value={inputs.state}
+                onChange={(v) => handleInputChange('state', v as string)}
+                options={STATE_OPTIONS}
+                helperText="Sets attorney customs, transfer tax, and property tax estimates"
+              />
+            </InputSection>
+
+            <InputSection title="Lender Fees" icon={<Gavel />} color="secondary">
+              <PercentageInput
+                label="Origination Fee"
+                value={inputs.originationPercent ?? 1}
+                onChange={(v) => handleInputChange('originationPercent', v)}
+                step={0.25}
+                helperText="Assumption — often negotiable; some lenders charge 0% for a higher rate"
+              />
             </InputSection>
 
             <InputSection title="Prepaid Items" icon={<Receipt />} color="secondary">
@@ -161,10 +182,11 @@ export default function ClosingCostCalculator() {
                 onChange={(v) => handleInputChange('prepaidInsurance', v)}
               />
               <NumberInput
-                label="Prepaid Tax Months"
-                value={inputs.prepaidTaxMonths ?? 6}
-                onChange={(v) => handleInputChange('prepaidTaxMonths', v)}
+                label="Property Tax Escrow"
+                value={inputs.taxEscrowMonths ?? 3}
+                onChange={(v) => handleInputChange('taxEscrowMonths', v)}
                 suffix="months"
+                helperText="Months of property tax collected at closing to fund your escrow account"
               />
               <NumberInput
                 label="Prepaid Interest Days"
@@ -323,6 +345,40 @@ export default function ClosingCostCalculator() {
                       )}
                     </Stack>
                   </Paper>
+
+                  {/* Paid Outside Closing */}
+                  {result.lineItems.some(i => i.category === 'outside-closing') && (
+                    <Paper elevation={0} sx={{ borderRadius: 3, border: '1px dashed', borderColor: 'divider', overflow: 'hidden' }}>
+                      <Box sx={{ p: 2, bgcolor: 'grey.50', borderBottom: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                          Paid Outside Closing
+                        </Typography>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                          ${fmt(result.details.outsideClosingTotal as number)}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ p: 2 }}>
+                        <Stack spacing={1}>
+                          {result.lineItems.filter(i => i.category === 'outside-closing').map((item, i) => (
+                            <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 0.5 }}>
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <Typography variant="body2">{item.name}</Typography>
+                                {item.isEstimate && (
+                                  <Chip label="Est." size="small" sx={{ height: 20, fontSize: '0.65rem', bgcolor: 'grey.200' }} />
+                                )}
+                              </Stack>
+                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                ${fmt(item.amount)}
+                              </Typography>
+                            </Box>
+                          ))}
+                          <Typography variant="caption" color="text.secondary">
+                            Paid directly to the provider before closing day — not included in your cash-to-close total.
+                          </Typography>
+                        </Stack>
+                      </Box>
+                    </Paper>
+                  )}
                 </Stack>
               </ResultsSection>
 
