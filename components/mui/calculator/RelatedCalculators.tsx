@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Box, Typography, Stack, Paper, Avatar } from '@mui/material';
+import { Box, Typography, Grid, Paper, Avatar, Stack } from '@mui/material';
 import { Calculate, ArrowForward } from '@mui/icons-material';
 
 interface RelatedCalculator {
@@ -21,62 +21,62 @@ export function RelatedCalculators({ calculators }: RelatedCalculatorsProps) {
       <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
         Related Calculators
       </Typography>
-      <Stack spacing={2}>
+      <Grid container spacing={2}>
         {calculators.map((calc) => (
-          <Link
-            key={calc.slug}
-            href={`/calculators/${calc.slug}`}
-            style={{ textDecoration: 'none' }}
-          >
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2.5,
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                '&:hover': {
-                  borderColor: 'primary.main',
-                  bgcolor: 'primary.light',
-                  '& .arrow-icon': {
-                    transform: 'translateX(4px)',
-                    color: 'primary.main',
-                  },
-                },
-              }}
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={calc.slug}>
+            <Link
+              href={`/calculators/${calc.slug}`}
+              style={{ textDecoration: 'none', display: 'block', height: '100%' }}
             >
-              <Stack direction="row" spacing={2} alignItems="center">
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  height: '100%',
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    boxShadow: '0 4px 16px rgba(29, 107, 192, 0.12)',
+                    transform: 'translateY(-2px)',
+                    '& .arrow-icon': {
+                      transform: 'translateX(4px)',
+                      color: 'primary.main',
+                    },
+                  },
+                }}
+              >
                 <Avatar
                   sx={{
-                    width: 40,
-                    height: 40,
-                    bgcolor: 'grey.100',
+                    width: 44,
+                    height: 44,
+                    bgcolor: 'primary.light',
                     color: 'primary.main',
+                    mb: 2,
                   }}
                 >
-                  <Calculate sx={{ fontSize: 20 }} />
+                  <Calculate sx={{ fontSize: 22 }} />
                 </Avatar>
-                <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary' }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
                   {calc.name}
                 </Typography>
-              </Stack>
-              <ArrowForward
-                className="arrow-icon"
-                sx={{
-                  fontSize: 20,
-                  color: 'text.secondary',
-                  transition: 'all 0.2s',
-                }}
-              />
-            </Paper>
-          </Link>
+                <Stack direction="row" alignItems="center" spacing={0.5}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                    Try it free
+                  </Typography>
+                  <ArrowForward
+                    className="arrow-icon"
+                    sx={{ fontSize: 16, color: 'primary.main', transition: 'all 0.2s' }}
+                  />
+                </Stack>
+              </Paper>
+            </Link>
+          </Grid>
         ))}
-      </Stack>
+      </Grid>
     </Box>
   );
 }
