@@ -17,8 +17,7 @@ import {
   Home,
   Shield,
   CheckCircle,
-  Cancel,
-  CreditCard,
+  InfoOutlined,
 } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
 import {
@@ -247,19 +246,76 @@ export default function FHACalculator() {
                         passes: (result.details.meetsDTI as number) === 1,
                       },
                     ].map((check, i) => (
-                      <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, borderRadius: 2, bgcolor: check.passes ? '#F0FDF4' : '#FEF2F2' }}>
+                      <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, borderRadius: 2, bgcolor: check.passes ? '#F0FDF4' : '#FFFBEB' }}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          {check.passes ? <CheckCircle sx={{ fontSize: 20, color: '#22C55E' }} /> : <Cancel sx={{ fontSize: 20, color: '#EF4444' }} />}
+                          {check.passes ? <CheckCircle sx={{ fontSize: 20, color: '#22C55E' }} /> : <InfoOutlined sx={{ fontSize: 20, color: '#F59E0B' }} />}
                           <Box>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>{check.label}</Typography>
                             <Typography variant="caption" color="text.secondary">{check.detail}</Typography>
                           </Box>
                         </Stack>
-                        <Typography variant="body2" sx={{ fontWeight: 700, color: check.passes ? '#22C55E' : '#EF4444' }}>
-                          {check.passes ? 'Pass' : 'Fail'}
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: check.passes ? '#22C55E' : '#B45309' }}>
+                          {check.passes ? 'Meets guideline' : 'Worth reviewing'}
                         </Typography>
                       </Box>
                     ))}
+                    <Typography variant="caption" color="text.secondary">
+                      These are general FHA guidelines, not a lending decision — lenders weigh your full application, and compensating factors can offset items flagged above.
+                    </Typography>
+                  </Stack>
+                </Paper>
+              </ResultsSection>
+
+              {/* 2026 Loan Limits */}
+              <ResultsSection title={`${result.details.loanLimitYear} Loan Limits`} subtitle="How your loan amount compares">
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Stack spacing={2}>
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 12, sm: 4 }}>
+                        <MetricCard
+                          label="Your Base Loan"
+                          value={`$${fmt(result.details.baseLoanAmount as number)}`}
+                          sublabel={(result.details.isJumbo as number) === 1 ? 'above conforming limit' : 'within conforming limit'}
+                          color={(result.details.isJumbo as number) === 1 ? 'warning' : 'primary'}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 6, sm: 4 }}>
+                        <MetricCard
+                          label="FHA Limit (standard)"
+                          value={`$${fmt(result.details.fhaStandardLimit as number)}`}
+                          sublabel={`up to $${fmt(result.details.fhaHighCostLimit as number)} in high-cost counties`}
+                          color="secondary"
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 6, sm: 4 }}>
+                        <MetricCard
+                          label="Conforming Limit"
+                          value={`$${fmt(result.details.conformingLimit as number)}`}
+                          sublabel="most counties (one-unit)"
+                          color="secondary"
+                        />
+                      </Grid>
+                    </Grid>
+                    {(result.details.withinCeilingLimit as number) === 0 ? (
+                      <Alert severity="warning" sx={{ borderRadius: 2 }}>
+                        <Typography variant="body2">
+                          Your base loan amount is above the {result.details.loanLimitYear} FHA ceiling of <strong>${fmt(result.details.fhaHighCostLimit as number)}</strong>, so FHA financing isn&apos;t available at this amount. A conventional loan this size would be a <strong>jumbo loan</strong>.
+                        </Typography>
+                      </Alert>
+                    ) : (result.details.withinStandardLimit as number) === 0 ? (
+                      <Alert severity="info" sx={{ borderRadius: 2 }}>
+                        <Typography variant="body2">
+                          Your base loan amount is above the {result.details.loanLimitYear} FHA standard limit of <strong>${fmt(result.details.fhaStandardLimit as number)}</strong>. FHA may still work if your county is a designated high-cost area (limits up to ${fmt(result.details.fhaHighCostLimit as number)}) — check your county&apos;s limit on HUD&apos;s website.
+                          {(result.details.isJumbo as number) === 1 && <> A conventional alternative would be a <strong>jumbo loan</strong> in most counties.</>}
+                        </Typography>
+                      </Alert>
+                    ) : (
+                      <Alert severity="success" sx={{ borderRadius: 2 }}>
+                        <Typography variant="body2">
+                          Your base loan amount fits within the {result.details.loanLimitYear} FHA standard limit, which applies in every U.S. county.
+                        </Typography>
+                      </Alert>
+                    )}
                   </Stack>
                 </Paper>
               </ResultsSection>

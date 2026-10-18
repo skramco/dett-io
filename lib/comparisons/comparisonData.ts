@@ -44,7 +44,7 @@ export const comparisons: ComparisonData[] = [
       { feature: 'Credit Score Minimum', optionA: '500 (10% down) or 580 (3.5% down)', optionB: '620 typical minimum' },
       { feature: 'Mortgage Insurance', optionA: 'Upfront MIP (1.75%) + annual MIP (0.55%)', optionB: 'PMI only if <20% down; drops at 80% LTV' },
       { feature: 'MI Duration', optionA: 'Life of loan (if <10% down)', optionB: 'Cancellable at 80% LTV' },
-      { feature: 'Loan Limits (2024)', optionA: '$498,257 (standard); $1,149,825 (high-cost)', optionB: '$766,550 (standard); $1,149,825 (high-cost)' },
+      { feature: 'Loan Limits (2026)', optionA: '$541,287 (standard); $1,249,125 (high-cost)', optionB: '$832,750 (conforming); $1,249,125 (high-cost)' },
       { feature: 'Property Requirements', optionA: 'Strict FHA appraisal standards', optionB: 'Standard appraisal' },
       { feature: 'Seller Concessions', optionA: 'Up to 6% of purchase price', optionB: '3% (if <10% down), 6% (10-25%), 9% (25%+)' },
       { feature: 'Interest Rates', optionA: 'Typically 0.25-0.5% lower', optionB: 'Slightly higher; rate depends on credit score' },

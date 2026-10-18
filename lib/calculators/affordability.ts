@@ -1,4 +1,5 @@
 import type { AffordabilityInputs, CalculatorResult } from './types';
+import { LOAN_LIMIT_YEAR, CONFORMING_LIMIT, CONFORMING_LIMIT_HIGH_COST, isJumboLoan } from './loanLimits';
 
 export function calculateAffordability(inputs: AffordabilityInputs): CalculatorResult {
   const {
@@ -73,6 +74,12 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
   // Calculate back-end DTI (includes all debts)
   const backEndDTI = ((results.moderatePayment + monthlyDebts) / monthlyIncome) * 100;
 
+  // Jumbo check against the 2026 conforming loan limit
+  const moderateLoanAmount = Math.max(0, results.moderatePrice - downPayment);
+  const aggressiveLoanAmount = Math.max(0, results.aggressivePrice - downPayment);
+  const moderateIsJumbo = isJumboLoan(moderateLoanAmount);
+  const aggressiveIsJumbo = isJumboLoan(aggressiveLoanAmount);
+
   const insights: string[] = [];
   
   insights.push(
@@ -99,6 +106,16 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
     );
   }
 
+  if (moderateIsJumbo) {
+    insights.push(
+      `A loan of $${Math.round(moderateLoanAmount).toLocaleString()} at your moderate price exceeds the ${LOAN_LIMIT_YEAR} conforming limit of $${CONFORMING_LIMIT.toLocaleString()} in most counties — jumbo territory, which typically means a 700+ credit score, 10-20% down, and larger reserves. High-cost counties have limits up to $${CONFORMING_LIMIT_HIGH_COST.toLocaleString()}.`
+    );
+  } else if (aggressiveIsJumbo) {
+    insights.push(
+      `At the top of your range, the loan amount ($${Math.round(aggressiveLoanAmount).toLocaleString()}) would exceed the ${LOAN_LIMIT_YEAR} conforming limit of $${CONFORMING_LIMIT.toLocaleString()} in most counties and require a jumbo loan. Staying below the limit usually gets you better terms.`
+    );
+  }
+
   const summary = `Based on $${monthlyIncome.toLocaleString()}/month income, you can afford $${results.conservativePrice.toLocaleString()} (safe) to $${results.aggressivePrice.toLocaleString()} (max).`;
 
   return {
@@ -116,6 +133,10 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
       aggressivePayment: results.aggressivePayment,
       aggressiveDTI: results.aggressiveDTI,
       backEndDTI: Math.round(backEndDTI),
+      loanLimitYear: LOAN_LIMIT_YEAR,
+      conformingLimit: CONFORMING_LIMIT,
+      moderateIsJumbo: moderateIsJumbo ? 1 : 0,
+      aggressiveIsJumbo: aggressiveIsJumbo ? 1 : 0,
     },
     chartData: [
       { level: 'Conservative\n(28% DTI)', price: results.conservativePrice, payment: results.conservativePayment },
