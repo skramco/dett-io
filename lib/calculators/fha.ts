@@ -3,6 +3,7 @@ import {
   backEndDtiPercent,
   conventionalPmiRatePercent,
   fhaAnnualMipRatePercent,
+  fhaMipDurationYears,
   fhaMonthlyMip,
   fhaUpfrontMip,
   frontEndDtiPercent,
@@ -10,6 +11,13 @@ import {
   monthlyPayment,
   monthlyPmiAmount,
 } from './mortgageMath';
+import {
+  LOAN_LIMIT_YEAR,
+  CONFORMING_LOAN_LIMIT,
+  FHA_LOAN_LIMIT_FLOOR,
+  FHA_LOAN_LIMIT_CEILING,
+  isJumboLoan,
+} from './loanLimits';
 
 export interface FHAInputs {
   homePrice: number;
@@ -50,9 +58,10 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
 
   const monthlyMIP = fhaMonthlyMip(baseLoanAmount, annualMIPRate);
 
-  // MIP duration
-  // For 30-year loans with >10% down: 11 years. Otherwise: life of loan.
-  const mipDurationYears = downPaymentPercent >= 10 ? 11 : loanTerm;
+  // MIP duration (HUD Handbook 4000.1): with a down payment of 10% or more
+  // (LTV <= 90% at origination), MIP ends after 11 years. Otherwise it lasts
+  // the full loan term.
+  const mipDurationYears = fhaMipDurationYears(downPaymentPercent, loanTerm);
   const mipDurationMonths = mipDurationYears * 12;
 
   // Monthly P&I on total loan (including financed upfront MIP)
@@ -79,10 +88,13 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   const meetsDTI = totalDTI <= 57; // FHA can go up to 57% with compensating factors
   const meetsStandardDTI = totalDTI <= 43;
 
-  // FHA loan limits (2024 baseline)
-  const fhaLoanLimit = 498257; // Baseline, varies by county
-  const highCostLimit = 1149825;
-  const withinLoanLimit = baseLoanAmount <= highCostLimit;
+  // FHA county loan limits (one-unit). The floor applies in most counties;
+  // high-cost counties go up to the ceiling. FHA limits apply to the base
+  // loan amount (financed upfront MIP may exceed the limit).
+  const withinFhaFloor = baseLoanAmount <= FHA_LOAN_LIMIT_FLOOR;
+  const withinFhaCeiling = baseLoanAmount <= FHA_LOAN_LIMIT_CEILING;
+  // Jumbo applies to the conventional alternative: above the conforming limit.
+  const isJumbo = isJumboLoan(baseLoanAmount);
 
   // Comparison: FHA vs Conventional
   const convDownPayment = homePrice * 0.05; // 5% conventional
@@ -118,11 +130,27 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
 
   if (mipDurationYears < loanTerm) {
     insights.push(
-      `With ${downPaymentPercent}% down, your monthly MIP drops off after ${mipDurationYears} years. Total MIP cost: $${Math.round(totalMIPCost).toLocaleString()}.`
+      `With ${downPaymentPercent}% down (10% or more), your monthly MIP drops off after ${mipDurationYears} years instead of lasting the full loan term. Total MIP cost: $${Math.round(totalMIPCost).toLocaleString()}.`
     );
   } else {
     insights.push(
-      `With less than 10% down on a 30-year FHA loan, MIP lasts the entire life of the loan. Total MIP cost: $${Math.round(totalMIPCost).toLocaleString()}. Consider refinancing to conventional once you reach 20% equity.`
+      `With less than 10% down, FHA MIP lasts the entire life of the loan. Total MIP cost: $${Math.round(totalMIPCost).toLocaleString()}. Consider refinancing to conventional once you reach 20% equity, or putting 10%+ down to limit MIP to 11 years.`
+    );
+  }
+
+  if (!withinFhaCeiling) {
+    insights.push(
+      `Your base loan of $${Math.round(baseLoanAmount).toLocaleString()} is above the ${LOAN_LIMIT_YEAR} FHA ceiling of $${FHA_LOAN_LIMIT_CEILING.toLocaleString()} — the maximum even in the highest-cost counties — so this scenario wouldn't fit an FHA loan. A jumbo loan is the more likely route at this amount.`
+    );
+  } else if (!withinFhaFloor) {
+    insights.push(
+      `Your base loan of $${Math.round(baseLoanAmount).toLocaleString()} is above the ${LOAN_LIMIT_YEAR} FHA limit of $${FHA_LOAN_LIMIT_FLOOR.toLocaleString()} that applies in most counties. High-cost counties allow up to $${FHA_LOAN_LIMIT_CEILING.toLocaleString()}, so check your county's limit on HUD's lookup tool before counting on FHA.`
+    );
+  }
+
+  if (isJumbo) {
+    insights.push(
+      `At $${Math.round(baseLoanAmount).toLocaleString()}, the loan is above the ${LOAN_LIMIT_YEAR} conforming limit of $${CONFORMING_LOAN_LIMIT.toLocaleString()} (most counties), so the conventional alternative would be a jumbo loan — typically requiring higher credit scores, larger down payments, and sometimes different pricing.`
     );
   }
 
@@ -171,6 +199,13 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
       convMonthlyPI: Math.round(convMonthlyPI),
       convMonthlyPMI: Math.round(convMonthlyPMI),
       ltv: Math.round(ltv * 10) / 10,
+      loanLimitYear: LOAN_LIMIT_YEAR,
+      conformingLoanLimit: CONFORMING_LOAN_LIMIT,
+      fhaLoanLimitFloor: FHA_LOAN_LIMIT_FLOOR,
+      fhaLoanLimitCeiling: FHA_LOAN_LIMIT_CEILING,
+      withinFhaFloor: withinFhaFloor ? 1 : 0,
+      withinFhaCeiling: withinFhaCeiling ? 1 : 0,
+      isJumbo: isJumbo ? 1 : 0,
     },
     chartData,
     insights,

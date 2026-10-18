@@ -46,7 +46,7 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
   ],
   'afford-house-120k-salary': [
     { question: 'How much house can I afford on $120K?', answer: 'On a $120,000 salary, you can afford a home in the $400,000 to $525,000 range. Your 28% DTI housing budget is about $2,800/month.' },
-    { question: 'Do I need a jumbo loan at $120K income?', answer: 'Not necessarily. The conforming loan limit is $766,550 in most areas and higher in expensive markets. Most homes in the $400K-$525K range use standard conforming loans.' },
+    { question: 'Do I need a jumbo loan at $120K income?', answer: 'Not necessarily. The 2026 conforming loan limit is $832,750 in most areas and higher in expensive markets. Most homes in the $400K-$525K range use standard conforming loans.' },
     { question: 'How much should I put down on $120K salary?', answer: '15-20% is ideal at this income level. On a $450K home, that is $67,500-$90,000. Putting 20% down eliminates PMI entirely, saving $150-$250/month.' },
   ],
   'afford-house-125k-salary': [
@@ -61,12 +61,12 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
   ],
   'afford-house-175k-salary': [
     { question: 'How much house can I afford on $175K?', answer: 'On a $175,000 salary, you can afford a home in the $600,000 to $750,000 range. Your 28% DTI housing budget is about $4,083/month.' },
-    { question: 'Do I need a jumbo loan at $175K income?', answer: 'Possibly. In most counties, the conforming limit is $766,550. In high-cost areas it is up to $1,149,825. If your loan stays under the limit, you get better terms with a conforming loan.' },
+    { question: 'Do I need a jumbo loan at $175K income?', answer: 'Possibly. In most counties, the 2026 conforming limit is $832,750. In high-cost areas it is up to $1,249,125. If your loan stays under the limit, you get better terms with a conforming loan.' },
     { question: 'What is the smartest home price at $175K income?', answer: 'Financial experts recommend 3x-3.5x income, or $525,000-$612,500. This preserves your ability to invest aggressively and build wealth beyond your home equity.' },
   ],
   'afford-house-200k-salary': [
     { question: 'How much house can I afford on $200K salary?', answer: 'On a $200,000 salary, you can afford a home in the $700,000 to $875,000 range. However, after taxes your take-home is closer to $130K-$140K, so budget accordingly.' },
-    { question: 'What is a jumbo loan and do I need one at $200K?', answer: 'A jumbo loan exceeds the conforming limit ($766,550 in most areas). At $200K income, you likely need one for homes above this threshold. Jumbo loans require higher credit scores (700+) and larger down payments (10-20%).' },
+    { question: 'What is a jumbo loan and do I need one at $200K?', answer: 'A jumbo loan exceeds the conforming limit ($832,750 in most areas for 2026). At $200K income, you may need one for loans above this threshold. Jumbo loans require higher credit scores (700+) and larger down payments (10-20%).' },
     { question: 'Should I buy a $600K or $850K home on $200K?', answer: 'The financially optimal choice is usually the lower price. Buying at $600K and investing the $250K difference can generate $1.4 million+ in additional wealth over 30 years at historical market returns.' },
   ],
   'should-i-refinance': [

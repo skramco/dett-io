@@ -16,6 +16,12 @@ import {
 } from '@mui/material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
+import {
+  CONFORMING_LOAN_LIMIT_DISPLAY,
+  FHA_LOAN_LIMIT_CEILING_DISPLAY,
+  FHA_LOAN_LIMIT_FLOOR_DISPLAY,
+  LOAN_LIMIT_YEAR,
+} from '@/lib/calculators/loanLimits';
 
 const dataSources = [
   {
@@ -27,7 +33,7 @@ const dataSources = [
   },
   {
     area: 'Conforming & FHA loan limits',
-    how: 'The FHA calculator checks your loan amount against the baseline limit ($498,257) and high-cost ceiling ($1,149,825). Limits vary by county.',
+    how: `The FHA calculator checks your base loan against the ${LOAN_LIMIT_YEAR} FHA floor (${FHA_LOAN_LIMIT_FLOOR_DISPLAY}) and ceiling (${FHA_LOAN_LIMIT_CEILING_DISPLAY}). Conventional loans above the conforming baseline (${CONFORMING_LOAN_LIMIT_DISPLAY}) are flagged as jumbo. Limits vary by county.`,
     source: 'FHFA conforming loan limits and HUD FHA mortgage limits.',
     link: 'https://www.fhfa.gov/data/conforming-loan-limit-cll-values',
     linkLabel: 'fhfa.gov',

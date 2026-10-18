@@ -256,6 +256,7 @@ export default function AffordabilityCalculator() {
                         </Typography>
                         <Typography variant="caption" sx={{ color: '#166534', fontWeight: 600 }}>
                           Binding constraint: {bindingLabel(result.details.conservativeBinding as string, result.details.conservativeBinding === 'back-end' ? 36 : 28)}
+                          {(result.details.conservativeIsJumbo as number) === 1 && ` · Loan above ${result.details.loanLimitYear} conforming limit (jumbo)`}
                         </Typography>
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
@@ -294,6 +295,7 @@ export default function AffordabilityCalculator() {
                         </Typography>
                         <Typography variant="caption" sx={{ color: '#0F4F8F', fontWeight: 600 }}>
                           Binding constraint: {bindingLabel(result.details.moderateBinding as string, 36)}
+                          {(result.details.moderateIsJumbo as number) === 1 && ` · Loan above ${result.details.loanLimitYear} conforming limit (jumbo)`}
                         </Typography>
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
@@ -332,6 +334,7 @@ export default function AffordabilityCalculator() {
                         </Typography>
                         <Typography variant="caption" sx={{ color: '#92400E', fontWeight: 600 }}>
                           Binding constraint: {bindingLabel(result.details.aggressiveBinding as string, 43)}
+                          {(result.details.aggressiveIsJumbo as number) === 1 && ` · Loan above ${result.details.loanLimitYear} conforming limit (jumbo)`}
                         </Typography>
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
