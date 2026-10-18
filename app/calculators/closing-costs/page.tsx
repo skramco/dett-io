@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -65,7 +67,7 @@ export default function ClosingCostCalculator() {
   const [inputs, setInputs] = useState<ClosingCostInputs>({
     homePrice: 450000,
     downPaymentPercent: 20,
-    interestRate: 6.75,
+    interestRate: DEFAULT_RATES.thirtyYearFixed,
     loanTerm: 30,
     state: 'CA',
     isNewConstruction: false,

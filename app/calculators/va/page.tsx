@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -50,7 +52,7 @@ export default function VACalculator() {
   const [inputs, setInputs] = useState<VAInputs>({
     homePrice: 400000,
     downPaymentPercent: 0,
-    interestRate: 6.25,
+    interestRate: DEFAULT_RATES.va30,
     loanTerm: 30,
     serviceType: 'regular',
     firstTimeUse: true,
