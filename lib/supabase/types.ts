@@ -37,6 +37,49 @@ export interface Database {
           anonymous_id?: string | null
           user_id?: string | null
         }
+        Relationships: []
+      }
+      loanknow_leads: {
+        Row: {
+          id: string
+          created_at: string
+          email: string
+          consent: boolean
+          consent_text: string | null
+          calculator_slug: string
+          calculator_name: string | null
+          inputs: Json
+          results: Json
+          source_path: string | null
+          cta_label: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          email: string
+          consent: boolean
+          consent_text?: string | null
+          calculator_slug: string
+          calculator_name?: string | null
+          inputs?: Json
+          results?: Json
+          source_path?: string | null
+          cta_label?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          email?: string
+          consent?: boolean
+          consent_text?: string | null
+          calculator_slug?: string
+          calculator_name?: string | null
+          inputs?: Json
+          results?: Json
+          source_path?: string | null
+          cta_label?: string | null
+        }
+        Relationships: []
       }
       scenarios: {
         Row: {
@@ -63,6 +106,14 @@ export interface Database {
           inputs?: Json
           results?: Json
         }
+        Relationships: [
+          {
+            foreignKeyName: "scenarios_session_id_fkey"
+            columns: ["session_id"]
+            referencedRelation: "calculator_sessions"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
