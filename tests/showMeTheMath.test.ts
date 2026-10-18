@@ -66,7 +66,7 @@ const detailsBySlug: Record<string, Record<string, number | string>> = {
     loanTerm: 30,
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1500,
-    pmiRate: 0.5,
+    creditScore: 740,
   }).details,
   'rent-vs-buy': calculateRentVsBuy({
     homePrice: 400000,

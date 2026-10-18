@@ -61,7 +61,8 @@ export interface DownPaymentInputs {
   loanTerm: number;
   propertyTaxRate: number;
   homeInsuranceAnnual: number;
-  pmiRate: number;
+  /** Used to look up the annual PMI rate per LTV band (shared grid with the PMI calculator). */
+  creditScore: number;
 }
 
 export interface RentVsBuyInputs {
