@@ -269,6 +269,49 @@ describe('Show Me the Math values', () => {
     });
   }
 
+  it('pmi math card shows starting LTV, 80%/78% removal rules, and original-loan PMI (ENG-329)', () => {
+    // Dett.io review scenario: $450k home, 10% down, 6.75%, 30yr, 740 score
+    const details = calculatePMI({
+      homePrice: 450000,
+      downPaymentPercent: 10,
+      loanAmount: 405000,
+      interestRate: 6.75,
+      loanTerm: 30,
+      creditScore: 740,
+      pmiType: 'borrower-paid',
+    }).details;
+
+    const steps = calculatorFormulas.pmi(details)[0].steps;
+    const byLabel = Object.fromEntries(steps.map((s) => [s.label, s]));
+
+    expect(byLabel['Starting LTV Ratio'].computedValue).toBe('90.0%');
+    expect(byLabel['Monthly PMI'].computedValue).toBe('$118');
+    expect(byLabel['Monthly PMI'].formula).toMatch(/Original Loan Amount/);
+    expect(byLabel['Monthly PMI'].description).toMatch(/original loan amount/);
+    expect(byLabel['Request Cancellation at 80% LTV'].computedValue).toBe('$360,000 balance');
+    expect(byLabel['Request Cancellation at 80% LTV'].description).toMatch(/good payment history/);
+    expect(byLabel['Automatic Removal at 78% LTV'].computedValue).toBe('Month 112 (~9.3 yrs)');
+    expect(byLabel['Automatic Removal at 78% LTV'].description).toMatch(/automatically/);
+    expect(steps.some((s) => s.computedValue === '0.0%' || s.computedValue === 'N/A')).toBe(false);
+  });
+
+  it('pmi math card shows Not required when down payment is 20% or more', () => {
+    const details = calculatePMI({
+      homePrice: 450000,
+      downPaymentPercent: 20,
+      loanAmount: 360000,
+      interestRate: 6.75,
+      loanTerm: 30,
+      creditScore: 740,
+      pmiType: 'borrower-paid',
+    }).details;
+
+    const steps = calculatorFormulas.pmi(details)[0].steps;
+    expect(steps.find((s) => s.label === 'Starting LTV Ratio')?.computedValue).toBe('80.0%');
+    expect(steps.find((s) => s.label === 'PMI Required?')?.computedValue).toBe('Not required');
+    expect(steps.some((s) => s.label === 'Monthly PMI')).toBe(false);
+  });
+
   it('rent-vs-buy shows N/A only when buying genuinely never breaks even', () => {
     // Renting stays far cheaper, home barely appreciates → no crossover
     const details = calculateRentVsBuy({
