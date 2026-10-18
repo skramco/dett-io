@@ -44,7 +44,8 @@ import {
 import { calculateDTI } from '@/lib/calculators';
 import type { DTIInputs } from '@/lib/calculators/dti';
 
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+import { formatNumber } from '@/lib/format';
+const fmt = formatNumber;
 
 const DTI_COLORS = {
   excellent: '#22C55E',

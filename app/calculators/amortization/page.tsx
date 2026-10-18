@@ -48,7 +48,8 @@ import {
 import { calculateAmortization } from '@/lib/calculators';
 import type { AmortizationInputs } from '@/lib/calculators/amortization';
 
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+import { formatNumber } from '@/lib/format';
+const fmt = formatNumber;
 
 export default function AmortizationCalculator() {
   const [inputs, setInputs] = useState<AmortizationInputs>({
@@ -156,7 +157,7 @@ export default function AmortizationCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total Interest"
-                    value={`$${((result.details.totalInterest as number) / 1000).toFixed(0)}k`}
+                    value={`$${fmt(result.details.totalInterest as number)}`}
                     sublabel={`${(((result.details.totalInterest as number) / (result.details.loanAmount as number)) * 100).toFixed(0)}% of loan`}
                     color="warning"
                   />
@@ -164,7 +165,7 @@ export default function AmortizationCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total Paid"
-                    value={`$${((result.details.totalPaid as number) / 1000).toFixed(0)}k`}
+                    value={`$${fmt(result.details.totalPaid as number)}`}
                     color="error"
                   />
                 </Grid>

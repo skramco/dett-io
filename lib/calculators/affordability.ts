@@ -1,5 +1,6 @@
 import type { AffordabilityInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculateAffordability(inputs: AffordabilityInputs): CalculatorResult {
   const {
     annualIncome,
@@ -76,15 +77,15 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
   const insights: string[] = [];
   
   insights.push(
-    `Conservative ($${results.conservativePrice.toLocaleString()}): Safest option with breathing room for unexpected expenses`
+    `Conservative (${formatCurrency(results.conservativePrice)}): Safest option with breathing room for unexpected expenses`
   );
   
   insights.push(
-    `Moderate ($${results.moderatePrice.toLocaleString()}): Balanced approach - most common choice for stable income`
+    `Moderate (${formatCurrency(results.moderatePrice)}): Balanced approach - most common choice for stable income`
   );
   
   insights.push(
-    `Aggressive ($${results.aggressivePrice.toLocaleString()}): Maximum qualification - leaves little room for error`
+    `Aggressive (${formatCurrency(results.aggressivePrice)}): Maximum qualification - leaves little room for error`
   );
 
   if (backEndDTI > 43) {
@@ -95,11 +96,11 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
 
   if (downPayment < results.conservativePrice * 0.2) {
     insights.push(
-      `💡 With less than 20% down, you'll likely pay PMI. Budget an extra $${Math.round((results.moderatePrice - downPayment) * 0.005 / 12)}/month.`
+      `💡 With less than 20% down, you'll likely pay PMI. Budget an extra ${formatCurrency((results.moderatePrice - downPayment) * 0.005 / 12)}/month.`
     );
   }
 
-  const summary = `Based on $${monthlyIncome.toLocaleString()}/month income, you can afford $${results.conservativePrice.toLocaleString()} (safe) to $${results.aggressivePrice.toLocaleString()} (max).`;
+  const summary = `Based on ${formatCurrency(monthlyIncome)}/month income, you can afford ${formatCurrency(results.conservativePrice)} (safe) to ${formatCurrency(results.aggressivePrice)} (max).`;
 
   return {
     summary,

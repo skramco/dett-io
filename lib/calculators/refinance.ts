@@ -1,5 +1,6 @@
 import type { RefinanceInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 /** Standard amortization payment: P × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1] */
 function amortizedPayment(principal: number, annualRate: number, months: number): number {
   if (months <= 0 || principal <= 0) return 0;
@@ -81,39 +82,39 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
 
   if (paymentMismatch) {
     insights.push(
-      `Warning: at $${currentBalance.toLocaleString()} / ${currentRate}% / ${yearsRemaining} years remaining, the amortized P&I payment is about $${impliedCurrentPayment.toFixed(0)}/month, but you entered $${currentMonthlyPayment.toFixed(0)}. The analysis uses the computed $${impliedCurrentPayment.toFixed(0)} — make sure your entry is principal & interest only (no taxes, insurance, or escrow).`
+      `Warning: at ${formatCurrency(currentBalance)} / ${currentRate}% / ${yearsRemaining} years remaining, the amortized P&I payment is about ${formatCurrency(impliedCurrentPayment)}/month, but you entered ${formatCurrency(currentMonthlyPayment)}. The analysis uses the computed ${formatCurrency(impliedCurrentPayment)} — make sure your entry is principal & interest only (no taxes, insurance, or escrow).`
     );
   }
 
   insights.push(
-    `Closing costs of $${closingCosts.toLocaleString()} are financed into the new loan, so your new balance starts at $${newLoanAmount.toLocaleString()} — you're borrowing the costs (and paying interest on them) rather than paying them upfront.`
+    `Closing costs of ${formatCurrency(closingCosts)} are financed into the new loan, so your new balance starts at ${formatCurrency(newLoanAmount)} — you're borrowing the costs (and paying interest on them) rather than paying them upfront.`
   );
 
   if (hasMonthlySavings) {
     insights.push(
-      `You'll save $${monthlySavings.toFixed(2)}/month, but it will take ${breakEvenMonths} months (${breakEvenYears.toFixed(1)} years) of those savings to recoup the $${closingCosts.toFixed(0)} closing costs.`
+      `You'll save ${formatCurrency(monthlySavings)}/month, but it will take ${breakEvenMonths} months (${breakEvenYears.toFixed(1)} years) of those savings to recoup the ${formatCurrency(closingCosts)} closing costs.`
     );
   } else {
     insights.push(
       verdict === 'higher-payment-lower-cost'
-        ? `Your monthly payment will increase by $${Math.abs(monthlySavings).toFixed(2)}, but the faster payoff lowers your total cost — there is no payment-based break-even point.`
-        : `Your monthly payment will increase by $${Math.abs(monthlySavings).toFixed(2)}. This refinance may not make financial sense.`
+        ? `Your monthly payment will increase by ${formatCurrency(Math.abs(monthlySavings))}, but the faster payoff lowers your total cost — there is no payment-based break-even point.`
+        : `Your monthly payment will increase by ${formatCurrency(Math.abs(monthlySavings))}. This refinance may not make financial sense.`
     );
   }
 
   if (hasLifetimeSavings) {
     insights.push(
-      `Over the life of the loan, you'll save $${totalSavings.toFixed(0)} total (including the financed closing costs).`
+      `Over the life of the loan, you'll save ${formatCurrency(totalSavings)} total (including the financed closing costs).`
     );
   } else {
     insights.push(
-      `Over the life of the loan, you'll pay $${Math.abs(totalSavings).toFixed(0)} more than keeping your current loan.`
+      `Over the life of the loan, you'll pay ${formatCurrency(Math.abs(totalSavings))} more than keeping your current loan.`
     );
   }
 
   if (interestSavings > 0) {
     insights.push(
-      `You'll save $${interestSavings.toFixed(0)} in interest charges alone.`
+      `You'll save ${formatCurrency(interestSavings)} in interest charges alone.`
     );
   }
 
@@ -138,12 +139,12 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
 
   const summary =
     verdict === 'refinance'
-      ? `Refinancing saves you $${monthlySavings.toFixed(2)}/month and $${totalSavings.toFixed(0)} over the life of the loan. You'll break even on the financed $${closingCosts.toFixed(0)} closing costs in ${breakEvenMonths} months.`
+      ? `Refinancing saves you ${formatCurrency(monthlySavings)}/month and ${formatCurrency(totalSavings)} over the life of the loan. You'll break even on the financed ${formatCurrency(closingCosts)} closing costs in ${breakEvenMonths} months.`
       : verdict === 'mixed'
-        ? `Refinancing lowers your payment by $${monthlySavings.toFixed(2)}/month, but resets your term — you'd pay $${Math.abs(totalSavings).toFixed(0)} more over the life of the loan. Break-even on payment alone is ${breakEvenMonths} months.`
+        ? `Refinancing lowers your payment by ${formatCurrency(monthlySavings)}/month, but resets your term — you'd pay ${formatCurrency(Math.abs(totalSavings))} more over the life of the loan. Break-even on payment alone is ${breakEvenMonths} months.`
         : verdict === 'higher-payment-lower-cost'
-          ? `Your payment rises by $${Math.abs(monthlySavings).toFixed(2)}/month, but the shorter payoff saves you $${totalSavings.toFixed(0)} in total.`
-          : `This refinance increases your monthly payment by $${Math.abs(monthlySavings).toFixed(2)} and costs $${Math.abs(totalSavings).toFixed(0)} more over the life of the loan. It does not save you money.`;
+          ? `Your payment rises by ${formatCurrency(Math.abs(monthlySavings))}/month, but the shorter payoff saves you ${formatCurrency(totalSavings)} in total.`
+          : `This refinance increases your monthly payment by ${formatCurrency(Math.abs(monthlySavings))} and costs ${formatCurrency(Math.abs(totalSavings))} more over the life of the loan. It does not save you money.`;
 
   return {
     summary,

@@ -3,6 +3,8 @@
  * Each calculator has a set of formulas that explain how its key numbers are derived.
  */
 
+import { formatNumber, formatSignedCurrency } from '@/lib/format';
+
 export interface FormulaStep {
   label: string;
   formula: string;
@@ -18,10 +20,9 @@ export interface FormulaSet {
 
 type FormulaGenerator = (details: Record<string, number | string>) => FormulaSet[];
 
-const fmt = (v: number) => (Number.isFinite(v) ? v : 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-const fmtDec = (v: number, d = 2) => (Number.isFinite(v) ? v : 0).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
-/** Currency with an explicit minus sign for negative values, e.g. −$217. */
-const fmtSigned = (v: number) => `${Number.isFinite(v) && v < 0 ? '−' : ''}$${fmt(Math.abs(Number.isFinite(v) ? v : 0))}`;
+const fmt = formatNumber;
+const fmtDec = (v: number, d = 2) => formatNumber(v, d);
+const fmtSigned = formatSignedCurrency;
 
 export const calculatorFormulas: Record<string, FormulaGenerator> = {
   affordability: (d) => [

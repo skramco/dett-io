@@ -1,5 +1,6 @@
 import type { CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export interface PMIInputs {
   homePrice: number;
   downPaymentPercent: number;
@@ -167,17 +168,17 @@ export function calculatePMI(inputs: PMIInputs): CalculatorResult {
     insights.push('With 20% or more down, you avoid PMI entirely. This saves you hundreds per month compared to a lower down payment.');
   } else {
     insights.push(
-      `Your PMI rate is ${pmiRate.toFixed(2)}% ($${Math.round(monthlyPMI)}/month). PMI automatically drops off after ${monthsUntilRemoval} months (${(monthsUntilRemoval / 12).toFixed(1)} years) when your loan balance reaches 78% of the home value.`
+      `Your PMI rate is ${pmiRate.toFixed(2)}% (${formatCurrency(monthlyPMI)}/month). PMI automatically drops off after ${monthsUntilRemoval} months (${(monthsUntilRemoval / 12).toFixed(1)} years) when your loan balance reaches 78% of the home value.`
     );
 
     insights.push(
-      `Total PMI cost over ${(monthsUntilRemoval / 12).toFixed(1)} years: $${Math.round(totalPMICost).toLocaleString()}. That's the "cost" of putting less than 20% down.`
+      `Total PMI cost over ${(monthsUntilRemoval / 12).toFixed(1)} years: ${formatCurrency(Math.round(totalPMICost))}. That's the "cost" of putting less than 20% down.`
     );
 
     const extraDownNeeded = (homePrice * 0.20) - (homePrice * (downPaymentPercent / 100));
     if (extraDownNeeded > 0) {
       insights.push(
-        `You'd need $${Math.round(extraDownNeeded).toLocaleString()} more in down payment to reach 20% and eliminate PMI entirely.`
+        `You'd need ${formatCurrency(Math.round(extraDownNeeded))} more in down payment to reach 20% and eliminate PMI entirely.`
       );
     }
 
@@ -187,20 +188,20 @@ export function calculatePMI(inputs: PMIInputs): CalculatorResult {
       const savings = monthlyPMI - betterMonthly;
       if (savings > 10) {
         insights.push(
-          `Improving your credit score to 760+ would reduce your PMI from $${Math.round(monthlyPMI)}/mo to $${Math.round(betterMonthly)}/mo — saving $${Math.round(savings)}/month.`
+          `Improving your credit score to 760+ would reduce your PMI from ${formatCurrency(monthlyPMI)}/mo to ${formatCurrency(betterMonthly)}/mo — saving ${formatCurrency(savings)}/month.`
         );
       }
     }
   }
 
   insights.push(
-    `You can request PMI removal when your loan reaches 80% LTV (balance of $${Math.round(homePrice * 0.80).toLocaleString()}). It's automatically removed at 78% LTV.`
+    `You can request PMI removal when your loan reaches 80% LTV (balance of ${formatCurrency(Math.round(homePrice * 0.80))}). It's automatically removed at 78% LTV.`
   );
 
   return {
     summary: downPaymentPercent >= 20
       ? 'No PMI required with 20% or more down payment.'
-      : `Monthly PMI: $${Math.round(monthlyPMI)}/month for ${(monthsUntilRemoval / 12).toFixed(1)} years. Total PMI cost: $${Math.round(totalPMICost).toLocaleString()}.`,
+      : `Monthly PMI: $${Math.round(monthlyPMI)}/month for ${(monthsUntilRemoval / 12).toFixed(1)} years. Total PMI cost: ${formatCurrency(Math.round(totalPMICost))}.`,
     details: {
       homePrice,
       loanAmount: Math.round(loanAmount),

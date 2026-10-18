@@ -12,6 +12,7 @@ import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/LazyCha
 import { calculatePointsBuydown } from '@/lib/calculators';
 import type { PointsBuydownInputs } from '@/lib/calculators/types';
 
+import { formatCurrency, formatNumber } from '@/lib/format';
 export default function PointsBuydownCalculator() {
   const [inputs, setInputs] = useState<PointsBuydownInputs>({
     loanAmount: 360000, parRate: 6.75, loanTerm: 30, pointsCost: 7200, pointsRate: 6.25,
@@ -52,12 +53,12 @@ export default function PointsBuydownCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric label={`Best for ${inputs.yearsToHold} Years`} value={result.details.bestOption as string} sublabel={`Total: $${(result.details.bestTotalCost as number).toLocaleString()}`} />
+              <HeroMetric label={`Best for ${inputs.yearsToHold} Years`} value={result.details.bestOption as string} sublabel={`Total: ${formatCurrency(result.details.bestTotalCost as number)}`} />
               <Grid container spacing={2}>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Par Payment" value={`$${(result.details.parPayment as number).toLocaleString()}`} color="primary" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Best Payment" value={`$${(result.details.bestPayment as number).toLocaleString()}`} color="success" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Par Payment" value={formatCurrency(result.details.parPayment as number)} color="primary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Best Payment" value={formatCurrency(result.details.bestPayment as number)} color="success" /></Grid>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Hold Period" value={`${inputs.yearsToHold} yrs`} color="secondary" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Best Cost" value={`$${(result.details.bestTotalCost as number).toLocaleString()}`} color="success" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Best Cost" value={formatCurrency(result.details.bestTotalCost as number)} color="success" /></Grid>
               </Grid>
               <ResultsSection title="Options Compared" subtitle={`Total cost over ${inputs.yearsToHold} years`}>
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
@@ -68,7 +69,7 @@ export default function PointsBuydownCalculator() {
                           <Grid size={{ xs: 4 }}><Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{opt.option === bestOption.option && <CheckCircle sx={{ fontSize: 16, color: '#22C55E', mr: 0.5 }} />}{opt.option}</Typography></Grid>
                           <Grid size={{ xs: 3 }}><Typography variant="body2">${opt.monthlyPayment}/mo</Typography></Grid>
                           <Grid size={{ xs: 2 }}><Typography variant="body2">${opt.upfrontCost}</Typography></Grid>
-                          <Grid size={{ xs: 3 }}><Typography variant="body2" sx={{ fontWeight: 700 }}>${opt.totalCost.toLocaleString()}</Typography></Grid>
+                          <Grid size={{ xs: 3 }}><Typography variant="body2" sx={{ fontWeight: 700 }}>${formatNumber(opt.totalCost)}</Typography></Grid>
                         </Grid>
                       </Box>
                     ))}
@@ -89,7 +90,7 @@ export default function PointsBuydownCalculator() {
               )}
               <Paper elevation={0} sx={{ p: 4, borderRadius: 3, background: 'linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)' }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: 'success.dark', mb: 1 }}>The Bottom Line</Typography>
-                <Typography variant="body1" sx={{ color: 'success.dark' }}>For a {inputs.yearsToHold}-year hold, <strong>{result.details.bestOption}</strong> is your best option at ${(result.details.bestTotalCost as number).toLocaleString()} total cost.</Typography>
+                <Typography variant="body1" sx={{ color: 'success.dark' }}>For a {inputs.yearsToHold}-year hold, <strong>{result.details.bestOption}</strong> is your best option at ${formatNumber(result.details.bestTotalCost as number)} total cost.</Typography>
               </Paper>
             </Stack>
           ) : <EmptyResultsState />}

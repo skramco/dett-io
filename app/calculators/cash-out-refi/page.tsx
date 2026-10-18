@@ -12,6 +12,7 @@ import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/LazyCha
 import { calculateCashOutRefi } from '@/lib/calculators';
 import type { CashOutRefinanceInputs } from '@/lib/calculators/types';
 
+import { formatCurrency, formatNumber } from '@/lib/format';
 export default function CashOutRefiCalculator() {
   const [inputs, setInputs] = useState<CashOutRefinanceInputs>({
     currentBalance: 280000, currentRate: 4.5, yearsRemaining: 25, homeValue: 500000,
@@ -50,12 +51,12 @@ export default function CashOutRefiCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric label="Effective Cost of Cash" value={`${result.details.effectiveRate}%`} sublabel={`Getting $${inputs.cashOutAmount.toLocaleString()} costs you this rate over ${inputs.newTerm} years`} />
+              <HeroMetric label="Effective Cost of Cash" value={`${result.details.effectiveRate}%`} sublabel={`Getting ${formatCurrency(inputs.cashOutAmount)} costs you this rate over ${inputs.newTerm} years`} />
               <Grid container spacing={2}>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={`$${(result.details.currentPayment as number).toLocaleString()}`} color="primary" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New Payment" value={`$${(result.details.newPayment as number).toLocaleString()}`} color="warning" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={formatCurrency(result.details.currentPayment as number)} color="primary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New Payment" value={formatCurrency(result.details.newPayment as number)} color="warning" /></Grid>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New LTV" value={`${result.details.newLTV}%`} color={(result.details.newLTV as number) > 80 ? 'error' : 'success'} /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Extra Interest" value={`$${(result.details.totalInterestIncrease as number).toLocaleString()}`} color="error" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Extra Interest" value={formatCurrency(result.details.totalInterestIncrease as number)} color="error" /></Grid>
               </Grid>
               <ResultsSection title="Payment Comparison" subtitle="Current vs cash-out refi">
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
@@ -63,14 +64,14 @@ export default function CashOutRefiCalculator() {
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="text.secondary">CURRENT MORTGAGE</Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>${(result.details.currentPayment as number).toLocaleString()}/mo</Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>${formatNumber(result.details.currentPayment as number)}/mo</Typography>
                         <Typography variant="body2" color="text.secondary">{inputs.currentRate}% • {inputs.yearsRemaining} years left</Typography>
                       </Box>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Box sx={{ p: 3, bgcolor: '#FEF3C7', borderRadius: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="text.secondary">CASH-OUT REFI</Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#92400E', my: 1 }}>${(result.details.newPayment as number).toLocaleString()}/mo</Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#92400E', my: 1 }}>${formatNumber(result.details.newPayment as number)}/mo</Typography>
                         <Typography variant="body2" color="text.secondary">{inputs.newRate}% • {inputs.newTerm} years</Typography>
                       </Box>
                     </Grid>
@@ -90,8 +91,8 @@ export default function CashOutRefiCalculator() {
                   {scenarios.map((s, i) => <HorizontalBar key={i} label={s.scenario} value={s.totalInterest} maxValue={Math.max(...scenarios.map(x => x.totalInterest))} color={i === 0 ? CHART_COLORS.primary : i === 1 ? CHART_COLORS.quaternary : CHART_COLORS.secondary} />)}
                   <Divider sx={{ my: 3 }} />
                   <Box sx={{ p: 3, bgcolor: '#FEE2E2', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#DC2626' }}>Extra Interest Cost: ${(result.details.totalInterestIncrease as number).toLocaleString()}</Typography>
-                    <Typography variant="body2" color="text.secondary">This is the true cost of your ${inputs.cashOutAmount.toLocaleString()} cash</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#DC2626' }}>Extra Interest Cost: ${formatNumber(result.details.totalInterestIncrease as number)}</Typography>
+                    <Typography variant="body2" color="text.secondary">This is the true cost of your ${formatNumber(inputs.cashOutAmount)} cash</Typography>
                   </Box>
                 </Paper>
               </ResultsSection>
@@ -114,9 +115,9 @@ export default function CashOutRefiCalculator() {
                   <Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, color: '#92400E', mb: 1 }}>The Bottom Line</Typography>
                     <Typography variant="body1" sx={{ color: '#92400E' }}>
-                      Getting <strong>${inputs.cashOutAmount.toLocaleString()}</strong> via cash-out refi costs you an effective <strong>{result.details.effectiveRate}%</strong> rate 
-                      and <strong>${(result.details.totalInterestIncrease as number).toLocaleString()}</strong> in extra interest. Your payment increases by 
-                      <strong> ${((result.details.newPayment as number) - (result.details.currentPayment as number)).toLocaleString()}/month</strong>.
+                      Getting <strong>${formatNumber(inputs.cashOutAmount)}</strong> via cash-out refi costs you an effective <strong>{result.details.effectiveRate}%</strong> rate 
+                      and <strong>${formatNumber(result.details.totalInterestIncrease as number)}</strong> in extra interest. Your payment increases by 
+                      <strong> ${formatNumber((result.details.newPayment as number) - (result.details.currentPayment as number))}/month</strong>.
                     </Typography>
                   </Box>
                 </Stack>

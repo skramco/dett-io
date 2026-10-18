@@ -1,5 +1,6 @@
 import type { RentVsBuyInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculateRentVsBuy(inputs: RentVsBuyInputs): CalculatorResult {
   const {
     homePrice,
@@ -107,15 +108,15 @@ export function calculateRentVsBuy(inputs: RentVsBuyInputs): CalculatorResult {
   
   if (baseCase.crossoverYear) {
     insights.push(
-      `Base case: Buying breaks even in year ${baseCase.crossoverYear}. After ${yearsToAnalyze} years, you're ahead by $${Math.abs(baseCase.netWorthDifference).toLocaleString()}`
+      `Base case: Buying breaks even in year ${baseCase.crossoverYear}. After ${yearsToAnalyze} years, you're ahead by ${formatCurrency(Math.abs(baseCase.netWorthDifference))}`
     );
   } else if (baseCase.netWorthDifference > 0) {
     insights.push(
-      `Base case: Buying wins from day one. After ${yearsToAnalyze} years, you're ahead by $${baseCase.netWorthDifference.toLocaleString()}`
+      `Base case: Buying wins from day one. After ${yearsToAnalyze} years, you're ahead by ${formatCurrency(baseCase.netWorthDifference)}`
     );
   } else {
     insights.push(
-      `Base case: Renting wins. After ${yearsToAnalyze} years, you're ahead by $${Math.abs(baseCase.netWorthDifference).toLocaleString()} by renting`
+      `Base case: Renting wins. After ${yearsToAnalyze} years, you're ahead by ${formatCurrency(Math.abs(baseCase.netWorthDifference))} by renting`
     );
   }
   
@@ -131,14 +132,14 @@ export function calculateRentVsBuy(inputs: RentVsBuyInputs): CalculatorResult {
   
   const totalRentPaid = baseCase.yearlyData.reduce((sum, d) => sum + d.rentPaid, 0);
   insights.push(
-    `Over ${yearsToAnalyze} years, you'll pay $${totalRentPaid.toLocaleString()} in rent with no equity to show for it`
+    `Over ${yearsToAnalyze} years, you'll pay ${formatCurrency(totalRentPaid)} in rent with no equity to show for it`
   );
   
   insights.push(
     `The math assumes you invest the difference when renting. If you don't invest, buying wins by default.`
   );
 
-  const summary = `After ${yearsToAnalyze} years, ${baseCase.netWorthDifference > 0 ? 'buying' : 'renting'} wins by $${Math.abs(baseCase.netWorthDifference).toLocaleString()} (base case).`;
+  const summary = `After ${yearsToAnalyze} years, ${baseCase.netWorthDifference > 0 ? 'buying' : 'renting'} wins by ${formatCurrency(Math.abs(baseCase.netWorthDifference))} (base case).`;
 
   return {
     summary,

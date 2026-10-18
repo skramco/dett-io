@@ -1,5 +1,6 @@
 import type { CashOutRefinanceInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): CalculatorResult {
   const {
     currentBalance,
@@ -53,11 +54,11 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
   const insights: string[] = [];
   
   insights.push(
-    `Current: $${Math.round(currentPayment).toLocaleString()}/month, $${Math.round(currentTotalInterest).toLocaleString()} interest remaining`
+    `Current: ${formatCurrency(Math.round(currentPayment))}/month, ${formatCurrency(Math.round(currentTotalInterest))} interest remaining`
   );
   
   insights.push(
-    `Cash-out refi: $${Math.round(newPayment).toLocaleString()}/month, get $${cashOutAmount.toLocaleString()} cash, pay $${Math.round(newTotalInterest).toLocaleString()} total interest`
+    `Cash-out refi: ${formatCurrency(Math.round(newPayment))}/month, get ${formatCurrency(cashOutAmount)} cash, pay ${formatCurrency(Math.round(newTotalInterest))} total interest`
   );
 
   insights.push(
@@ -72,7 +73,7 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
 
   if (altTotalPaid < newTotalPaid) {
     insights.push(
-      `💡 Alternative: Keep current mortgage + separate ${alternativeRate}% loan saves $${Math.round(newTotalPaid - altTotalPaid).toLocaleString()} total`
+      `💡 Alternative: Keep current mortgage + separate ${alternativeRate}% loan saves ${formatCurrency(Math.round(newTotalPaid - altTotalPaid))} total`
     );
   } else {
     insights.push(
@@ -86,7 +87,7 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
     );
   }
 
-  const summary = `Cash-out refi gives you $${cashOutAmount.toLocaleString()} but costs ${effectiveRate.toFixed(2)}% effective rate and resets your loan to ${newTerm} years.`;
+  const summary = `Cash-out refi gives you ${formatCurrency(cashOutAmount)} but costs ${effectiveRate.toFixed(2)}% effective rate and resets your loan to ${newTerm} years.`;
 
   return {
     summary,

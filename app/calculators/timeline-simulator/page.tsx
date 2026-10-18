@@ -12,6 +12,7 @@ import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/LazyCha
 import { calculateTimelineSimulator } from '@/lib/calculators';
 import type { TimelineSimulatorInputs } from '@/lib/calculators/types';
 
+import { formatCurrency, formatNumber } from '@/lib/format';
 export default function TimelineSimulatorCalculator() {
   const [inputs, setInputs] = useState<TimelineSimulatorInputs>({
     loanAmount: 360000, interestRate: 6.75, expectedMoveYear: 7, refiLikelihood: 30,
@@ -52,12 +53,12 @@ export default function TimelineSimulatorCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric label={`Best for ${inputs.expectedMoveYear}-Year Hold`} value={result.details.bestOption as string} sublabel={`Total cost: $${(result.details.bestTotalCost as number).toLocaleString()}`} />
+              <HeroMetric label={`Best for ${inputs.expectedMoveYear}-Year Hold`} value={result.details.bestOption as string} sublabel={`Total cost: ${formatCurrency(result.details.bestTotalCost as number)}`} />
               <Grid container spacing={2}>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Best Payment" value={`$${(result.details.bestPayment as number).toLocaleString()}`} color="success" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Fixed Payment" value={`$${(result.details.fixedPayment as number).toLocaleString()}`} color="primary" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="ARM Payment" value={`$${(result.details.armPayment as number).toLocaleString()}`} color="secondary" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Balance at Move" value={`$${(result.details.bestBalance as number).toLocaleString()}`} color="warning" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Best Payment" value={formatCurrency(result.details.bestPayment as number)} color="success" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Fixed Payment" value={formatCurrency(result.details.fixedPayment as number)} color="primary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="ARM Payment" value={formatCurrency(result.details.armPayment as number)} color="secondary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Balance at Move" value={formatCurrency(result.details.bestBalance as number)} color="warning" /></Grid>
               </Grid>
               <ResultsSection title="All Options Compared" subtitle={`Total cost over ${inputs.expectedMoveYear} years (payments only)`}>
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
@@ -74,15 +75,15 @@ export default function TimelineSimulatorCalculator() {
                           </Grid>
                           <Grid size={{ xs: 4, sm: 2 }}>
                             <Typography variant="body2" color="text.secondary">Payment</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>${opt.monthlyPayment.toLocaleString()}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700 }}>${formatNumber(opt.monthlyPayment)}</Typography>
                           </Grid>
                           <Grid size={{ xs: 4, sm: 3 }}>
                             <Typography variant="body2" color="text.secondary">Total Paid</Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 600, color: opt.option === bestOption.option ? '#065F46' : 'inherit' }}>${opt.totalPaid.toLocaleString()}</Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 600, color: opt.option === bestOption.option ? '#065F46' : 'inherit' }}>${formatNumber(opt.totalPaid)}</Typography>
                           </Grid>
                           <Grid size={{ xs: 4, sm: 3 }}>
                             <Typography variant="body2" color="text.secondary">Balance Left</Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 600 }}>${opt.remainingBalance.toLocaleString()}</Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 600 }}>${formatNumber(opt.remainingBalance)}</Typography>
                           </Grid>
                         </Grid>
                       </Box>
@@ -135,8 +136,8 @@ export default function TimelineSimulatorCalculator() {
                     <Typography variant="h6" sx={{ fontWeight: 600, color: 'success.dark', mb: 1 }}>The Bottom Line</Typography>
                     <Typography variant="body1" sx={{ color: 'success.dark' }}>
                       For a <strong>{inputs.expectedMoveYear}-year</strong> hold, <strong>{result.details.bestOption}</strong> costs the least 
-                      at <strong>${(result.details.bestTotalCost as number).toLocaleString()}</strong> total. 
-                      You'll have <strong>${(result.details.bestBalance as number).toLocaleString()}</strong> remaining when you sell.
+                      at <strong>${formatNumber(result.details.bestTotalCost as number)}</strong> total. 
+                      You'll have <strong>${formatNumber(result.details.bestBalance as number)}</strong> remaining when you sell.
                     </Typography>
                   </Box>
                 </Stack>

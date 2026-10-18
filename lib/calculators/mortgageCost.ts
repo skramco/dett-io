@@ -1,5 +1,6 @@
 import type { MortgageCostInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorResult {
   const {
     homePrice,
@@ -41,13 +42,13 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
 
   if (monthlyPMI > 0) {
     insights.push(
-      `You're paying $${monthlyPMI.toFixed(2)}/month in PMI because your down payment is less than 20%. This adds $${(monthlyPMI * 12).toFixed(0)}/year.`
+      `You're paying ${formatCurrency(monthlyPMI)}/month in PMI because your down payment is less than 20%. This adds ${formatCurrency(monthlyPMI * 12)}/year.`
     );
   }
 
   if (totalInterest > loanAmount) {
     insights.push(
-      `Over ${loanTerm} years, you'll pay $${totalInterest.toFixed(0)} in interest - that's ${((totalInterest / loanAmount) * 100).toFixed(0)}% of your loan amount.`
+      `Over ${loanTerm} years, you'll pay ${formatCurrency(totalInterest)} in interest - that's ${((totalInterest / loanAmount) * 100).toFixed(0)}% of your loan amount.`
     );
   }
 
@@ -58,7 +59,7 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
 
   if (hoaFees > 0) {
     insights.push(
-      `HOA fees add $${(hoaFees * 12).toFixed(0)}/year to your housing costs.`
+      `HOA fees add ${formatCurrency(hoaFees * 12)}/year to your housing costs.`
     );
   }
 
@@ -71,7 +72,7 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
   ].filter(item => item.value > 0);
 
   return {
-    summary: `Your true monthly mortgage cost is $${totalMonthlyPayment.toFixed(2)}, not just the $${principalAndInterest.toFixed(2)} principal and interest most calculators show.`,
+    summary: `Your true monthly mortgage cost is ${formatCurrency(totalMonthlyPayment)}, not just the ${formatCurrency(principalAndInterest)} principal and interest most calculators show.`,
     details: {
       totalMonthlyPayment: parseFloat(totalMonthlyPayment.toFixed(2)),
       principalAndInterest: parseFloat(principalAndInterest.toFixed(2)),

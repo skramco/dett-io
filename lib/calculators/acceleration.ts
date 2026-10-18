@@ -1,5 +1,6 @@
 import type { AccelerationInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculateAcceleration(inputs: AccelerationInputs): CalculatorResult {
   const {
     loanAmount,
@@ -109,11 +110,11 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
   const insights: string[] = [];
   
   insights.push(
-    `Regular payments: $${Math.round(basePayment).toLocaleString()}/month, $${Math.round(regularTotalInterest).toLocaleString()} interest over ${loanTerm} years`
+    `Regular payments: ${formatCurrency(Math.round(basePayment))}/month, ${formatCurrency(Math.round(regularTotalInterest))} interest over ${loanTerm} years`
   );
   
   insights.push(
-    `Prepay strategy: Pay off in ${(prepayMonths / 12).toFixed(1)} years, save $${Math.round(regularTotalInterest - prepayTotalInterest).toLocaleString()} in interest`
+    `Prepay strategy: Pay off in ${(prepayMonths / 12).toFixed(1)} years, save ${formatCurrency(Math.round(regularTotalInterest - prepayTotalInterest))} in interest`
   );
 
   if (recastOption && recastMonths < prepayMonths) {
@@ -125,7 +126,7 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
   const investNetGain = investPortfolio - (prepayTotalPaid - investTotalPaid);
   if (investNetGain > 0) {
     insights.push(
-      `💡 Investing instead: End with $${Math.round(investPortfolio).toLocaleString()} portfolio vs $${Math.round(regularTotalInterest - prepayTotalInterest).toLocaleString()} interest saved`
+      `💡 Investing instead: End with ${formatCurrency(Math.round(investPortfolio))} portfolio vs ${formatCurrency(Math.round(regularTotalInterest - prepayTotalInterest))} interest saved`
     );
   } else {
     insights.push(
@@ -137,7 +138,7 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
     `The "right" choice depends on: interest rate vs investment returns, risk tolerance, and peace of mind value`
   );
 
-  const summary = `Prepaying saves $${Math.round(regularTotalInterest - prepayTotalInterest).toLocaleString()} and pays off ${prepayYearsSaved.toFixed(1)} years early.`;
+  const summary = `Prepaying saves ${formatCurrency(Math.round(regularTotalInterest - prepayTotalInterest))} and pays off ${prepayYearsSaved.toFixed(1)} years early.`;
 
   return {
     summary,

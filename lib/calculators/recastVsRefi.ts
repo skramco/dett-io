@@ -1,5 +1,6 @@
 import type { RecastVsRefinanceInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculateRecastVsRefi(inputs: RecastVsRefinanceInputs): CalculatorResult {
   const {
     currentBalance,
@@ -59,15 +60,15 @@ export function calculateRecastVsRefi(inputs: RecastVsRefinanceInputs): Calculat
   const insights: string[] = [];
   
   insights.push(
-    `Recast: Pay $${recastFee.toLocaleString()} fee, lower payment to $${Math.round(recastPayment).toLocaleString()}/month (saves $${Math.round(monthlySavings.recast).toLocaleString()}/month)`
+    `Recast: Pay ${formatCurrency(recastFee)} fee, lower payment to ${formatCurrency(Math.round(recastPayment))}/month (saves ${formatCurrency(Math.round(monthlySavings.recast))}/month)`
   );
   
   insights.push(
-    `Refinance: Pay $${closingCosts.toLocaleString()} costs, new payment $${Math.round(refiPayment).toLocaleString()}/month at ${newRate}%`
+    `Refinance: Pay ${formatCurrency(closingCosts)} costs, new payment ${formatCurrency(Math.round(refiPayment))}/month at ${newRate}%`
   );
 
   insights.push(
-    `Prepay only: Keep $${Math.round(currentPayment).toLocaleString()}/month payment, pay off ${Math.round((currentPayments - monthsToPayoff) / 12)} years early`
+    `Prepay only: Keep ${formatCurrency(Math.round(currentPayment))}/month payment, pay off ${Math.round((currentPayments - monthsToPayoff) / 12)} years early`
   );
 
   const bestOption = [
@@ -77,7 +78,7 @@ export function calculateRecastVsRefi(inputs: RecastVsRefinanceInputs): Calculat
   ].reduce((best, current) => current.totalInterest < best.totalInterest ? current : best);
 
   insights.push(
-    `Best for total interest: ${bestOption.name} ($${Math.round(bestOption.totalInterest).toLocaleString()} interest)`
+    `Best for total interest: ${bestOption.name} (${formatCurrency(Math.round(bestOption.totalInterest))} interest)`
   );
 
   if (newRate < currentRate - 0.5) {
@@ -86,7 +87,7 @@ export function calculateRecastVsRefi(inputs: RecastVsRefinanceInputs): Calculat
     );
   } else if (recastFee < 1000) {
     insights.push(
-      `💡 Recast is cheap ($${recastFee}) and gives you flexibility with lower payments`
+      `💡 Recast is cheap (${formatCurrency(recastFee)}) and gives you flexibility with lower payments`
     );
   } else {
     insights.push(

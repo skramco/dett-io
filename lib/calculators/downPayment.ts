@@ -1,5 +1,6 @@
 import type { DownPaymentInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResult {
   const {
     homePrice,
@@ -84,11 +85,11 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
   const option20 = results.find(r => r.percent === 20)!;
   
   insights.push(
-    `3% down: Lowest upfront cost ($${option3.cashToClose.toLocaleString()}), but you'll pay $${option3.pmiTotalCost.toLocaleString()} in PMI over ${Math.round(option3.pmiMonths / 12)} years`
+    `3% down: Lowest upfront cost (${formatCurrency(option3.cashToClose)}), but you'll pay ${formatCurrency(option3.pmiTotalCost)} in PMI over ${Math.round(option3.pmiMonths / 12)} years`
   );
   
   insights.push(
-    `20% down: No PMI, saves $${(option3.totalMonthly - option20.totalMonthly).toLocaleString()}/month, but requires $${option20.cashToClose.toLocaleString()} upfront`
+    `20% down: No PMI, saves ${formatCurrency(option3.totalMonthly - option20.totalMonthly)}/month, but requires ${formatCurrency(option20.cashToClose)} upfront`
   );
   
   const pmiSavings = option3.pmiTotalCost;
@@ -109,7 +110,7 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
     `The "right" amount depends on your cash reserves, emergency fund, and other investment opportunities`
   );
 
-  const summary = `Comparing down payments from 3% to 20% on a $${homePrice.toLocaleString()} home. PMI adds $${option3.pmiTotalCost.toLocaleString()} total with 3% down.`;
+  const summary = `Comparing down payments from 3% to 20% on a ${formatCurrency(homePrice)} home. PMI adds ${formatCurrency(option3.pmiTotalCost)} total with 3% down.`;
 
   return {
     summary,

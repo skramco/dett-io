@@ -20,6 +20,7 @@ import {
   AreaChart,
   ReferenceLine,
 } from 'recharts';
+import { formatCompactCurrency, formatCurrency } from '@/lib/format';
 
 // Premium color palette
 const CHART_COLORS = {
@@ -107,7 +108,7 @@ export function DonutChart({ data, centerLabel, centerValue, height = 280 }: Don
             ))}
           </Pie>
           <Tooltip
-            formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+            formatter={(value: any) => `${formatCurrency(Number(value))}`}
             contentStyle={{
               borderRadius: 8,
               border: '1px solid #E5E7EB',
@@ -246,11 +247,11 @@ export function AmortizationChart({ data, height = 300 }: AmortizationChartProps
             tick={{ fontSize: 12, fill: '#6B7280' }}
             tickLine={false}
             axisLine={{ stroke: '#E5E7EB' }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+            tickFormatter={(value) => formatCompactCurrency(value)}
             width={60}
           />
           <Tooltip
-            formatter={(value: any) => [`$${Number(value).toLocaleString()}`, 'Balance']}
+            formatter={(value: any) => [`${formatCurrency(Number(value))}`, 'Balance']}
             labelFormatter={(label) => `Year ${label}`}
             contentStyle={{
               borderRadius: 8,
@@ -319,11 +320,11 @@ export function ComparisonBarChart({
             tick={{ fontSize: 12, fill: '#6B7280' }}
             tickLine={false}
             axisLine={{ stroke: '#E5E7EB' }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+            tickFormatter={(value) => formatCompactCurrency(value)}
             width={60}
           />
           <Tooltip
-            formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+            formatter={(value: any) => `${formatCurrency(Number(value))}`}
             contentStyle={{
               borderRadius: 8,
               border: '1px solid #E5E7EB',
@@ -389,11 +390,11 @@ export function TimelineChart({
             tick={{ fontSize: 12, fill: '#6B7280' }}
             tickLine={false}
             axisLine={{ stroke: '#E5E7EB' }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+            tickFormatter={(value) => formatCompactCurrency(value)}
             width={60}
           />
           <Tooltip
-            formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+            formatter={(value: any) => `${formatCurrency(Number(value))}`}
             labelFormatter={(label) => `Month ${label}`}
             contentStyle={{
               borderRadius: 8,
@@ -477,11 +478,11 @@ export function StackedBarChart({ data, height = 300 }: StackedBarChartProps) {
             tick={{ fontSize: 12, fill: '#6B7280' }}
             tickLine={false}
             axisLine={{ stroke: '#E5E7EB' }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+            tickFormatter={(value) => formatCompactCurrency(value)}
             width={60}
           />
           <Tooltip
-            formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+            formatter={(value: any) => `${formatCurrency(Number(value))}`}
             contentStyle={{
               borderRadius: 8,
               border: '1px solid #E5E7EB',
@@ -519,7 +520,7 @@ export function HorizontalBar({
   value, 
   maxValue, 
   color = CHART_COLORS.primary,
-  formatValue = (v) => `$${v.toLocaleString()}`
+  formatValue = (v) => `${formatCurrency(v)}`
 }: HorizontalBarProps) {
   const percentage = maxValue > 0 ? (value / maxValue) * 100 : 0;
   

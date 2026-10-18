@@ -1,5 +1,6 @@
 import type { ExtraPaymentInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorResult {
   const {
     loanAmount,
@@ -74,7 +75,7 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
 
   if (interestSaved > 0) {
     insights.push(
-      `Making extra payments saves you $${interestSaved.toFixed(0)} in interest and pays off your loan ${yearsSaved.toFixed(1)} years earlier.`
+      `Making extra payments saves you ${formatCurrency(interestSaved)} in interest and pays off your loan ${yearsSaved.toFixed(1)} years earlier.`
     );
   }
 
@@ -86,12 +87,12 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
   if (investmentValue > interestSaved) {
     const difference = investmentValue - interestSaved;
     insights.push(
-      `If you invested the extra payment at ${investmentReturn}% instead, you'd have $${investmentValue.toFixed(0)} - that's $${difference.toFixed(0)} more than the interest you'd save.`
+      `If you invested the extra payment at ${investmentReturn}% instead, you'd have ${formatCurrency(investmentValue)} - that's ${formatCurrency(difference)} more than the interest you'd save.`
     );
   } else {
     const difference = interestSaved - investmentValue;
     insights.push(
-      `Paying down your mortgage saves you $${difference.toFixed(0)} more than investing at ${investmentReturn}% would earn.`
+      `Paying down your mortgage saves you ${formatCurrency(difference)} more than investing at ${investmentReturn}% would earn.`
     );
   }
 
@@ -135,7 +136,7 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
   }
 
   return {
-    summary: `Extra payments of $${(extraMonthlyPayment + extraAnnualPayment / 12).toFixed(2)}/month save you $${interestSaved.toFixed(0)} in interest and ${yearsSaved.toFixed(1)} years of payments.`,
+    summary: `Extra payments of ${formatCurrency(extraMonthlyPayment + extraAnnualPayment / 12)}/month save you ${formatCurrency(interestSaved)} in interest and ${yearsSaved.toFixed(1)} years of payments.`,
     details: {
       regularMonthlyPayment: parseFloat(regularMonthlyPayment.toFixed(2)),
       extraMonthlyPayment: parseFloat(extraMonthlyPayment.toFixed(2)),

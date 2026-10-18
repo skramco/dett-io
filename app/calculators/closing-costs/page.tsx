@@ -45,7 +45,8 @@ import {
 import { calculateClosingCosts } from '@/lib/calculators';
 import type { ClosingCostInputs } from '@/lib/calculators/closingCosts';
 
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+import { formatNumber } from '@/lib/format';
+const fmt = formatNumber;
 
 const CATEGORY_COLORS: Record<string, string> = {
   lender: CHART_COLORS.primary,

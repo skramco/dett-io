@@ -1,5 +1,6 @@
 import type { CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export interface FHAInputs {
   homePrice: number;
   downPaymentPercent: number;
@@ -121,22 +122,22 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   }
 
   insights.push(
-    `FHA charges two types of mortgage insurance: an upfront premium of $${Math.round(upfrontMIP).toLocaleString()} (1.75% of loan, financed into the loan) and a monthly premium of $${Math.round(monthlyMIP)}/mo (${annualMIPRate}% annually).`
+    `FHA charges two types of mortgage insurance: an upfront premium of ${formatCurrency(Math.round(upfrontMIP))} (1.75% of loan, financed into the loan) and a monthly premium of $${Math.round(monthlyMIP)}/mo (${annualMIPRate}% annually).`
   );
 
   if (mipDurationYears < loanTerm) {
     insights.push(
-      `With ${downPaymentPercent}% down, your monthly MIP drops off after ${mipDurationYears} years. Total MIP cost: $${Math.round(totalMIPCost).toLocaleString()}.`
+      `With ${downPaymentPercent}% down, your monthly MIP drops off after ${mipDurationYears} years. Total MIP cost: ${formatCurrency(Math.round(totalMIPCost))}.`
     );
   } else {
     insights.push(
-      `With less than 10% down on a 30-year FHA loan, MIP lasts the entire life of the loan. Total MIP cost: $${Math.round(totalMIPCost).toLocaleString()}. Consider refinancing to conventional once you reach 20% equity.`
+      `With less than 10% down on a 30-year FHA loan, MIP lasts the entire life of the loan. Total MIP cost: ${formatCurrency(Math.round(totalMIPCost))}. Consider refinancing to conventional once you reach 20% equity.`
     );
   }
 
   if (convTotalMonthly < totalMonthlyPayment && creditScore >= 680) {
     insights.push(
-      `A conventional loan with 5% down would cost $${Math.round(convTotalMonthly).toLocaleString()}/mo vs FHA at $${Math.round(totalMonthlyPayment).toLocaleString()}/mo. With your credit score, conventional may be the better option.`
+      `A conventional loan with 5% down would cost ${formatCurrency(Math.round(convTotalMonthly))}/mo vs FHA at ${formatCurrency(Math.round(totalMonthlyPayment))}/mo. With your credit score, conventional may be the better option.`
     );
   } else if (creditScore < 680) {
     insights.push(
@@ -151,7 +152,7 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   }
 
   return {
-    summary: `FHA monthly payment: $${Math.round(totalMonthlyPayment).toLocaleString()} (P&I: $${Math.round(monthlyPI).toLocaleString()} + MIP: $${Math.round(monthlyMIP)} + Tax/Ins: $${Math.round(monthlyPropertyTax + monthlyInsurance)})`,
+    summary: `FHA monthly payment: ${formatCurrency(Math.round(totalMonthlyPayment))} (P&I: ${formatCurrency(Math.round(monthlyPI))} + MIP: $${Math.round(monthlyMIP)} + Tax/Ins: $${Math.round(monthlyPropertyTax + monthlyInsurance)})`,
     details: {
       homePrice,
       downPayment: Math.round(downPayment),

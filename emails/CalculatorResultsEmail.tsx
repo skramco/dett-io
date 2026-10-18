@@ -14,6 +14,8 @@ import {
   Column,
 } from '@react-email/components';
 
+import { formatCurrency } from '@/lib/format';
+
 interface CalculatorResultsEmailProps {
   calculatorName: string;
   summary: string;
@@ -164,7 +166,7 @@ function formatValue(key: string, value: number | string): string {
     if (key.toLowerCase().includes('months') || key.toLowerCase().includes('years') || key.toLowerCase().includes('month')) {
       return value.toString();
     }
-    return `$${value.toLocaleString()}`;
+    return formatCurrency(value);
   }
   return value.toString();
 }

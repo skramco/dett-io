@@ -40,6 +40,7 @@ import {
 import { calculateExtraPayment } from '@/lib/calculators';
 import type { ExtraPaymentInputs } from '@/lib/calculators/types';
 
+import { formatCurrency, formatNumber } from '@/lib/format';
 export default function ExtraPaymentCalculator() {
   const [inputs, setInputs] = useState<ExtraPaymentInputs>({
     loanAmount: 360000,
@@ -148,7 +149,7 @@ export default function ExtraPaymentCalculator() {
               {/* Hero Metric */}
               <HeroMetric
                 label="Interest Saved"
-                value={`$${(result.details.interestSaved as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                value={formatCurrency(result.details.interestSaved as number)}
                 sublabel={`Pay off ${(result.details.yearsSaved as number).toFixed(1)} years early`}
               />
 
@@ -157,14 +158,14 @@ export default function ExtraPaymentCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Regular Payment"
-                    value={`$${(result.details.regularMonthlyPayment as number).toLocaleString()}`}
+                    value={formatCurrency(result.details.regularMonthlyPayment as number)}
                     color="primary"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="With Extra"
-                    value={`$${((result.details.regularMonthlyPayment as number) + (inputs.extraMonthlyPayment ?? 0)).toLocaleString()}`}
+                    value={formatCurrency((result.details.regularMonthlyPayment as number) + (inputs.extraMonthlyPayment ?? 0))}
                     color="success"
                   />
                 </Grid>
@@ -179,7 +180,7 @@ export default function ExtraPaymentCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Investment Value"
-                    value={`$${(result.details.investmentValue as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                    value={formatCurrency(result.details.investmentValue as number)}
                     sublabel="If invested instead"
                     color="secondary"
                   />
@@ -209,7 +210,7 @@ export default function ExtraPaymentCalculator() {
                   
                   <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2, textAlign: 'center' }}>
                     <Typography variant="h5" sx={{ fontWeight: 700, color: '#065F46' }}>
-                      Save ${(result.details.interestSaved as number).toLocaleString(undefined, { maximumFractionDigits: 0 })} in Interest
+                      Save ${formatNumber(result.details.interestSaved as number)} in Interest
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Plus pay off your mortgage {(result.details.yearsSaved as number).toFixed(1)} years early
@@ -263,7 +264,7 @@ export default function ExtraPaymentCalculator() {
                           Prepay Mortgage
                         </Typography>
                         <Typography variant="h5" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>
-                          ${(result.details.interestSaved as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                          ${formatNumber(result.details.interestSaved as number)}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Guaranteed {inputs.interestRate}% return
@@ -277,7 +278,7 @@ export default function ExtraPaymentCalculator() {
                           Invest Instead
                         </Typography>
                         <Typography variant="h5" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
-                          ${(result.details.investmentValue as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                          ${formatNumber(result.details.investmentValue as number)}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Potential at {result.details.investmentReturn}% return
@@ -294,8 +295,8 @@ export default function ExtraPaymentCalculator() {
                   >
                     <Typography variant="body2">
                       {(result.details.investmentValue as number) > (result.details.interestSaved as number) 
-                        ? `Investing may yield $${((result.details.investmentValue as number) - (result.details.interestSaved as number)).toLocaleString(undefined, { maximumFractionDigits: 0 })} more than prepaying. However, investment returns aren't guaranteed while interest savings are.`
-                        : `Prepaying wins by $${((result.details.interestSaved as number) - (result.details.investmentValue as number)).toLocaleString(undefined, { maximumFractionDigits: 0 })}. The guaranteed ${inputs.interestRate}% return from prepaying beats the expected ${result.details.investmentReturn}% investment return.`
+                        ? `Investing may yield ${formatCurrency((result.details.investmentValue as number) - (result.details.interestSaved as number))} more than prepaying. However, investment returns aren't guaranteed while interest savings are.`
+                        : `Prepaying wins by ${formatCurrency((result.details.interestSaved as number) - (result.details.investmentValue as number))}. The guaranteed ${inputs.interestRate}% return from prepaying beats the expected ${result.details.investmentReturn}% investment return.`
                       }
                     </Typography>
                   </Alert>
@@ -337,9 +338,9 @@ export default function ExtraPaymentCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'success.dark' }}>
-                      Adding <strong>${(inputs.extraMonthlyPayment ?? 0).toLocaleString()}/month</strong> 
-                      {(inputs.extraAnnualPayment ?? 0) > 0 ? ` plus $${(inputs.extraAnnualPayment ?? 0).toLocaleString()}/year` : ''} to your mortgage 
-                      saves <strong>${(result.details.interestSaved as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> in interest and 
+                      Adding <strong>${formatNumber(inputs.extraMonthlyPayment ?? 0)}/month</strong> 
+                      {(inputs.extraAnnualPayment ?? 0) > 0 ? ` plus ${formatCurrency(inputs.extraAnnualPayment ?? 0)}/year` : ''} to your mortgage 
+                      saves <strong>${formatNumber(result.details.interestSaved as number)}</strong> in interest and 
                       pays off your loan <strong>{(result.details.yearsSaved as number).toFixed(1)} years early</strong>. 
                       That's a guaranteed <strong>{inputs.interestRate}%</strong> return on every extra dollar.
                     </Typography>

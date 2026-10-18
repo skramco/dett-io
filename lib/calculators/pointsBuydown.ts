@@ -1,5 +1,6 @@
 import type { PointsBuydownInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorResult {
   const {
     loanAmount,
@@ -60,7 +61,7 @@ export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorR
   const insights: string[] = [];
   
   insights.push(
-    `Par rate (${parRate}%): $${parOption.monthlyPayment.toLocaleString()}/month, no upfront cost`
+    `Par rate (${parRate}%): ${formatCurrency(parOption.monthlyPayment)}/month, no upfront cost`
   );
 
   const pointsOption = results.find(r => r.name === 'Buy Points');
@@ -68,7 +69,7 @@ export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorR
     const monthlySavings = parOption.monthlyPayment - pointsOption.monthlyPayment;
     const breakEvenMonths = pointsCost / monthlySavings;
     insights.push(
-      `Buying points: Saves $${monthlySavings}/month, breaks even in ${Math.round(breakEvenMonths)} months (${(breakEvenMonths / 12).toFixed(1)} years)`
+      `Buying points: Saves ${formatCurrency(monthlySavings)}/month, breaks even in ${Math.round(breakEvenMonths)} months (${(breakEvenMonths / 12).toFixed(1)} years)`
     );
   }
 
@@ -76,12 +77,12 @@ export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorR
   if (creditOption) {
     const extraMonthly = creditOption.monthlyPayment - parOption.monthlyPayment;
     insights.push(
-      `Lender credit: Get $${lenderCredit.toLocaleString()} upfront, pay $${extraMonthly}/month more`
+      `Lender credit: Get ${formatCurrency(lenderCredit)} upfront, pay $${extraMonthly}/month more`
     );
   }
 
   insights.push(
-    `Best option for ${yearsToHold} years: ${bestOption.name} (total cost: $${bestOption.totalCost.toLocaleString()})`
+    `Best option for ${yearsToHold} years: ${bestOption.name} (total cost: ${formatCurrency(bestOption.totalCost)})`
   );
 
   if (yearsToHold < 5) {
@@ -94,7 +95,7 @@ export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorR
     );
   }
 
-  const summary = `For a ${yearsToHold}-year hold, ${bestOption.name} is cheapest at $${bestOption.totalCost.toLocaleString()} total cost.`;
+  const summary = `For a ${yearsToHold}-year hold, ${bestOption.name} is cheapest at ${formatCurrency(bestOption.totalCost)} total cost.`;
 
   return {
     summary,

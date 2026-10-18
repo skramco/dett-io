@@ -1,5 +1,6 @@
 import type { CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export interface ClosingCostInputs {
   homePrice: number;
   downPaymentPercent: number;
@@ -136,17 +137,17 @@ export function calculateClosingCosts(inputs: ClosingCostInputs): CalculatorResu
   const insights: string[] = [];
 
   insights.push(
-    `Your estimated closing costs are $${totalClosingCosts.toLocaleString()} (${closingCostPercent.toFixed(1)}% of the home price). The national average is 2-5%.`
+    `Your estimated closing costs are ${formatCurrency(totalClosingCosts)} (${closingCostPercent.toFixed(1)}% of the home price). The national average is 2-5%.`
   );
 
   if (sellerCredit > 0) {
     insights.push(
-      `With a ${sellerCreditPercent}% seller credit ($${sellerCredit.toLocaleString()}), your net closing costs drop to $${netClosingCosts.toLocaleString()}.`
+      `With a ${sellerCreditPercent}% seller credit (${formatCurrency(sellerCredit)}), your net closing costs drop to ${formatCurrency(netClosingCosts)}.`
     );
   }
 
   insights.push(
-    `You'll need $${totalCashNeeded.toLocaleString()} total cash at closing: $${downPayment.toLocaleString()} down payment + $${netClosingCosts.toLocaleString()} closing costs.`
+    `You'll need ${formatCurrency(totalCashNeeded)} total cash at closing: ${formatCurrency(downPayment)} down payment + ${formatCurrency(netClosingCosts)} closing costs.`
   );
 
   const prepaidPercent = totalClosingCosts > 0 ? (prepaidItems / totalClosingCosts) * 100 : 0;
@@ -156,12 +157,12 @@ export function calculateClosingCosts(inputs: ClosingCostInputs): CalculatorResu
 
   if (calcOriginationFee > 0) {
     insights.push(
-      `The origination fee ($${calcOriginationFee.toLocaleString()}) is often negotiable. Some lenders offer no-origination-fee loans in exchange for a slightly higher rate.`
+      `The origination fee (${formatCurrency(calcOriginationFee)}) is often negotiable. Some lenders offer no-origination-fee loans in exchange for a slightly higher rate.`
     );
   }
 
   return {
-    summary: `Estimated closing costs of $${totalClosingCosts.toLocaleString()} (${closingCostPercent.toFixed(1)}% of home price). Total cash needed: $${totalCashNeeded.toLocaleString()}.`,
+    summary: `Estimated closing costs of ${formatCurrency(totalClosingCosts)} (${closingCostPercent.toFixed(1)}% of home price). Total cash needed: ${formatCurrency(totalCashNeeded)}.`,
     details: {
       homePrice,
       loanAmount: Math.round(loanAmount),

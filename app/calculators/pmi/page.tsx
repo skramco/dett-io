@@ -44,7 +44,8 @@ import {
 import { calculatePMI } from '@/lib/calculators';
 import type { PMIInputs } from '@/lib/calculators/pmi';
 
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+import { formatNumber } from '@/lib/format';
+const fmt = formatNumber;
 
 export default function PMICalculator() {
   const [inputs, setInputs] = useState<PMIInputs>({

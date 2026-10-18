@@ -39,6 +39,7 @@ import {
 import { calculateInterestSensitivity } from '@/lib/calculators';
 import type { InterestSensitivityInputs } from '@/lib/calculators/types';
 
+import { formatCurrency, formatNumber } from '@/lib/format';
 export default function InterestSensitivityCalculator() {
   const [inputs, setInputs] = useState<InterestSensitivityInputs>({
     loanAmount: 360000,
@@ -136,8 +137,8 @@ export default function InterestSensitivityCalculator() {
               {/* Hero Metric */}
               <HeroMetric
                 label="Payment at Base Rate"
-                value={`$${(result.details.basePayment as number).toLocaleString()}/mo`}
-                sublabel={`${inputs.baseRate}% on $${inputs.loanAmount.toLocaleString()} loan`}
+                value={`${formatCurrency(result.details.basePayment as number)}/mo`}
+                sublabel={`${inputs.baseRate}% on ${formatCurrency(inputs.loanAmount)} loan`}
               />
 
               {/* Key Metrics Grid */}
@@ -145,28 +146,28 @@ export default function InterestSensitivityCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="±0.25% Impact"
-                    value={`$${result.details.quarterPctImpact}/mo`}
+                    value={`${formatCurrency(result.details.quarterPctImpact as number)}/mo`}
                     color="primary"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="±0.5% Impact"
-                    value={`$${result.details.halfPctImpact}/mo`}
+                    value={`${formatCurrency(result.details.halfPctImpact as number)}/mo`}
                     color="warning"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="±1.0% Impact"
-                    value={`$${result.details.fullPctImpact}/mo`}
+                    value={`${formatCurrency(result.details.fullPctImpact as number)}/mo`}
                     color="error"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total Interest"
-                    value={`$${(result.details.baseInterest as number).toLocaleString()}`}
+                    value={formatCurrency(result.details.baseInterest as number)}
                     sublabel={`Over ${inputs.loanTerm} years`}
                     color="secondary"
                   />
@@ -217,13 +218,13 @@ export default function InterestSensitivityCalculator() {
                             <Grid size={{ xs: 4 }}>
                               <Typography variant="body2" color="text.secondary">Monthly P&I</Typography>
                               <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                                ${scenario.monthlyPayment.toLocaleString()}
+                                ${formatNumber(scenario.monthlyPayment)}
                               </Typography>
                             </Grid>
                             <Grid size={{ xs: 3 }}>
                               <Typography variant="body2" color="text.secondary">Total Interest</Typography>
                               <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                                ${scenario.totalInterest.toLocaleString()}
+                                ${formatNumber(scenario.totalInterest)}
                               </Typography>
                             </Grid>
                             <Grid size={{ xs: 2 }}>
@@ -236,7 +237,7 @@ export default function InterestSensitivityCalculator() {
                                     textAlign: 'right',
                                   }}
                                 >
-                                  {diff > 0 ? '+' : ''}{diff.toLocaleString()}/mo
+                                  {diff > 0 ? '+' : ''}{formatNumber(diff)}/mo
                                 </Typography>
                               )}
                             </Grid>
@@ -288,7 +289,7 @@ export default function InterestSensitivityCalculator() {
                           Save ${result.details.halfPctImpact}/mo
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          ${((result.details.halfPctImpact as number) * 12).toLocaleString()}/year
+                          ${formatNumber((result.details.halfPctImpact as number) * 12)}/year
                         </Typography>
                       </Box>
                     </Grid>
@@ -298,7 +299,7 @@ export default function InterestSensitivityCalculator() {
                           CURRENT RATE
                         </Typography>
                         <Typography variant="h5" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
-                          ${(result.details.basePayment as number).toLocaleString()}/mo
+                          ${formatNumber(result.details.basePayment as number)}/mo
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           At {inputs.baseRate}%
@@ -314,7 +315,7 @@ export default function InterestSensitivityCalculator() {
                           +${result.details.halfPctImpact}/mo
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          ${((result.details.halfPctImpact as number) * 12).toLocaleString()}/year more
+                          ${formatNumber((result.details.halfPctImpact as number) * 12)}/year more
                         </Typography>
                       </Box>
                     </Grid>
@@ -324,7 +325,7 @@ export default function InterestSensitivityCalculator() {
 
                   <Alert severity="info" sx={{ borderRadius: 2 }}>
                     <Typography variant="body2">
-                      <strong>Buying points:</strong> If paying 1 point (1% of loan = ${(inputs.loanAmount * 0.01).toLocaleString()}) 
+                      <strong>Buying points:</strong> If paying 1 point (1% of loan = ${formatNumber(inputs.loanAmount * 0.01)}) 
                       reduces your rate by 0.25%, you'd save ${result.details.quarterPctImpact}/month. 
                       Break-even: {Math.round((inputs.loanAmount * 0.01) / (result.details.quarterPctImpact as number))} months.
                     </Typography>
@@ -367,11 +368,11 @@ export default function InterestSensitivityCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'primary.dark' }}>
-                      On a <strong>${inputs.loanAmount.toLocaleString()}</strong> loan, every <strong>0.25%</strong> rate change 
+                      On a <strong>${formatNumber(inputs.loanAmount)}</strong> loan, every <strong>0.25%</strong> rate change 
                       affects your payment by <strong>${result.details.quarterPctImpact}/month</strong> 
-                      (${((result.details.quarterPctImpact as number) * 12).toLocaleString()}/year). 
+                      (${formatNumber((result.details.quarterPctImpact as number) * 12)}/year). 
                       A <strong>1%</strong> difference means <strong>${result.details.fullPctImpact}/month</strong> more or less—that's 
-                      <strong> ${((result.details.fullPctImpact as number) * 12).toLocaleString()}/year</strong> and significant interest over {inputs.loanTerm} years.
+                      <strong> ${formatNumber((result.details.fullPctImpact as number) * 12)}/year</strong> and significant interest over {inputs.loanTerm} years.
                     </Typography>
                   </Box>
                 </Stack>

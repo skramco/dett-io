@@ -1,5 +1,6 @@
 import type { CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export interface VAInputs {
   homePrice: number;
   downPaymentPercent: number;
@@ -134,16 +135,16 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
   const insights: string[] = [];
 
   insights.push(
-    `VA loans require no down payment and no monthly mortgage insurance — saving you $${Math.round(pmiSavingsVsConv)}/month vs a conventional loan with PMI.`
+    `VA loans require no down payment and no monthly mortgage insurance — saving you ${formatCurrency(pmiSavingsVsConv)}/month vs a conventional loan with PMI.`
   );
 
   if (fundingFee > 0) {
     insights.push(
-      `The VA funding fee is ${fundingFeeRate}% ($${fundingFee.toLocaleString()}), financed into the loan. ${firstTimeUse ? 'First-time' : 'Subsequent'} use rate applies. Putting 5%+ down reduces this fee significantly.`
+      `The VA funding fee is ${fundingFeeRate}% (${formatCurrency(fundingFee)}), financed into the loan. ${firstTimeUse ? 'First-time' : 'Subsequent'} use rate applies. Putting 5%+ down reduces this fee significantly.`
     );
   } else {
     insights.push(
-      `You're exempt from the VA funding fee due to disability status, saving you $${Math.round(baseLoanAmount * 0.0215).toLocaleString()} that most VA borrowers pay.`
+      `You're exempt from the VA funding fee due to disability status, saving you ${formatCurrency(Math.round(baseLoanAmount * 0.0215))} that most VA borrowers pay.`
     );
   }
 
@@ -151,18 +152,18 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
   const vaVsConv = convTotalMonthly - totalMonthlyPayment;
   if (vaVsFHA > 0) {
     insights.push(
-      `VA saves you $${Math.round(vaVsFHA)}/month vs FHA ($${Math.round(vaVsFHA * 12).toLocaleString()}/year) — primarily because VA has no monthly mortgage insurance.`
+      `VA saves you $${Math.round(vaVsFHA)}/month vs FHA (${formatCurrency(Math.round(vaVsFHA * 12))}/year) — primarily because VA has no monthly mortgage insurance.`
     );
   }
   if (vaVsConv > 0) {
     insights.push(
-      `VA saves you $${Math.round(vaVsConv)}/month vs conventional with 5% down ($${Math.round(vaVsConv * 12).toLocaleString()}/year).`
+      `VA saves you $${Math.round(vaVsConv)}/month vs conventional with 5% down (${formatCurrency(Math.round(vaVsConv * 12))}/year).`
     );
   }
 
   if (totalDTI > 41 && totalDTI <= 50) {
     insights.push(
-      `Your DTI of ${totalDTI.toFixed(1)}% exceeds the 41% guideline, but VA may approve with sufficient residual income. Your estimated residual income is $${Math.round(monthlyResidualIncome).toLocaleString()}/month.`
+      `Your DTI of ${totalDTI.toFixed(1)}% exceeds the 41% guideline, but VA may approve with sufficient residual income. Your estimated residual income is ${formatCurrency(Math.round(monthlyResidualIncome))}/month.`
     );
   } else if (totalDTI > 50) {
     insights.push(
@@ -172,12 +173,12 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
 
   if (downPaymentPercent === 0 && !disabilityExempt) {
     insights.push(
-      `Putting just 5% down ($${Math.round(homePrice * 0.05).toLocaleString()}) would reduce your funding fee from ${fundingFeeRate}% to 1.5%, saving $${Math.round(baseLoanAmount * (fundingFeeRate / 100) - baseLoanAmount * 0.015).toLocaleString()}.`
+      `Putting just 5% down (${formatCurrency(Math.round(homePrice * 0.05))}) would reduce your funding fee from ${fundingFeeRate}% to 1.5%, saving ${formatCurrency(Math.round(baseLoanAmount * (fundingFeeRate / 100) - baseLoanAmount * 0.015))}.`
     );
   }
 
   return {
-    summary: `VA monthly payment: $${Math.round(totalMonthlyPayment).toLocaleString()} with $0 down and no PMI. Funding fee: $${fundingFee.toLocaleString()} (${fundingFeeRate}%).`,
+    summary: `VA monthly payment: ${formatCurrency(Math.round(totalMonthlyPayment))} with $0 down and no PMI. Funding fee: ${formatCurrency(fundingFee)} (${fundingFeeRate}%).`,
     details: {
       homePrice,
       downPayment: Math.round(downPayment),

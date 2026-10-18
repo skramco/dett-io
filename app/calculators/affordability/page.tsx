@@ -41,6 +41,7 @@ import {
 import { calculateAffordability } from '@/lib/calculators';
 import type { AffordabilityInputs } from '@/lib/calculators/types';
 
+import { formatCurrency, formatNumber } from '@/lib/format';
 export default function AffordabilityCalculator() {
   const [inputs, setInputs] = useState<AffordabilityInputs>({
     annualIncome: 120000,
@@ -176,8 +177,8 @@ export default function AffordabilityCalculator() {
               {/* Hero Metric - Moderate recommendation */}
               <HeroMetric
                 label="Recommended Home Price"
-                value={`$${(result.details.moderatePrice as number).toLocaleString()}`}
-                sublabel={`Based on 36% DTI with $${(result.details.moderatePayment as number).toLocaleString()}/month payment`}
+                value={formatCurrency(result.details.moderatePrice as number)}
+                sublabel={`Based on 36% DTI with ${formatCurrency(result.details.moderatePayment as number)}/month payment`}
               />
 
               {/* Key Metrics Grid */}
@@ -185,14 +186,14 @@ export default function AffordabilityCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Monthly Income"
-                    value={`$${monthlyIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                    value={formatCurrency(monthlyIncome)}
                     color="primary"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Down Payment"
-                    value={`$${inputs.downPayment.toLocaleString()}`}
+                    value={formatCurrency(inputs.downPayment)}
                     sublabel={`${((inputs.downPayment / (result.details.moderatePrice as number)) * 100).toFixed(0)}% of moderate`}
                     color="secondary"
                   />
@@ -200,7 +201,7 @@ export default function AffordabilityCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Current Debts"
-                    value={`$${inputs.monthlyDebts.toLocaleString()}/mo`}
+                    value={`${formatCurrency(inputs.monthlyDebts)}/mo`}
                     color={inputs.monthlyDebts > monthlyIncome * 0.1 ? 'warning' : 'success'}
                   />
                 </Grid>
@@ -245,10 +246,10 @@ export default function AffordabilityCalculator() {
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#166534' }}>
-                          ${(result.details.conservativePrice as number).toLocaleString()}
+                          ${formatNumber(result.details.conservativePrice as number)}
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#166534' }}>
-                          ${(result.details.conservativePayment as number).toLocaleString()}/month
+                          ${formatNumber(result.details.conservativePayment as number)}/month
                         </Typography>
                       </Box>
                     </Stack>
@@ -279,10 +280,10 @@ export default function AffordabilityCalculator() {
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F4F8F' }}>
-                          ${(result.details.moderatePrice as number).toLocaleString()}
+                          ${formatNumber(result.details.moderatePrice as number)}
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
-                          ${(result.details.moderatePayment as number).toLocaleString()}/month
+                          ${formatNumber(result.details.moderatePayment as number)}/month
                         </Typography>
                       </Box>
                     </Stack>
@@ -313,10 +314,10 @@ export default function AffordabilityCalculator() {
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#92400E' }}>
-                          ${(result.details.aggressivePrice as number).toLocaleString()}
+                          ${formatNumber(result.details.aggressivePrice as number)}
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#92400E' }}>
-                          ${(result.details.aggressivePayment as number).toLocaleString()}/month
+                          ${formatNumber(result.details.aggressivePayment as number)}/month
                         </Typography>
                       </Box>
                     </Stack>
@@ -355,21 +356,21 @@ export default function AffordabilityCalculator() {
                     value={monthlyIncome - (result.details.conservativePayment as number)}
                     maxValue={monthlyIncome}
                     color="#22C55E"
-                    formatValue={(v) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })} left`}
+                    formatValue={(v) => `${formatCurrency(v)} left`}
                   />
                   <HorizontalBar
                     label="Moderate"
                     value={monthlyIncome - (result.details.moderatePayment as number)}
                     maxValue={monthlyIncome}
                     color="#196bc0"
-                    formatValue={(v) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })} left`}
+                    formatValue={(v) => `${formatCurrency(v)} left`}
                   />
                   <HorizontalBar
                     label="Aggressive"
                     value={monthlyIncome - (result.details.aggressivePayment as number)}
                     maxValue={monthlyIncome}
                     color="#F59E0B"
-                    formatValue={(v) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })} left`}
+                    formatValue={(v) => `${formatCurrency(v)} left`}
                   />
 
                   <Divider sx={{ my: 3 }} />
@@ -418,10 +419,10 @@ export default function AffordabilityCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'primary.dark' }}>
-                      With a <strong>${inputs.annualIncome.toLocaleString()}</strong> annual income and <strong>${inputs.downPayment.toLocaleString()}</strong> down payment, 
-                      we recommend looking at homes up to <strong>${(result.details.moderatePrice as number).toLocaleString()}</strong>. 
-                      This keeps your monthly payment at <strong>${(result.details.moderatePayment as number).toLocaleString()}</strong>, 
-                      leaving you with <strong>${(monthlyIncome - (result.details.moderatePayment as number)).toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> each month for other expenses.
+                      With a <strong>${formatNumber(inputs.annualIncome)}</strong> annual income and <strong>${formatNumber(inputs.downPayment)}</strong> down payment, 
+                      we recommend looking at homes up to <strong>${formatNumber(result.details.moderatePrice as number)}</strong>. 
+                      This keeps your monthly payment at <strong>${formatNumber(result.details.moderatePayment as number)}</strong>, 
+                      leaving you with <strong>${formatNumber(monthlyIncome - (result.details.moderatePayment as number))}</strong> each month for other expenses.
                     </Typography>
                   </Box>
                 </Stack>

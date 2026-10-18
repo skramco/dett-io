@@ -12,6 +12,7 @@ import { HorizontalBar, CHART_COLORS } from '@/components/mui/calculator/LazyCha
 import { calculateRecastVsRefi } from '@/lib/calculators';
 import type { RecastVsRefinanceInputs } from '@/lib/calculators/types';
 
+import { formatCurrency, formatNumber } from '@/lib/format';
 export default function RecastVsRefiCalculator() {
   const [inputs, setInputs] = useState<RecastVsRefinanceInputs>({
     currentBalance: 320000, currentRate: 6.5, yearsRemaining: 27, lumpSumAmount: 50000,
@@ -50,11 +51,11 @@ export default function RecastVsRefiCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric label="Best Option for Interest Savings" value={bestOption.option} sublabel={`Total interest: $${bestOption.totalInterest.toLocaleString()}`} />
+              <HeroMetric label="Best Option for Interest Savings" value={bestOption.option} sublabel={`Total interest: ${formatCurrency(bestOption.totalInterest)}`} />
               <Grid container spacing={2}>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={`$${(result.details.currentPayment as number).toLocaleString()}`} color="primary" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Recast Payment" value={`$${(result.details.recastPayment as number).toLocaleString()}`} sublabel={`Fee: $${result.details.recastFee}`} color="success" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Refi Payment" value={`$${(result.details.refiPayment as number).toLocaleString()}`} sublabel={`Costs: $${result.details.refiCosts}`} color="secondary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={formatCurrency(result.details.currentPayment as number)} color="primary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Recast Payment" value={formatCurrency(result.details.recastPayment as number)} sublabel={`Fee: $${result.details.recastFee}`} color="success" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Refi Payment" value={formatCurrency(result.details.refiPayment as number)} sublabel={`Costs: $${result.details.refiCosts}`} color="secondary" /></Grid>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Prepay Saves" value={`${Math.round((result.details.prepayMonthsSaved as number) / 12)} years`} color="warning" /></Grid>
               </Grid>
               <ResultsSection title="Options Compared" subtitle="Three ways to use your lump sum">
@@ -72,11 +73,11 @@ export default function RecastVsRefiCalculator() {
                           </Grid>
                           <Grid size={{ xs: 6, sm: 4 }}>
                             <Typography variant="body2" color="text.secondary">Monthly Payment</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>${opt.payment.toLocaleString()}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700 }}>${formatNumber(opt.payment)}</Typography>
                           </Grid>
                           <Grid size={{ xs: 6, sm: 4 }}>
                             <Typography variant="body2" color="text.secondary">Total Interest</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700, color: opt.option === bestOption.option ? '#065F46' : 'inherit' }}>${opt.totalInterest.toLocaleString()}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700, color: opt.option === bestOption.option ? '#065F46' : 'inherit' }}>${formatNumber(opt.totalInterest)}</Typography>
                           </Grid>
                         </Grid>
                       </Box>
@@ -126,8 +127,8 @@ export default function RecastVsRefiCalculator() {
                   <Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, color: 'success.dark', mb: 1 }}>The Bottom Line</Typography>
                     <Typography variant="body1" sx={{ color: 'success.dark' }}>
-                      With ${inputs.lumpSumAmount.toLocaleString()} to apply, <strong>{bestOption.option}</strong> saves the most interest 
-                      (${bestOption.totalInterest.toLocaleString()} total). Recast lowers your payment to ${(result.details.recastPayment as number).toLocaleString()}/mo 
+                      With ${formatNumber(inputs.lumpSumAmount)} to apply, <strong>{bestOption.option}</strong> saves the most interest 
+                      (${formatNumber(bestOption.totalInterest)} total). Recast lowers your payment to ${formatNumber(result.details.recastPayment as number)}/mo 
                       for just ${result.details.recastFee} fee.
                     </Typography>
                   </Box>

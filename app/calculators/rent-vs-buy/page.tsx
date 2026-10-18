@@ -42,6 +42,7 @@ import {
 import { calculateRentVsBuy } from '@/lib/calculators';
 import type { RentVsBuyInputs } from '@/lib/calculators/types';
 
+import { formatCurrency, formatNumber } from '@/lib/format';
 export default function RentVsBuyCalculator() {
   const [inputs, setInputs] = useState<RentVsBuyInputs>({
     homePrice: 450000,
@@ -182,7 +183,7 @@ export default function RentVsBuyCalculator() {
               <HeroMetric
                 label={`After ${inputs.yearsToAnalyze} Years`}
                 value={buyingWins ? 'Buying Wins' : 'Renting Wins'}
-                sublabel={`By $${Math.abs(result.details.baseDifference as number).toLocaleString()} in net worth`}
+                sublabel={`By ${formatCurrency(Math.abs(result.details.baseDifference as number))} in net worth`}
               />
 
               {/* Key Metrics Grid */}
@@ -190,14 +191,14 @@ export default function RentVsBuyCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Rent Net Worth"
-                    value={`$${(result.details.baseRentNetWorth as number).toLocaleString()}`}
+                    value={formatCurrency(result.details.baseRentNetWorth as number)}
                     color={!buyingWins ? 'success' : 'primary'}
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Buy Net Worth"
-                    value={`$${(result.details.baseBuyNetWorth as number).toLocaleString()}`}
+                    value={formatCurrency(result.details.baseBuyNetWorth as number)}
                     color={buyingWins ? 'success' : 'primary'}
                   />
                 </Grid>
@@ -212,7 +213,7 @@ export default function RentVsBuyCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Difference"
-                    value={`$${Math.abs(result.details.baseDifference as number).toLocaleString()}`}
+                    value={formatCurrency(Math.abs(result.details.baseDifference as number))}
                     sublabel={buyingWins ? 'Buy ahead' : 'Rent ahead'}
                     color={buyingWins ? 'success' : 'warning'}
                   />
@@ -257,14 +258,14 @@ export default function RentVsBuyCalculator() {
                           RENTING
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
-                          ${inputs.monthlyRent.toLocaleString()}
+                          ${formatNumber(inputs.monthlyRent)}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           per month (year 1)
                         </Typography>
                         <Divider sx={{ my: 2 }} />
                         <Typography variant="body2" color="text.secondary">
-                          In year {inputs.yearsToAnalyze}: ~${Math.round(inputs.monthlyRent * Math.pow(1 + inputs.rentInflation / 100, inputs.yearsToAnalyze - 1)).toLocaleString()}/mo
+                          In year {inputs.yearsToAnalyze}: ~${formatNumber(Math.round(inputs.monthlyRent * Math.pow(1 + inputs.rentInflation / 100, inputs.yearsToAnalyze - 1)))}/mo
                         </Typography>
                       </Box>
                     </Grid>
@@ -275,7 +276,7 @@ export default function RentVsBuyCalculator() {
                           BUYING
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#166534', my: 1 }}>
-                          ${(result.details.monthlyPI as number).toLocaleString()}
+                          ${formatNumber(result.details.monthlyPI as number)}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           P&I only (+ taxes, insurance, maintenance)
@@ -386,8 +387,8 @@ export default function RentVsBuyCalculator() {
                     </Typography>
                     <Typography variant="body1" sx={{ color: buyingWins ? 'success.dark' : 'primary.dark' }}>
                       {buyingWins 
-                        ? `Over ${inputs.yearsToAnalyze} years, buying a $${inputs.homePrice.toLocaleString()} home builds $${Math.abs(result.details.baseDifference as number).toLocaleString()} more wealth than renting at $${inputs.monthlyRent.toLocaleString()}/month and investing the difference. You break even in year ${crossoverYear}.`
-                        : `Over ${inputs.yearsToAnalyze} years, renting at $${inputs.monthlyRent.toLocaleString()}/month and investing the difference builds $${Math.abs(result.details.baseDifference as number).toLocaleString()} more wealth than buying. Consider staying longer or finding a cheaper home.`
+                        ? `Over ${inputs.yearsToAnalyze} years, buying a ${formatCurrency(inputs.homePrice)} home builds ${formatCurrency(Math.abs(result.details.baseDifference as number))} more wealth than renting at ${formatCurrency(inputs.monthlyRent)}/month and investing the difference. You break even in year ${crossoverYear}.`
+                        : `Over ${inputs.yearsToAnalyze} years, renting at ${formatCurrency(inputs.monthlyRent)}/month and investing the difference builds ${formatCurrency(Math.abs(result.details.baseDifference as number))} more wealth than buying. Consider staying longer or finding a cheaper home.`
                       }
                     </Typography>
                   </Box>

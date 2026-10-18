@@ -43,7 +43,8 @@ import {
 import { calculateFHA } from '@/lib/calculators';
 import type { FHAInputs } from '@/lib/calculators/fha';
 
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+import { formatNumber } from '@/lib/format';
+const fmt = formatNumber;
 
 export default function FHACalculator() {
   const [inputs, setInputs] = useState<FHAInputs>({

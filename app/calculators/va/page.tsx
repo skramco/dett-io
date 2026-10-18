@@ -44,7 +44,8 @@ import {
 import { calculateVA } from '@/lib/calculators';
 import type { VAInputs } from '@/lib/calculators/va';
 
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+import { formatNumber } from '@/lib/format';
+const fmt = formatNumber;
 
 export default function VACalculator() {
   const [inputs, setInputs] = useState<VAInputs>({

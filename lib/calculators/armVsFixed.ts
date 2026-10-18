@@ -1,5 +1,6 @@
 import type { ArmVsFixedInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult {
   const {
     loanAmount,
@@ -77,25 +78,25 @@ export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult 
   const insights: string[] = [];
   
   insights.push(
-    `Fixed rate: $${Math.round(fixedPayment).toLocaleString()}/month for ${loanTerm} years - predictable and stable`
+    `Fixed rate: ${formatCurrency(Math.round(fixedPayment))}/month for ${loanTerm} years - predictable and stable`
   );
   
   insights.push(
-    `ARM: Starts at $${armPayments[0].payment.toLocaleString()}/month, saves $${Math.round(savingsOverFixedPeriod).toLocaleString()} in first ${armFixedPeriod} years`
+    `ARM: Starts at ${formatCurrency(armPayments[0].payment)}/month, saves ${formatCurrency(Math.round(savingsOverFixedPeriod))} in first ${armFixedPeriod} years`
   );
 
   if (armTotalPaid < fixedTotalPaid) {
     insights.push(
-      `Expected case: ARM saves $${Math.round(fixedTotalPaid - armTotalPaid).toLocaleString()} total (assumes ${expectedIndexRate}% index)`
+      `Expected case: ARM saves ${formatCurrency(Math.round(fixedTotalPaid - armTotalPaid))} total (assumes ${expectedIndexRate}% index)`
     );
   } else {
     insights.push(
-      `Expected case: Fixed saves $${Math.round(armTotalPaid - fixedTotalPaid).toLocaleString()} total (assumes ${expectedIndexRate}% index)`
+      `Expected case: Fixed saves ${formatCurrency(Math.round(armTotalPaid - fixedTotalPaid))} total (assumes ${expectedIndexRate}% index)`
     );
   }
 
   insights.push(
-    `⚠️ Worst case: ARM payment could reach $${Math.round(worstPayment).toLocaleString()}/month if rates spike`
+    `⚠️ Worst case: ARM payment could reach ${formatCurrency(Math.round(worstPayment))}/month if rates spike`
   );
 
   if (armFixedPeriod >= 7) {

@@ -1,5 +1,6 @@
 import type { TimelineSimulatorInputs, CalculatorResult } from './types';
 
+import { formatCurrency } from '@/lib/format';
 export function calculateTimelineSimulator(inputs: TimelineSimulatorInputs): CalculatorResult {
   const {
     loanAmount,
@@ -105,15 +106,15 @@ export function calculateTimelineSimulator(inputs: TimelineSimulatorInputs): Cal
 
   if (expectedMoveYear <= 7 && fifteenPayment < fixedPayment * 1.3) {
     insights.push(
-      `15-year option: Higher payment ($${Math.round(fifteenPayment).toLocaleString()}) but builds equity faster and lower rate`
+      `15-year option: Higher payment (${formatCurrency(Math.round(fifteenPayment))}) but builds equity faster and lower rate`
     );
   }
 
   insights.push(
-    `Best for ${expectedMoveYear} years: ${bestOption.name} (total cost: $${Math.round(bestOption.totalPaid).toLocaleString()})`
+    `Best for ${expectedMoveYear} years: ${bestOption.name} (total cost: ${formatCurrency(Math.round(bestOption.totalPaid))})`
   );
 
-  const summary = `For a ${expectedMoveYear}-year hold, ${bestOption.name} costs least at $${Math.round(bestOption.totalPaid).toLocaleString()} total.`;
+  const summary = `For a ${expectedMoveYear}-year hold, ${bestOption.name} costs least at ${formatCurrency(Math.round(bestOption.totalPaid))} total.`;
 
   return {
     summary,
