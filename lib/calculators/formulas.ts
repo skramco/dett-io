@@ -132,7 +132,10 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'Cost of 1 Point', formula: 'Loan Amount × 1%', description: 'Each point costs 1% of the loan and typically reduces the rate by 0.25%.' },
         { label: 'Monthly Savings from Points', formula: 'Payment at Par Rate − Payment at Bought-Down Rate', description: 'The monthly payment reduction from buying points.' },
-        { label: 'Break-Even', formula: 'Points Cost ÷ Monthly Savings', description: 'Months to recoup the upfront cost of buying points.' },
+        { label: 'Break-Even', formula: 'Points Cost ÷ Monthly Savings', description: 'Months to recoup the upfront cost of buying points on payments alone. The faster principal paydown at the lower rate means the true break-even arrives sooner.' },
+        { label: 'Remaining Balance', formula: 'Standard amortization balance at end of hold', description: 'A lower rate pays down principal faster, so a bought-down loan leaves a smaller balance when you sell or refinance.' },
+        { label: 'Temporary Buydown Payment', formula: 'Payment at (Note Rate − Reduction) for each buydown year', description: 'A 2-1 buydown charges 2% below the note rate in year 1 and 1% below in year 2; the upfront subsidy covers the difference while the loan amortizes at the note rate.' },
+        { label: 'Net Cost Over Hold', formula: 'Payments Made + Upfront Cost − Principal Paid', description: 'Comparable total that credits each option for the equity it builds. Equivalent to including the remaining balance at the end of the hold.' },
       ],
     },
   ],

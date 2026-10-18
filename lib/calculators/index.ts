@@ -9,7 +9,7 @@ export { calculateDownPayment } from './downPayment';
 export { calculateRentVsBuy } from './rentVsBuy';
 
 // Category 2: Rate & Structure
-export { calculatePointsBuydown } from './pointsBuydown';
+export { calculatePointsBuydown, calculateBuydownSubsidy } from './pointsBuydown';
 export { calculateArmVsFixed } from './armVsFixed';
 
 // Category 3: Refinancing & Equity
