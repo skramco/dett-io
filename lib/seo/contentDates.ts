@@ -37,13 +37,14 @@ export const calculatorLastUpdated: Record<string, string> = {
 
 /** Static / index pages: path -> last meaningful content change. */
 export const staticPageLastUpdated: Record<string, string> = {
-  '/': '2026-02-15',
+  '/': '2026-10-18',
   '/calculators': '2026-10-18', // calculator index reflects calculator content
   '/guides': '2026-02-16',
   '/learn': '2026-02-16',
   '/compare': '2026-02-16',
-  '/privacy': '2026-02-13',
-  '/terms': '2026-02-14',
+  '/about': '2026-10-18',
+  '/privacy': '2026-10-18',
+  '/terms': '2026-10-18',
 };
 
 /** Guide articles (content lives in lib/guides/guideContent.tsx). */

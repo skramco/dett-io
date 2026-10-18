@@ -27,6 +27,7 @@ export function Footer() {
             <h4 className="mb-3 text-sm font-medium text-slate-900">Learn</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/learn" className="text-slate-600 hover:text-blue-600">About Debt</Link></li>
+              <li><Link href="/about" className="text-slate-600 hover:text-blue-600">About Us</Link></li>
             </ul>
           </div>
           
@@ -41,7 +42,8 @@ export function Footer() {
         
         <div className="mt-12 border-t border-slate-200 pt-8">
           <p className="text-center text-sm text-slate-600">
-            © {new Date().getFullYear()} Dett. Built to help, not to sell.
+            © {new Date().getFullYear()} Knowe LLC. All rights reserved.{' '}
+            <a href="https://knowe.one" className="hover:text-blue-600">Dett.io is a Knowe LLC company</a>
           </p>
         </div>
       </Container>

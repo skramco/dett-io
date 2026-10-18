@@ -43,7 +43,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${BASE_URL}/about`,
-      lastModified: new Date(),
+      lastModified: new Date(staticPageLastUpdated['/about']),
       changeFrequency: 'monthly',
       priority: 0.5,
     },

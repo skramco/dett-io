@@ -132,6 +132,8 @@ export default function CalculatorResultsEmail({
               {' · '}
               <Link href="https://dett.io/guides" style={footerLink}>Guides</Link>
               {' · '}
+              <Link href="https://dett.io/about" style={footerLink}>About</Link>
+              {' · '}
               <Link href="https://dett.io/privacy" style={footerLink}>Privacy</Link>
               {' · '}
               <Link href="https://dett.io/terms" style={footerLink}>Terms</Link>
@@ -140,7 +142,7 @@ export default function CalculatorResultsEmail({
               This calculator provides estimates for educational purposes only. Results are not a loan offer, pre-qualification, or commitment to lend. Dett.io is not a mortgage lender, broker, or financial advisor. Consult qualified professionals before making financial decisions.
             </Text>
             <Text style={footerCopyright}>
-              © {new Date().getFullYear()} Skramco Holdings LLC d/b/a Dett.io. All rights reserved.
+              © {new Date().getFullYear()} Knowe LLC. All rights reserved. Dett.io is a Knowe LLC company.
             </Text>
           </Section>
         </Container>

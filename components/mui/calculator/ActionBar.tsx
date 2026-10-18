@@ -226,7 +226,7 @@ export function ActionBar({
         pdf.setPage(i);
         pdf.setFontSize(8);
         pdf.setTextColor(148, 163, 184);
-        pdf.text('This is an educational tool. Results are estimates and should not be considered financial advice.', 15, 290);
+        pdf.text(`© ${new Date().getFullYear()} Knowe LLC. Educational estimates — not financial advice.`, 15, 290);
         pdf.text(`dett.io | Page ${i} of ${pageCount}`, 170, 290);
       }
 

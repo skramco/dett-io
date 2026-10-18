@@ -29,13 +29,15 @@ export const metadata: Metadata = {
     'how much house can I afford',
   ],
   metadataBase: new URL('https://dett.io'),
+  authors: [{ name: 'Knowe LLC', url: 'https://knowe.one' }],
+  publisher: 'Knowe LLC',
   alternates: {
     canonical: 'https://dett.io',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    siteName: 'Dett',
+    siteName: 'Dett.io',
     title: 'Dett - Free Mortgage Calculators & Decision Tools',
     description: 'Make smarter mortgage decisions with crystal-clear calculators. No hidden fees. No email required. Just honest math to help you decide.',
   },

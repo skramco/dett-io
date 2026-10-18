@@ -30,8 +30,8 @@ export default function AboutPage() {
               About Dett.io
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 2, maxWidth: 640 }}>
-              Independent mortgage calculators with documented math — built because running the
-              numbers on your biggest purchase shouldn&apos;t require handing over your email.
+              Dett.io is built by Knowe LLC, a team of 30+ year mortgage industry veterans and
+              mortgage technologists by trade.
             </Typography>
           </Container>
         </Box>
@@ -48,22 +48,28 @@ export default function AboutPage() {
           <Stack spacing={0}>
             <h2>Who&apos;s behind this</h2>
             <p>
-              Dett.io is built and operated by <strong>Skramco Holdings LLC</strong>, a Delaware
-              limited liability company. We are a small team of software engineers who kept
-              finding that the mortgage calculators ranking at the top of search results were
-              designed to capture leads first and answer questions second — rate quotes behind
-              email gates, &ldquo;results&rdquo; that trigger sales calls, and math that quietly
-              flatters whichever loan product pays the referral fee.
+              Dett.io is built by <strong>Knowe LLC</strong>, a team of 30+ year mortgage industry
+              veterans and mortgage technologists by trade. We built these calculators to give
+              borrowers the same clear math we use every day — free, with no signup.
             </p>
             <p>
-              So we built the tool we wanted: calculators that use the same amortization math
+              Knowe LLC is a Delaware limited liability company. Dett.io is a Knowe LLC company.
+              Learn more about Knowe at{' '}
+              <a href="https://knowe.one" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                knowe.one
+              </a>
+              . LoanKnow is a sibling Knowe platform; mentioning it never adds a lead form to
+              Dett.io, and we do not sell, rent, or share borrower information.
+            </p>
+            <p>
+              We built the tool we wanted: calculators that use the same amortization math
               lenders use, show every formula behind every number, and never ask who you are.
             </p>
 
             <h2>Our independence</h2>
             <p>
-              Dett.io is <strong>not</strong> a mortgage lender, broker, or advisor, and we are not
-              owned by or affiliated with one. Specifically:
+              Dett.io is <strong>not</strong> a mortgage lender, broker, or advisor. Knowe LLC is
+              a technology company, not a lender. Specifically:
             </p>
             <ul>
               <li>We do not sell, rent, or share leads. There are no email gates or phone-number forms in front of any result.</li>
@@ -83,10 +89,11 @@ export default function AboutPage() {
 
             <h2>What we are not</h2>
             <p>
-              We are engineers, not licensed financial professionals. Our calculators are
-              educational tools that produce estimates — they are not loan offers,
-              pre-qualifications, or financial advice. Before making decisions, compare official
-              Loan Estimates from multiple lenders and consult qualified professionals. See our{' '}
+              We are mortgage-industry veterans and technologists, not licensed financial
+              advisors. Our calculators are educational tools that produce estimates — they are
+              not loan offers, pre-qualifications, or financial advice. Before making decisions,
+              compare official Loan Estimates from multiple lenders and consult qualified
+              professionals. See our{' '}
               <Link href="/terms" style={{ color: 'inherit' }}>Terms of Use</Link> for full
               details.
             </p>

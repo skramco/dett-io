@@ -4,7 +4,7 @@
 
 Dett is a 100% free, consumer-first web application dedicated to debt education and transparent calculators. No paywalls, no lead gating, no hidden agendas.
 
-Sister site to [LoanKnow](https://loanknow.com).
+A [Knowe LLC](https://knowe.one) company. Sister Knowe platform: [LoanKnow](https://loanknow.com).
 
 ## 🎯 Project Philosophy
 

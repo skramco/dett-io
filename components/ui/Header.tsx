@@ -23,6 +23,12 @@ export default function Header() {
             >
               Learn
             </Link>
+            <Link 
+              href="/about" 
+              className="text-sm font-medium text-foreground hover:text-accent transition-colors"
+            >
+              About
+            </Link>
           </div>
         </nav>
       </Container>

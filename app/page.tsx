@@ -547,7 +547,7 @@ export default function Home() {
                     Our free mortgage calculators help you understand the true cost of homeownership before you talk to a lender. Calculate your monthly mortgage payment with taxes, insurance, PMI, and HOA fees included. Check how much house you can afford based on your income and debts. Compare refinancing scenarios to see if switching loans actually saves money after closing costs.
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8 }}>
-                    Unlike most mortgage sites, we don't collect your information or sell leads. Dett.io is independently built, every formula is documented on our methodology page, and each calculator shows when it was last reviewed — so you can verify the math instead of taking our word for it.
+                    Unlike most mortgage sites, we don&apos;t collect your information or sell leads. Dett.io is built by Knowe LLC. Every formula is documented on our methodology page, and each calculator shows when it was last reviewed — so you can verify the math instead of taking our word for it.
                   </Typography>
                 </Stack>
               </Grid>
