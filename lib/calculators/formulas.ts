@@ -93,6 +93,7 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'Refinance Analysis',
       steps: [
+        { label: 'Current Scheduled P&I', formula: 'Balance × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Payment implied by your current balance, rate, and years remaining. If your entered payment differs materially, this computed value is used.', computedValue: `$${fmt(d.impliedCurrentPayment as number)}` },
         { label: 'New Loan Amount', formula: 'Current Balance + Closing Costs', description: 'Closing costs are financed — rolled into the new loan balance rather than paid upfront.', computedValue: `$${fmt(d.newLoanAmount as number)}` },
         { label: 'New Monthly Payment', formula: 'New Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Payment at the new rate and term.', computedValue: `$${fmt(d.newMonthlyPayment as number)}` },
         { label: 'Monthly Savings', formula: 'Current Payment − New Payment', description: 'How much less you pay each month. Negative means the refinance raises your payment.', computedValue: fmtSigned(d.monthlySavings as number) },

@@ -72,9 +72,12 @@ export default function RefinanceCalculator() {
   const totalSavings = result ? (result.details.totalSavings as number) : 0;
   // Lower monthly payment — drives payment-level displays only
   const isBeneficial = monthlySavings > 0;
-  // Overall verdict from the calculator: 'refinance' | 'mixed' | 'keep'
+  // Overall verdict from the calculator:
+  // 'refinance' | 'mixed' | 'higher-payment-lower-cost' | 'keep'
   const verdict = result ? (result.details.verdict as string) : 'keep';
   const paymentMismatch = result ? result.details.paymentMismatch === 1 : false;
+  // Trade-off verdicts (win on one axis, lose on the other) share amber styling
+  const isTradeOff = verdict === 'mixed' || verdict === 'higher-payment-lower-cost';
   const impliedCurrentPayment = result ? (result.details.impliedCurrentPayment as number) : 0;
 
   // Timeline data for break-even visualization
@@ -139,7 +142,8 @@ export default function RefinanceCalculator() {
                     Your entered payment doesn&apos;t match these loan terms. At $
                     {inputs.currentBalance.toLocaleString()} / {inputs.currentRate}% / {inputs.yearsRemaining} years
                     remaining, the P&amp;I payment is about <strong>${impliedCurrentPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}/month</strong>.
-                    Make sure you&apos;re excluding taxes, insurance, and escrow — an off payment skews every result.
+                    The analysis below uses the computed payment — make sure your entry is principal &amp; interest only
+                    (no taxes, insurance, or escrow).
                   </Typography>
                 </Alert>
               )}
@@ -190,7 +194,9 @@ export default function RefinanceCalculator() {
                 label={isBeneficial ? "Monthly Savings" : "Monthly Increase"}
                 value={`${isBeneficial ? '' : '+'}$${Math.abs(monthlySavings).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
                 sublabel={!isBeneficial
-                  ? "This refinance may not make financial sense"
+                  ? verdict === 'higher-payment-lower-cost'
+                    ? `Higher payment, but $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} less in lifetime cost`
+                    : "This refinance does not save you money"
                   : verdict === 'mixed'
                     ? `Break-even in ${result.details.breakEvenMonths} months — but you pay more over the full term`
                     : `Break-even in ${result.details.breakEvenMonths} months (${(result.details.breakEvenYears as number).toFixed(1)} years)`
@@ -398,29 +404,33 @@ export default function RefinanceCalculator() {
                   borderRadius: 3,
                   background: verdict === 'refinance'
                     ? 'linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)'
-                    : verdict === 'mixed'
+                    : isTradeOff
                       ? 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)'
                       : 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%)',
                   border: '1px solid',
-                  borderColor: verdict === 'refinance' ? 'success.light' : verdict === 'mixed' ? 'warning.light' : 'error.light',
+                  borderColor: verdict === 'refinance' ? 'success.light' : isTradeOff ? 'warning.light' : 'error.light',
                 }}
               >
                 <Stack direction="row" spacing={2} alignItems="flex-start">
-                  <Savings sx={{ fontSize: 32, color: verdict === 'refinance' ? 'success.main' : verdict === 'mixed' ? 'warning.main' : 'error.main' }} />
+                  <Savings sx={{ fontSize: 32, color: verdict === 'refinance' ? 'success.main' : isTradeOff ? 'warning.main' : 'error.main' }} />
                   <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: verdict === 'refinance' ? 'success.dark' : verdict === 'mixed' ? 'warning.dark' : 'error.dark', mb: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: verdict === 'refinance' ? 'success.dark' : isTradeOff ? 'warning.dark' : 'error.dark', mb: 1 }}>
                       {verdict === 'refinance'
                         ? 'Refinancing Makes Sense'
                         : verdict === 'mixed'
                           ? 'Lower Payment, But Higher Total Cost'
-                          : 'Refinancing May Not Make Sense'}
+                          : verdict === 'higher-payment-lower-cost'
+                            ? 'Higher Payment, But Lower Total Cost'
+                            : 'Refinancing Doesn\u2019t Save You Money'}
                     </Typography>
-                    <Typography variant="body1" sx={{ color: verdict === 'refinance' ? 'success.dark' : verdict === 'mixed' ? 'warning.dark' : 'error.dark' }}>
+                    <Typography variant="body1" sx={{ color: verdict === 'refinance' ? 'success.dark' : isTradeOff ? 'warning.dark' : 'error.dark' }}>
                       {verdict === 'refinance'
                         ? `By refinancing from ${inputs.currentRate}% to ${inputs.newRate}%, you'll save $${Math.abs(monthlySavings).toLocaleString()}/month and $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} over the life of the loan. After ${result.details.breakEvenMonths} months of payment savings, you'll have recovered the $${(result.details.closingCosts as number).toLocaleString()} closing costs financed into your new loan.`
                         : verdict === 'mixed'
                           ? `Refinancing lowers your payment by $${Math.abs(monthlySavings).toLocaleString()}/month and breaks even in ${result.details.breakEvenMonths} months — but because the term resets to ${inputs.newTerm} years, you'd pay $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} more over the life of the loan. It can still make sense if you need the monthly cash flow or won't keep the loan to term.`
-                          : `This refinance would increase your monthly payment by $${Math.abs(monthlySavings).toLocaleString()}. Unless you need to access equity or have other strategic reasons, this refinance may not be in your best interest.`
+                          : verdict === 'higher-payment-lower-cost'
+                            ? `This refinance raises your payment by $${Math.abs(monthlySavings).toLocaleString()}/month, but the shorter payoff saves $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} in total. It can make sense if you can afford the higher payment.`
+                            : `This refinance would increase your monthly payment by $${Math.abs(monthlySavings).toLocaleString()} and cost $${Math.abs(totalSavings).toLocaleString(undefined, { maximumFractionDigits: 0 })} more over the life of the loan. Unless you need to access equity or have other strategic reasons, it is not in your financial interest.`
                       }
                     </Typography>
                   </Box>

@@ -8,7 +8,15 @@ function amortizedPayment(principal: number, annualRate: number, months: number)
   return (principal * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
 }
 
-export type RefinanceVerdict = 'refinance' | 'mixed' | 'keep';
+/** Remaining principal after `monthsElapsed` payments on an amortizing loan. */
+function remainingBalance(principal: number, annualRate: number, payment: number, monthsElapsed: number): number {
+  const r = annualRate / 100 / 12;
+  if (r === 0) return Math.max(0, principal - payment * monthsElapsed);
+  const growth = Math.pow(1 + r, monthsElapsed);
+  return Math.max(0, principal * growth - payment * ((growth - 1) / r));
+}
+
+export type RefinanceVerdict = 'refinance' | 'mixed' | 'higher-payment-lower-cost' | 'keep';
 
 export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
   const {
@@ -27,19 +35,25 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
   // Used to validate the user-entered payment (which often includes taxes/insurance by mistake).
   const impliedCurrentPayment = amortizedPayment(currentBalance, currentRate, currentPaymentsRemaining);
   const paymentMismatch =
+    currentMonthlyPayment > 0 &&
     Math.abs(currentMonthlyPayment - impliedCurrentPayment) > Math.max(25, impliedCurrentPayment * 0.02);
+  // If the entered payment is missing or materially off (e.g. includes escrow or
+  // extra principal), fall back to the computed P&I so the comparison stays
+  // apples-to-apples. The mismatch is still surfaced in the UI and insights.
+  const effectiveCurrentPayment =
+    currentMonthlyPayment > 0 && !paymentMismatch ? currentMonthlyPayment : impliedCurrentPayment;
 
   // Closing costs are financed: rolled into the new loan balance rather than paid upfront.
   const newLoanAmount = currentBalance + closingCosts;
   const newNumberOfPayments = newTerm * 12;
   const newMonthlyPayment = amortizedPayment(newLoanAmount, newRate, newNumberOfPayments);
 
-  const monthlySavings = currentMonthlyPayment - newMonthlyPayment;
+  const monthlySavings = effectiveCurrentPayment - newMonthlyPayment;
   const hasMonthlySavings = monthlySavings > 0;
   const breakEvenMonths = hasMonthlySavings ? Math.ceil(closingCosts / monthlySavings) : 0;
   const breakEvenYears = breakEvenMonths / 12;
 
-  const currentTotalPaid = currentMonthlyPayment * currentPaymentsRemaining;
+  const currentTotalPaid = effectiveCurrentPayment * currentPaymentsRemaining;
   const newTotalPaid = newMonthlyPayment * newNumberOfPayments;
   const totalSavings = currentTotalPaid - newTotalPaid;
   const hasLifetimeSavings = totalSavings > 0;
@@ -53,18 +67,21 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
   // Verdict must agree with both the monthly and lifetime numbers:
   // - 'refinance': saves monthly AND over the life of the loan
   // - 'mixed': lower payment but higher lifetime cost (usually a term reset)
-  // - 'keep': doesn't even lower the payment
+  // - 'higher-payment-lower-cost': payment rises but the shorter payoff costs less overall
+  // - 'keep': loses on both
   const verdict: RefinanceVerdict = hasMonthlySavings
     ? hasLifetimeSavings
       ? 'refinance'
       : 'mixed'
-    : 'keep';
+    : hasLifetimeSavings
+      ? 'higher-payment-lower-cost'
+      : 'keep';
 
   const insights: string[] = [];
 
   if (paymentMismatch) {
     insights.push(
-      `Warning: at $${currentBalance.toLocaleString()} / ${currentRate}% / ${yearsRemaining} years remaining, the amortized P&I payment is about $${impliedCurrentPayment.toFixed(0)}/month, but you entered $${currentMonthlyPayment.toFixed(0)}. Make sure your payment excludes taxes, insurance, and escrow — a wrong payment skews every number below.`
+      `Warning: at $${currentBalance.toLocaleString()} / ${currentRate}% / ${yearsRemaining} years remaining, the amortized P&I payment is about $${impliedCurrentPayment.toFixed(0)}/month, but you entered $${currentMonthlyPayment.toFixed(0)}. The analysis uses the computed $${impliedCurrentPayment.toFixed(0)} — make sure your entry is principal & interest only (no taxes, insurance, or escrow).`
     );
   }
 
@@ -78,7 +95,9 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
     );
   } else {
     insights.push(
-      `Your monthly payment will increase by $${Math.abs(monthlySavings).toFixed(2)}. This refinance may not make financial sense.`
+      verdict === 'higher-payment-lower-cost'
+        ? `Your monthly payment will increase by $${Math.abs(monthlySavings).toFixed(2)}, but the faster payoff lowers your total cost — there is no payment-based break-even point.`
+        : `Your monthly payment will increase by $${Math.abs(monthlySavings).toFixed(2)}. This refinance may not make financial sense.`
     );
   }
 
@@ -107,8 +126,8 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
 
   const chartData = [];
   for (let year = 0; year <= Math.max(yearsRemaining, newTerm); year++) {
-    const currentRemaining = Math.max(0, currentBalance - (currentMonthlyPayment * 12 * year - currentTotalInterest * (year / yearsRemaining)));
-    const newRemaining = Math.max(0, newLoanAmount - (newMonthlyPayment * 12 * year - newTotalInterest * (year / newTerm)));
+    const currentRemaining = remainingBalance(currentBalance, currentRate, effectiveCurrentPayment, Math.min(year, yearsRemaining) * 12);
+    const newRemaining = remainingBalance(newLoanAmount, newRate, newMonthlyPayment, Math.min(year, newTerm) * 12);
 
     chartData.push({
       year,
@@ -122,12 +141,15 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
       ? `Refinancing saves you $${monthlySavings.toFixed(2)}/month and $${totalSavings.toFixed(0)} over the life of the loan. You'll break even on the financed $${closingCosts.toFixed(0)} closing costs in ${breakEvenMonths} months.`
       : verdict === 'mixed'
         ? `Refinancing lowers your payment by $${monthlySavings.toFixed(2)}/month, but resets your term — you'd pay $${Math.abs(totalSavings).toFixed(0)} more over the life of the loan. Break-even on payment alone is ${breakEvenMonths} months.`
-        : `This refinance increases your monthly payment by $${Math.abs(monthlySavings).toFixed(2)}. Consider if the trade-offs are worth it.`;
+        : verdict === 'higher-payment-lower-cost'
+          ? `Your payment rises by $${Math.abs(monthlySavings).toFixed(2)}/month, but the shorter payoff saves you $${totalSavings.toFixed(0)} in total.`
+          : `This refinance increases your monthly payment by $${Math.abs(monthlySavings).toFixed(2)} and costs $${Math.abs(totalSavings).toFixed(0)} more over the life of the loan. It does not save you money.`;
 
   return {
     summary,
     details: {
-      currentMonthlyPayment: parseFloat(currentMonthlyPayment.toFixed(2)),
+      currentMonthlyPayment: parseFloat(effectiveCurrentPayment.toFixed(2)),
+      enteredMonthlyPayment: parseFloat(currentMonthlyPayment.toFixed(2)),
       impliedCurrentPayment: parseFloat(impliedCurrentPayment.toFixed(2)),
       paymentMismatch: paymentMismatch ? 1 : 0,
       newLoanAmount: parseFloat(newLoanAmount.toFixed(2)),
