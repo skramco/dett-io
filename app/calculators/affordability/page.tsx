@@ -18,7 +18,6 @@ import {
 } from '@mui/material';
 import {
   AccountBalance,
-  TrendingUp,
   Home,
   Warning,
   CheckCircle,
@@ -205,7 +204,7 @@ export default function AffordabilityCalculator() {
               <HeroMetric
                 label="Recommended Home Price"
                 value={`$${(result.details.moderatePrice as number).toLocaleString()}`}
-                sublabel={`Based on ${bindingLabel(result.details.moderateBinding as string, 36)} with $${(result.details.moderatePayment as number).toLocaleString()}/month payment${(result.details.moderatePMI as number) > 0 ? ` incl. $${(result.details.moderatePMI as number).toLocaleString()} PMI` : ''}`}
+                sublabel={`Moderate scenario — based on ${bindingLabel(result.details.moderateBinding as string, 36)} with $${(result.details.moderatePayment as number).toLocaleString()}/month payment${(result.details.moderatePMI as number) > 0 ? ` incl. $${(result.details.moderatePMI as number).toLocaleString()} PMI` : ''}`}
               />
 
               {/* Key Metrics Grid */}
@@ -244,8 +243,8 @@ export default function AffordabilityCalculator() {
 
               {/* Affordability Ranges */}
               <ResultsSection 
-                title="Affordability Ranges" 
-                subtitle="Three options based on different debt-to-income ratios"
+                title="Alternative Scenarios" 
+                subtitle="How a safer option and maximum qualification compare to your recommended price above"
               >
                 <Stack spacing={2}>
                   {/* Conservative */}
@@ -282,45 +281,6 @@ export default function AffordabilityCalculator() {
                         <Typography variant="body2" sx={{ color: '#166534' }}>
                           ${(result.details.conservativePayment as number).toLocaleString()}/month
                           {(result.details.conservativePMI as number) > 0 && ` (incl. $${(result.details.conservativePMI as number).toLocaleString()} PMI)`}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  </Paper>
-
-                  {/* Moderate */}
-                  <Paper 
-                    elevation={0} 
-                    sx={{ 
-                      p: 3, 
-                      borderRadius: 3, 
-                      border: '2px solid',
-                      borderColor: '#196bc0',
-                      bgcolor: '#EBF5FF',
-                    }}
-                  >
-                    <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-                      <Box>
-                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                          <TrendingUp sx={{ color: '#196bc0', fontSize: 20 }} />
-                          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0F4F8F' }}>
-                            Moderate (36% Back-End DTI) — Recommended
-                          </Typography>
-                        </Stack>
-                        <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
-                          Balanced approach - most common choice for stable income
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: '#0F4F8F', fontWeight: 600 }}>
-                          Binding constraint: {bindingLabel(result.details.moderateBinding as string, 36)}
-                          {(result.details.moderateIsJumbo as number) === 1 && ` · Loan above ${result.details.loanLimitYear} conforming limit (jumbo)`}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ textAlign: 'right' }}>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F4F8F' }}>
-                          ${(result.details.moderatePrice as number).toLocaleString()}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
-                          ${(result.details.moderatePayment as number).toLocaleString()}/month
-                          {(result.details.moderatePMI as number) > 0 && ` (incl. $${(result.details.moderatePMI as number).toLocaleString()} PMI)`}
                         </Typography>
                       </Box>
                     </Stack>
