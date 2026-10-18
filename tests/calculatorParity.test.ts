@@ -16,6 +16,7 @@ import {
   calculateArmVsFixed,
   calculateBiweekly,
   calculateCashOutRefi,
+  calculateClosingCosts,
   calculateDownPayment,
   calculateDTI,
   calculateExtraPayment,
@@ -519,7 +520,7 @@ describe('down-payment', () => {
     loanTerm: 30,
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1500,
-    pmiRate: 0.5,
+    creditScore: 740,
   };
   const result = calculateDownPayment(inputs);
 
@@ -529,14 +530,41 @@ describe('down-payment', () => {
     expect(num(result.details.monthlyPayment)).toBeCloseTo(monthlyPayment(360000, 6.5, 360), 0);
   });
 
-  it('3% option matches the reference P&I, PMI, and removal month', () => {
+  it('3% option matches the reference P&I, LTV-banded PMI, and removal month', () => {
     const loan3 = 400000 * 0.97;
+    const refRate = conventionalPmiRatePercent(ltvPercent(loan3, 400000), 740);
     const refPI = monthlyPayment(loan3, 6.5, 360);
-    const refPMI = monthlyPmiAmount(loan3, 0.5);
+    const refPMI = monthlyPmiAmount(loan3, refRate);
     const refMonths = monthsToReachLtv(loan3, 400000, 6.5, 360, 78);
     const expectedTotal = refPI + refPMI + (400000 * 1.2) / 100 / 12 + 1500 / 12;
+    expect(num(result.details.option3PmiRate)).toBe(refRate);
+    expect(num(result.details.option3PmiMonths)).toBe(refMonths);
     expect(num(result.details.option3Payment)).toBeCloseTo(expectedTotal, 0);
     expect(num(result.details.option3PMI)).toBeCloseTo(refPMI * refMonths, -1);
+  });
+
+  it('PMI rate is cheaper at 15% down than at 3% down', () => {
+    const rate3 = conventionalPmiRatePercent(97, 740);
+    const rate15 = conventionalPmiRatePercent(85, 740);
+    expect(rate3).toBeGreaterThan(rate15);
+    expect(num(result.details.option3PmiRate)).toBe(rate3);
+    expect(num(result.details.option15PmiRate)).toBe(rate15);
+  });
+
+  it('20% cash-to-close matches the Closing Costs calculator', () => {
+    const closing = calculateClosingCosts({
+      homePrice: 400000,
+      downPaymentPercent: 20,
+      interestRate: 6.5,
+      loanTerm: 30,
+      state: 'CA',
+      isNewConstruction: false,
+      propertyTaxRate: 1.2,
+      prepaidInsurance: 1500,
+    });
+    const expected = 80000 + (closing.details.totalClosingCosts as number);
+    expect(num(result.details.option20CashToClose)).toBe(Math.round(expected));
+    expect(num(result.details.option20ClosingCosts)).toBe(Math.round(closing.details.totalClosingCosts as number));
   });
 });
 

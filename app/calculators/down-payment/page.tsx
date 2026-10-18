@@ -30,6 +30,7 @@ import {
   CurrencyInput,
   PercentageInput,
   SelectInput,
+  SliderInput,
 } from '@/components/mui/calculator/InputPanel';
 import {
   HeroMetric,
@@ -54,7 +55,7 @@ export default function DownPaymentCalculator() {
     loanTerm: 30,
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1800,
-    pmiRate: 0.5,
+    creditScore: 740,
   });
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate' });
@@ -71,9 +72,19 @@ export default function DownPaymentCalculator() {
   };
 
   // Parse chart data for comparison
+  type DownPaymentOption = {
+    downPayment: string;
+    cashToClose: number;
+    closingCosts: number;
+    monthlyPayment: number;
+    pmiCost: number;
+    pmiRate: number;
+    pmiMonths: number;
+  };
+
   const comparisonData = useMemo(() => {
     if (!result?.chartData) return [];
-    return (result.chartData as Array<{ downPayment: string; cashToClose: number; monthlyPayment: number; pmiCost: number }>).map(item => ({
+    return (result.chartData as DownPaymentOption[]).map(item => ({
       name: item.downPayment,
       current: item.cashToClose,
       new: item.monthlyPayment * 12,
@@ -83,7 +94,7 @@ export default function DownPaymentCalculator() {
   // Get specific options for display
   const getOption = (percent: number) => {
     if (!result?.chartData) return null;
-    return (result.chartData as Array<{ downPayment: string; cashToClose: number; monthlyPayment: number; pmiCost: number }>)
+    return (result.chartData as DownPaymentOption[])
       .find(item => item.downPayment === `${percent}%`);
   };
 
@@ -95,6 +106,7 @@ export default function DownPaymentCalculator() {
       relatedCalculators={[
         { slug: 'affordability', name: 'How Much House Can I Afford?' },
         { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
+        { slug: 'closing-costs', name: 'Closing Cost Estimator' },
         { slug: 'rent-vs-buy', name: 'Rent vs Buy Analysis' },
       ]}
       actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
@@ -145,13 +157,17 @@ export default function DownPaymentCalculator() {
                 onChange={(v) => handleInputChange('homeInsuranceAnnual', v)}
               />
 
-              <PercentageInput
-                label="PMI Rate"
-                value={inputs.pmiRate}
-                onChange={(v) => handleInputChange('pmiRate', v)}
-                step={0.1}
-                helperText="Annual PMI as % of loan (typically 0.3-1.5%)"
+              <SliderInput
+                label="Credit Score"
+                value={inputs.creditScore}
+                onChange={(v) => handleInputChange('creditScore', v)}
+                min={620}
+                max={850}
+                step={10}
               />
+              <Typography variant="caption" color="text.secondary">
+                PMI rates vary by loan-to-value and credit score — same rate grid as our PMI calculator.
+              </Typography>
             </InputSection>
           </Box>
         </Grid>
@@ -240,7 +256,7 @@ export default function DownPaymentCalculator() {
                             </Stack>
                             {needsPMI && (
                               <Chip 
-                                label="Requires PMI" 
+                                label={`PMI ${option.pmiRate.toFixed(2)}%/yr`} 
                                 size="small" 
                                 sx={{ mt: 0.5, bgcolor: '#FEF3C7', color: '#92400E', fontSize: '0.7rem' }} 
                               />
@@ -270,11 +286,21 @@ export default function DownPaymentCalculator() {
                             <Typography variant="body1" sx={{ fontWeight: 600, color: option.pmiCost > 0 ? '#DC2626' : '#22C55E' }}>
                               {option.pmiCost > 0 ? `$${option.pmiCost.toLocaleString()}` : '$0'}
                             </Typography>
+                            {option.pmiCost > 0 && (
+                              <Typography variant="caption" color="text.secondary">
+                                ~{(option.pmiMonths / 12).toFixed(1)} yrs
+                              </Typography>
+                            )}
                           </Grid>
                         </Grid>
                       </Paper>
                     );
                   })}
+                  <Typography variant="caption" color="text.secondary">
+                    Cash to close = down payment + itemized closing costs and prepaids, using the same
+                    line-item engine as our Closing Costs calculator (California defaults for transfer
+                    tax and attorney customs).
+                  </Typography>
                 </Stack>
               </ResultsSection>
 
@@ -327,8 +353,14 @@ export default function DownPaymentCalculator() {
 
                   <Alert severity="info" sx={{ borderRadius: 2 }}>
                     <Typography variant="body2">
-                      <strong>PMI automatically drops</strong> when your loan balance reaches 78% of the original home value. 
-                      With 3% down, this typically takes 8-10 years.
+                      <strong>PMI automatically drops</strong> when your loan balance reaches 78% of the original home value.
+                      {(() => {
+                        const option3 = getOption(3);
+                        if (!option3 || option3.pmiMonths <= 0) return null;
+                        return (
+                          <> With 3% down at your inputs, this takes about {(option3.pmiMonths / 12).toFixed(1)} years ({option3.pmiMonths} months).</>
+                        );
+                      })()}
                     </Typography>
                   </Alert>
                 </Paper>
