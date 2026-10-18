@@ -17,6 +17,9 @@ export interface MortgageCostInputs {
   creditScore?: number;
   /** Manual annual PMI override in dollars; 0 or undefined = auto-estimate. */
   pmi?: number;
+  /** Two-letter state code; drives tax/insurance defaults when set. */
+  state?: string;
+  zip?: string;
 }
 
 export interface RefinanceInputs {
@@ -57,6 +60,9 @@ export interface AffordabilityInputs {
   hoaFees: number;
   /** Credit score used to estimate PMI from the shared LTV × credit grid. */
   creditScore?: number;
+  /** Two-letter state code; drives tax/insurance defaults when set. */
+  state?: string;
+  zip?: string;
 }
 
 export interface DownPaymentInputs {
@@ -87,6 +93,9 @@ export interface RentVsBuyInputs {
   sellingCosts: number;
   investmentReturn: number;
   yearsToAnalyze: number;
+  /** Two-letter state code; drives tax/insurance/closing defaults when set. */
+  state?: string;
+  zip?: string;
 }
 
 // Category 2: Rate & Structure

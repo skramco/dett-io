@@ -21,6 +21,8 @@ export const MORTGAGE_COST_DEFAULT_INPUTS: MortgageCostInputs = {
   hoaFees: 0,
   creditScore: DEFAULT_PMI_CREDIT_SCORE,
   pmi: 0,
+  state: '',
+  zip: '',
 };
 
 /** Whole dollars with thousands separators — same formatting the calculator uses. */
