@@ -14,13 +14,19 @@ export function OrganizationJsonLd() {
       data={{
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        name: 'Dett.io',
-        legalName: 'Skramco Holdings LLC',
-        url: 'https://dett.io',
+        name: 'Knowe LLC',
+        legalName: 'Knowe LLC',
+        url: 'https://knowe.one',
         logo: 'https://dett.io/logo.png',
         description:
           'Independent mortgage calculators and educational guides with documented formulas and cited data sources.',
-        sameAs: [],
+        alternateName: 'Dett.io',
+        brand: {
+          '@type': 'Brand',
+          name: 'Dett.io',
+          url: 'https://dett.io',
+        },
+        sameAs: ['https://dett.io'],
         contactPoint: {
           '@type': 'ContactPoint',
           email: 'legal@dett.io',
@@ -44,7 +50,8 @@ export function WebSiteJsonLd() {
           'Free mortgage calculators and decision tools. Make smarter mortgage decisions with crystal-clear math.',
         publisher: {
           '@type': 'Organization',
-          name: 'Skramco Holdings LLC',
+          name: 'Knowe LLC',
+          url: 'https://knowe.one',
         },
         speakable: {
           '@type': 'SpeakableSpecification',
@@ -85,6 +92,11 @@ export function CalculatorJsonLd({
           name: 'Dett.io',
           url: 'https://dett.io',
         },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Knowe LLC',
+          url: 'https://knowe.one',
+        },
       }}
     />
   );
@@ -121,8 +133,8 @@ export function ArticleJsonLd({
         },
         publisher: {
           '@type': 'Organization',
-          name: 'Skramco Holdings LLC',
-          url: 'https://dett.io',
+          name: 'Knowe LLC',
+          url: 'https://knowe.one',
         },
         mainEntityOfPage: {
           '@type': 'WebPage',

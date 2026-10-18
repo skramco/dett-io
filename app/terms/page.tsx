@@ -10,7 +10,7 @@ import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
 
 export default function TermsOfUsePage() {
-  const effectiveDate = 'February 13, 2026';
+  const effectiveDate = 'October 18, 2026';
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -48,7 +48,7 @@ export default function TermsOfUsePage() {
         >
           <Stack spacing={0}>
             <h2>1. Acceptance of Terms</h2>
-            <p>These Terms of Use (&quot;Terms&quot;) constitute a legally binding agreement between you (&quot;you,&quot; &quot;your,&quot; or &quot;User&quot;) and Skramco Holdings LLC, a Delaware limited liability company, doing business as Dett.io (&quot;Dett,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;). By accessing or using the website located at dett.io (the &quot;Site&quot;) and any services, features, content, calculators, tools, or applications offered on or through the Site (collectively, the &quot;Services&quot;), you agree to be bound by these Terms.</p>
+            <p>These Terms of Use (&quot;Terms&quot;) constitute a legally binding agreement between you (&quot;you,&quot; &quot;your,&quot; or &quot;User&quot;) and Knowe LLC, a Delaware limited liability company, doing business as Dett.io (&quot;Dett,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;). By accessing or using the website located at dett.io (the &quot;Site&quot;) and any services, features, content, calculators, tools, or applications offered on or through the Site (collectively, the &quot;Services&quot;), you agree to be bound by these Terms.</p>
             <p>If you do not agree to all of these Terms, you must not access or use the Site or Services. We reserve the right to modify these Terms at any time. Your continued use of the Site following the posting of revised Terms constitutes your acceptance of such changes.</p>
 
             <h2>2. Description of Services</h2>
@@ -86,8 +86,8 @@ export default function TermsOfUsePage() {
             </ul>
 
             <h2>6. Intellectual Property</h2>
-            <p>All content, features, and functionality of the Site — including but not limited to text, graphics, logos, icons, images, audio clips, digital downloads, data compilations, software, calculator algorithms, and the design, selection, and arrangement thereof — are the exclusive property of Skramco Holdings LLC or its licensors and are protected by United States and international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.</p>
-            <p>The &quot;Dett,&quot; &quot;Dett.io,&quot; and &quot;Skramco&quot; names, logos, and all related names, logos, product and service names, designs, and slogans are trademarks of Skramco Holdings LLC. You may not use such marks without our prior written permission.</p>
+            <p>All content, features, and functionality of the Site — including but not limited to text, graphics, logos, icons, images, audio clips, digital downloads, data compilations, software, calculator algorithms, and the design, selection, and arrangement thereof — are the exclusive property of Knowe LLC or its licensors and are protected by United States and international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.</p>
+            <p>The &quot;Dett,&quot; &quot;Dett.io,&quot; and &quot;Knowe&quot; names, logos, and all related names, logos, product and service names, designs, and slogans are trademarks of Knowe LLC. You may not use such marks without our prior written permission.</p>
             <p>You are granted a limited, non-exclusive, non-transferable, revocable license to access and use the Site and Services for your personal, non-commercial use, subject to these Terms.</p>
 
             <h2>7. Third-Party Links and Services</h2>
@@ -95,11 +95,11 @@ export default function TermsOfUsePage() {
 
             <h2>8. Disclaimer of Warranties</h2>
             <p><strong>THE SITE AND SERVICES ARE PROVIDED ON AN &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; BASIS, WITHOUT ANY WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED.</strong></p>
-            <p>TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, SKRAMCO HOLDINGS LLC DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE SITE OR SERVICES WILL BE UNINTERRUPTED, TIMELY, SECURE, OR ERROR-FREE, THAT DEFECTS WILL BE CORRECTED, OR THAT THE SITE OR THE SERVERS THAT MAKE IT AVAILABLE ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.</p>
+            <p>TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, KNOWE LLC DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE SITE OR SERVICES WILL BE UNINTERRUPTED, TIMELY, SECURE, OR ERROR-FREE, THAT DEFECTS WILL BE CORRECTED, OR THAT THE SITE OR THE SERVERS THAT MAKE IT AVAILABLE ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.</p>
             <p>WE MAKE NO WARRANTIES OR REPRESENTATIONS ABOUT THE ACCURACY, RELIABILITY, COMPLETENESS, OR TIMELINESS OF THE CONTENT, SERVICES, SOFTWARE, TEXT, GRAPHICS, LINKS, OR COMMUNICATIONS PROVIDED ON OR THROUGH THE SITE.</p>
 
             <h2>9. Limitation of Liability</h2>
-            <p><strong>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL SKRAMCO HOLDINGS LLC, ITS OFFICERS, DIRECTORS, MEMBERS, MANAGERS, EMPLOYEES, AGENTS, AFFILIATES, SUCCESSORS, OR ASSIGNS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO DAMAGES FOR LOSS OF PROFITS, GOODWILL, USE, DATA, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH:</strong></p>
+            <p><strong>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL KNOWE LLC, ITS OFFICERS, DIRECTORS, MEMBERS, MANAGERS, EMPLOYEES, AGENTS, AFFILIATES, SUCCESSORS, OR ASSIGNS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO DAMAGES FOR LOSS OF PROFITS, GOODWILL, USE, DATA, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR IN CONNECTION WITH:</strong></p>
             <ul>
               <li>Your access to, use of, or inability to access or use the Site or Services;</li>
               <li>Any Output, content, or information obtained from or through the Site or Services;</li>
@@ -112,12 +112,12 @@ export default function TermsOfUsePage() {
             <p>SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OR LIMITATION OF CERTAIN DAMAGES. IF THESE LAWS APPLY TO YOU, SOME OR ALL OF THE ABOVE EXCLUSIONS OR LIMITATIONS MAY NOT APPLY, AND YOU MAY HAVE ADDITIONAL RIGHTS.</p>
 
             <h2>10. Indemnification</h2>
-            <p>You agree to indemnify, defend, and hold harmless Skramco Holdings LLC, its officers, directors, members, managers, employees, agents, affiliates, successors, and assigns from and against any and all claims, liabilities, damages, losses, costs, expenses, or fees (including reasonable attorneys&apos; fees) arising from or relating to: (a) your use of the Site or Services; (b) your violation of these Terms; (c) your violation of any rights of a third party; or (d) any financial decisions you make based on Output or content from the Site.</p>
+            <p>You agree to indemnify, defend, and hold harmless Knowe LLC, its officers, directors, members, managers, employees, agents, affiliates, successors, and assigns from and against any and all claims, liabilities, damages, losses, costs, expenses, or fees (including reasonable attorneys&apos; fees) arising from or relating to: (a) your use of the Site or Services; (b) your violation of these Terms; (c) your violation of any rights of a third party; or (d) any financial decisions you make based on Output or content from the Site.</p>
 
             <h2>11. Governing Law and Dispute Resolution</h2>
             <p>These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict of law provisions.</p>
             <p>Any dispute, claim, or controversy arising out of or relating to these Terms or the breach, termination, enforcement, interpretation, or validity thereof, including the determination of the scope or applicability of this agreement to arbitrate, shall be determined by binding arbitration administered in accordance with the rules of the American Arbitration Association (&quot;AAA&quot;). The arbitration shall be conducted in the State of Delaware. Judgment on the award rendered by the arbitrator(s) may be entered in any court having jurisdiction thereof.</p>
-            <p><strong>YOU AGREE THAT ANY DISPUTE RESOLUTION PROCEEDINGS WILL BE CONDUCTED ONLY ON AN INDIVIDUAL BASIS AND NOT IN A CLASS, CONSOLIDATED, OR REPRESENTATIVE ACTION.</strong> If for any reason a claim proceeds in court rather than in arbitration, you and Skramco Holdings LLC each waive any right to a jury trial.</p>
+            <p><strong>YOU AGREE THAT ANY DISPUTE RESOLUTION PROCEEDINGS WILL BE CONDUCTED ONLY ON AN INDIVIDUAL BASIS AND NOT IN A CLASS, CONSOLIDATED, OR REPRESENTATIVE ACTION.</strong> If for any reason a claim proceeds in court rather than in arbitration, you and Knowe LLC each waive any right to a jury trial.</p>
 
             <h2>12. Severability</h2>
             <p>If any provision of these Terms is held to be invalid, illegal, or unenforceable by a court of competent jurisdiction, such invalidity, illegality, or unenforceability shall not affect any other provision of these Terms, and these Terms shall be construed as if such invalid, illegal, or unenforceable provision had never been contained herein.</p>
@@ -126,13 +126,14 @@ export default function TermsOfUsePage() {
             <p>No waiver of any term or condition set forth in these Terms shall be deemed a further or continuing waiver of such term or condition or a waiver of any other term or condition, and any failure to assert a right or provision under these Terms shall not constitute a waiver of such right or provision.</p>
 
             <h2>14. Entire Agreement</h2>
-            <p>These Terms, together with our Privacy Policy, constitute the entire agreement between you and Skramco Holdings LLC regarding your use of the Site and Services, and supersede all prior and contemporaneous understandings, agreements, representations, and warranties, both written and oral, regarding the Site and Services.</p>
+            <p>These Terms, together with our Privacy Policy, constitute the entire agreement between you and Knowe LLC regarding your use of the Site and Services, and supersede all prior and contemporaneous understandings, agreements, representations, and warranties, both written and oral, regarding the Site and Services.</p>
 
             <h2>15. Contact Information</h2>
             <p>If you have any questions about these Terms, please contact us at:</p>
             <p>
-              <strong>Skramco Holdings LLC</strong><br />
+              <strong>Knowe LLC</strong><br />
               d/b/a Dett.io<br />
+              <a href="https://knowe.one" target="_blank" rel="noopener noreferrer">https://knowe.one</a><br />
               Email: legal@dett.io<br />
             </p>
           </Stack>

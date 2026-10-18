@@ -578,8 +578,13 @@ export function getCalculatorJsonLd(slug: string): Record<string, unknown> | nul
     },
     provider: {
       '@type': 'Organization',
-      name: 'Dett',
+      name: 'Dett.io',
       url: BASE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Knowe LLC',
+      url: 'https://knowe.one',
     },
     featureList: calculatorSeoConfigs[slug]?.keywords?.slice(0, 5).join(', '),
     isAccessibleForFree: true,

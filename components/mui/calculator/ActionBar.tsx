@@ -166,10 +166,10 @@ export function ActionBar({
       // Header
       pdf.setFontSize(20);
       pdf.setTextColor(15, 23, 42); // slate-900
-      pdf.text('Dett', 15, 15);
+      pdf.text('Dett.io', 15, 15);
       pdf.setFontSize(10);
       pdf.setTextColor(100, 116, 139); // slate-500
-      pdf.text('Free Mortgage Calculators | dett.io', 15, 22);
+      pdf.text('A Knowe LLC company | Free Mortgage Calculators | dett.io', 15, 22);
 
       // Calculator name
       pdf.setFontSize(16);
@@ -226,8 +226,12 @@ export function ActionBar({
         pdf.setPage(i);
         pdf.setFontSize(8);
         pdf.setTextColor(148, 163, 184);
-        pdf.text('This is an educational tool. Results are estimates and should not be considered financial advice.', 15, 290);
-        pdf.text(`dett.io | Page ${i} of ${pageCount}`, 170, 290);
+        pdf.text('This is an educational tool. Results are estimates and should not be considered financial advice.', 15, 286);
+        pdf.text(
+          `© ${new Date().getFullYear()} Knowe LLC. All rights reserved.  |  dett.io  |  Page ${i} of ${pageCount}`,
+          15,
+          291
+        );
       }
 
       // Download

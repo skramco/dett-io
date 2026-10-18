@@ -39,7 +39,7 @@ export interface LoanKnowCtaCopy {
 // Shared compliance note: copy must stay educational and must NOT use
 // "qualify", "pre-approved", "guaranteed", or promise specific rates/terms.
 const DEFAULT_BODY =
-  'LoanKnow is a free, anonymous way to have lenders compete for your business — launching soon. Join the waitlist and be first to know when it goes live.';
+  'LoanKnow, a Knowe platform, is a free, anonymous way to have lenders compete for your business — launching soon. Join the waitlist and be first to know when it goes live.';
 
 const DEFAULT_COPY: LoanKnowCtaCopy = {
   headline: 'Ready for the next step?',

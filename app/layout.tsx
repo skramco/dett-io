@@ -29,6 +29,9 @@ export const metadata: Metadata = {
     'how much house can I afford',
   ],
   metadataBase: new URL('https://dett.io'),
+  authors: [{ name: 'Knowe LLC', url: 'https://knowe.one' }],
+  creator: 'Knowe LLC',
+  publisher: 'Knowe LLC',
   alternates: {
     canonical: 'https://dett.io',
   },

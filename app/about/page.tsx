@@ -48,8 +48,13 @@ export default function AboutPage() {
           <Stack spacing={0}>
             <h2>Who&apos;s behind this</h2>
             <p>
-              Dett.io is built and operated by <strong>Skramco Holdings LLC</strong>, a Delaware
-              limited liability company. We are a small team of software engineers who kept
+              Dett.io is built and operated by <strong>Knowe LLC</strong>, a Delaware
+              limited liability company. Dett.io is a Knowe LLC company — learn more at{' '}
+              <a href="https://knowe.one" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                knowe.one
+              </a>
+              . Knowe also operates LoanKnow, a sibling platform for consumer-controlled
+              origination. We are a small team of software engineers who kept
               finding that the mortgage calculators ranking at the top of search results were
               designed to capture leads first and answer questions second — rate quotes behind
               email gates, &ldquo;results&rdquo; that trigger sales calls, and math that quietly
