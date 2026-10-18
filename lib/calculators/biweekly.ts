@@ -1,4 +1,5 @@
 import type { BiweeklyInputs, CalculatorResult } from './types';
+import { monthlyPayment as calcMonthlyPayment, simulateBiweeklyPayoff, toMonthlyRate } from './mortgageMath';
 
 export function calculateBiweekly(inputs: BiweeklyInputs): CalculatorResult {
   const {
@@ -8,32 +9,21 @@ export function calculateBiweekly(inputs: BiweeklyInputs): CalculatorResult {
     biweeklyFee,
   } = inputs;
 
-  const monthlyRate = interestRate / 100 / 12;
+  const monthlyRate = toMonthlyRate(interestRate);
   const numPayments = loanTerm * 12;
   
   // Monthly payment
-  const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                        (Math.pow(1 + monthlyRate, numPayments) - 1);
+  const monthlyPayment = calcMonthlyPayment(loanAmount, interestRate, numPayments);
   
   const monthlyTotalPaid = monthlyPayment * numPayments;
   const monthlyTotalInterest = monthlyTotalPaid - loanAmount;
 
   // True biweekly (26 payments per year = 13 monthly payments)
   const biweeklyPayment = monthlyPayment / 2;
-  let biweeklyBalance = loanAmount;
-  let biweeklyTotalPaid = 0;
-  let biweeklyPaymentCount = 0;
+  const biweeklyResult = simulateBiweeklyPayoff(loanAmount, interestRate, biweeklyPayment, numPayments * 2);
+  const biweeklyPaymentCount = biweeklyResult.periods;
   
-  while (biweeklyBalance > 0 && biweeklyPaymentCount < numPayments * 2) {
-    // Apply payment every 2 weeks
-    const interest = biweeklyBalance * (interestRate / 100 / 26);
-    const principal = biweeklyPayment - interest;
-    biweeklyBalance -= principal;
-    biweeklyTotalPaid += biweeklyPayment;
-    biweeklyPaymentCount++;
-  }
-  
-  const biweeklyTotalInterest = biweeklyTotalPaid - loanAmount;
+  const biweeklyTotalInterest = biweeklyResult.totalInterest;
   const biweeklyYears = biweeklyPaymentCount / 26;
   const biweeklyYearsSaved = loanTerm - biweeklyYears;
 

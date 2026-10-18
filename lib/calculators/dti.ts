@@ -1,4 +1,5 @@
 import type { CalculatorResult } from './types';
+import { backEndDtiPercent, frontEndDtiPercent } from './mortgageMath';
 
 export interface DTIInputs {
   monthlyGrossIncome: number;
@@ -34,12 +35,12 @@ export function calculateDTI(inputs: DTIInputs): CalculatorResult {
 
   // Front-end DTI: housing costs only
   const housingCosts = mortgagePayment + monthlyPropertyTax + monthlyInsurance + hoaFees;
-  const frontEndDTI = monthlyGrossIncome > 0 ? (housingCosts / monthlyGrossIncome) * 100 : 0;
+  const frontEndDTI = frontEndDtiPercent(housingCosts, monthlyGrossIncome);
 
   // Back-end DTI: all debts
   const nonHousingDebts = carPayments + studentLoans + creditCardMinimums + personalLoans + childSupport + otherDebts;
   const totalMonthlyDebts = housingCosts + nonHousingDebts;
-  const backEndDTI = monthlyGrossIncome > 0 ? (totalMonthlyDebts / monthlyGrossIncome) * 100 : 0;
+  const backEndDTI = backEndDtiPercent(housingCosts, nonHousingDebts, monthlyGrossIncome);
 
   // Remaining income
   const remainingIncome = monthlyGrossIncome - totalMonthlyDebts;

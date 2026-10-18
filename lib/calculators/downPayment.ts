@@ -1,4 +1,5 @@
 import type { DownPaymentInputs, CalculatorResult } from './types';
+import { monthlyPayment, monthlyPmiAmount, monthsToReachLtv } from './mortgageMath';
 
 export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResult {
   const {
@@ -12,7 +13,6 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
   } = inputs;
 
   const downPaymentOptions = [3, 5, 10, 15, 20];
-  const monthlyRate = interestRate / 100 / 12;
   const numPayments = loanTerm * 12;
 
   const results = downPaymentOptions.map(percent => {
@@ -21,11 +21,10 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
     const needsPMI = percent < 20;
     
     // Calculate monthly PI
-    const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                     (Math.pow(1 + monthlyRate, numPayments) - 1);
+    const monthlyPI = monthlyPayment(loanAmount, interestRate, numPayments);
     
     // Calculate monthly PMI
-    const monthlyPMI = needsPMI ? (loanAmount * pmiRate / 100 / 12) : 0;
+    const monthlyPMI = needsPMI ? monthlyPmiAmount(loanAmount, pmiRate) : 0;
     
     // Calculate monthly tax and insurance
     const monthlyTax = homePrice * propertyTaxRate / 100 / 12;
@@ -38,18 +37,7 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
     let pmiMonths = 0;
     let pmiTotalCost = 0;
     if (needsPMI) {
-      let balance = loanAmount;
-      for (let month = 1; month <= numPayments; month++) {
-        const interest = balance * monthlyRate;
-        const principal = monthlyPI - interest;
-        balance -= principal;
-        
-        const currentLTV = (balance / homePrice) * 100;
-        if (currentLTV <= 78) {
-          pmiMonths = month;
-          break;
-        }
-      }
+      pmiMonths = monthsToReachLtv(loanAmount, homePrice, interestRate, numPayments, 78);
       pmiTotalCost = monthlyPMI * pmiMonths;
     }
     
@@ -111,10 +99,19 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
 
   const summary = `Comparing down payments from 3% to 20% on a $${homePrice.toLocaleString()} home. PMI adds $${option3.pmiTotalCost.toLocaleString()} total with 3% down.`;
 
+  // Details for the user's selected down payment (used by "Show Me the Math")
+  const selectedDownPayment = homePrice * (downPaymentPercent / 100);
+  const selectedLoanAmount = homePrice - selectedDownPayment;
+  const selectedMonthlyPI = monthlyPayment(selectedLoanAmount, interestRate, numPayments);
+
   return {
     summary,
     details: {
       homePrice,
+      downPaymentPercent,
+      downPaymentAmount: Math.round(selectedDownPayment),
+      loanAmount: Math.round(selectedLoanAmount),
+      monthlyPayment: Math.round(selectedMonthlyPI),
       option3Down: option3.downPaymentAmount,
       option3Payment: option3.totalMonthly,
       option3PMI: option3.pmiTotalCost,

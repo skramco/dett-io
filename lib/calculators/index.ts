@@ -1,4 +1,7 @@
 export * from './types';
+
+// Shared mortgage math — single source of truth for all calculator formulas
+export * from './mortgageMath';
 export { calculateMortgageCost } from './mortgageCost';
 export { calculateRefinance } from './refinance';
 export { calculateExtraPayment } from './extraPayment';

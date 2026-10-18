@@ -1,4 +1,5 @@
 import type { InterestSensitivityInputs, CalculatorResult } from './types';
+import { monthlyPayment } from './mortgageMath';
 
 export function calculateInterestSensitivity(inputs: InterestSensitivityInputs): CalculatorResult {
   const {
@@ -14,10 +15,8 @@ export function calculateInterestSensitivity(inputs: InterestSensitivityInputs):
 
   const results = rateChanges.map(change => {
     const rate = baseRate + change;
-    const monthlyRate = rate / 100 / 12;
     
-    const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                     (Math.pow(1 + monthlyRate, numPayments) - 1);
+    const monthlyPI = monthlyPayment(loanAmount, rate, numPayments);
     
     const monthlyTax = (loanAmount * 1.25) * propertyTaxRate / 100 / 12; // Estimate home price
     const monthlyInsurance = homeInsuranceAnnual / 12;

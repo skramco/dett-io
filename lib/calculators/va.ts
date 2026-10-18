@@ -1,4 +1,13 @@
 import type { CalculatorResult } from './types';
+import {
+  backEndDtiPercent,
+  fhaMonthlyMip,
+  fhaUpfrontMip,
+  frontEndDtiPercent,
+  monthlyPayment,
+  monthlyPmiAmount,
+  vaFundingFeeRatePercent,
+} from './mortgageMath';
 
 export interface VAInputs {
   homePrice: number;
@@ -12,31 +21,6 @@ export interface VAInputs {
   homeInsurance: number;
   monthlyGrossIncome: number;
   monthlyDebts: number;
-}
-
-// VA Funding Fee rates (as of current guidelines)
-function getVAFundingFeeRate(
-  downPaymentPercent: number,
-  firstTimeUse: boolean,
-  serviceType: string,
-  disabilityExempt: boolean
-): number {
-  if (disabilityExempt) return 0;
-
-  const isReservesGuard = serviceType === 'reserves-guard';
-
-  if (downPaymentPercent >= 10) {
-    return 1.25;
-  } else if (downPaymentPercent >= 5) {
-    return 1.5;
-  } else {
-    // Less than 5% down
-    if (firstTimeUse) {
-      return isReservesGuard ? 2.5 : 2.15;
-    } else {
-      return isReservesGuard ? 2.5 : 3.3;
-    }
-  }
 }
 
 export function calculateVA(inputs: VAInputs): CalculatorResult {
@@ -58,17 +42,13 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
   const baseLoanAmount = homePrice - downPayment;
 
   // VA Funding Fee
-  const fundingFeeRate = getVAFundingFeeRate(downPaymentPercent, firstTimeUse, serviceType, disabilityExempt);
+  const fundingFeeRate = vaFundingFeeRatePercent(downPaymentPercent, firstTimeUse, serviceType, disabilityExempt);
   const fundingFee = Math.round(baseLoanAmount * (fundingFeeRate / 100));
   const totalLoanAmount = baseLoanAmount + fundingFee; // VA allows financing the funding fee
 
   // Monthly P&I on total loan (including financed funding fee)
-  const monthlyRate = interestRate / 100 / 12;
   const numberOfPayments = loanTerm * 12;
-  const monthlyPI = monthlyRate === 0
-    ? totalLoanAmount / numberOfPayments
-    : (totalLoanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  const monthlyPI = monthlyPayment(totalLoanAmount, interestRate, numberOfPayments);
 
   const monthlyPropertyTax = propertyTax / 12;
   const monthlyInsurance = homeInsurance / 12;
@@ -80,8 +60,8 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
   const totalInterest = totalPaid - totalLoanAmount;
 
   // DTI check — VA uses residual income method but also checks DTI
-  const housingDTI = monthlyGrossIncome > 0 ? (totalMonthlyPayment / monthlyGrossIncome) * 100 : 0;
-  const totalDTI = monthlyGrossIncome > 0 ? ((totalMonthlyPayment + monthlyDebts) / monthlyGrossIncome) * 100 : 0;
+  const housingDTI = frontEndDtiPercent(totalMonthlyPayment, monthlyGrossIncome);
+  const totalDTI = backEndDtiPercent(totalMonthlyPayment, monthlyDebts, monthlyGrossIncome);
   const meetsDTI = totalDTI <= 41; // VA guideline is 41%, but can go higher with compensating factors
   const meetsExtendedDTI = totalDTI <= 50;
 
@@ -92,24 +72,17 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
   // FHA comparison (3.5% down)
   const fhaDownPayment = homePrice * 0.035;
   const fhaLoanAmount = homePrice - fhaDownPayment;
-  const fhaUpfrontMIP = fhaLoanAmount * 0.0175;
+  const fhaUpfrontMIP = fhaUpfrontMip(fhaLoanAmount);
   const fhaTotalLoan = fhaLoanAmount + fhaUpfrontMIP;
-  const fhaMonthlyPI = monthlyRate === 0
-    ? fhaTotalLoan / numberOfPayments
-    : (fhaTotalLoan * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-  const fhaMonthlyMIP = (fhaLoanAmount * 0.0055) / 12; // 0.55% annual MIP
+  const fhaMonthlyPI = monthlyPayment(fhaTotalLoan, interestRate, numberOfPayments);
+  const fhaMonthlyMIP = fhaMonthlyMip(fhaLoanAmount, 0.55); // 0.55% annual MIP
   const fhaTotalMonthly = fhaMonthlyPI + fhaMonthlyMIP + monthlyPropertyTax + monthlyInsurance;
 
   // Conventional comparison (5% down)
   const convDownPayment = homePrice * 0.05;
   const convLoanAmount = homePrice - convDownPayment;
-  const convMonthlyPI = monthlyRate === 0
-    ? convLoanAmount / numberOfPayments
-    : (convLoanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-  const convPMIRate = 0.005; // ~0.5% estimate
-  const convMonthlyPMI = (convLoanAmount * convPMIRate) / 12;
+  const convMonthlyPI = monthlyPayment(convLoanAmount, interestRate, numberOfPayments);
+  const convMonthlyPMI = monthlyPmiAmount(convLoanAmount, 0.5); // ~0.5%/yr estimate
   const convTotalMonthly = convMonthlyPI + convMonthlyPMI + monthlyPropertyTax + monthlyInsurance;
 
   // Savings from no PMI

@@ -1,4 +1,5 @@
 import type { CashOutRefinanceInputs, CalculatorResult } from './types';
+import { monthlyPayment } from './mortgageMath';
 
 export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): CalculatorResult {
   const {
@@ -13,20 +14,16 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
     alternativeRate,
   } = inputs;
 
-  const currentMonthlyRate = currentRate / 100 / 12;
   const currentPayments = yearsRemaining * 12;
   
   // Current mortgage payment
-  const currentPayment = currentBalance * (currentMonthlyRate * Math.pow(1 + currentMonthlyRate, currentPayments)) / 
-                        (Math.pow(1 + currentMonthlyRate, currentPayments) - 1);
+  const currentPayment = monthlyPayment(currentBalance, currentRate, currentPayments);
 
   // Cash-out refi scenario
   const newLoanAmount = currentBalance + cashOutAmount + closingCosts;
-  const newMonthlyRate = newRate / 100 / 12;
   const newPayments = newTerm * 12;
   
-  const newPayment = newLoanAmount * (newMonthlyRate * Math.pow(1 + newMonthlyRate, newPayments)) / 
-                    (Math.pow(1 + newMonthlyRate, newPayments) - 1);
+  const newPayment = monthlyPayment(newLoanAmount, newRate, newPayments);
 
   // Calculate total interest for both scenarios
   const currentTotalPaid = currentPayment * currentPayments;
@@ -35,9 +32,8 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
   const newTotalPaid = newPayment * newPayments;
   const newTotalInterest = newTotalPaid - newLoanAmount;
 
-  // Alternative: Keep mortgage, take separate loan for cash
-  const altLoanPayment = cashOutAmount * (alternativeRate / 100 / 12 * Math.pow(1 + alternativeRate / 100 / 12, 120)) / 
-                        (Math.pow(1 + alternativeRate / 100 / 12, 120) - 1); // 10-year loan
+  // Alternative: Keep mortgage, take separate loan for cash (10-year loan)
+  const altLoanPayment = monthlyPayment(cashOutAmount, alternativeRate, 120);
   const altTotalPayment = currentPayment + altLoanPayment;
   const altTotalPaid = (currentPayment * currentPayments) + (altLoanPayment * 120);
   const altTotalInterest = altTotalPaid - currentBalance - cashOutAmount;

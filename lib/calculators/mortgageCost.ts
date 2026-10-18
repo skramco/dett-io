@@ -1,4 +1,5 @@
 import type { MortgageCostInputs, CalculatorResult } from './types';
+import { monthlyPayment } from './mortgageMath';
 
 export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorResult {
   const {
@@ -13,14 +14,9 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
   } = inputs;
 
   const loanAmount = homePrice - downPayment;
-  const monthlyRate = interestRate / 100 / 12;
   const numberOfPayments = loanTerm * 12;
 
-  const principalAndInterest =
-    monthlyRate === 0
-      ? loanAmount / numberOfPayments
-      : (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-        (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  const principalAndInterest = monthlyPayment(loanAmount, interestRate, numberOfPayments);
 
   const monthlyPropertyTax = propertyTax / 12;
   const monthlyInsurance = homeInsurance / 12;
