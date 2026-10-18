@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { calculateBiweekly } from '../lib/calculators/biweekly';
+import { calculatePayoff } from '../lib/calculators';
 
 describe('biweekly servicer disclosure', () => {
   it('warns that some servicers will not accept partial or true biweekly payments', () => {
-    const result = calculateBiweekly({
+    const result = calculatePayoff({
       loanAmount: 300000,
       interestRate: 6.5,
       loanTerm: 30,

@@ -55,6 +55,17 @@ Rationale:
   guaranteed return on prepaying is the loan rate itself — not interest saved
   divided by extra paid. When the investment return equals the loan rate, both
   paths end equal.
+- **Shared formatters (ENG-333):** both merged tools use `formatCurrency` for
+  summaries, insights, and result surfaces — whole dollars with thousands
+  separators, no `$Xk` abbreviations.
+- **Shareable URLs (ENG-344):** both pages restore inputs from the query string
+  via `useUrlInputs`.
+- **Scenario prefill (ENG-346):** both pages call `useScenarioPrefill`. Pay Off
+  Faster maps loan amount / rate / term; Best Loan for My Timeline maps
+  `parRate` and keeps ARM / 15-year / points sibling rates at the same spread.
+- **Biweekly servicer note (ENG-350):** Pay Off Faster warns that many servicers
+  reject half-payments or a true biweekly schedule, and points users to the
+  DIY extra-principal method instead.
 - **SEO surface updates:** sitemap, internal links (nav, footers, wizard, guides,
   comparisons, definitions), `llms.txt`, and per-page metadata/JSON-LD all point
   at the new slugs only.

@@ -174,13 +174,32 @@ describe('mapProfileToInputs', () => {
       parRate: 6.75,
       pointsRate: 6.25,
       lenderCreditRate: 7.0,
+      armInitialRate: 5.75,
+      fifteenYearRate: 6.0,
       loanTerm: 30,
     };
     const mapped = mapProfileToInputs(defaults, profile);
     expect(mapped.parRate).toBe(6.25);
     expect(mapped.pointsRate).toBe(5.75);
     expect(mapped.lenderCreditRate).toBe(6.5);
+    expect(mapped.armInitialRate).toBe(5.25);
+    expect(mapped.fifteenYearRate).toBe(5.5);
     expect(mapped.loanAmount).toBe(400000);
+  });
+
+  it('prefills Pay Off Faster loan amount, rate, and term', () => {
+    const defaults = {
+      loanAmount: 360000,
+      interestRate: 6.75,
+      loanTerm: 30,
+      extraMonthlyPayment: 300,
+      investmentReturn: 7,
+    };
+    expect(mapProfileToInputs(defaults, profile)).toEqual({
+      loanAmount: 400000,
+      interestRate: 6.25,
+      loanTerm: 30,
+    });
   });
 
   it('lets URL query params win over the profile', () => {

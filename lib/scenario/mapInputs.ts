@@ -32,7 +32,7 @@ const DIRECT_FIELD_MAP: Record<string, keyof ScenarioProfile> = {
  * they had against the calculator's default (ARM teaser, points, credits).
  */
 const RATE_OFFSET_FIELDS: Record<string, string[]> = {
-  parRate: ['pointsRate', 'lenderCreditRate'],
+  parRate: ['pointsRate', 'lenderCreditRate', 'armInitialRate', 'fifteenYearRate'],
   fixedRate: ['armInitialRate'],
   interestRate: ['armInitialRate', 'pointsRate'],
 };
