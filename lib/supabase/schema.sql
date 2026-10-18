@@ -127,6 +127,35 @@ CREATE POLICY "Allow delete scenarios" ON scenarios
     )
   );
 
+-- LoanKnow Leads Table (email capture with calculator state)
+CREATE TABLE loanknow_leads (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  email TEXT NOT NULL,
+  consent BOOLEAN NOT NULL DEFAULT FALSE,
+  consent_text TEXT,
+  calculator_slug TEXT NOT NULL,
+  calculator_name TEXT,
+  cta_label TEXT,
+  inputs JSONB NOT NULL DEFAULT '{}',
+  results JSONB NOT NULL DEFAULT '{}',
+  source_path TEXT,
+  -- Leads must always carry explicit consent
+  CONSTRAINT loanknow_leads_consent_required CHECK (consent = TRUE)
+);
+
+CREATE INDEX idx_loanknow_leads_email ON loanknow_leads(email);
+CREATE INDEX idx_loanknow_leads_calculator_slug ON loanknow_leads(calculator_slug);
+
+ALTER TABLE loanknow_leads ENABLE ROW LEVEL SECURITY;
+
+-- Anyone (anon key) may submit a lead, but only with consent = TRUE.
+-- There is intentionally NO select/update/delete policy: leads are
+-- write-only from the public site and readable only with the service role.
+CREATE POLICY "Allow anonymous lead insert" ON loanknow_leads
+  FOR INSERT
+  WITH CHECK (consent = TRUE);
+
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
