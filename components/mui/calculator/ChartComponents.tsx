@@ -57,7 +57,7 @@ function ChartLoading({ height }: { height: number }) {
 // ============================================
 // DONUT CHART - Payment breakdown
 // ============================================
-interface DonutChartProps {
+export interface DonutChartProps {
   data: Array<{ name: string; value: number; color?: string }>;
   centerLabel?: string;
   centerValue?: string;
@@ -200,7 +200,7 @@ export function ChartLegend({ items }: ChartLegendProps) {
 // ============================================
 // AMORTIZATION CHART - Loan balance over time
 // ============================================
-interface AmortizationChartProps {
+export interface AmortizationChartProps {
   data: Array<{ year: number; balance: number; principal?: number; interest?: number }>;
   height?: number;
 }
@@ -275,7 +275,7 @@ export function AmortizationChart({ data, height = 300 }: AmortizationChartProps
 // ============================================
 // COMPARISON BAR CHART - Side by side comparison
 // ============================================
-interface ComparisonBarChartProps {
+export interface ComparisonBarChartProps {
   data: Array<{ name: string; current: number; new: number }>;
   height?: number;
   labels?: { current: string; new: string };
@@ -342,7 +342,7 @@ export function ComparisonBarChart({
 // ============================================
 // TIMELINE CHART - Break-even / crossover analysis
 // ============================================
-interface TimelineChartProps {
+export interface TimelineChartProps {
   data: Array<{ month: number; optionA: number; optionB: number }>;
   breakEvenMonth?: number;
   height?: number;
@@ -438,7 +438,7 @@ export function TimelineChart({
 // ============================================
 // STACKED BAR CHART - Payment composition over time
 // ============================================
-interface StackedBarChartProps {
+export interface StackedBarChartProps {
   data: Array<{ year: number; principal: number; interest: number; taxes?: number; insurance?: number }>;
   height?: number;
 }
