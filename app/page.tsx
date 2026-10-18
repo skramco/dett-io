@@ -33,12 +33,17 @@ const CalculatorWizard = dynamic(
   { ssr: false }
 );
 import { OrganizationJsonLd, WebSiteJsonLd, FAQJsonLd } from '@/components/JsonLd';
+import { getMortgageCostHeroData } from '@/lib/calculators/mortgageCostDefaults';
 
 // SaaSable-inspired dotted background pattern
 const dottedBackground = {
   backgroundImage: `radial-gradient(circle, #D1D5DB 1px, transparent 1px)`,
   backgroundSize: '24px 24px',
 };
+
+// Hero mock result is computed from the True Monthly Cost calculator's own
+// function and default inputs, so it always matches the live calculator.
+const heroResult = getMortgageCostHeroData();
 
 export default function Home() {
   return (
@@ -171,15 +176,24 @@ export default function Home() {
               {/* Right side - Stacked stat cards */}
               <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
                 <Box sx={{ position: 'relative', height: 420, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {/* Main card */}
+                  {/* Main card - links to the live calculator showing these exact defaults */}
                   <Card
+                    component={Link}
+                    href="/calculators/mortgage-cost"
                     sx={{
+                      display: 'block',
+                      textDecoration: 'none',
                       width: '100%',
                       maxWidth: 380,
                       p: 0,
                       boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
                       borderRadius: 4,
                       overflow: 'hidden',
+                      transition: 'box-shadow 0.2s, transform 0.2s',
+                      '&:hover': {
+                        boxShadow: '0 24px 70px rgba(0,0,0,0.16)',
+                        transform: 'translateY(-2px)',
+                      },
                     }}
                   >
                     {/* Card header */}
@@ -198,15 +212,10 @@ export default function Home() {
                         Your True Monthly Cost
                       </Typography>
                       <Typography variant="h3" sx={{ fontWeight: 800, color: 'primary.main', my: 1 }}>
-                        $2,847
+                        {heroResult.total}
                       </Typography>
                       <Stack spacing={1} sx={{ mt: 1 }}>
-                        {[
-                          { label: 'Principal & Interest', value: '$2,271', pct: 80 },
-                          { label: 'Property Tax', value: '$313', pct: 11 },
-                          { label: 'Insurance', value: '$146', pct: 5 },
-                          { label: 'PMI', value: '$117', pct: 4 },
-                        ].map((item) => (
+                        {heroResult.breakdown.map((item) => (
                           <Box key={item.label}>
                             <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.25 }}>
                               <Typography variant="caption" color="text.secondary">{item.label}</Typography>
