@@ -30,6 +30,8 @@ Rationale:
   it replaced, and the merged pages are self-canonical.
 - **Embeds keep working.** Partner embeds of the old slugs (`/embed/extra-payment`
   etc.) redirect to the corresponding merged embed, so existing iframes don't break.
+  The ENG-361 embed builder catalog lists only the live tools (`loan-timeline`,
+  `payoff`); `/partners` still redirects to `/embed`.
 
 ## Implementation notes
 

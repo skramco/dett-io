@@ -276,7 +276,7 @@ export default function Home() {
                   >
                     <Stack direction="row" spacing={1} alignItems="center">
                       <BarChart sx={{ color: 'primary.main', fontSize: 18 }} />
-                      <Typography variant="caption" sx={{ fontWeight: 600 }}>20 calculators</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 600 }}>16 calculators</Typography>
                     </Stack>
                   </Card>
                 </Box>
