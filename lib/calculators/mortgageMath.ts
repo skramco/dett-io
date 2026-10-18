@@ -239,7 +239,12 @@ export function vaFundingFeeRatePercent(
 
 /**
  * Rate after one ARM adjustment: fully-indexed rate (index + margin), limited by
- * the periodic adjustment cap and the lifetime cap over the initial rate.
+ * the adjustment cap in both directions, the lifetime cap over the initial rate,
+ * and a floor at the margin (index assumed non-negative).
+ *
+ * Pass `Number.POSITIVE_INFINITY` as the index to force the cap-driven
+ * worst-case step (rate rises by the full adjustment cap, still bounded by
+ * the lifetime cap).
  */
 export function armAdjustedRate(
   currentRatePercent: number,
@@ -251,8 +256,12 @@ export function armAdjustedRate(
 ): number {
   const fullyIndexed = indexRatePercent + marginPercent;
   const periodicMax = currentRatePercent + periodicCapPercent;
+  const periodicMin = currentRatePercent - periodicCapPercent;
   const lifetimeMax = initialRatePercent + lifetimeCapPercent;
-  return Math.min(fullyIndexed, periodicMax, lifetimeMax);
+  const floor = Math.max(marginPercent, 0);
+  const upper = Math.min(periodicMax, lifetimeMax);
+  const lower = Math.max(periodicMin, Math.min(floor, currentRatePercent));
+  return Math.min(Math.max(fullyIndexed, lower), upper);
 }
 
 // ---------------------------------------------------------------------------

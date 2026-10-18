@@ -193,6 +193,16 @@ describe('armAdjustedRate', () => {
   it('is limited by the lifetime cap', () => {
     expect(armAdjustedRate(9.5, 8, 2.75, 2, 5.5, 5)).toBeCloseTo(10.5, 10);
   });
+
+  it('caps downward moves symmetrically and floors at the margin', () => {
+    expect(armAdjustedRate(7, 1, 2.75, 1, 5.75, 5)).toBeCloseTo(6, 10);
+    expect(armAdjustedRate(3.5, 0, 2.75, 2, 5.75, 5)).toBeCloseTo(2.75, 10);
+  });
+
+  it('hits the adjustment cap when the index is infinite (worst-case step)', () => {
+    expect(armAdjustedRate(5.75, Number.POSITIVE_INFINITY, 2.75, 2, 5.75, 5)).toBeCloseTo(7.75, 10);
+    expect(armAdjustedRate(9.75, Number.POSITIVE_INFINITY, 2.75, 1, 5.75, 5)).toBeCloseTo(10.75, 10);
+  });
 });
 
 describe('simulateBiweeklyPayoff', () => {

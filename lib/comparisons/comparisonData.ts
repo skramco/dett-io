@@ -142,7 +142,7 @@ export const comparisons: ComparisonData[] = [
     ],
     faq: [
       { question: 'What does 5/1 ARM mean?', answer: 'A 5/1 ARM has a fixed rate for the first 5 years, then adjusts once per year after that. A 5/6 ARM adjusts every 6 months after the fixed period. The first number is the fixed period in years; the second is how often it adjusts.' },
-      { question: 'How much can an ARM rate increase?', answer: 'Most ARMs have three caps: an initial adjustment cap (typically 2%), an annual adjustment cap (2%), and a lifetime cap (5%). So a 5.5% ARM could go as high as 10.5% over the life of the loan.' },
+      { question: 'How much can an ARM rate increase?', answer: 'Most SOFR ARMs today use 2/1/5 caps: a 2-point increase at the first adjustment, 1 point at each later adjustment, and 5 points above the initial rate over the life of the loan. So a 5.75% ARM could go as high as 10.75%. Older 5/1 products often used 2/2/5.' },
       { question: 'Can I refinance out of an ARM?', answer: 'Yes, and many ARM borrowers plan to refinance before the adjustment period. However, refinancing has closing costs (typically 2-3% of the loan), and there\'s no guarantee rates will be favorable when you need to refinance.' },
     ],
   },
