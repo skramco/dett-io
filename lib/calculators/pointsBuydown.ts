@@ -1,4 +1,5 @@
 import type { PointsBuydownInputs, CalculatorResult } from './types';
+import { monthlyPayment } from './mortgageMath';
 
 export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorResult {
   const {
@@ -35,17 +36,15 @@ export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorR
   }
 
   const results = scenarios.map(scenario => {
-    const monthlyRate = scenario.rate / 100 / 12;
-    const monthlyPayment = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                          (Math.pow(1 + monthlyRate, numPayments) - 1);
+    const scenarioPayment = monthlyPayment(loanAmount, scenario.rate, numPayments);
     
-    const totalPaidOverHold = monthlyPayment * holdMonths;
+    const totalPaidOverHold = scenarioPayment * holdMonths;
     const totalCost = totalPaidOverHold + scenario.upfrontCost;
     
     return {
       name: scenario.name,
       rate: scenario.rate,
-      monthlyPayment: Math.round(monthlyPayment),
+      monthlyPayment: Math.round(scenarioPayment),
       upfrontCost: Math.round(scenario.upfrontCost),
       totalPaidOverHold: Math.round(totalPaidOverHold),
       totalCost: Math.round(totalCost),

@@ -1,20 +1,9 @@
 import type { RefinanceInputs, CalculatorResult } from './types';
-
-/** Standard amortization payment: P × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1] */
-function amortizedPayment(principal: number, annualRate: number, months: number): number {
-  if (months <= 0 || principal <= 0) return 0;
-  const r = annualRate / 100 / 12;
-  if (r === 0) return principal / months;
-  return (principal * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
-}
-
-/** Remaining principal after `monthsElapsed` payments on an amortizing loan. */
-function remainingBalance(principal: number, annualRate: number, payment: number, monthsElapsed: number): number {
-  const r = annualRate / 100 / 12;
-  if (r === 0) return Math.max(0, principal - payment * monthsElapsed);
-  const growth = Math.pow(1 + r, monthsElapsed);
-  return Math.max(0, principal * growth - payment * ((growth - 1) / r));
-}
+import {
+  breakEvenMonths as calcBreakEvenMonths,
+  monthlyPayment,
+  remainingBalanceWithPayment,
+} from './mortgageMath';
 
 export type RefinanceVerdict = 'refinance' | 'mixed' | 'higher-payment-lower-cost' | 'keep';
 
@@ -33,7 +22,7 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
 
   // What the P&I payment should be given the stated balance, rate, and remaining term.
   // Used to validate the user-entered payment (which often includes taxes/insurance by mistake).
-  const impliedCurrentPayment = amortizedPayment(currentBalance, currentRate, currentPaymentsRemaining);
+  const impliedCurrentPayment = monthlyPayment(currentBalance, currentRate, currentPaymentsRemaining);
   const paymentMismatch =
     currentMonthlyPayment > 0 &&
     Math.abs(currentMonthlyPayment - impliedCurrentPayment) > Math.max(25, impliedCurrentPayment * 0.02);
@@ -46,11 +35,13 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
   // Closing costs are financed: rolled into the new loan balance rather than paid upfront.
   const newLoanAmount = currentBalance + closingCosts;
   const newNumberOfPayments = newTerm * 12;
-  const newMonthlyPayment = amortizedPayment(newLoanAmount, newRate, newNumberOfPayments);
+  const newMonthlyPayment = monthlyPayment(newLoanAmount, newRate, newNumberOfPayments);
 
   const monthlySavings = effectiveCurrentPayment - newMonthlyPayment;
   const hasMonthlySavings = monthlySavings > 0;
-  const breakEvenMonths = hasMonthlySavings ? Math.ceil(closingCosts / monthlySavings) : 0;
+  const breakEvenMonths = hasMonthlySavings
+    ? Math.ceil(calcBreakEvenMonths(closingCosts, monthlySavings))
+    : 0;
   const breakEvenYears = breakEvenMonths / 12;
 
   const currentTotalPaid = effectiveCurrentPayment * currentPaymentsRemaining;
@@ -126,8 +117,8 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
 
   const chartData = [];
   for (let year = 0; year <= Math.max(yearsRemaining, newTerm); year++) {
-    const currentRemaining = remainingBalance(currentBalance, currentRate, effectiveCurrentPayment, Math.min(year, yearsRemaining) * 12);
-    const newRemaining = remainingBalance(newLoanAmount, newRate, newMonthlyPayment, Math.min(year, newTerm) * 12);
+    const currentRemaining = remainingBalanceWithPayment(currentBalance, currentRate, effectiveCurrentPayment, Math.min(year, yearsRemaining) * 12);
+    const newRemaining = remainingBalanceWithPayment(newLoanAmount, newRate, newMonthlyPayment, Math.min(year, newTerm) * 12);
 
     chartData.push({
       year,

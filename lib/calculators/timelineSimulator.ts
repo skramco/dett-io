@@ -1,4 +1,5 @@
 import type { TimelineSimulatorInputs, CalculatorResult } from './types';
+import { monthlyPayment, remainingBalance } from './mortgageMath';
 
 export function calculateTimelineSimulator(inputs: TimelineSimulatorInputs): CalculatorResult {
   const {
@@ -17,47 +18,28 @@ export function calculateTimelineSimulator(inputs: TimelineSimulatorInputs): Cal
   const holdMonths = expectedMoveYear * 12;
 
   // Scenario 1: 30-year fixed at par
-  const fixedMonthlyRate = interestRate / 100 / 12;
-  const fixedPayment = loanAmount * (fixedMonthlyRate * Math.pow(1 + fixedMonthlyRate, numPayments)) / 
-                      (Math.pow(1 + fixedMonthlyRate, numPayments) - 1);
+  const fixedPayment = monthlyPayment(loanAmount, interestRate, numPayments);
   const fixedTotalPaid = fixedPayment * holdMonths;
 
   // Scenario 2: 30-year fixed with points
-  const pointsMonthlyRate = pointsRate / 100 / 12;
-  const pointsPayment = loanAmount * (pointsMonthlyRate * Math.pow(1 + pointsMonthlyRate, numPayments)) / 
-                       (Math.pow(1 + pointsMonthlyRate, numPayments) - 1);
+  const pointsPayment = monthlyPayment(loanAmount, pointsRate, numPayments);
   const pointsTotalPaid = (pointsPayment * holdMonths) + pointsCost;
 
   // Scenario 3: ARM
-  const armMonthlyRate = armInitialRate / 100 / 12;
-  const armPayment = loanAmount * (armMonthlyRate * Math.pow(1 + armMonthlyRate, numPayments)) / 
-                    (Math.pow(1 + armMonthlyRate, numPayments) - 1);
+  const armPayment = monthlyPayment(loanAmount, armInitialRate, numPayments);
   const armTotalPaid = armPayment * holdMonths;
 
   // Scenario 4: 15-year fixed (if moving soon, shorter term might work)
   const fifteenYearRate = interestRate - 0.5; // Typically 0.5% lower
-  const fifteenMonthlyRate = fifteenYearRate / 100 / 12;
   const fifteenPayments = 15 * 12;
-  const fifteenPayment = loanAmount * (fifteenMonthlyRate * Math.pow(1 + fifteenMonthlyRate, fifteenPayments)) / 
-                        (Math.pow(1 + fifteenMonthlyRate, fifteenPayments) - 1);
+  const fifteenPayment = monthlyPayment(loanAmount, fifteenYearRate, fifteenPayments);
   const fifteenTotalPaid = fifteenPayment * Math.min(holdMonths, fifteenPayments);
 
-  // Calculate remaining balance at move time for each scenario
-  const calculateBalance = (payment: number, rate: number, months: number) => {
-    let balance = loanAmount;
-    const monthlyRate = rate / 100 / 12;
-    for (let i = 0; i < months; i++) {
-      const interest = balance * monthlyRate;
-      const principal = payment - interest;
-      balance -= principal;
-    }
-    return balance;
-  };
-
-  const fixedBalance = calculateBalance(fixedPayment, interestRate, holdMonths);
-  const pointsBalance = calculateBalance(pointsPayment, pointsRate, holdMonths);
-  const armBalance = calculateBalance(armPayment, armInitialRate, holdMonths);
-  const fifteenBalance = holdMonths < fifteenPayments ? calculateBalance(fifteenPayment, fifteenYearRate, holdMonths) : 0;
+  // Remaining balance at move time for each scenario
+  const fixedBalance = remainingBalance(loanAmount, interestRate, numPayments, holdMonths);
+  const pointsBalance = remainingBalance(loanAmount, pointsRate, numPayments, holdMonths);
+  const armBalance = remainingBalance(loanAmount, armInitialRate, numPayments, holdMonths);
+  const fifteenBalance = holdMonths < fifteenPayments ? remainingBalance(loanAmount, fifteenYearRate, fifteenPayments, holdMonths) : 0;
 
   const results = [
     { name: '30-Year Fixed (Par)', payment: fixedPayment, totalPaid: fixedTotalPaid, balance: fixedBalance, rate: interestRate },

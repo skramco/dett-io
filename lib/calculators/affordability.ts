@@ -1,4 +1,5 @@
 import type { AffordabilityInputs, CalculatorResult } from './types';
+import { monthlyPayment } from './mortgageMath';
 
 // Assumed annual PMI rate (as a fraction of the loan amount) when LTV > 80%.
 const PMI_ANNUAL_RATE = 0.005;
@@ -34,18 +35,12 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
   } = inputs;
 
   const monthlyIncome = annualIncome / 12;
-  const monthlyRate = interestRate / 100 / 12;
   const numPayments = loanTerm * 12;
 
   // Full monthly housing cost (P&I + tax + insurance + PMI + HOA) at a given price.
   const housingPaymentAt = (homePrice: number) => {
     const loanAmount = Math.max(0, homePrice - downPayment);
-    const monthlyPI = loanAmount <= 0
-      ? 0
-      : monthlyRate === 0
-        ? loanAmount / numPayments
-        : loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
-          (Math.pow(1 + monthlyRate, numPayments) - 1);
+    const monthlyPI = monthlyPayment(loanAmount, interestRate, numPayments);
     const ltv = homePrice > 0 ? loanAmount / homePrice : 0;
     const monthlyPMI = ltv > PMI_LTV_THRESHOLD ? (loanAmount * PMI_ANNUAL_RATE) / 12 : 0;
     const monthlyTaxIns = (homePrice * propertyTaxRate / 100 / 12) + (homeInsuranceAnnual / 12);

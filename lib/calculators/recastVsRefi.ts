@@ -1,4 +1,5 @@
 import type { RecastVsRefinanceInputs, CalculatorResult } from './types';
+import { monthlyPayment, toMonthlyRate } from './mortgageMath';
 
 export function calculateRecastVsRefi(inputs: RecastVsRefinanceInputs): CalculatorResult {
   const {
@@ -12,26 +13,22 @@ export function calculateRecastVsRefi(inputs: RecastVsRefinanceInputs): Calculat
     closingCosts,
   } = inputs;
 
-  const currentMonthlyRate = currentRate / 100 / 12;
+  const currentMonthlyRate = toMonthlyRate(currentRate);
   const currentPayments = yearsRemaining * 12;
   
   // Current payment
-  const currentPayment = currentBalance * (currentMonthlyRate * Math.pow(1 + currentMonthlyRate, currentPayments)) / 
-                        (Math.pow(1 + currentMonthlyRate, currentPayments) - 1);
+  const currentPayment = monthlyPayment(currentBalance, currentRate, currentPayments);
 
   // Recast scenario
   const recastBalance = currentBalance - lumpSumAmount;
-  const recastPayment = recastBalance * (currentMonthlyRate * Math.pow(1 + currentMonthlyRate, currentPayments)) / 
-                       (Math.pow(1 + currentMonthlyRate, currentPayments) - 1);
+  const recastPayment = monthlyPayment(recastBalance, currentRate, currentPayments);
   const recastTotalPaid = (recastPayment * currentPayments) + lumpSumAmount + recastFee;
   const recastTotalInterest = recastTotalPaid - currentBalance;
 
   // Refinance scenario
   const refiBalance = currentBalance - lumpSumAmount;
-  const refiMonthlyRate = newRate / 100 / 12;
   const refiPayments = newTerm * 12;
-  const refiPayment = refiBalance * (refiMonthlyRate * Math.pow(1 + refiMonthlyRate, refiPayments)) / 
-                     (Math.pow(1 + refiMonthlyRate, refiPayments) - 1);
+  const refiPayment = monthlyPayment(refiBalance, newRate, refiPayments);
   const refiTotalPaid = (refiPayment * refiPayments) + lumpSumAmount + closingCosts;
   const refiTotalInterest = refiTotalPaid - currentBalance;
 

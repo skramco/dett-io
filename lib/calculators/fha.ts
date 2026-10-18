@@ -1,4 +1,15 @@
 import type { CalculatorResult } from './types';
+import {
+  backEndDtiPercent,
+  conventionalPmiRatePercent,
+  fhaAnnualMipRatePercent,
+  fhaMonthlyMip,
+  fhaUpfrontMip,
+  frontEndDtiPercent,
+  ltvPercent,
+  monthlyPayment,
+  monthlyPmiAmount,
+} from './mortgageMath';
 
 export interface FHAInputs {
   homePrice: number;
@@ -30,26 +41,14 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
 
   // FHA MIP rates (as of current guidelines)
   // Upfront MIP: 1.75% of base loan amount
-  const upfrontMIP = baseLoanAmount * 0.0175;
+  const upfrontMIP = fhaUpfrontMip(baseLoanAmount);
   const totalLoanAmount = baseLoanAmount + upfrontMIP; // FHA rolls upfront MIP into loan
 
   // Annual MIP rate depends on loan term, LTV, and loan amount
-  const ltv = (baseLoanAmount / homePrice) * 100;
-  let annualMIPRate: number;
-  if (loanTerm <= 15) {
-    if (ltv <= 90) annualMIPRate = 0.15;
-    else annualMIPRate = 0.40;
-  } else {
-    if (baseLoanAmount <= 726200) {
-      if (ltv <= 95) annualMIPRate = 0.50;
-      else annualMIPRate = 0.55;
-    } else {
-      if (ltv <= 95) annualMIPRate = 0.70;
-      else annualMIPRate = 0.75;
-    }
-  }
+  const ltv = ltvPercent(baseLoanAmount, homePrice);
+  const annualMIPRate = fhaAnnualMipRatePercent(baseLoanAmount, ltv, loanTerm);
 
-  const monthlyMIP = (baseLoanAmount * (annualMIPRate / 100)) / 12;
+  const monthlyMIP = fhaMonthlyMip(baseLoanAmount, annualMIPRate);
 
   // MIP duration
   // For 30-year loans with >10% down: 11 years. Otherwise: life of loan.
@@ -57,12 +56,8 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   const mipDurationMonths = mipDurationYears * 12;
 
   // Monthly P&I on total loan (including financed upfront MIP)
-  const monthlyRate = interestRate / 100 / 12;
   const numberOfPayments = loanTerm * 12;
-  const monthlyPI = monthlyRate === 0
-    ? totalLoanAmount / numberOfPayments
-    : (totalLoanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  const monthlyPI = monthlyPayment(totalLoanAmount, interestRate, numberOfPayments);
 
   const monthlyPropertyTax = propertyTax / 12;
   const monthlyInsurance = homeInsurance / 12;
@@ -74,8 +69,8 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   const totalMIPCost = monthlyMIP * mipDurationMonths + upfrontMIP;
 
   // DTI check
-  const housingDTI = monthlyGrossIncome > 0 ? (totalMonthlyPayment / monthlyGrossIncome) * 100 : 0;
-  const totalDTI = monthlyGrossIncome > 0 ? ((totalMonthlyPayment + monthlyDebts) / monthlyGrossIncome) * 100 : 0;
+  const housingDTI = frontEndDtiPercent(totalMonthlyPayment, monthlyGrossIncome);
+  const totalDTI = backEndDtiPercent(totalMonthlyPayment, monthlyDebts, monthlyGrossIncome);
 
   // FHA eligibility
   const minDownPayment = creditScore >= 580 ? 3.5 : 10;
@@ -92,13 +87,10 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   // Comparison: FHA vs Conventional
   const convDownPayment = homePrice * 0.05; // 5% conventional
   const convLoanAmount = homePrice - convDownPayment;
-  const convMonthlyPI = monthlyRate === 0
-    ? convLoanAmount / numberOfPayments
-    : (convLoanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-  // Conventional PMI estimate
-  const convPMIRate = creditScore >= 740 ? 0.30 : creditScore >= 720 ? 0.47 : creditScore >= 700 ? 0.58 : 0.90;
-  const convMonthlyPMI = (convLoanAmount * (convPMIRate / 100)) / 12;
+  const convMonthlyPI = monthlyPayment(convLoanAmount, interestRate, numberOfPayments);
+  // Conventional PMI estimate from the shared LTV/credit-score rate table
+  const convPMIRate = conventionalPmiRatePercent(ltvPercent(convLoanAmount, homePrice), creditScore);
+  const convMonthlyPMI = monthlyPmiAmount(convLoanAmount, convPMIRate);
   const convTotalMonthly = convMonthlyPI + convMonthlyPMI + monthlyPropertyTax + monthlyInsurance;
 
   // Chart data

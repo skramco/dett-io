@@ -1,4 +1,5 @@
 import type { ArmVsFixedInputs, CalculatorResult } from './types';
+import { armAdjustedRate, monthlyPayment, toMonthlyRate } from './mortgageMath';
 
 export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult {
   const {
@@ -14,11 +15,10 @@ export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult 
   } = inputs;
 
   const numPayments = loanTerm * 12;
-  const fixedMonthlyRate = fixedRate / 100 / 12;
+  const fixedMonthlyRate = toMonthlyRate(fixedRate);
   
   // Fixed rate calculation
-  const fixedPayment = loanAmount * (fixedMonthlyRate * Math.pow(1 + fixedMonthlyRate, numPayments)) / 
-                       (Math.pow(1 + fixedMonthlyRate, numPayments) - 1);
+  const fixedPayment = monthlyPayment(loanAmount, fixedRate, numPayments);
   
   let fixedBalance = loanAmount;
   let fixedTotalPaid = 0;
@@ -39,16 +39,19 @@ export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult 
   for (let month = 1; month <= numPayments; month++) {
     // Adjust rate after fixed period
     if (month > armFixedPeriod * 12 && month % 12 === 1) {
-      const newRate = expectedIndexRate + armMargin;
-      const maxIncrease = currentArmRate + armAdjustmentCap;
-      const maxRate = armInitialRate + armLifetimeCap;
-      currentArmRate = Math.min(newRate, maxIncrease, maxRate);
+      currentArmRate = armAdjustedRate(
+        currentArmRate,
+        expectedIndexRate,
+        armMargin,
+        armAdjustmentCap,
+        armInitialRate,
+        armLifetimeCap
+      );
     }
     
-    const monthlyRate = currentArmRate / 100 / 12;
+    const monthlyRate = toMonthlyRate(currentArmRate);
     const remainingMonths = numPayments - month + 1;
-    const payment = armBalance * (monthlyRate * Math.pow(1 + monthlyRate, remainingMonths)) / 
-                   (Math.pow(1 + monthlyRate, remainingMonths) - 1);
+    const payment = monthlyPayment(armBalance, currentArmRate, remainingMonths);
     
     const interest = armBalance * monthlyRate;
     const principal = payment - interest;
@@ -66,12 +69,9 @@ export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult 
 
   // Worst case scenario (max rate from start)
   const worstCaseRate = Math.min(armInitialRate + armLifetimeCap, fixedRate + 3);
-  const worstMonthlyRate = worstCaseRate / 100 / 12;
-  const worstPayment = loanAmount * (worstMonthlyRate * Math.pow(1 + worstMonthlyRate, numPayments)) / 
-                       (Math.pow(1 + worstMonthlyRate, numPayments) - 1);
+  const worstPayment = monthlyPayment(loanAmount, worstCaseRate, numPayments);
 
-  const initialSavings = fixedPayment - (loanAmount * (armInitialRate / 100 / 12) * Math.pow(1 + armInitialRate / 100 / 12, numPayments)) / 
-                        (Math.pow(1 + armInitialRate / 100 / 12, numPayments) - 1);
+  const initialSavings = fixedPayment - monthlyPayment(loanAmount, armInitialRate, numPayments);
   const savingsOverFixedPeriod = initialSavings * armFixedPeriod * 12;
 
   const insights: string[] = [];
