@@ -68,6 +68,10 @@ cp .env.example .env.local
 # NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 # NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 # RESEND_API_KEY=your_resend_api_key
+
+# Optional — LoanKnow CTA on calculators (defaults shown)
+# NEXT_PUBLIC_LOANKNOW_CTA_ENABLED=true
+# NEXT_PUBLIC_LOANKNOW_WAITLIST_URL=https://loanknow.com
 ```
 
 ### Database Setup
