@@ -229,13 +229,23 @@ describe('refinance', () => {
   };
   const result = calculateRefinance(inputs);
   const refNewPayment = monthlyPayment(326000, 6.25, 360);
+  // The entered $2,450 payment is materially above the scheduled P&I for this
+  // balance/rate/term, so the calculator validates it and falls back to the
+  // implied payment (ENG-318). The reference comparison must do the same.
+  const refImpliedPayment = monthlyPayment(320000, 7.5, 27 * 12);
 
   it('headline new payment matches the reference', () => {
     expect(num(result.details.newMonthlyPayment)).toBeCloseTo(refNewPayment, 1);
   });
 
+  it('flags the entered payment as mismatched and uses the implied P&I', () => {
+    expect(num(result.details.paymentMismatch)).toBe(1);
+    expect(num(result.details.impliedCurrentPayment)).toBeCloseTo(refImpliedPayment, 1);
+    expect(num(result.details.currentMonthlyPayment)).toBeCloseTo(refImpliedPayment, 1);
+  });
+
   it('headline break-even matches the reference', () => {
-    const savings = 2450 - refNewPayment;
+    const savings = refImpliedPayment - refNewPayment;
     expect(num(result.details.breakEvenMonths)).toBe(Math.ceil(breakEvenMonths(6000, savings)));
   });
 });
@@ -396,9 +406,13 @@ describe('affordability', () => {
       const price = num(result.details[`${tier}Price`]);
       const payment = num(result.details[`${tier}Payment`]);
       const loan = price - 60000;
+      // PMI is part of the affordability back-solve when LTV > 80% (ENG-320),
+      // at the calculator's assumed 0.5%/yr rate.
+      const pmi = loan / price > 0.8 ? (loan * 0.005) / 12 : 0;
       const expected =
-        monthlyPayment(loan, 6.5, 360) + (price * 1.2) / 100 / 12 + 1500 / 12;
+        monthlyPayment(loan, 6.5, 360) + pmi + (price * 1.2) / 100 / 12 + 1500 / 12;
       expect(payment).toBeCloseTo(expected, -1);
+      expect(num(result.details[`${tier}PMI`])).toBeCloseTo(pmi, 0);
     }
   });
 
