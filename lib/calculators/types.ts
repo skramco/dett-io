@@ -61,7 +61,7 @@ export interface DownPaymentInputs {
   loanTerm: number;
   propertyTaxRate: number;
   homeInsuranceAnnual: number;
-  pmiRate: number;
+  creditScore: number;
 }
 
 export interface RentVsBuyInputs {

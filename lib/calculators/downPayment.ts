@@ -1,14 +1,15 @@
 import type { DownPaymentInputs, CalculatorResult } from './types';
+import { getPMIRate } from './pmiRates';
+import { calculateClosingCosts } from './closingCosts';
 
 export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResult {
   const {
     homePrice,
-    downPaymentPercent,
     interestRate,
     loanTerm,
     propertyTaxRate,
     homeInsuranceAnnual,
-    pmiRate,
+    creditScore,
   } = inputs;
 
   const downPaymentOptions = [3, 5, 10, 15, 20];
@@ -18,8 +19,12 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
   const results = downPaymentOptions.map(percent => {
     const downPaymentAmount = homePrice * (percent / 100);
     const loanAmount = homePrice - downPaymentAmount;
+    const ltv = (loanAmount / homePrice) * 100;
     const needsPMI = percent < 20;
-    
+
+    // PMI rate from the shared LTV / credit-score grid (same as the PMI calculator)
+    const pmiRate = needsPMI ? getPMIRate(ltv, creditScore) : 0;
+
     // Calculate monthly PI
     const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
                      (Math.pow(1 + monthlyRate, numPayments) - 1);
@@ -57,14 +62,25 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
     const totalPaid = monthlyPI * numPayments;
     const totalInterest = totalPaid - loanAmount;
     
-    // Cash to close (down payment + typical closing costs)
-    const closingCosts = homePrice * 0.03; // Estimate 3%
+    // Cash to close: down payment + itemized closing-cost estimate,
+    // using the same assumptions as the Closing Costs calculator.
+    const closingCostsResult = calculateClosingCosts({
+      homePrice,
+      downPaymentPercent: percent,
+      interestRate,
+      loanTerm,
+      state: '',
+      isNewConstruction: false,
+      prepaidInsurance: homeInsuranceAnnual,
+    });
+    const closingCosts = closingCostsResult.details.totalClosingCosts as number;
     const cashToClose = downPaymentAmount + closingCosts;
     
     return {
       percent,
       downPaymentAmount,
       loanAmount,
+      pmiRate,
       monthlyPI: Math.round(monthlyPI),
       monthlyPMI: Math.round(monthlyPMI),
       monthlyTax: Math.round(monthlyTax),
@@ -73,6 +89,7 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
       pmiMonths,
       pmiTotalCost: Math.round(pmiTotalCost),
       totalInterest: Math.round(totalInterest),
+      closingCosts: Math.round(closingCosts),
       cashToClose: Math.round(cashToClose),
       needsPMI,
     };
@@ -81,10 +98,17 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
   const insights: string[] = [];
   
   const option3 = results.find(r => r.percent === 3)!;
+  const option15 = results.find(r => r.percent === 15)!;
   const option20 = results.find(r => r.percent === 20)!;
+
+  const option3PmiYears = option3.pmiMonths / 12;
   
   insights.push(
-    `3% down: Lowest upfront cost ($${option3.cashToClose.toLocaleString()}), but you'll pay $${option3.pmiTotalCost.toLocaleString()} in PMI over ${Math.round(option3.pmiMonths / 12)} years`
+    `3% down: Lowest upfront cost ($${option3.cashToClose.toLocaleString()}), but you'll pay $${option3.pmiTotalCost.toLocaleString()} in PMI over about ${option3PmiYears.toFixed(1)} years (${option3.pmiMonths} months)`
+  );
+
+  insights.push(
+    `PMI gets cheaper as your down payment grows: at a ${creditScore} credit score the annual rate is ${option3.pmiRate.toFixed(2)}% with 3% down vs ${option15.pmiRate.toFixed(2)}% with 15% down`
   );
   
   insights.push(
@@ -93,7 +117,7 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
   
   const pmiSavings = option3.pmiTotalCost;
   const extraDownPayment = option20.downPaymentAmount - option3.downPaymentAmount;
-  const breakEvenYears = (extraDownPayment / pmiSavings) * (option3.pmiMonths / 12);
+  const breakEvenYears = pmiSavings > 0 ? (extraDownPayment / pmiSavings) * option3PmiYears : Infinity;
   
   if (breakEvenYears < 10) {
     insights.push(
@@ -109,7 +133,7 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
     `The "right" amount depends on your cash reserves, emergency fund, and other investment opportunities`
   );
 
-  const summary = `Comparing down payments from 3% to 20% on a $${homePrice.toLocaleString()} home. PMI adds $${option3.pmiTotalCost.toLocaleString()} total with 3% down.`;
+  const summary = `Comparing down payments from 3% to 20% on a $${homePrice.toLocaleString()} home. PMI adds $${option3.pmiTotalCost.toLocaleString()} total over about ${option3PmiYears.toFixed(1)} years with 3% down.`;
 
   return {
     summary,
@@ -118,15 +142,22 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
       option3Down: option3.downPaymentAmount,
       option3Payment: option3.totalMonthly,
       option3PMI: option3.pmiTotalCost,
+      option3PmiRate: option3.pmiRate,
+      option3PmiMonths: option3.pmiMonths,
+      option3PmiYears: Math.round(option3PmiYears * 10) / 10,
       option20Down: option20.downPaymentAmount,
       option20Payment: option20.totalMonthly,
       pmiSavings,
+      creditScore,
     },
     chartData: results.map(r => ({
       downPayment: `${r.percent}%`,
       cashToClose: r.cashToClose,
+      closingCosts: r.closingCosts,
       monthlyPayment: r.totalMonthly,
       pmiCost: r.pmiTotalCost,
+      pmiRate: r.pmiRate,
+      pmiMonths: r.pmiMonths,
     })),
     insights,
   };
