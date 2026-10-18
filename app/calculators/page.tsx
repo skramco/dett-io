@@ -43,6 +43,7 @@ import {
   Functions,
   MenuBook,
   VerifiedUser,
+  Code,
 } from '@mui/icons-material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
@@ -555,6 +556,29 @@ export default function CalculatorsPage() {
               </Typography>
             </Stack>
             <CalculatorWizard />
+          </Container>
+        </Box>
+
+        <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: 'grey.50' }}>
+          <Container maxWidth="md">
+            <Stack spacing={2} alignItems="center" textAlign="center">
+              <Typography variant="h4" sx={{ fontWeight: 700, fontSize: { xs: 24, md: 32 } }}>
+                Embed these calculators on your site
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 560 }}>
+                Realtors, brokers, lenders, and bloggers: add any calculator to your website. Free, forever. No signup.
+              </Typography>
+              <Button
+                component={Link}
+                href="/embed"
+                variant="contained"
+                startIcon={<Code />}
+                endIcon={<ArrowForward />}
+                sx={{ textTransform: 'none', fontWeight: 600 }}
+              >
+                Get the embed code
+              </Button>
+            </Stack>
           </Container>
         </Box>
       </Box>

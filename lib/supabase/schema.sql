@@ -127,6 +127,25 @@ CREATE POLICY "Allow delete scenarios" ON scenarios
     )
   );
 
+-- Embed load counts (privacy-respecting: referring domain + calculator only, no PII)
+CREATE TABLE IF NOT EXISTS embed_loads (
+  id BIGSERIAL PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  calculator_slug TEXT NOT NULL,
+  referring_domain TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_embed_loads_domain ON embed_loads(referring_domain);
+CREATE INDEX IF NOT EXISTS idx_embed_loads_created_at ON embed_loads(created_at);
+CREATE INDEX IF NOT EXISTS idx_embed_loads_slug ON embed_loads(calculator_slug);
+
+ALTER TABLE embed_loads ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can record a load (fired from the public embed widget). Nobody can read via anon.
+CREATE POLICY "Allow anonymous insert embed loads" ON embed_loads
+  FOR INSERT
+  WITH CHECK (true);
+
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$

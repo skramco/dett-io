@@ -8,6 +8,15 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['@mui/icons-material', '@mui/material', 'recharts', 'lucide-react'],
   },
+  async redirects() {
+    return [
+      {
+        source: '/partners',
+        destination: '/embed',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

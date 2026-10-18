@@ -27,6 +27,11 @@ import {
   Home as HomeIcon,
   TrendingUp,
   Balance,
+  Code,
+  HomeWork,
+  Groups,
+  AccountBalance,
+  Article,
 } from '@mui/icons-material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
@@ -611,6 +616,53 @@ export default function Home() {
                 </Stack>
               </Grid>
             </Grid>
+          </Container>
+        </Box>
+
+        {/* Embed for professionals */}
+        <Box sx={{ py: { xs: 8, md: 10 }, bgcolor: 'grey.50' }}>
+          <Container maxWidth="lg">
+            <Stack spacing={4} alignItems="center" textAlign="center">
+              <Chip
+                label="For realtors, brokers, lenders & bloggers"
+                sx={{ fontWeight: 600, bgcolor: 'primary.50', color: 'primary.dark' }}
+              />
+              <Typography variant="h2" sx={{ fontSize: { xs: 28, md: 40 } }}>
+                Embed them, free, forever
+              </Typography>
+              <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 640, fontWeight: 400 }}>
+                Put Dett calculators on your website. No signup, no API key, no tracking of your visitors&apos; numbers.
+                A small Powered by Dett.io link is the only ask.
+              </Typography>
+              <Grid container spacing={2} sx={{ maxWidth: 900 }}>
+                {[
+                  { icon: <HomeWork />, title: 'Realtors', body: 'Affordability, True Monthly Cost, Rent vs Buy' },
+                  { icon: <Groups />, title: 'Brokers & LOs', body: 'Refinance, DTI, Points' },
+                  { icon: <AccountBalance />, title: 'Lenders, Banks & CUs', body: 'The full suite, zero engineering' },
+                  { icon: <Article />, title: 'Bloggers', body: 'Drop a live calculator next to any article' },
+                ].map((item) => (
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }} key={item.title}>
+                    <Card sx={{ height: '100%', p: 1 }}>
+                      <CardContent>
+                        <Box sx={{ color: 'primary.main', mb: 1 }}>{item.icon}</Box>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{item.title}</Typography>
+                        <Typography variant="body2" color="text.secondary">{item.body}</Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+              <Button
+                component={Link}
+                href="/embed"
+                variant="contained"
+                size="large"
+                startIcon={<Code />}
+                endIcon={<ArrowForward />}
+              >
+                Get the free embed
+              </Button>
+            </Stack>
           </Container>
         </Box>
 

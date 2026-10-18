@@ -46,6 +46,7 @@ export const staticPageLastUpdated: Record<string, string> = {
   '/terms': '2026-10-18',
   '/about': '2026-10-18',
   '/scenario': '2026-10-18',
+  '/embed': '2026-10-18',
 };
 
 /** Guide articles (content lives in lib/guides/guideContent.tsx). */

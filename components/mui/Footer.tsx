@@ -16,7 +16,7 @@ const footerLinks = {
     { label: 'Loan Comparisons', href: '/compare' },
     { label: 'Closing Costs by State', href: '/closing-costs' },
     { label: 'Learn About Debt', href: '/learn' },
-    { label: 'Embed Calculators', href: '/partners' },
+    { label: 'Embed Calculators', href: '/embed' },
   ],
   company: [
     { label: 'About', href: '/about' },

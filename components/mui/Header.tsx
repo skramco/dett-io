@@ -26,6 +26,7 @@ import {
   Article,
   CompareArrows,
   Tune,
+  Code,
 } from '@mui/icons-material';
 import Link from 'next/link';
 
@@ -107,6 +108,18 @@ export function Header() {
                   }}
                 >
                   Learn
+                </Button>
+              </Link>
+              <Link href="/embed" style={{ textDecoration: 'none' }}>
+                <Button
+                  color="inherit"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 500,
+                    '&:hover': { color: 'primary.main', bgcolor: 'transparent' },
+                  }}
+                >
+                  Embed
                 </Button>
               </Link>
             </Stack>
@@ -226,6 +239,24 @@ export function Header() {
               <ListItemText
                 primary="Learn"
                 secondary="Debt basics & glossary"
+                primaryTypographyProps={{ fontWeight: 600 }}
+                secondaryTypographyProps={{ variant: 'caption' }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              component={Link}
+              href="/embed"
+              onClick={() => setDrawerOpen(false)}
+              sx={{ borderRadius: 2, mb: 0.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <Code sx={{ color: 'primary.main' }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Embed"
+                secondary="Free calculators for your site"
                 primaryTypographyProps={{ fontWeight: 600 }}
                 secondaryTypographyProps={{ variant: 'caption' }}
               />
