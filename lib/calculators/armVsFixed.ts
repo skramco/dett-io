@@ -1,6 +1,12 @@
 import { formatCurrency } from '../format';
 import type { ArmVsFixedInputs, CalculatorResult } from './types';
 import { armAdjustedRate, monthlyPayment, toMonthlyRate } from './mortgageMath';
+import {
+  createRng,
+  meanRevertingStep,
+  percentile,
+  shareWhere,
+} from './monteCarlo';
 
 /** e.g. "5/6 ARM" for a 5-year fixed period adjusting every 6 months, "5/1 ARM" for annual. */
 export function getArmProductName(armFixedPeriod: number, armAdjustmentFrequency: number): string {
@@ -15,6 +21,24 @@ export function getArmCapStructure(
 ): string {
   return `${armInitialCap}/${armAdjustmentCap}/${armLifetimeCap}`;
 }
+
+/**
+ * Disclosed Monte Carlo / named-path assumptions for ARM index scenarios.
+ * Keep these in sync with the methodology page and Show Me the Math copy.
+ */
+export const ARM_RATE_PATH_ASSUMPTIONS = {
+  /** Seeded draws of the SOFR/Treasury-like index after the fixed period. */
+  samples: 400,
+  seed: 34901,
+  /** Annualized index volatility (percentage points). */
+  indexVolPercent: 1.25,
+  /** Mean-reversion speed κ (per year) toward the expected index. */
+  meanReversion: 0.35,
+  /** Named "rates fall" path: constant index = expected − this (floored at 0). */
+  fallingIndexShift: -2,
+  /** Named "rates rise" path: constant index = expected + this. */
+  risingIndexShift: 2,
+} as const;
 
 export interface WorstCaseStep {
   /** First month (1-indexed) this rate applies */
@@ -85,14 +109,24 @@ interface ArmSimulation {
   yearly: Array<{ year: number; rate: number; payment: number }>;
 }
 
+function adjustmentCount(numPayments: number, fixedMonths: number, frequency: number): number {
+  if (fixedMonths >= numPayments) return 0;
+  return Math.floor((numPayments - fixedMonths - 1) / frequency) + 1;
+}
+
 /**
  * Amortizes the ARM month by month. After the fixed period, the rate moves toward
  * the fully indexed rate (index + margin) at each adjustment, constrained by the
  * initial cap (first adjustment), the periodic cap (later adjustments), the
  * lifetime cap, and a floor at the margin (index assumed non-negative).
- * Pass `indexRatePercent = Infinity` to trace the cap-driven worst-case path.
+ *
+ * `indexAtAdjustment(i)` is the index used at the i-th adjustment (0-based).
+ * Pass `() => Infinity` to trace the cap-driven worst-case path.
  */
-function simulateArm(inputs: ArmVsFixedInputs, indexRatePercent: number): ArmSimulation {
+function simulateArm(
+  inputs: ArmVsFixedInputs,
+  indexAtAdjustment: (adjustmentIndex: number) => number
+): ArmSimulation {
   const {
     loanAmount,
     armInitialRate,
@@ -129,7 +163,7 @@ function simulateArm(inputs: ArmVsFixedInputs, indexRatePercent: number): ArmSim
       const cap = adjustmentIndex === 0 ? armInitialCap : armAdjustmentCap;
       rate = armAdjustedRate(
         rate,
-        indexRatePercent,
+        indexAtAdjustment(adjustmentIndex),
         armMargin,
         cap,
         armInitialRate,
@@ -157,6 +191,34 @@ function simulateArm(inputs: ArmVsFixedInputs, indexRatePercent: number): ArmSim
   return { totalPaid, initialPayment, maxPayment, maxRate, maxRateMonth, yearly };
 }
 
+function constantIndex(indexRatePercent: number): (adjustmentIndex: number) => number {
+  return () => indexRatePercent;
+}
+
+/** Sample a mean-reverting index path, one value per ARM adjustment. */
+function sampleIndexSeries(
+  adjustments: number,
+  mean: number,
+  kappa: number,
+  sigma: number,
+  dtYears: number,
+  rng: () => number
+): number[] {
+  const series = new Array<number>(adjustments);
+  let index = mean;
+  for (let i = 0; i < adjustments; i++) {
+    if (i > 0) {
+      index = Math.max(0, meanRevertingStep(index, mean, kappa, sigma, dtYears, rng));
+    }
+    series[i] = index;
+  }
+  return series;
+}
+
+function roundPct(value: number): number {
+  return Number(value.toFixed(1));
+}
+
 export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult {
   const {
     loanAmount,
@@ -176,22 +238,62 @@ export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult 
   const productName = getArmProductName(armFixedPeriod, armAdjustmentFrequency);
   const capStructure = getArmCapStructure(armInitialCap, armAdjustmentCap, armLifetimeCap);
   const fullyIndexedRate = expectedIndexRate + armMargin;
+  const frequency = Math.max(1, Math.round(armAdjustmentFrequency));
+  const fixedMonths = Math.min(armFixedPeriod * 12, numPayments);
+  const nAdjustments = adjustmentCount(numPayments, fixedMonths, frequency);
+  const dtYears = frequency / 12;
+
+  const fallingIndex = Math.max(0, expectedIndexRate + ARM_RATE_PATH_ASSUMPTIONS.fallingIndexShift);
+  const risingIndex = expectedIndexRate + ARM_RATE_PATH_ASSUMPTIONS.risingIndexShift;
 
   const fixedPayment = monthlyPayment(loanAmount, fixedRate, numPayments);
   const fixedTotalPaid = fixedPayment * numPayments;
 
-  // Expected path: rate moves toward the fully indexed rate (index + margin), within caps
-  const expected = simulateArm(inputs, expectedIndexRate);
+  const falling = simulateArm(inputs, constantIndex(fallingIndex));
+  const expected = simulateArm(inputs, constantIndex(expectedIndexRate));
+  const rising = simulateArm(inputs, constantIndex(risingIndex));
+  const worst = simulateArm(inputs, constantIndex(Number.POSITIVE_INFINITY));
 
-  // Worst case: index rises so far that every adjustment hits its cap,
-  // until the lifetime cap (initial rate + lifetime cap) is reached
-  const worst = simulateArm(inputs, Number.POSITIVE_INFINITY);
   const worstCaseRate = worst.maxRate;
   const worstCasePayment = worst.maxPayment;
   const worstCaseYear = worst.maxRateMonth > 0 ? Math.ceil(worst.maxRateMonth / 12) : loanTerm;
 
   const initialSavings = fixedPayment - expected.initialPayment;
   const savingsOverFixedPeriod = initialSavings * armFixedPeriod * 12;
+
+  // Monte Carlo: sample index paths, then apply the same ARM cap machinery
+  const rng = createRng(ARM_RATE_PATH_ASSUMPTIONS.seed);
+  const samples = ARM_RATE_PATH_ASSUMPTIONS.samples;
+  const totals = new Float64Array(samples);
+  const maxPays = new Float64Array(samples);
+  const yearlyPayments: Float64Array[] = expected.yearly.map(
+    () => new Float64Array(samples)
+  );
+
+  for (let s = 0; s < samples; s++) {
+    const series = sampleIndexSeries(
+      nAdjustments,
+      expectedIndexRate,
+      ARM_RATE_PATH_ASSUMPTIONS.meanReversion,
+      ARM_RATE_PATH_ASSUMPTIONS.indexVolPercent,
+      dtYears,
+      rng
+    );
+    const path = simulateArm(inputs, (i) => series[i] ?? expectedIndexRate);
+    totals[s] = path.totalPaid;
+    maxPays[s] = path.maxPayment;
+    for (let y = 0; y < path.yearly.length; y++) {
+      yearlyPayments[y][s] = path.yearly[y].payment;
+    }
+  }
+
+  const p10TotalPaid = percentile(totals, 10);
+  const p50TotalPaid = percentile(totals, 50);
+  const p90TotalPaid = percentile(totals, 90);
+  const p10MaxPayment = percentile(maxPays, 10);
+  const p50MaxPayment = percentile(maxPays, 50);
+  const p90MaxPayment = percentile(maxPays, 90);
+  const pctArmCheaper = roundPct(shareWhere(totals, (t) => t < fixedTotalPaid));
 
   const insights: string[] = [];
 
@@ -205,16 +307,24 @@ export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult 
 
   if (expected.totalPaid < fixedTotalPaid) {
     insights.push(
-      `Expected case: ARM saves ${formatCurrency(fixedTotalPaid - expected.totalPaid)} total (assumes ${expectedIndexRate}% index + ${armMargin}% margin = ${fullyIndexedRate.toFixed(2)}% fully indexed rate)`
+      `Expected path (index stays at ${expectedIndexRate}%): ARM saves ${formatCurrency(fixedTotalPaid - expected.totalPaid)} total versus fixed (fully indexed ${fullyIndexedRate.toFixed(2)}%)`
     );
   } else {
     insights.push(
-      `Expected case: Fixed saves ${formatCurrency(expected.totalPaid - fixedTotalPaid)} total (assumes ${expectedIndexRate}% index + ${armMargin}% margin = ${fullyIndexedRate.toFixed(2)}% fully indexed rate)`
+      `Expected path (index stays at ${expectedIndexRate}%): Fixed saves ${formatCurrency(expected.totalPaid - fixedTotalPaid)} total versus ARM (fully indexed ${fullyIndexedRate.toFixed(2)}%)`
     );
   }
 
   insights.push(
-    `⚠️ Worst case from your ${capStructure} caps: rate reaches ${worstCaseRate.toFixed(2)}% by year ${worstCaseYear}, pushing the payment to ${formatCurrency(worstCasePayment)}/month`
+    `Rate-path range: falling index (${fallingIndex.toFixed(2)}%) pays ${formatCurrency(falling.totalPaid)} total; rising index (${risingIndex.toFixed(2)}%) pays ${formatCurrency(rising.totalPaid)}`
+  );
+
+  insights.push(
+    `Monte Carlo (${samples} seeded index paths, ${ARM_RATE_PATH_ASSUMPTIONS.indexVolPercent}% annual vol, mean-reverting to ${expectedIndexRate}%): ARM costs less than fixed in ${pctArmCheaper}% of paths. Total paid P10–P90: ${formatCurrency(p10TotalPaid)}–${formatCurrency(p90TotalPaid)}`
+  );
+
+  insights.push(
+    `⚠️ Cap-driven worst case from your ${capStructure} caps: rate reaches ${worstCaseRate.toFixed(2)}% by year ${worstCaseYear}, pushing the payment to ${formatCurrency(worstCasePayment)}/month`
   );
 
   if (armFixedPeriod >= 7) {
@@ -227,7 +337,7 @@ export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult 
     );
   }
 
-  const summary = `${productName} starts ${(((fixedPayment - expected.initialPayment) / fixedPayment) * 100).toFixed(1)}% cheaper but carries rate risk after year ${armFixedPeriod} (worst case ${worstCaseRate.toFixed(2)}% from ${capStructure} caps).`;
+  const summary = `${productName} starts ${(((fixedPayment - expected.initialPayment) / fixedPayment) * 100).toFixed(1)}% cheaper. Across ${samples} rate paths ARM costs less than fixed in ${pctArmCheaper}% of cases (worst case ${worstCaseRate.toFixed(2)}% from ${capStructure} caps).`;
 
   return {
     summary,
@@ -247,14 +357,39 @@ export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult 
       worstCasePayment: Math.round(worstCasePayment),
       worstCaseYear,
       savingsInFixedPeriod: Math.round(savingsOverFixedPeriod),
+      fallingIndex: Number(fallingIndex.toFixed(3)),
+      fallingTotalPaid: Math.round(falling.totalPaid),
+      fallingMaxPayment: Math.round(falling.maxPayment),
+      fallingMaxRate: Number(falling.maxRate.toFixed(3)),
+      risingIndex: Number(risingIndex.toFixed(3)),
+      risingTotalPaid: Math.round(rising.totalPaid),
+      risingMaxPayment: Math.round(rising.maxPayment),
+      risingMaxRate: Number(rising.maxRate.toFixed(3)),
+      p10TotalPaid: Math.round(p10TotalPaid),
+      p50TotalPaid: Math.round(p50TotalPaid),
+      p90TotalPaid: Math.round(p90TotalPaid),
+      p10MaxPayment: Math.round(p10MaxPayment),
+      p50MaxPayment: Math.round(p50MaxPayment),
+      p90MaxPayment: Math.round(p90MaxPayment),
+      pctArmCheaper,
+      mcSamples: samples,
+      mcIndexVol: ARM_RATE_PATH_ASSUMPTIONS.indexVolPercent,
+      mcMeanReversion: ARM_RATE_PATH_ASSUMPTIONS.meanReversion,
     },
     chartData: expected.yearly.map((p, i) => ({
       year: p.year,
       armPayment: p.payment,
       armRate: p.rate,
       fixedPayment: Math.round(fixedPayment),
+      fallingPayment: falling.yearly[i]?.payment ?? p.payment,
+      fallingRate: falling.yearly[i]?.rate ?? p.rate,
+      risingPayment: rising.yearly[i]?.payment ?? p.payment,
+      risingRate: rising.yearly[i]?.rate ?? p.rate,
       worstRate: worst.yearly[i]?.rate ?? p.rate,
       worstPayment: worst.yearly[i]?.payment ?? p.payment,
+      p10Payment: Math.round(percentile(yearlyPayments[i], 10)),
+      p50Payment: Math.round(percentile(yearlyPayments[i], 50)),
+      p90Payment: Math.round(percentile(yearlyPayments[i], 90)),
     })),
     insights,
   };

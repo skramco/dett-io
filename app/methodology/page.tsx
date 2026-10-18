@@ -22,6 +22,8 @@ import {
   FHA_LOAN_LIMIT_FLOOR_DISPLAY,
   LOAN_LIMIT_YEAR,
 } from '@/lib/calculators/loanLimits';
+import { ARM_RATE_PATH_ASSUMPTIONS } from '@/lib/calculators/armVsFixed';
+import { RENT_VS_BUY_SCENARIO_ASSUMPTIONS } from '@/lib/calculators/rentVsBuy';
 
 const dataSources = [
   {
@@ -86,6 +88,20 @@ const dataSources = [
     source: 'NAIC / Insurance Information Institute average homeowners premium by state, expressed as a percent of value.',
     link: 'https://www.iii.org/fact-statistic/facts-statistics-homeowners-and-renters-insurance',
     linkLabel: 'iii.org',
+  },
+  {
+    area: 'ARM index scenarios',
+    how: `Named paths hold the index at expected ${ARM_RATE_PATH_ASSUMPTIONS.fallingIndexShift} / 0 / +${ARM_RATE_PATH_ASSUMPTIONS.risingIndexShift} points. Monte Carlo draws ${ARM_RATE_PATH_ASSUMPTIONS.samples} seeded mean-reverting index paths (σ = ${ARM_RATE_PATH_ASSUMPTIONS.indexVolPercent}% / year, κ = ${ARM_RATE_PATH_ASSUMPTIONS.meanReversion}). Caps still bind every path. Worst case is the cap-driven upper bound, not a random draw.`,
+    source: 'Modeled on historical SOFR / Treasury-bill volatility; not a forecast. Caps follow typical CFPB ARM disclosures (initial / periodic / lifetime).',
+    link: 'https://www.consumerfinance.gov/owning-a-home/adjustable-rate-mortgages/',
+    linkLabel: 'consumerfinance.gov',
+  },
+  {
+    area: 'Rent vs buy scenario range',
+    how: `Named paths jointly shift appreciation, rent inflation, and investment return. Monte Carlo draws ${RENT_VS_BUY_SCENARIO_ASSUMPTIONS.samples} seeded truncated-normal samples (σ = ${RENT_VS_BUY_SCENARIO_ASSUMPTIONS.vol.appreciation} / ${RENT_VS_BUY_SCENARIO_ASSUMPTIONS.vol.rentInflation} / ${RENT_VS_BUY_SCENARIO_ASSUMPTIONS.vol.investmentReturn} pts). Results are shown as P10–P90 bands and the share of paths where buying ends ahead.`,
+    source: 'Illustrative long-run dispersion around your inputs — not a prediction of local housing, rents, or market returns.',
+    link: 'https://www.fhfa.gov/data/hpi',
+    linkLabel: 'fhfa.gov/data/hpi',
   },
 ];
 
@@ -207,6 +223,56 @@ export default function MethodologyPage() {
                 </TableBody>
               </Table>
             </TableContainer>
+
+            <h2>Rate-path and Monte Carlo scenarios</h2>
+            <p>
+              Two calculators — <Link href="/calculators/arm-vs-fixed">ARM vs Fixed</Link> and{' '}
+              <Link href="/calculators/rent-vs-buy">Rent vs Buy</Link> — no longer rest on a single
+              expected line plus a best/base/worst trio. They show a <strong>range of paths</strong>,
+              with every assumption on the page and here.
+            </p>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginTop: 16, marginBottom: 8 }}>ARM vs Fixed</h3>
+            <ul>
+              <li>
+                <strong>Named index paths.</strong> After the fixed period, we hold the index at your
+                expected rate, {ARM_RATE_PATH_ASSUMPTIONS.fallingIndexShift} percentage points, and +
+                {ARM_RATE_PATH_ASSUMPTIONS.risingIndexShift} percentage points (floored at 0%), then
+                apply the same initial / periodic / lifetime caps as the loan.
+              </li>
+              <li>
+                <strong>Monte Carlo.</strong> {ARM_RATE_PATH_ASSUMPTIONS.samples} seeded draws of a
+                mean-reverting index: x ← x + κ(μ − x)Δt + σ√Δt · Z, with μ = your expected index,
+                σ = {ARM_RATE_PATH_ASSUMPTIONS.indexVolPercent}% per year, κ = {ARM_RATE_PATH_ASSUMPTIONS.meanReversion},
+                and Δt equal to the adjustment period. The index cannot go negative. The PRNG is
+                deterministic (seed {ARM_RATE_PATH_ASSUMPTIONS.seed}) so the same inputs always produce
+                the same percentiles.
+              </li>
+              <li>
+                <strong>Worst case is not sampled.</strong> It is the cap-driven path: every adjustment
+                hits its cap until the lifetime cap. That is an upper bound, not a probability.
+              </li>
+            </ul>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginTop: 16, marginBottom: 8 }}>Rent vs Buy</h3>
+            <ul>
+              <li>
+                <strong>Named joint paths.</strong> Optimistic (buying-friendly) and pessimistic
+                (renting-friendly) shift appreciation, rent inflation, <em>and</em> investment return
+                together — not appreciation alone, which used to be the entire best/base/worst story.
+              </li>
+              <li>
+                <strong>Monte Carlo.</strong> {RENT_VS_BUY_SCENARIO_ASSUMPTIONS.samples} seeded draws
+                from truncated normals around your three inputs (appreciation σ = {RENT_VS_BUY_SCENARIO_ASSUMPTIONS.vol.appreciation} pts,
+                rent inflation σ = {RENT_VS_BUY_SCENARIO_ASSUMPTIONS.vol.rentInflation} pts,
+                investment return σ = {RENT_VS_BUY_SCENARIO_ASSUMPTIONS.vol.investmentReturn} pts).
+                We report P10 / P50 / P90 of the buy-minus-rent net-worth gap and the share of paths
+                where buying ends ahead.
+              </li>
+              <li>
+                <strong>This is a sensitivity range, not a forecast.</strong> Local housing, rent, and
+                market returns can move together in ways a simple independent-draw model misses. Use
+                the band to see how fragile the base-path verdict is.
+              </li>
+            </ul>
 
             <h2>How often everything is reviewed</h2>
             <p>

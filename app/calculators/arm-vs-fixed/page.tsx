@@ -40,13 +40,19 @@ import {
   ResultsSection,
   EmptyResultsState,
 } from '@/components/mui/calculator/ResultsPanel';
+import Link from 'next/link';
 import {
   HorizontalBar,
-  LazyTimelineChart as TimelineChart,
+  LazyRangeTimelineChart as RangeTimelineChart,
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateArmVsFixed } from '@/lib/calculators';
-import { getArmCapStructure, getArmProductName, getWorstCaseRatePath } from '@/lib/calculators/armVsFixed';
+import {
+  ARM_RATE_PATH_ASSUMPTIONS,
+  getArmCapStructure,
+  getArmProductName,
+  getWorstCaseRatePath,
+} from '@/lib/calculators/armVsFixed';
 import type { ArmVsFixedInputs } from '@/lib/calculators/types';
 
 export default function ArmVsFixedCalculator() {
@@ -78,14 +84,19 @@ export default function ArmVsFixedCalculator() {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
-  // Timeline data for payment comparison
-  const timelineData = useMemo(() => {
+  const rangeChartData = useMemo(() => {
     if (!result?.chartData) return [];
-    return (result.chartData as Array<{ year: number; armPayment: number; fixedPayment: number }>).map(item => ({
-      month: item.year * 12,
-      optionA: item.fixedPayment,
-      optionB: item.armPayment,
-    }));
+    return result.chartData as Array<{
+      year: number;
+      armPayment: number;
+      fixedPayment: number;
+      fallingPayment: number;
+      risingPayment: number;
+      worstPayment: number;
+      p10Payment: number;
+      p50Payment: number;
+      p90Payment: number;
+    }>;
   }, [result]);
 
   // Derived values
@@ -104,7 +115,7 @@ export default function ArmVsFixedCalculator() {
         `ARM adjustments are estimates from a ${inputs.expectedIndexRate}% index plus a ${inputs.armMargin}% margin, limited by your entered caps — actual adjustments will differ`,
       ]}
       title="ARM vs Fixed Rate Calculator"
-      description="Compare adjustable-rate mortgages (like the 5/6 SOFR ARM) to fixed-rate loans. Set initial, periodic, and lifetime rate caps to see initial savings, adjustment scenarios, and a caps-derived worst case."
+      description="Compare adjustable-rate mortgages (like the 5/6 SOFR ARM) to fixed-rate loans. Model multiple index rate paths and a Monte Carlo range — not a single expected vs worst-case pair — plus caps-derived bounds."
       relatedCalculators={[
         { slug: 'points-buydown', name: 'Points & Buydown' },
         { slug: 'timeline-simulator', name: 'Decision Timeline' },
@@ -263,10 +274,10 @@ export default function ArmVsFixedCalculator() {
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
-                    label="Expected Winner"
-                    value={armWins ? 'ARM' : 'Fixed'}
-                    sublabel={`Saves ${formatCurrency(Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)))}`}
-                    color={armWins ? 'success' : 'primary'}
+                    label="ARM cheaper in"
+                    value={`${result.details.pctArmCheaper}%`}
+                    sublabel={`of ${result.details.mcSamples} rate paths`}
+                    color={(result.details.pctArmCheaper as number) >= 50 ? 'success' : 'primary'}
                   />
                 </Grid>
               </Grid>
@@ -327,31 +338,125 @@ export default function ArmVsFixedCalculator() {
                       ARM saves {formatCurrency(initialSavings)}/month initially
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      That's {formatCurrency((result.details.savingsInFixedPeriod as number))} over the {inputs.armFixedPeriod}-year fixed period
+                      That&apos;s {formatCurrency((result.details.savingsInFixedPeriod as number))} over the {inputs.armFixedPeriod}-year fixed period
                     </Typography>
                   </Box>
                 </Paper>
               </ResultsSection>
 
-              {/* Payment Over Time */}
+              {/* Rate-path scenarios */}
               <ResultsSection 
-                title="Payment Projection" 
-                subtitle="How payments may change over time (expected scenario)"
+                title="Rate-path scenarios" 
+                subtitle="Named index paths plus a Monte Carlo P10–P90 payment band — not a single expected line"
               >
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-                  <TimelineChart 
-                    data={timelineData}
-                    labels={{ optionA: 'Fixed Rate', optionB: productName }}
-                    height={280}
+                  <RangeTimelineChart
+                    data={rangeChartData}
+                    xKey="year"
+                    xLabel="Years"
+                    bandLow="p10Payment"
+                    bandHigh="p90Payment"
+                    bandLabel="Monte Carlo P10–P90"
+                    bandColor={CHART_COLORS.secondary}
+                    height={300}
+                    lines={[
+                      { dataKey: 'fixedPayment', name: 'Fixed', color: CHART_COLORS.primary, strokeWidth: 2.5 },
+                      { dataKey: 'armPayment', name: 'Expected ARM', color: CHART_COLORS.secondary, strokeWidth: 2.5 },
+                      { dataKey: 'fallingPayment', name: 'Falling index', color: '#047857', strokeWidth: 1.75, strokeDasharray: '5 4' },
+                      { dataKey: 'risingPayment', name: 'Rising index', color: '#92400E', strokeWidth: 1.75, strokeDasharray: '5 4' },
+                      { dataKey: 'worstPayment', name: 'Cap-driven worst', color: '#B91C1C', strokeWidth: 2, strokeDasharray: '2 3' },
+                    ]}
                   />
-                  
+
                   <Divider sx={{ my: 3 }} />
+
+                  <Grid container spacing={2} sx={{ mb: 2 }}>
+                    <Grid size={{ xs: 6, sm: 3 }}>
+                      <MetricCard
+                        label="P10 max payment"
+                        value={`${formatCurrency(result.details.p10MaxPayment as number)}`}
+                        sublabel="10th percentile"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 6, sm: 3 }}>
+                      <MetricCard
+                        label="P50 max payment"
+                        value={`${formatCurrency(result.details.p50MaxPayment as number)}`}
+                        sublabel="Median path"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 6, sm: 3 }}>
+                      <MetricCard
+                        label="P90 max payment"
+                        value={`${formatCurrency(result.details.p90MaxPayment as number)}`}
+                        sublabel="90th percentile"
+                        color="warning"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 6, sm: 3 }}>
+                      <MetricCard
+                        label="P10–P90 total paid"
+                        value={`${formatCurrency(result.details.p10TotalPaid as number)}`}
+                        sublabel={`to ${formatCurrency(result.details.p90TotalPaid as number)}`}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Stack spacing={1.25} sx={{ mb: 2 }}>
+                    {[
+                      {
+                        name: `Falling index (${(result.details.fallingIndex as number).toFixed(2)}%)`,
+                        total: result.details.fallingTotalPaid as number,
+                        maxPay: result.details.fallingMaxPayment as number,
+                        note: `${ARM_RATE_PATH_ASSUMPTIONS.fallingIndexShift} pts vs expected`,
+                      },
+                      {
+                        name: `Expected index (${inputs.expectedIndexRate.toFixed(2)}%)`,
+                        total: result.details.armTotalPaid as number,
+                        maxPay: result.details.armInitialPayment as number,
+                        note: 'Index stays at your input',
+                      },
+                      {
+                        name: `Rising index (${(result.details.risingIndex as number).toFixed(2)}%)`,
+                        total: result.details.risingTotalPaid as number,
+                        maxPay: result.details.risingMaxPayment as number,
+                        note: `+${ARM_RATE_PATH_ASSUMPTIONS.risingIndexShift} pts vs expected`,
+                      },
+                      {
+                        name: `Cap-driven worst (${result.details.worstCaseRate}%)`,
+                        total: result.details.worstCasePayment as number,
+                        maxPay: result.details.worstCasePayment as number,
+                        note: `${capStructure} caps, every adjustment hits`,
+                      },
+                    ].map((row) => (
+                      <Stack
+                        key={row.name}
+                        direction={{ xs: 'column', sm: 'row' }}
+                        justifyContent="space-between"
+                        sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider', gap: 0.5 }}
+                      >
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>{row.name}</Typography>
+                          <Typography variant="caption" color="text.secondary">{row.note}</Typography>
+                        </Box>
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                          {row.name.startsWith('Cap-driven')
+                            ? `Peak ${formatCurrency(row.maxPay)}/mo`
+                            : `Total ${formatCurrency(row.total)}`}
+                        </Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
                   
                   <Alert severity="info" sx={{ borderRadius: 2 }}>
                     <Typography variant="body2">
-                      <strong>After year {inputs.armFixedPeriod}:</strong> the {productName} rate adjusts every {inputs.armAdjustmentFrequency} months 
-                      toward the fully indexed rate (index + margin = {(result.details.fullyIndexedRate as number).toFixed(2)}%), limited by your {capStructure} caps. 
-                      This projection assumes the index rate stays around {inputs.expectedIndexRate}%.
+                      <strong>Methodology:</strong> After year {inputs.armFixedPeriod}, the {productName} adjusts every {inputs.armAdjustmentFrequency} months
+                      toward index + margin, limited by your {capStructure} caps.
+                      Named paths hold the index at expected {ARM_RATE_PATH_ASSUMPTIONS.fallingIndexShift} / 0 / +{ARM_RATE_PATH_ASSUMPTIONS.risingIndexShift} points.
+                      The shaded band is {ARM_RATE_PATH_ASSUMPTIONS.samples} seeded Monte Carlo index paths
+                      (mean-reverting to {inputs.expectedIndexRate}%, {ARM_RATE_PATH_ASSUMPTIONS.indexVolPercent}% annual volatility, κ = {ARM_RATE_PATH_ASSUMPTIONS.meanReversion}).
+                      The worst case is not a random draw — it is the cap-driven upper bound.{' '}
+                      <Link href="/methodology" style={{ color: 'inherit', fontWeight: 700 }}>Full methodology</Link>
                     </Typography>
                   </Alert>
                 </Paper>
@@ -388,7 +493,7 @@ export default function ArmVsFixedCalculator() {
                     <Typography variant="body2">
                       <strong>Worst case scenario:</strong> If rates spike, your {productName} payment could reach 
                       <strong> {formatCurrency((result.details.worstCasePayment as number))}/month</strong> at a 
-                      <strong> {result.details.worstCaseRate}%</strong> rate (reached by year {result.details.worstCaseYear as number}). That's 
+                      <strong> {result.details.worstCaseRate}%</strong> rate (reached by year {result.details.worstCaseYear as number}). That&apos;s 
                       <strong> {formatCurrency(((result.details.worstCasePayment as number) - (result.details.fixedPayment as number)))}/month more</strong> than the fixed option. 
                       This rate is derived from your {capStructure} caps, not an arbitrary assumption.
                     </Typography>
@@ -515,9 +620,10 @@ export default function ArmVsFixedCalculator() {
                       The {productName} saves <strong>{formatCurrency(initialSavings)}/month</strong> initially 
                       (<strong>{formatCurrency((result.details.savingsInFixedPeriod as number))}</strong> over {inputs.armFixedPeriod} years). 
                       {armWins 
-                        ? ` Based on expected rates, the ARM saves ${formatCurrency(Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)))} total. Good choice if you'll move or refinance within ${inputs.armFixedPeriod} years.`
-                        : ` However, if rates rise as expected, the fixed rate saves ${formatCurrency(Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)))} over the life of the loan.`
+                        ? ` On the expected path, the ARM saves ${formatCurrency(Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)))} total.`
+                        : ` On the expected path, the fixed rate saves ${formatCurrency(Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)))} over the life of the loan.`
                       }
+                      {' '}Across {result.details.mcSamples} sampled index paths, the ARM costs less than fixed in <strong>{result.details.pctArmCheaper}%</strong> of cases. Good choice if you&apos;ll move or refinance within {inputs.armFixedPeriod} years.
                     </Typography>
                   </Box>
                 </Stack>

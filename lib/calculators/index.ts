@@ -17,11 +17,11 @@ export { calculateExtraPayment } from './extraPayment';
 // Category 1: Buying a Home
 export { calculateAffordability } from './affordability';
 export { calculateDownPayment } from './downPayment';
-export { calculateRentVsBuy } from './rentVsBuy';
+export { calculateRentVsBuy, RENT_VS_BUY_SCENARIO_ASSUMPTIONS } from './rentVsBuy';
 
 // Category 2: Rate & Structure
 export { calculatePointsBuydown } from './pointsBuydown';
-export { calculateArmVsFixed } from './armVsFixed';
+export { calculateArmVsFixed, ARM_RATE_PATH_ASSUMPTIONS } from './armVsFixed';
 
 // Category 3: Refinancing & Equity
 export { calculateCashOutRefi } from './cashOutRefi';

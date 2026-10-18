@@ -344,5 +344,16 @@ describe('Show Me the Math values', () => {
     const sets = calculatorFormulas['rent-vs-buy'](details);
     const breakEvenStep = sets[0].steps.find((s) => s.label === 'Break-Even Year')!;
     expect(breakEvenStep.computedValue).toBe('Never within horizon');
+    expect(sets[1].title).toMatch(/Scenario range/);
+    expect(sets[1].steps.find((s) => s.label === 'Share of paths where buying wins')?.computedValue).toMatch(/of paths$/);
+  });
+
+  it('arm-vs-fixed math card discloses rate-path Monte Carlo percentiles', () => {
+    const details = detailsBySlug['arm-vs-fixed'];
+    const sets = calculatorFormulas['arm-vs-fixed'](details);
+    expect(sets.map((s) => s.title).join(' ')).toMatch(/Rate-path scenarios/);
+    const mc = sets.find((s) => s.title.includes('Monte Carlo'))!;
+    expect(mc.steps.find((s) => s.label === 'Share of paths ARM is cheaper')?.computedValue).toMatch(/of paths$/);
+    expect(mc.steps.find((s) => s.label === 'P10–P90 total paid')?.computedValue).not.toBe('$0');
   });
 });

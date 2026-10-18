@@ -100,7 +100,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     slug: 'rent-vs-buy',
     title: 'Rent vs Buy Calculator - Should I Rent or Buy a Home? | Dett',
     description:
-      'Compare the true cost of renting vs buying a home. Includes rent inflation, home appreciation, tax benefits, maintenance costs, and investment alternatives. Free analysis.',
+      'Compare the true cost of renting vs buying a home. Includes rent inflation, home appreciation, maintenance, selling costs, and a Monte Carlo scenario range — not a single path. Free analysis.',
     keywords: [
       'rent vs buy calculator',
       'should I rent or buy',
@@ -117,7 +117,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     jsonLd: {
       name: 'Rent vs Buy Calculator',
       description:
-        'Compare the true cost of renting vs buying including appreciation, tax benefits, and investment alternatives.',
+        'Compare the true cost of renting vs buying including appreciation, selling costs, investment alternatives, and a sampled scenario range.',
       applicationCategory: 'FinanceApplication',
     },
   },
@@ -223,7 +223,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     slug: 'arm-vs-fixed',
     title: 'ARM vs Fixed Rate Mortgage Calculator - Compare Loan Types | Dett',
     description:
-      'Compare adjustable-rate (ARM) vs fixed-rate mortgages. Model rate caps, adjustment timelines, and worst-case scenarios. See which loan type saves you more.',
+      'Compare adjustable-rate (ARM) vs fixed-rate mortgages. Model multiple index rate paths, a Monte Carlo payment range, rate caps, and the cap-driven worst case.',
     keywords: [
       'ARM vs fixed rate calculator',
       'adjustable rate mortgage calculator',
@@ -242,7 +242,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     jsonLd: {
       name: 'ARM vs Fixed Rate Calculator',
       description:
-        'Compare adjustable-rate and fixed-rate mortgages with rate cap modeling and worst-case scenarios.',
+        'Compare adjustable-rate and fixed-rate mortgages with named rate paths, Monte Carlo ranges, and cap-driven worst-case scenarios.',
       applicationCategory: 'FinanceApplication',
     },
   },

@@ -18,6 +18,7 @@ import {
   Line,
   Area,
   AreaChart,
+  ComposedChart,
   ReferenceLine,
 } from 'recharts';
 import { formatAxisCurrency, formatCurrency } from '@/lib/format/currency';
@@ -384,6 +385,188 @@ export function TimelineChart({
             activeDot={{ r: 6, fill: CHART_COLORS.tertiary }}
           />
         </LineChart>
+      </ResponsiveContainer>
+    </Box>
+  );
+}
+
+// ============================================
+// RANGE TIMELINE — percentile band + named paths
+// ============================================
+export interface RangeTimelineLine {
+  dataKey: string;
+  name: string;
+  color: string;
+  strokeWidth?: number;
+  strokeDasharray?: string;
+}
+
+export interface RangeTimelineChartProps {
+  data: Array<Record<string, number>>;
+  xKey?: string;
+  xLabel?: string;
+  bandLow: string;
+  bandHigh: string;
+  bandLabel?: string;
+  bandColor?: string;
+  lines?: RangeTimelineLine[];
+  referenceY?: number;
+  referenceLabel?: string;
+  /** When false (default), the Y axis pads around the data instead of forcing $0. */
+  includeZero?: boolean;
+  height?: number;
+}
+
+export function RangeTimelineChart({
+  data,
+  xKey = 'year',
+  xLabel = 'Years',
+  bandLow,
+  bandHigh,
+  bandLabel = 'P10–P90 range',
+  bandColor = CHART_COLORS.primary,
+  lines = [],
+  referenceY,
+  referenceLabel,
+  includeZero = false,
+  height = 300,
+}: RangeTimelineChartProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <ChartLoading height={height} />;
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <Box sx={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography color="text.secondary">No data available</Typography>
+      </Box>
+    );
+  }
+
+  const yKeys = [bandLow, bandHigh, ...lines.map((line) => line.dataKey)];
+  let yMin = Infinity;
+  let yMax = -Infinity;
+  for (const row of data) {
+    for (const key of yKeys) {
+      const value = Number(row[key]);
+      if (!Number.isFinite(value)) continue;
+      if (value < yMin) yMin = value;
+      if (value > yMax) yMax = value;
+    }
+  }
+  if (!Number.isFinite(yMin) || !Number.isFinite(yMax)) {
+    yMin = 0;
+    yMax = 1;
+  }
+  if (includeZero) {
+    yMin = Math.min(yMin, 0);
+    yMax = Math.max(yMax, 0);
+  }
+  if (referenceY !== undefined) {
+    yMin = Math.min(yMin, referenceY);
+    yMax = Math.max(yMax, referenceY);
+  }
+  const pad = Math.max(50, (yMax - yMin) * 0.08);
+
+  const chartData = data.map((row) => {
+    const low = Number(row[bandLow] ?? 0);
+    const high = Number(row[bandHigh] ?? 0);
+    return {
+      ...row,
+      _bandBase: low,
+      _bandSpan: Math.max(high - low, 0),
+    };
+  });
+
+  return (
+    <Box sx={{ height, width: '100%' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 22 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+          <XAxis
+            dataKey={xKey}
+            tick={AXIS_TICK}
+            tickLine={false}
+            axisLine={AXIS_LINE}
+            label={{ value: xLabel, position: 'insideBottom', offset: -5, fill: RESULT_TOKENS.chartTick, fontSize: 12 }}
+          />
+          <YAxis
+            tick={AXIS_TICK}
+            tickLine={false}
+            axisLine={AXIS_LINE}
+            tickFormatter={formatAxisCurrency}
+            width={68}
+            domain={[yMin - pad, yMax + pad]}
+            allowDataOverflow
+          />
+          <Tooltip
+            formatter={(value: unknown, name: unknown, item: { payload?: Record<string, number> }) => {
+              if (name === '_bandBase' || name === '_bandSpan' || name === bandLabel) {
+                const row = item?.payload;
+                if (!row) return [null, null];
+                return [
+                  `${formatCurrency(Number(row[bandLow]))} – ${formatCurrency(Number(row[bandHigh]))}`,
+                  bandLabel,
+                ];
+              }
+              return [`${formatCurrency(Number(value))}`, String(name)];
+            }}
+            labelFormatter={(label) => `${xLabel.replace(/s$/, '')} ${label}`}
+            contentStyle={{
+              borderRadius: 8,
+              border: '1px solid #E5E7EB',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            }}
+          />
+          <Legend formatter={ChartLegendText} />
+          {referenceY !== undefined && (
+            <ReferenceLine
+              y={referenceY}
+              stroke={RESULT_TOKENS.chartTick}
+              strokeDasharray="4 4"
+              label={{ value: referenceLabel, fill: RESULT_TOKENS.chartTick, fontSize: 12, position: 'insideTopRight' }}
+            />
+          )}
+          <Area
+            type="monotone"
+            dataKey="_bandBase"
+            stackId="band"
+            stroke="none"
+            fill="transparent"
+            legendType="none"
+            tooltipType="none"
+            activeDot={false}
+          />
+          <Area
+            type="monotone"
+            dataKey="_bandSpan"
+            name={bandLabel}
+            stackId="band"
+            stroke="none"
+            fill={bandColor}
+            fillOpacity={0.22}
+            activeDot={false}
+          />
+          {lines.map((line) => (
+            <Line
+              key={line.dataKey}
+              type="monotone"
+              dataKey={line.dataKey}
+              name={line.name}
+              stroke={line.color}
+              strokeWidth={line.strokeWidth ?? 2.5}
+              strokeDasharray={line.strokeDasharray}
+              dot={false}
+              activeDot={{ r: 5, fill: line.color }}
+            />
+          ))}
+        </ComposedChart>
       </ResponsiveContainer>
     </Box>
   );

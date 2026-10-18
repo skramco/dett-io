@@ -77,7 +77,12 @@ export const calculatorFaqs: Record<string, CalculatorFaq[]> = {
     {
       question: 'What is the break-even point in a rent vs buy analysis?',
       answer:
-        'The break-even point is the year when the total cost of owning (net of equity built and appreciation) drops below the total cost of renting (including what your down payment could have earned invested). This calculator charts both paths year by year.',
+        'The break-even point is the year when the total cost of owning (net of equity built and appreciation) drops below the total cost of renting (including what your down payment could have earned invested). This calculator charts the base path year by year and a Monte Carlo range so you can see how often that break-even still holds when appreciation, rent inflation, and investment returns vary together.',
+    },
+    {
+      question: 'Why does Rent vs Buy show a range instead of one answer?',
+      answer:
+        'Appreciation, rent inflation, and investment returns are uncertain. A single best/base/worst that only moves home appreciation understates that. We run named joint paths plus 400 seeded Monte Carlo draws around your inputs and report P10–P90 of the wealth gap and the share of scenarios where buying ends ahead. Assumptions are listed on the calculator and on the methodology page.',
     },
   ],
   refinance: [
@@ -157,12 +162,12 @@ export const calculatorFaqs: Record<string, CalculatorFaq[]> = {
     {
       question: 'When does an ARM make sense?',
       answer:
-        'An ARM can win if you are confident you will sell or refinance before the fixed period ends, because you pocket the initial-rate savings without facing adjustments. If you may stay longer, model the worst-case capped rate — this calculator shows that scenario explicitly.',
+        'An ARM can win if you are confident you will sell or refinance before the fixed period ends, because you pocket the initial-rate savings without facing adjustments. If you may stay longer, look at the rate-path range and the cap-driven worst case — not just the expected index. This calculator shows named falling/expected/rising paths, a Monte Carlo payment band, and the share of index paths where the ARM still costs less than fixed.',
     },
     {
       question: 'How high can my ARM rate go?',
       answer:
-        'ARM caps are usually quoted like 2/1/5: a maximum 2-point increase at the first adjustment, 1 point per later adjustment, and 5 points above the initial rate over the life of the loan. A 5.75% ARM with a 5-point lifetime cap could reach 10.75%. This calculator derives the worst-case rate from the caps you enter, not from an unstated assumption.',
+        'ARM caps are usually quoted like 2/1/5: a maximum 2-point increase at the first adjustment, 1 point per later adjustment, and 5 points above the initial rate over the life of the loan. A 5.75% ARM with a 5-point lifetime cap could reach 10.75%. This calculator derives that worst-case rate from the caps you enter, and separately samples 400 mean-reverting index paths so typical outcomes sit in a P10–P90 band rather than a single expected line.',
     },
   ],
   'timeline-simulator': [
