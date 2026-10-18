@@ -115,7 +115,9 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'New Loan Amount', formula: 'Current Balance + Cash Out + Closing Costs', description: 'Total amount of the new mortgage.', computedValue: `$${fmt(d.newLoanAmount as number)}` },
         { label: 'New Monthly Payment', formula: 'New Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Monthly P&I on the larger loan.', computedValue: `$${fmt(d.newPayment as number)}` },
-        { label: 'Effective Cash-Out Rate', formula: 'Additional Interest ÷ Cash Received × 100', description: 'The true cost of borrowing against your equity.' },
+        { label: 'Extra Interest for Cash', formula: 'Refi Total Interest − Current Remaining Interest', description: 'Undiscounted extra interest paid over the new term to take the cash via refinance vs keeping the current mortgage. This is a dollar cost, not a rate or APR.', computedValue: `$${fmt(d.totalInterestIncrease as number)}` },
+        { label: 'Implied Annual Cost (IRR)', formula: 'IRR of: +cash today, then extra monthly payments vs keeping the current loan', description: 'Educational internal rate of return on the incremental cash flows — not an APR, TILA disclosure, or loan offer. Omitted when flows change sign (e.g. a shorter new term).', computedValue: (d.impliedCashCostIrr as number) > 0 ? `${fmtDec(d.impliedCashCostIrr as number)}%` : 'Not meaningful for this scenario' },
+        { label: 'Blended Keep + HELOC Note Rate', formula: '(Current Balance × Current Rate + Cash Out × HELOC Rate) ÷ (Current Balance + Cash Out)', description: 'Weighted-average note rate of keeping the current mortgage and borrowing the cash separately, compared with the refi note rate on the full new balance. This is a note-rate blend, not an APR.', computedValue: `${fmtDec(d.blendedKeepRate as number)}% vs ${fmtDec(d.newRate as number)}%` },
       ],
     },
   ],
