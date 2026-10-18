@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect, useId } from 'react';
 import {
   Box,
   Paper,
@@ -309,13 +309,17 @@ interface SelectInputProps {
 }
 
 export function SelectInput({ label, value, onChange, options, helperText }: SelectInputProps) {
+  const labelId = useId();
+  const helperId = useId();
   return (
     <FormControl fullWidth>
-      <InputLabel sx={{ fontWeight: 500, '&.Mui-focused': { color: '#196bc0' } }}>{label}</InputLabel>
+      <InputLabel id={labelId} sx={{ fontWeight: 500, '&.Mui-focused': { color: '#196bc0' } }}>{label}</InputLabel>
       <Select
+        labelId={labelId}
         value={value}
         label={label}
         onChange={(e) => onChange(e.target.value)}
+        aria-describedby={helperText ? helperId : undefined}
         sx={{
           borderRadius: 1.5,
           bgcolor: '#FFFFFF',
@@ -345,7 +349,7 @@ export function SelectInput({ label, value, onChange, options, helperText }: Sel
         ))}
       </Select>
       {helperText && (
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1.5 }}>
+        <Typography id={helperId} variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1.5 }}>
           {helperText}
         </Typography>
       )}
@@ -432,6 +436,7 @@ export function SliderInput({
   marks = false,
   valueLabelFormat 
 }: SliderInputProps) {
+  const labelId = useId();
   return (
     <Box
       sx={{
@@ -447,7 +452,7 @@ export function SliderInput({
       }}
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151' }}>
+        <Typography id={labelId} variant="body2" sx={{ fontWeight: 600, color: '#374151' }}>
           {label}
         </Typography>
         <Chip 
@@ -470,6 +475,8 @@ export function SliderInput({
         marks={marks}
         valueLabelDisplay="auto"
         valueLabelFormat={valueLabelFormat}
+        aria-labelledby={labelId}
+        getAriaValueText={valueLabelFormat ? (v) => valueLabelFormat(v) : undefined}
         sx={{
           color: '#196bc0',
           '& .MuiSlider-thumb': {
