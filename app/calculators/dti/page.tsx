@@ -30,7 +30,7 @@ import {
   CurrencyInput,
 } from '@/components/mui/calculator/InputPanel';
 import {
-  HeroMetric,
+  StickyResultAnchor,
   MetricCard,
   InsightCallout,
   ResultsSection,
@@ -212,7 +212,11 @@ export default function DTICalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              {/* DTI Gauges */}
+              {/* DTI Gauges — back-end DTI is the headline lenders underwrite to */}
+              <StickyResultAnchor
+                label="Back-End DTI"
+                value={`${result.details.backEndDTI}%`}
+              >
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '2px solid', borderColor: getDTIColor(result.details.frontEndDTI as number), textAlign: 'center' }}>
@@ -281,6 +285,7 @@ export default function DTICalculator() {
                   </Paper>
                 </Grid>
               </Grid>
+              </StickyResultAnchor>
 
               {/* Key Metrics */}
               <Grid container spacing={2}>

@@ -8,9 +8,17 @@ describe('calculatorBodySx', () => {
     expect(sx['& .calculator-inputs']).toEqual({
       maxHeight: 'none',
       overflow: 'visible',
+      pb: { xs: 'calc(88px + env(safe-area-inset-bottom, 0px))', sm: 0 },
     });
     expect(sx['& .calculator-inputs']).not.toHaveProperty('overflowY');
     expect(sx['& .calculator-inputs']).not.toHaveProperty('maxHeight', expect.stringContaining('100vh'));
+  });
+
+  it('pads the input column on mobile so the sticky result bar does not cover the last field', () => {
+    expect(sx['& .calculator-inputs'].pb).toEqual({
+      xs: 'calc(88px + env(safe-area-inset-bottom, 0px))',
+      sm: 0,
+    });
   });
 
   it('does not paint a custom scrollbar track on the inputs panel', () => {

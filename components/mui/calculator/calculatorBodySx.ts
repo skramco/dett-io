@@ -18,6 +18,8 @@ export function calculatorBodySx(resultsStickyTop: number) {
     '& .calculator-inputs': {
       maxHeight: 'none',
       overflow: 'visible',
+      // Room for the mobile sticky result bar so the last field isn't covered.
+      pb: { xs: 'calc(88px + env(safe-area-inset-bottom, 0px))', sm: 0 },
     },
     // Results are the Grid item immediately after the inputs column.
     '& .MuiGrid-root:has(> .calculator-inputs) + .MuiGrid-root': {
