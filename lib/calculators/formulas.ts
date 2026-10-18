@@ -37,7 +37,7 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
         { label: 'Monthly Rate', formula: 'Annual Rate ÷ 12 ÷ 100', description: 'Convert annual percentage to monthly decimal.' },
         { label: 'Number of Payments', formula: 'Loan Term × 12', description: 'Total months over the life of the loan.' },
         { label: 'Loan Amount', formula: 'Payment × [(1+r)ⁿ − 1] ÷ [r × (1+r)ⁿ]', description: 'Standard present value of annuity formula, solving for principal.' },
-        { label: 'Max Home Price', formula: 'Loan Amount + Down Payment', description: 'Add your down payment to the loan amount.', computedValue: `$${fmt(d.maxHomePrice as number)}` },
+        { label: 'Max Home Price', formula: 'Loan Amount + Down Payment', description: 'Add your down payment to the loan amount.', computedValue: `$${fmt(d.aggressivePrice as number)}` },
       ],
     },
   ],
@@ -48,7 +48,7 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'Monthly Rate (r)', formula: 'Annual Rate ÷ 12 ÷ 100', description: 'Convert annual percentage rate to a monthly decimal.' },
         { label: 'Number of Payments (n)', formula: 'Loan Term × 12', description: 'Total number of monthly payments.' },
-        { label: 'Monthly P&I', formula: 'P × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Standard amortization formula. P = loan amount.', computedValue: `$${fmt(d.monthlyPI as number)}` },
+        { label: 'Monthly P&I', formula: 'P × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Standard amortization formula. P = loan amount.', computedValue: `$${fmt(d.principalAndInterest as number)}` },
       ],
     },
     {
@@ -82,7 +82,7 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
         { label: 'Monthly Rent', formula: 'Current Rent × (1 + Annual Increase)ʸ', description: 'Rent grows each year by the annual increase rate.' },
         { label: 'Home Equity Built', formula: 'Principal Paid + Appreciation', description: 'Equity = cumulative principal payments + home value growth.' },
         { label: 'Investment Alternative', formula: 'Down Payment × (1 + Return Rate)ʸ', description: 'What your down payment could earn if invested instead.' },
-        { label: 'Break-Even Year', formula: 'Year where Buy Net Worth > Rent Net Worth', description: 'The year when buying becomes financially better than renting.', computedValue: d.breakEvenYear ? `Year ${d.breakEvenYear}` : 'N/A' },
+        { label: 'Break-Even Year', formula: 'Year where Buy Net Worth > Rent Net Worth', description: 'The year when buying becomes financially better than renting.', computedValue: typeof d.baseCrossover === 'number' ? `Year ${d.baseCrossover}` : 'Never' },
       ],
     },
   ],
@@ -91,10 +91,10 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'Refinance Analysis',
       steps: [
-        { label: 'New Monthly Payment', formula: 'New Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Payment at the new rate and term.', computedValue: `$${fmt(d.newPayment as number)}` },
+        { label: 'New Monthly Payment', formula: 'New Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Payment at the new rate and term.', computedValue: `$${fmt(d.newMonthlyPayment as number)}` },
         { label: 'Monthly Savings', formula: 'Current Payment − New Payment', description: 'How much less you pay each month.', computedValue: `$${fmt(d.monthlySavings as number)}` },
         { label: 'Break-Even Months', formula: 'Closing Costs ÷ Monthly Savings', description: 'Months to recoup refinance costs through savings.', computedValue: `${fmt(d.breakEvenMonths as number)} months` },
-        { label: 'Total Interest Saved', formula: 'Old Total Interest − New Total Interest', description: 'Lifetime interest savings from the lower rate.', computedValue: `$${fmt(d.interestSaved as number)}` },
+        { label: 'Total Interest Saved', formula: 'Old Total Interest − New Total Interest', description: 'Lifetime interest savings from the lower rate.', computedValue: `$${fmt(d.interestSavings as number)}` },
       ],
     },
   ],
@@ -244,10 +244,10 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'PMI Calculation',
       steps: [
-        { label: 'LTV Ratio', formula: 'Loan Amount ÷ Home Value × 100', description: 'Loan-to-Value ratio determines if PMI is required (> 80%).', computedValue: `${fmtDec(d.ltvPercent as number, 1)}%` },
+        { label: 'LTV Ratio', formula: 'Loan Amount ÷ Home Value × 100', description: 'Loan-to-Value ratio determines if PMI is required (> 80%).', computedValue: `${fmtDec(d.ltv as number, 1)}%` },
         { label: 'Annual PMI Rate', formula: 'Based on LTV and credit score (0.2% - 1.5%)', description: 'Higher LTV and lower credit scores mean higher PMI rates.', computedValue: `${fmtDec(d.pmiRate as number, 2)}%` },
         { label: 'Monthly PMI', formula: 'Loan Amount × Annual PMI Rate ÷ 12', description: 'Added to your monthly payment until you reach 80% LTV.', computedValue: `$${fmt(d.monthlyPMI as number)}` },
-        { label: 'PMI Removal', formula: 'When LTV reaches 80% (auto-cancels at 78%)', description: 'You can request removal at 80% LTV; it auto-cancels at 78%.', computedValue: d.pmiRemovalMonth ? `Month ${d.pmiRemovalMonth}` : 'N/A' },
+        { label: 'PMI Removal', formula: 'When LTV reaches 80% (auto-cancels at 78%)', description: 'You can request removal at 80% LTV; it auto-cancels at 78%.', computedValue: d.monthsUntilRemoval ? `Month ${d.monthsUntilRemoval}` : 'N/A' },
       ],
     },
   ],
