@@ -20,6 +20,8 @@ type FormulaGenerator = (details: Record<string, number | string>) => FormulaSet
 
 const fmt = (v: number) => (Number.isFinite(v) ? v : 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 const fmtDec = (v: number, d = 2) => (Number.isFinite(v) ? v : 0).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+/** Currency with an explicit minus sign for negative values, e.g. −$217. */
+const fmtSigned = (v: number) => `${Number.isFinite(v) && v < 0 ? '−' : ''}$${fmt(Math.abs(Number.isFinite(v) ? v : 0))}`;
 
 export const calculatorFormulas: Record<string, FormulaGenerator> = {
   affordability: (d) => [
@@ -91,12 +93,12 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'Refinance Analysis',
       steps: [
-        { label: 'Current Scheduled P&I', formula: 'Balance × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Payment implied by your current balance, rate, and years remaining. If your entered payment differs materially, this computed value is used.', computedValue: `$${fmt(d.scheduledCurrentPayment as number)}` },
-        { label: 'New Loan Amount', formula: 'Current Balance + Closing Costs', description: 'Closing costs are financed (rolled) into the new loan, so you pay interest on them too.', computedValue: `$${fmt(d.newLoanAmount as number)}` },
-        { label: 'New Monthly Payment', formula: 'New Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Payment at the new rate and term, on the balance including financed closing costs.', computedValue: `$${fmt(d.newMonthlyPayment as number)}` },
-        { label: 'Monthly Savings', formula: 'Current Payment − New Payment', description: 'How much less (negative = more) you pay each month.', computedValue: `${(d.monthlySavings as number) < 0 ? '−' : ''}$${fmt(Math.abs(d.monthlySavings as number))}` },
-        { label: 'Break-Even Months', formula: 'Closing Costs ÷ Monthly Savings', description: 'Months of payment savings needed to offset the financed closing costs. Ignores the slower equity build from resetting the term.', computedValue: Number.isFinite(d.breakEvenMonths as number) && (d.monthlySavings as number) > 0 ? `${fmt(d.breakEvenMonths as number)} months` : 'N/A — no monthly savings' },
-        { label: 'Total Interest Saved', formula: 'Old Total Interest − New Total Interest', description: 'Lifetime interest comparison. New-loan interest is computed on the full financed balance.', computedValue: `${(d.interestSavings as number) < 0 ? '−' : ''}$${fmt(Math.abs(d.interestSavings as number))}` },
+        { label: 'Current Scheduled P&I', formula: 'Balance × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Payment implied by your current balance, rate, and years remaining. If your entered payment differs materially, this computed value is used.', computedValue: `$${fmt(d.impliedCurrentPayment as number)}` },
+        { label: 'New Loan Amount', formula: 'Current Balance + Closing Costs', description: 'Closing costs are financed — rolled into the new loan balance rather than paid upfront.', computedValue: `$${fmt(d.newLoanAmount as number)}` },
+        { label: 'New Monthly Payment', formula: 'New Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Payment at the new rate and term.', computedValue: `$${fmt(d.newMonthlyPayment as number)}` },
+        { label: 'Monthly Savings', formula: 'Current Payment − New Payment', description: 'How much less you pay each month. Negative means the refinance raises your payment.', computedValue: fmtSigned(d.monthlySavings as number) },
+        { label: 'Break-Even Months', formula: 'Closing Costs ÷ Monthly Savings', description: 'Months of payment savings needed to recoup the financed closing costs. This method ignores the term reset and slower equity build.', computedValue: (d.monthlySavings as number) > 0 ? `${fmt(d.breakEvenMonths as number)} months` : 'N/A — no monthly savings' },
+        { label: 'Total Interest Saved', formula: 'Old Total Interest − New Total Interest', description: 'Lifetime interest savings from the lower rate. Negative means you pay more interest overall.', computedValue: fmtSigned(d.interestSavings as number) },
       ],
     },
   ],

@@ -1,20 +1,22 @@
 import type { RefinanceInputs, CalculatorResult } from './types';
 
-function amortizedPayment(principal: number, annualRatePct: number, months: number): number {
-  if (months <= 0) return 0;
-  const r = annualRatePct / 100 / 12;
+/** Standard amortization payment: P × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1] */
+function amortizedPayment(principal: number, annualRate: number, months: number): number {
+  if (months <= 0 || principal <= 0) return 0;
+  const r = annualRate / 100 / 12;
   if (r === 0) return principal / months;
   return (principal * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
 }
 
-function remainingBalance(principal: number, annualRatePct: number, payment: number, monthsElapsed: number): number {
-  const r = annualRatePct / 100 / 12;
+/** Remaining principal after `monthsElapsed` payments on an amortizing loan. */
+function remainingBalance(principal: number, annualRate: number, payment: number, monthsElapsed: number): number {
+  const r = annualRate / 100 / 12;
   if (r === 0) return Math.max(0, principal - payment * monthsElapsed);
   const growth = Math.pow(1 + r, monthsElapsed);
   return Math.max(0, principal * growth - payment * ((growth - 1) / r));
 }
 
-export type RefinanceVerdict = 'save' | 'lower-payment-higher-cost' | 'higher-payment-lower-cost' | 'costs-more';
+export type RefinanceVerdict = 'refinance' | 'mixed' | 'higher-payment-lower-cost' | 'keep';
 
 export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
   const {
@@ -29,82 +31,83 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
 
   const currentPaymentsRemaining = yearsRemaining * 12;
 
-  // Scheduled P&I implied by the current balance, rate, and remaining term.
-  const scheduledCurrentPayment = amortizedPayment(currentBalance, currentRate, currentPaymentsRemaining);
-
-  // Validate the entered payment against the amortization schedule. If it's
-  // materially off (wrong number, or includes escrow/extra principal), use the
-  // computed scheduled payment so the comparison stays apples-to-apples.
-  const mismatchTolerance = Math.max(scheduledCurrentPayment * 0.01, 10);
+  // What the P&I payment should be given the stated balance, rate, and remaining term.
+  // Used to validate the user-entered payment (which often includes taxes/insurance by mistake).
+  const impliedCurrentPayment = amortizedPayment(currentBalance, currentRate, currentPaymentsRemaining);
   const paymentMismatch =
     currentMonthlyPayment > 0 &&
-    Math.abs(currentMonthlyPayment - scheduledCurrentPayment) > mismatchTolerance;
+    Math.abs(currentMonthlyPayment - impliedCurrentPayment) > Math.max(25, impliedCurrentPayment * 0.02);
+  // If the entered payment is missing or materially off (e.g. includes escrow or
+  // extra principal), fall back to the computed P&I so the comparison stays
+  // apples-to-apples. The mismatch is still surfaced in the UI and insights.
   const effectiveCurrentPayment =
-    currentMonthlyPayment > 0 && !paymentMismatch ? currentMonthlyPayment : scheduledCurrentPayment;
+    currentMonthlyPayment > 0 && !paymentMismatch ? currentMonthlyPayment : impliedCurrentPayment;
 
-  // Closing costs are financed into the new loan (disclosed in the UI and insights).
+  // Closing costs are financed: rolled into the new loan balance rather than paid upfront.
   const newLoanAmount = currentBalance + closingCosts;
   const newNumberOfPayments = newTerm * 12;
   const newMonthlyPayment = amortizedPayment(newLoanAmount, newRate, newNumberOfPayments);
 
   const monthlySavings = effectiveCurrentPayment - newMonthlyPayment;
-
-  // Break-even: months of payment savings needed to offset the closing costs
-  // that were rolled into the new balance. Payment-based method; it does not
-  // credit the slower equity build from resetting the term (documented on page).
-  const breakEvenMonths = monthlySavings > 0 ? Math.ceil(closingCosts / monthlySavings) : Infinity;
+  const hasMonthlySavings = monthlySavings > 0;
+  const breakEvenMonths = hasMonthlySavings ? Math.ceil(closingCosts / monthlySavings) : 0;
   const breakEvenYears = breakEvenMonths / 12;
 
   const currentTotalPaid = effectiveCurrentPayment * currentPaymentsRemaining;
   const newTotalPaid = newMonthlyPayment * newNumberOfPayments;
-  // Financed closing costs are already inside newTotalPaid, so this is a true
-  // total-cost comparison of the two paths from today forward.
   const totalSavings = currentTotalPaid - newTotalPaid;
+  const hasLifetimeSavings = totalSavings > 0;
 
   const currentTotalInterest = currentTotalPaid - currentBalance;
-  // Interest on the new loan accrues on the financed balance (incl. closing costs).
+  // Interest on the new loan is relative to the new (larger) principal; the financed
+  // closing costs show up in totalSavings, not here.
   const newTotalInterest = newTotalPaid - newLoanAmount;
   const interestSavings = currentTotalInterest - newTotalInterest;
 
-  const savesMonthly = monthlySavings > 0;
-  const savesTotal = totalSavings > 0;
-  const verdict: RefinanceVerdict = savesMonthly
-    ? savesTotal
-      ? 'save'
-      : 'lower-payment-higher-cost'
-    : savesTotal
+  // Verdict must agree with both the monthly and lifetime numbers:
+  // - 'refinance': saves monthly AND over the life of the loan
+  // - 'mixed': lower payment but higher lifetime cost (usually a term reset)
+  // - 'higher-payment-lower-cost': payment rises but the shorter payoff costs less overall
+  // - 'keep': loses on both
+  const verdict: RefinanceVerdict = hasMonthlySavings
+    ? hasLifetimeSavings
+      ? 'refinance'
+      : 'mixed'
+    : hasLifetimeSavings
       ? 'higher-payment-lower-cost'
-      : 'costs-more';
+      : 'keep';
 
   const insights: string[] = [];
 
   if (paymentMismatch) {
     insights.push(
-      `Warning: Your entered payment ($${currentMonthlyPayment.toFixed(2)}) doesn't match the scheduled P&I of $${scheduledCurrentPayment.toFixed(2)} implied by a $${currentBalance.toLocaleString()} balance at ${currentRate}% with ${yearsRemaining} years left. The analysis uses the computed $${scheduledCurrentPayment.toFixed(2)} — check that your entry is principal & interest only.`
+      `Warning: at $${currentBalance.toLocaleString()} / ${currentRate}% / ${yearsRemaining} years remaining, the amortized P&I payment is about $${impliedCurrentPayment.toFixed(0)}/month, but you entered $${currentMonthlyPayment.toFixed(0)}. The analysis uses the computed $${impliedCurrentPayment.toFixed(0)} — make sure your entry is principal & interest only (no taxes, insurance, or escrow).`
     );
   }
 
   insights.push(
-    `The $${closingCosts.toLocaleString(undefined, { maximumFractionDigits: 0 })} in closing costs is financed into the new loan, so you'd borrow $${newLoanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })} and pay interest on those costs for the full ${newTerm}-year term.`
+    `Closing costs of $${closingCosts.toLocaleString()} are financed into the new loan, so your new balance starts at $${newLoanAmount.toLocaleString()} — you're borrowing the costs (and paying interest on them) rather than paying them upfront.`
   );
 
-  if (savesMonthly) {
+  if (hasMonthlySavings) {
     insights.push(
-      `You'll save $${monthlySavings.toFixed(2)}/month, and it will take ${breakEvenMonths} months (${breakEvenYears.toFixed(1)} years) of those savings to offset the $${closingCosts.toFixed(0)} closing costs.`
+      `You'll save $${monthlySavings.toFixed(2)}/month, but it will take ${breakEvenMonths} months (${breakEvenYears.toFixed(1)} years) of those savings to recoup the $${closingCosts.toFixed(0)} closing costs.`
     );
   } else {
     insights.push(
-      `Your monthly payment will increase by $${Math.abs(monthlySavings).toFixed(2)}/month, so there is no payment-based break-even point.`
+      verdict === 'higher-payment-lower-cost'
+        ? `Your monthly payment will increase by $${Math.abs(monthlySavings).toFixed(2)}, but the faster payoff lowers your total cost — there is no payment-based break-even point.`
+        : `Your monthly payment will increase by $${Math.abs(monthlySavings).toFixed(2)}. This refinance may not make financial sense.`
     );
   }
 
-  if (savesTotal) {
+  if (hasLifetimeSavings) {
     insights.push(
-      `Over the life of the loan, you'll pay $${totalSavings.toFixed(0)} less in total than keeping your current loan (closing costs included).`
+      `Over the life of the loan, you'll save $${totalSavings.toFixed(0)} total (including the financed closing costs).`
     );
   } else {
     insights.push(
-      `Over the life of the loan, you'll pay $${Math.abs(totalSavings).toFixed(0)} more in total than keeping your current loan (closing costs included)${savesMonthly ? ' — the lower payment comes from stretching the debt over more years.' : '.'}`
+      `Over the life of the loan, you'll pay $${Math.abs(totalSavings).toFixed(0)} more than keeping your current loan.`
     );
   }
 
@@ -117,7 +120,7 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
   if (newTerm > yearsRemaining) {
     const extraYears = newTerm - yearsRemaining;
     insights.push(
-      `Warning: You're extending your loan by ${extraYears} years. Resetting the term restarts amortization, so early payments are mostly interest and you build equity more slowly.`
+      `Warning: You're extending your loan by ${extraYears} years. A lower payment from a term reset also means rebuilding equity more slowly — the break-even figure above only counts payment savings.`
     );
   }
 
@@ -133,19 +136,21 @@ export function calculateRefinance(inputs: RefinanceInputs): CalculatorResult {
     });
   }
 
-  const summaryByVerdict: Record<RefinanceVerdict, string> = {
-    save: `Refinancing saves you $${monthlySavings.toFixed(2)}/month and $${totalSavings.toFixed(0)} over the life of the loan. You'll break even on the financed closing costs in ${Number.isFinite(breakEvenMonths) ? breakEvenMonths : 0} months.`,
-    'lower-payment-higher-cost': `Refinancing lowers your payment by $${monthlySavings.toFixed(2)}/month, but you'd pay $${Math.abs(totalSavings).toFixed(0)} more in total because the term resets to ${newTerm} years.`,
-    'higher-payment-lower-cost': `Your payment rises by $${Math.abs(monthlySavings).toFixed(2)}/month, but the shorter payoff saves you $${totalSavings.toFixed(0)} in total.`,
-    'costs-more': `This refinance increases your monthly payment by $${Math.abs(monthlySavings).toFixed(2)} and costs $${Math.abs(totalSavings).toFixed(0)} more over the life of the loan. It does not save you money.`,
-  };
+  const summary =
+    verdict === 'refinance'
+      ? `Refinancing saves you $${monthlySavings.toFixed(2)}/month and $${totalSavings.toFixed(0)} over the life of the loan. You'll break even on the financed $${closingCosts.toFixed(0)} closing costs in ${breakEvenMonths} months.`
+      : verdict === 'mixed'
+        ? `Refinancing lowers your payment by $${monthlySavings.toFixed(2)}/month, but resets your term — you'd pay $${Math.abs(totalSavings).toFixed(0)} more over the life of the loan. Break-even on payment alone is ${breakEvenMonths} months.`
+        : verdict === 'higher-payment-lower-cost'
+          ? `Your payment rises by $${Math.abs(monthlySavings).toFixed(2)}/month, but the shorter payoff saves you $${totalSavings.toFixed(0)} in total.`
+          : `This refinance increases your monthly payment by $${Math.abs(monthlySavings).toFixed(2)} and costs $${Math.abs(totalSavings).toFixed(0)} more over the life of the loan. It does not save you money.`;
 
   return {
-    summary: summaryByVerdict[verdict],
+    summary,
     details: {
       currentMonthlyPayment: parseFloat(effectiveCurrentPayment.toFixed(2)),
       enteredMonthlyPayment: parseFloat(currentMonthlyPayment.toFixed(2)),
-      scheduledCurrentPayment: parseFloat(scheduledCurrentPayment.toFixed(2)),
+      impliedCurrentPayment: parseFloat(impliedCurrentPayment.toFixed(2)),
       paymentMismatch: paymentMismatch ? 1 : 0,
       newLoanAmount: parseFloat(newLoanAmount.toFixed(2)),
       newMonthlyPayment: parseFloat(newMonthlyPayment.toFixed(2)),
