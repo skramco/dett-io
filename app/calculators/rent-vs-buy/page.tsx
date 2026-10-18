@@ -109,6 +109,10 @@ export default function RentVsBuyCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="rent-vs-buy"
+      assumptions={[
+        `${inputs.loanTerm}-year fixed-rate loan at ${inputs.interestRate}% interest`,
+        `${inputs.homeAppreciation}%/yr home appreciation, ${inputs.rentInflation}%/yr rent growth, and ${inputs.investmentReturn}%/yr investment return — projections, not guarantees`,
+      ]}
       title="Rent vs Buy Calculator"
       description="Compare the long-term financial impact of renting vs buying. See net worth projections, break-even timelines, and scenario analysis."
       relatedCalculators={[

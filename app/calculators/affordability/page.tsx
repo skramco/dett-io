@@ -116,6 +116,10 @@ export default function AffordabilityCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="affordability"
+      assumptions={[
+        `${inputs.loanTerm}-year fixed-rate loan at ${inputs.interestRate}% interest, fully amortizing`,
+        `Property tax ${inputs.propertyTaxRate}% of home value/yr, insurance $${inputs.homeInsuranceAnnual.toLocaleString()}/yr; PMI added when the down payment is under 20%`,
+      ]}
       title="How Much House Can I Afford?"
       description="Calculate your maximum home price based on income, debts, and down payment. See conservative, moderate, and aggressive affordability ranges with DTI analysis."
       relatedCalculators={[
@@ -326,7 +330,7 @@ export default function AffordabilityCalculator() {
                           </Typography>
                         </Stack>
                         <Typography variant="body2" sx={{ color: '#92400E' }}>
-                          Maximum qualification - leaves little room for error
+                          Top of typical guideline ranges — leaves little room for error
                         </Typography>
                         <Typography variant="caption" sx={{ color: '#92400E', fontWeight: 600 }}>
                           Binding constraint: {bindingLabel(result.details.aggressiveBinding as string, 43)}

@@ -127,6 +127,10 @@ export default function RefinanceCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="refinance"
+      assumptions={[
+        `New loan: ${inputs.newRate}% fixed for ${inputs.newTerm} years; current loan: ${inputs.currentRate}% with ${inputs.yearsRemaining} years remaining`,
+        `Closing costs of $${inputs.closingCosts.toLocaleString()} as entered; both loans fully amortizing`,
+      ]}
       title="Should I Refinance?"
       description="Compare your current mortgage to a new loan. See monthly savings, break-even timeline, and total cost comparison to make an informed decision."
       relatedCalculators={[

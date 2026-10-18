@@ -73,6 +73,9 @@ export default function BiweeklyCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="biweekly"
+      assumptions={[
+        `Fixed-rate loan of $${inputs.loanAmount.toLocaleString()} at ${inputs.interestRate}% interest for ${inputs.loanTerm} years, fully amortizing`,
+      ]}
       title="Biweekly Payment Calculator"
       description="See how biweekly payments can pay off your mortgage faster. Learn the difference between true biweekly and fake biweekly programs, plus a free DIY alternative."
       relatedCalculators={[

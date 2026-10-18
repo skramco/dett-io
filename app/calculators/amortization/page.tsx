@@ -103,6 +103,9 @@ export default function AmortizationCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="amortization"
+      assumptions={[
+        `Fixed-rate loan of $${inputs.loanAmount.toLocaleString()} at ${inputs.interestRate}% interest for ${inputs.loanTerm} years, fully amortizing`,
+      ]}
       title="Amortization Schedule Calculator"
       description="See a complete month-by-month breakdown of every mortgage payment. Understand exactly how much goes to principal vs interest over the life of your loan."
       relatedCalculators={[

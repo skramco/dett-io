@@ -128,8 +128,12 @@ export default function DTICalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="dti"
+      assumptions={[
+        'Ratios use gross (pre-tax) income and the minimum debt payments you enter',
+        'Thresholds shown are typical program guidelines (e.g. 28/36 conventional ideal) — lenders apply their own overlays',
+      ]}
       title="Debt-to-Income (DTI) Calculator"
-      description="Calculate your front-end and back-end DTI ratios — the key numbers lenders use to determine how much mortgage you can qualify for. See exactly what lenders see."
+      description="Calculate your front-end and back-end DTI ratios — the key numbers lenders review when sizing a mortgage. See exactly what lenders see."
       relatedCalculators={[
         { slug: 'affordability', name: 'How Much House Can I Afford?' },
         { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },

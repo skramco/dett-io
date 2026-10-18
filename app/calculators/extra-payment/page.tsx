@@ -83,6 +83,10 @@ export default function ExtraPaymentCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="extra-payment"
+      assumptions={[
+        `Fixed-rate loan of $${inputs.loanAmount.toLocaleString()} at ${inputs.interestRate}% interest for ${inputs.loanTerm} years, fully amortizing`,
+        `Invest-instead comparison assumes a ${inputs.investmentReturn}% annual return, which is not guaranteed`,
+      ]}
       title="Extra Payment Calculator"
       description="See how extra payments accelerate your mortgage payoff. Compare the impact of monthly vs annual extra payments and whether to prepay or invest."
       relatedCalculators={[

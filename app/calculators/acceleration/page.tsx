@@ -89,6 +89,10 @@ export default function AccelerationCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="acceleration"
+      assumptions={[
+        `Fixed-rate loan of $${inputs.loanAmount.toLocaleString()} at ${inputs.interestRate}% interest for ${inputs.loanTerm} years, fully amortizing`,
+        `Invest-instead comparison assumes a ${inputs.investmentReturn}% annual return, which is not guaranteed`,
+      ]}
       title="Mortgage Acceleration Calculator"
       description="See how extra payments can pay off your mortgage faster and save thousands in interest. Compare prepaying vs investing the difference."
       relatedCalculators={[

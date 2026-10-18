@@ -101,8 +101,12 @@ export default function FHACalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="fha"
+      assumptions={[
+        `${inputs.loanTerm}-year fixed-rate FHA loan at ${inputs.interestRate}% interest; upfront MIP (1.75%) financed into the loan`,
+        'MIP uses current published FHA premium schedules; taxes and insurance as entered',
+      ]}
       title="FHA Loan Calculator"
-      description="Calculate your FHA mortgage payment including upfront and monthly MIP. See if you qualify, compare FHA vs conventional, and understand the true cost of FHA mortgage insurance."
+      description="Calculate your FHA mortgage payment including upfront and monthly MIP. See how your numbers compare to typical FHA guidelines, compare FHA vs conventional, and understand the true cost of FHA mortgage insurance."
       relatedCalculators={[
         { slug: 'affordability', name: 'How Much House Can I Afford?' },
         { slug: 'dti', name: 'DTI Calculator' },
@@ -230,7 +234,7 @@ export default function FHACalculator() {
               </Grid>
 
               {/* FHA Guideline Check */}
-              <ResultsSection title="FHA Guideline Check" subtitle="How your numbers line up with typical FHA guidelines">
+              <ResultsSection title="FHA Guideline Check" subtitle="How your numbers compare to typical FHA guidelines">
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Stack spacing={2}>
                     {[
@@ -268,15 +272,15 @@ export default function FHACalculator() {
                             <Typography variant="caption" color="text.secondary">{check.detail}</Typography>
                           </Box>
                         </Stack>
-                        <Typography variant="body2" sx={{ fontWeight: 700, color: check.meets ? '#22C55E' : '#B45309' }}>
-                          {check.meets ? 'Meets guideline' : 'Worth reviewing'}
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: check.meets ? '#22C55E' : '#B45309', textAlign: 'right', maxWidth: 160 }}>
+                          {check.meets ? 'May meet typical guidelines' : 'Outside typical guidelines'}
                         </Typography>
                       </Box>
                     ))}
+                    <Typography variant="caption" color="text.secondary">
+                      Typical FHA guidelines only — this is not an eligibility decision. Lenders weigh your full application, overlays vary, and loan limits vary by county.
+                    </Typography>
                   </Stack>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
-                    These are general FHA guidelines, not an approval decision — lenders weigh your full picture, and limits vary by county.
-                  </Typography>
                 </Paper>
               </ResultsSection>
 
@@ -371,8 +375,8 @@ export default function FHACalculator() {
                     {result.insights.map((insight, index) => (
                       <InsightCallout
                         key={index}
-                        type={insight.includes('qualify') || insight.includes('meets') ? 'tip' : insight.includes('below') || insight.includes('exceeds') ? 'warning' : 'info'}
-                        title={insight.includes('qualify') || insight.includes('meets') ? 'Eligibility' : insight.includes('below') || insight.includes('exceeds') ? 'Warning' : 'Insight'}
+                        type={insight.includes('allow') || insight.includes('meets') ? 'tip' : insight.includes('below') || insight.includes('exceeds') ? 'warning' : 'info'}
+                        title={insight.includes('allow') || insight.includes('meets') ? 'Guidelines' : insight.includes('below') || insight.includes('exceeds') ? 'Warning' : 'Insight'}
                       >
                         {insight}
                       </InsightCallout>
