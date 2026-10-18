@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { trackEvent } from '@/lib/analytics';
+import { buildShareUrl } from '@/lib/share/calculatorState';
+import { downloadCalculatorPdf } from '@/lib/share/writeCalculatorPdf';
 import {
   Box,
   Stack,
@@ -38,7 +40,7 @@ export interface ActionBarProps {
   insights: string[];
   /** Current calculator inputs to encode in share URL */
   inputs: Record<string, unknown>;
-  /** The results container ref for PDF capture */
+  /** Optional results container ref. Kept for compatibility; PDF export is data-driven. */
   resultsRef?: React.RefObject<HTMLElement | null>;
 }
 
@@ -48,7 +50,6 @@ export function ActionBar({
   details,
   insights,
   inputs,
-  resultsRef,
 }: ActionBarProps) {
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' }>({
     open: false,
@@ -63,23 +64,37 @@ export function ActionBar({
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
 
-  // --- SHARE URL ---
-  const handleShareURL = useCallback(() => {
-    const params = new URLSearchParams();
-    Object.entries(inputs).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        params.set(key, String(value));
-      }
-    });
-    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-    setShareURL(url);
-    setLinkCopied(false);
-    setShareDialogOpen(true);
+  const currentShareUrl = useCallback(() => {
+    return buildShareUrl(
+      window.location.origin,
+      window.location.pathname,
+      inputs,
+      window.location.search,
+      window.location.hash
+    );
   }, [inputs]);
 
-  const handleCopyLink = useCallback(async () => {
+  // --- SHARE URL ---
+  const handleShareURL = useCallback(async () => {
+    const url = currentShareUrl();
+    setShareURL(url);
+    setShareDialogOpen(true);
     try {
-      await navigator.clipboard.writeText(shareURL);
+      await navigator.clipboard.writeText(url);
+      setLinkCopied(true);
+      trackEvent('calculator_link_shared', { calculator_slug: calculatorName });
+      setSnackbar({ open: true, message: 'Link copied to clipboard!', severity: 'success' });
+      setTimeout(() => setLinkCopied(false), 3000);
+    } catch {
+      setLinkCopied(false);
+      setSnackbar({ open: true, message: 'Select the link and copy it manually.', severity: 'info' });
+    }
+  }, [calculatorName, currentShareUrl]);
+
+  const handleCopyLink = useCallback(async () => {
+    const url = shareURL || currentShareUrl();
+    try {
+      await navigator.clipboard.writeText(url);
       setLinkCopied(true);
       trackEvent('calculator_link_shared', { calculator_slug: calculatorName });
       setSnackbar({ open: true, message: 'Link copied to clipboard!', severity: 'success' });
@@ -87,7 +102,7 @@ export function ActionBar({
     } catch {
       setSnackbar({ open: true, message: 'Failed to copy. Select the link and copy manually.', severity: 'error' });
     }
-  }, [shareURL]);
+  }, [calculatorName, currentShareUrl, shareURL]);
 
   // --- EMAIL RESULTS ---
   const handleEmailSend = useCallback(async () => {
@@ -129,110 +144,19 @@ export function ActionBar({
     } finally {
       setEmailSending(false);
     }
-  }, [emailAddress, calculatorName, summary, details, insights]);
+  }, [emailAddress, calculatorName, summary, details, insights, inputs]);
 
   // --- PDF DOWNLOAD ---
   const handlePDFDownload = useCallback(async () => {
     setPdfGenerating(true);
     try {
-      const html2canvas = (await import('html2canvas-pro')).default;
-      const { jsPDF } = await import('jspdf');
-
-      // Capture the results area — try ref first, then the right-side results column (lg:7 grid), then the full calculator content
-      const element = resultsRef?.current
-        || document.querySelector('[data-pdf-capture]') as HTMLElement
-        || document.querySelector('.MuiGrid2-root:last-child .MuiStack-root') as HTMLElement
-        || document.querySelector('.MuiContainer-root .MuiGrid2-root') as HTMLElement;
-      if (!element) {
-        setSnackbar({ open: true, message: 'Could not find results to export.', severity: 'error' });
-        setPdfGenerating(false);
-        return;
-      }
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
+      await downloadCalculatorPdf({
+        calculatorName,
+        summary,
+        details,
+        insights,
+        inputs,
       });
-
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = 190; // A4 width minus margins
-      const pageHeight = 277; // A4 height minus margins
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      const pdf = new jsPDF('p', 'mm', 'a4');
-
-      // Header
-      pdf.setFontSize(20);
-      pdf.setTextColor(15, 23, 42); // slate-900
-      pdf.text('Dett', 15, 15);
-      pdf.setFontSize(10);
-      pdf.setTextColor(100, 116, 139); // slate-500
-      pdf.text('Free Mortgage Calculators | dett.io', 15, 22);
-
-      // Calculator name
-      pdf.setFontSize(16);
-      pdf.setTextColor(15, 23, 42);
-      pdf.text(calculatorName, 15, 35);
-
-      // Date
-      pdf.setFontSize(9);
-      pdf.setTextColor(100, 116, 139);
-      pdf.text(`Generated: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, 15, 42);
-
-      // Results image
-      let yPosition = 48;
-      let remainingHeight = imgHeight;
-
-      if (imgHeight <= pageHeight - yPosition) {
-        // Fits on one page
-        pdf.addImage(imgData, 'PNG', 10, yPosition, imgWidth, imgHeight);
-      } else {
-        // Multi-page
-        let sourceY = 0;
-        const sourceWidth = canvas.width;
-        const sourceHeight = canvas.height;
-
-        while (remainingHeight > 0) {
-          const availableHeight = yPosition === 48 ? pageHeight - yPosition : pageHeight - 10;
-          const sliceHeight = Math.min(remainingHeight, availableHeight);
-          const sourceSliceHeight = (sliceHeight / imgHeight) * sourceHeight;
-
-          // Create a slice canvas
-          const sliceCanvas = document.createElement('canvas');
-          sliceCanvas.width = sourceWidth;
-          sliceCanvas.height = sourceSliceHeight;
-          const ctx = sliceCanvas.getContext('2d');
-          if (ctx) {
-            ctx.drawImage(canvas, 0, sourceY, sourceWidth, sourceSliceHeight, 0, 0, sourceWidth, sourceSliceHeight);
-            const sliceData = sliceCanvas.toDataURL('image/png');
-            pdf.addImage(sliceData, 'PNG', 10, yPosition, imgWidth, sliceHeight);
-          }
-
-          remainingHeight -= sliceHeight;
-          sourceY += sourceSliceHeight;
-
-          if (remainingHeight > 0) {
-            pdf.addPage();
-            yPosition = 10;
-          }
-        }
-      }
-
-      // Footer on last page
-      const pageCount = pdf.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        pdf.setPage(i);
-        pdf.setFontSize(8);
-        pdf.setTextColor(148, 163, 184);
-        pdf.text('This is an educational tool. Results are estimates and should not be considered financial advice.', 15, 290);
-        pdf.text(`dett.io | Page ${i} of ${pageCount}`, 170, 290);
-      }
-
-      // Download
-      const filename = `${calculatorName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-dett.pdf`;
-      pdf.save(filename);
       trackEvent('calculator_pdf_downloaded', { calculator_slug: calculatorName });
       setSnackbar({ open: true, message: 'PDF downloaded!', severity: 'success' });
     } catch (err) {
@@ -241,7 +165,7 @@ export function ActionBar({
     } finally {
       setPdfGenerating(false);
     }
-  }, [calculatorName, resultsRef]);
+  }, [calculatorName, details, insights, inputs, summary]);
 
   return (
     <>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import CalculatorResultsEmail from '@/emails/CalculatorResultsEmail';
+import { buildShareUrl, pickSerializableInputs } from '@/lib/share/calculatorState';
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,18 +33,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build prefilled calculator URL
-    let calculatorUrl = `https://dett.io${calculatorPath || '/calculators'}`;
-    if (inputs && typeof inputs === 'object') {
-      const params = new URLSearchParams();
-      Object.entries(inputs).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          params.set(key, String(value));
-        }
-      });
-      const qs = params.toString();
-      if (qs) calculatorUrl += `?${qs}`;
-    }
+    // Build prefilled calculator URL and only forward serializable inputs.
+    const safeInputs = pickSerializableInputs(inputs);
+    const calculatorUrl = buildShareUrl(
+      'https://dett.io',
+      calculatorPath || '/calculators',
+      safeInputs ?? {}
+    );
 
     const emailHtml = await render(
       CalculatorResultsEmail({
@@ -51,6 +47,7 @@ export async function POST(request: NextRequest) {
         summary,
         details,
         insights: insights || [],
+        inputs: safeInputs,
         calculatorUrl,
       })
     );

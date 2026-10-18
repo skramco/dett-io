@@ -7,9 +7,11 @@ import type { CalculatorResult } from '@/lib/calculators/types';
 interface EmailResultsFormProps {
   calculatorName: string;
   result: CalculatorResult;
+  inputs?: Record<string, unknown>;
+  calculatorPath?: string;
 }
 
-export default function EmailResultsForm({ calculatorName, result }: EmailResultsFormProps) {
+export default function EmailResultsForm({ calculatorName, result, inputs, calculatorPath }: EmailResultsFormProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -31,6 +33,8 @@ export default function EmailResultsForm({ calculatorName, result }: EmailResult
           summary: result.summary,
           details: result.details,
           insights: result.insights,
+          inputs,
+          calculatorPath: calculatorPath || (typeof window !== 'undefined' ? window.location.pathname : undefined),
         }),
       });
 
@@ -124,7 +128,7 @@ export default function EmailResultsForm({ calculatorName, result }: EmailResult
       </form>
 
       <p className="text-xs text-slate-500 mt-3">
-        We'll never spam you or share your email. This is just for sending your results.
+        We&apos;ll never spam you or share your email. This is just for sending your results.
       </p>
     </div>
   );

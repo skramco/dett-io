@@ -1,41 +1,69 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import {
+  applyInputsToUrl,
+  inputsEqual,
+  parseInputsFromLocation,
+  type CalculatorInputs,
+} from '@/lib/share/calculatorState';
 
 /**
- * Reads URL query params on mount and merges numeric values into calculator inputs.
- * Only overrides fields that exist in the defaults object and have valid numeric values.
- * Uses window.location.search directly to avoid needing a Suspense boundary.
- * Runs once on mount.
+ * Bidirectional calculator URL sync.
+ *
+ * - On mount, reads query (or hash) params and merges valid values into state.
+ * - After restore, writes current inputs back to the query string via
+ *   history.replaceState whenever they change.
+ * - Fresh visits (no encoded inputs) keep a clean URL until the user — or live
+ *   market-rate defaults — change a value, so shared links and /api/rates
+ *   still work together.
  */
 export function useUrlInputs<T extends object>(
-  defaults: T,
+  inputs: T,
   setInputs: (updater: (prev: T) => T) => void
 ) {
-  const defaultsRef = useRef(defaults);
+  const defaultsRef = useRef(inputs);
+  const knownKeysRef = useRef(Object.keys(inputs as object));
+  const restoredFromUrlRef = useRef(false);
+  const waitingForRestoreRef = useRef(false);
+
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const overrides = parseInputsFromLocation(
+      window.location.search,
+      defaultsRef.current,
+      window.location.hash
+    );
+
+    if (!overrides) return;
+
+    restoredFromUrlRef.current = true;
+    waitingForRestoreRef.current = true;
+    setInputs((prev) => ({ ...prev, ...overrides }));
+  }, [setInputs]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const searchParams = new URLSearchParams(window.location.search);
-    if (!searchParams.toString()) return;
+    const defaults = defaultsRef.current as CalculatorInputs;
+    const current = inputs as CalculatorInputs;
 
-    const overrides: Record<string, number> = {};
-    let hasOverrides = false;
-
-    for (const key of Object.keys(defaultsRef.current as object)) {
-      const raw = searchParams.get(key);
-      if (raw !== null) {
-        const num = Number(raw);
-        if (!isNaN(num)) {
-          overrides[key] = num;
-          hasOverrides = true;
-        }
-      }
+    if (waitingForRestoreRef.current) {
+      if (inputsEqual(current, defaults)) return;
+      waitingForRestoreRef.current = false;
     }
 
-    if (hasOverrides) {
-      setInputs((prev) => ({ ...prev, ...overrides }));
+    if (!restoredFromUrlRef.current && inputsEqual(current, defaults)) return;
+
+    const next = applyInputsToUrl(
+      window.location.href,
+      current,
+      knownKeysRef.current
+    );
+    const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (next !== currentPath) {
+      window.history.replaceState(window.history.state, '', next);
     }
-  }, [setInputs]);
+  }, [inputs]);
 }
