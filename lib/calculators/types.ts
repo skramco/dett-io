@@ -32,13 +32,22 @@ export interface RefinanceInputs {
   closingCosts: number;
 }
 
-export interface ExtraPaymentInputs {
+/** Merged Extra Payment + Acceleration + Biweekly inputs (ENG-345). */
+export interface PayoffInputs {
   loanAmount: number;
   interestRate: number;
   loanTerm: number;
   extraMonthlyPayment?: number;
   extraAnnualPayment?: number;
+  /** Acceleration-style aliases accepted by the shared engine. */
+  extraMonthly?: number;
+  extraAnnual?: number;
+  lumpSumAmount?: number;
+  lumpSumYear?: number;
+  biweeklyFee?: number;
   investmentReturn?: number;
+  recastOption?: boolean;
+  recastFee?: number;
 }
 
 export interface Scenario {
@@ -98,36 +107,39 @@ export interface RentVsBuyInputs {
   zip?: string;
 }
 
-// Category 2: Rate & Structure
-export interface PointsBuydownInputs {
+/**
+ * Merged Points & Buydown + Timeline Simulator + ARM vs Fixed inputs (ENG-345).
+ * Aliases (interestRate / fixedRate / expectedMoveYear) keep older call sites working.
+ */
+export interface LoanTimelineInputs {
   loanAmount: number;
-  parRate: number;
   loanTerm: number;
-  pointsCost: number;
+  expectedYearsInHome?: number;
+  /** Alias used by the former timeline simulator. */
+  expectedMoveYear?: number;
+  parRate?: number;
+  /** Aliases used by the former timeline simulator / ARM vs Fixed tools. */
+  interestRate?: number;
+  fixedRate?: number;
   pointsRate: number;
-  lenderCredit: number;
-  lenderCreditRate: number;
-  buydownType: 'none' | '3-2-1' | '2-1' | '1-0';
-  yearsToHold: number;
-}
-
-export interface ArmVsFixedInputs {
-  loanAmount: number;
-  fixedRate: number;
+  pointsCost: number;
+  lenderCredit?: number;
+  lenderCreditRate?: number;
+  buydownType?: 'none' | '3-2-1' | '2-1' | '1-0';
   armInitialRate: number;
   /** Fixed-rate period in years (the "5" in 5/6 or 5/1). */
   armFixedPeriod: number;
   /** Months between adjustments after the fixed period: 6 (modern SOFR ARMs) or 12. */
-  armAdjustmentFrequency: number;
+  armAdjustmentFrequency?: number;
   /** Max rate change at the first adjustment (percentage points). */
-  armInitialCap: number;
+  armInitialCap?: number;
+  armMargin: number;
   /** Max rate change at each subsequent adjustment (percentage points). */
   armAdjustmentCap: number;
   /** Max total increase above the initial rate (percentage points). */
   armLifetimeCap: number;
-  armMargin: number;
-  loanTerm: number;
   expectedIndexRate: number;
+  fifteenYearRate?: number;
 }
 
 // Category 3: Refinancing & Equity
@@ -156,27 +168,6 @@ export interface RecastVsRefinanceInputs {
   savingsRate: number;
 }
 
-// Category 4: Payoff & Wealth
-export interface AccelerationInputs {
-  loanAmount: number;
-  interestRate: number;
-  loanTerm: number;
-  extraMonthly: number;
-  extraAnnual: number;
-  lumpSumAmount: number;
-  lumpSumYear: number;
-  investmentReturn: number;
-  recastOption: boolean;
-  recastFee: number;
-}
-
-export interface BiweeklyInputs {
-  loanAmount: number;
-  interestRate: number;
-  loanTerm: number;
-  biweeklyFee: number;
-}
-
 // Category 5: Advanced
 export interface InterestSensitivityInputs {
   loanAmount: number;
@@ -186,18 +177,4 @@ export interface InterestSensitivityInputs {
   homeInsuranceAnnual: number;
   /** Expected closing date (YYYY-MM-DD) for the lock vs. float helper. */
   closingDate?: string;
-}
-
-export interface TimelineSimulatorInputs {
-  loanAmount: number;
-  interestRate: number;
-  expectedMoveYear: number;
-  armInitialRate: number;
-  armFixedPeriod: number;
-  armMargin: number;
-  expectedIndexRate: number;
-  armAdjustmentCap: number;
-  armLifetimeCap: number;
-  pointsCost: number;
-  pointsRate: number;
 }
