@@ -29,6 +29,7 @@ import {
   CurrencyInput,
   PercentageInput,
   SelectInput,
+  SliderInput,
 } from '@/components/mui/calculator/InputPanel';
 import {
   HeroMetric,
@@ -55,6 +56,7 @@ export default function AffordabilityCalculator() {
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1800,
     hoaFees: 0,
+    creditScore: 740,
   });
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate' });
@@ -146,6 +148,20 @@ export default function AffordabilityCalculator() {
                 step={0.125}
               />
               <MarketRateNote rates={marketRates} />
+
+              <Box>
+                <SliderInput
+                  label="Credit Score"
+                  value={inputs.creditScore ?? 740}
+                  onChange={(v) => handleInputChange('creditScore', v)}
+                  min={620}
+                  max={850}
+                  step={10}
+                />
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                  Used to estimate PMI when your down payment is under 20%
+                </Typography>
+              </Box>
 
               <SelectInput
                 label="Loan Term"

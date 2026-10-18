@@ -1,15 +1,17 @@
 import type { AffordabilityInputs, CalculatorResult } from './types';
-import { monthlyPayment } from './mortgageMath';
+import {
+  conventionalPmiRatePercent,
+  DEFAULT_PMI_CREDIT_SCORE,
+  ltvPercent,
+  monthlyPayment,
+  monthlyPmiAmount,
+} from './mortgageMath';
 import {
   LOAN_LIMIT_YEAR,
   CONFORMING_LOAN_LIMIT,
   CONFORMING_HIGH_COST_LIMIT,
   isJumboLoan,
 } from './loanLimits';
-
-// Assumed annual PMI rate (as a fraction of the loan amount) when LTV > 80%.
-const PMI_ANNUAL_RATE = 0.005;
-const PMI_LTV_THRESHOLD = 0.8;
 
 type BindingConstraint = 'front-end' | 'back-end';
 
@@ -38,6 +40,7 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
     propertyTaxRate,
     homeInsuranceAnnual,
     hoaFees,
+    creditScore = DEFAULT_PMI_CREDIT_SCORE,
   } = inputs;
 
   const monthlyIncome = annualIncome / 12;
@@ -47,13 +50,15 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
   const housingPaymentAt = (homePrice: number) => {
     const loanAmount = Math.max(0, homePrice - downPayment);
     const monthlyPI = monthlyPayment(loanAmount, interestRate, numPayments);
-    const ltv = homePrice > 0 ? loanAmount / homePrice : 0;
-    const monthlyPMI = ltv > PMI_LTV_THRESHOLD ? (loanAmount * PMI_ANNUAL_RATE) / 12 : 0;
+    // PMI rate from the shared LTV × credit score grid (0 when LTV ≤ 80%).
+    const pmiRate = conventionalPmiRatePercent(ltvPercent(loanAmount, homePrice), creditScore);
+    const monthlyPMI = monthlyPmiAmount(loanAmount, pmiRate);
     const monthlyTaxIns = (homePrice * propertyTaxRate / 100 / 12) + (homeInsuranceAnnual / 12);
     return {
       total: monthlyPI + monthlyPMI + monthlyTaxIns + hoaFees,
       monthlyPI,
       monthlyPMI,
+      pmiRate,
     };
   };
 
@@ -85,12 +90,13 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
 
     const payment = maxHomePrice > 0
       ? housingPaymentAt(maxHomePrice)
-      : { total: 0, monthlyPI: 0, monthlyPMI: 0 };
+      : { total: 0, monthlyPI: 0, monthlyPMI: 0, pmiRate: 0 };
 
     const loanAmount = Math.max(0, Math.round(maxHomePrice) - downPayment);
     results[`${level}Price`] = Math.round(maxHomePrice);
     results[`${level}Payment`] = Math.round(payment.total);
     results[`${level}PMI`] = Math.round(payment.monthlyPMI);
+    results[`${level}PMIRate`] = payment.pmiRate;
     results[`${level}LoanAmount`] = loanAmount;
     results[`${level}IsJumbo`] = isJumboLoan(loanAmount) ? 1 : 0;
     // Front-end DTI: housing payment as % of income.
@@ -155,6 +161,7 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
     details: {
       monthlyIncome: Math.round(monthlyIncome),
       monthlyDebts,
+      creditScore,
       conservativePrice: results.conservativePrice,
       conservativePayment: results.conservativePayment,
       conservativeDTI: results.conservativeDTI,
@@ -168,6 +175,7 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
       moderateDTI: results.moderateDTI,
       moderateBackEndDTI: results.moderateBackEndDTI,
       moderatePMI: results.moderatePMI,
+      moderatePMIRate: results.moderatePMIRate,
       moderateBinding: binding.moderate,
       moderateLoanAmount: results.moderateLoanAmount,
       moderateIsJumbo: results.moderateIsJumbo,

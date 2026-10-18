@@ -122,13 +122,33 @@ export function monthsToReachLtv(
   return 0;
 }
 
+/** PMI applies only when LTV is above this percentage (i.e. < 20% down). */
+export const PMI_LTV_THRESHOLD_PERCENT = 80;
+
+/**
+ * Last-resort assumption when a calculator has no credit score input.
+ * 740 approximates a typical conventional borrower and keeps estimates
+ * grid-driven instead of a flat rate.
+ */
+export const DEFAULT_PMI_CREDIT_SCORE = 740;
+
 /** Monthly PMI from an annual PMI rate (e.g. 0.5 for 0.5%/yr). */
 export function monthlyPmiAmount(loanAmount: number, annualPmiRatePercent: number): number {
   return (loanAmount * (annualPmiRatePercent / 100)) / 12;
 }
 
-/** Approximate conventional annual PMI rate (%) based on LTV and credit score. */
-export function conventionalPmiRatePercent(ltv: number, creditScore: number): number {
+/**
+ * Approximate conventional annual PMI rate (%) from the shared LTV × credit
+ * score grid. Returns 0 when LTV ≤ 80% (no PMI). When `creditScore` is omitted,
+ * uses {@link DEFAULT_PMI_CREDIT_SCORE} so calculators without a score input
+ * stay on the grid instead of a flat 0.5%.
+ */
+export function conventionalPmiRatePercent(
+  ltv: number,
+  creditScore: number = DEFAULT_PMI_CREDIT_SCORE
+): number {
+  if (ltv <= PMI_LTV_THRESHOLD_PERCENT) return 0;
+
   if (creditScore >= 760) {
     if (ltv <= 85) return 0.19;
     if (ltv <= 90) return 0.3;
@@ -159,6 +179,22 @@ export function conventionalPmiRatePercent(ltv: number, creditScore: number): nu
   if (ltv <= 90) return 0.9;
   if (ltv <= 95) return 1.25;
   return 1.5;
+}
+
+/**
+ * Monthly borrower-paid PMI in dollars from loan amount, home value, and
+ * credit score. Returns 0 when LTV ≤ 80% or inputs are non-positive.
+ */
+export function monthlyConventionalPmi(
+  loanAmount: number,
+  homeValue: number,
+  creditScore: number = DEFAULT_PMI_CREDIT_SCORE
+): number {
+  if (homeValue <= 0 || loanAmount <= 0) return 0;
+  return monthlyPmiAmount(
+    loanAmount,
+    conventionalPmiRatePercent(ltvPercent(loanAmount, homeValue), creditScore)
+  );
 }
 
 /** Front-end (housing) DTI as a percentage of gross monthly income. */

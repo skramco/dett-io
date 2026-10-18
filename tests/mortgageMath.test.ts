@@ -4,6 +4,8 @@ import {
   backEndDtiPercent,
   breakEvenMonths,
   conventionalPmiRatePercent,
+  DEFAULT_PMI_CREDIT_SCORE,
+  monthlyConventionalPmi,
   FHA_MIP_RATE_LOAN_THRESHOLD,
   FHA_UPFRONT_MIP_PERCENT,
   fhaAnnualMipRatePercent,
@@ -127,6 +129,22 @@ describe('PMI helpers', () => {
     expect(conventionalPmiRatePercent(90, 760)).toBeLessThan(conventionalPmiRatePercent(90, 650));
     expect(conventionalPmiRatePercent(90, 740)).toBe(0.35);
     expect(conventionalPmiRatePercent(95, 700)).toBe(0.82);
+  });
+
+  it('returns 0 PMI at or below 80% LTV', () => {
+    expect(conventionalPmiRatePercent(80, 740)).toBe(0);
+    expect(conventionalPmiRatePercent(70, 620)).toBe(0);
+    expect(monthlyConventionalPmi(360000, 450000, 740)).toBe(0);
+  });
+
+  it('uses the typical-borrower 740 band when credit score is omitted', () => {
+    expect(conventionalPmiRatePercent(90)).toBe(conventionalPmiRatePercent(90, DEFAULT_PMI_CREDIT_SCORE));
+    expect(conventionalPmiRatePercent(90)).toBe(0.35);
+  });
+
+  it('computes monthly PMI from loan, home value, and credit score', () => {
+    // $405k loan on $450k home = 90% LTV; 740 score → 0.35%/yr
+    expect(monthlyConventionalPmi(405000, 450000, 740)).toBeCloseTo((405000 * 0.35) / 100 / 12, 6);
   });
 });
 

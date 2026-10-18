@@ -1,9 +1,11 @@
 import type { CalculatorResult } from './types';
 import {
   backEndDtiPercent,
+  conventionalPmiRatePercent,
   fhaMonthlyMip,
   fhaUpfrontMip,
   frontEndDtiPercent,
+  ltvPercent,
   monthlyPayment,
   monthlyPmiAmount,
   vaFundingFeeRatePercent,
@@ -82,7 +84,9 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
   const convDownPayment = homePrice * 0.05;
   const convLoanAmount = homePrice - convDownPayment;
   const convMonthlyPI = monthlyPayment(convLoanAmount, interestRate, numberOfPayments);
-  const convMonthlyPMI = monthlyPmiAmount(convLoanAmount, 0.5); // ~0.5%/yr estimate
+  // Conventional PMI from the shared LTV × credit grid (typical-borrower fallback).
+  const convPMIRate = conventionalPmiRatePercent(ltvPercent(convLoanAmount, homePrice));
+  const convMonthlyPMI = monthlyPmiAmount(convLoanAmount, convPMIRate);
   const convTotalMonthly = convMonthlyPI + convMonthlyPMI + monthlyPropertyTax + monthlyInsurance;
 
   // Savings from no PMI

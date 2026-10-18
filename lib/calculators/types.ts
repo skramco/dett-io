@@ -13,6 +13,9 @@ export interface MortgageCostInputs {
   propertyTax: number;
   homeInsurance: number;
   hoaFees: number;
+  /** Credit score used to estimate PMI from the shared LTV × credit grid. */
+  creditScore?: number;
+  /** Manual annual PMI override in dollars; 0 or undefined = auto-estimate. */
   pmi?: number;
 }
 
@@ -52,6 +55,8 @@ export interface AffordabilityInputs {
   propertyTaxRate: number;
   homeInsuranceAnnual: number;
   hoaFees: number;
+  /** Credit score used to estimate PMI from the shared LTV × credit grid. */
+  creditScore?: number;
 }
 
 export interface DownPaymentInputs {
