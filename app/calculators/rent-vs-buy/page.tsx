@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -46,7 +48,7 @@ export default function RentVsBuyCalculator() {
   const [inputs, setInputs] = useState<RentVsBuyInputs>({
     homePrice: 450000,
     downPayment: 90000,
-    interestRate: 6.75,
+    interestRate: DEFAULT_RATES.thirtyYearFixed,
     loanTerm: 30,
     monthlyRent: 2200,
     rentInflation: 3,

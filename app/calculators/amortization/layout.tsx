@@ -1,9 +1,13 @@
 import { getCalculatorMetadata, getCalculatorJsonLd } from '@/lib/seo/calculatorSeo';
+import { calculatorLastModified } from '@/lib/seo/lastModified';
 
 export const metadata = getCalculatorMetadata('amortization');
 
 export default function AmortizationLayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = getCalculatorJsonLd('amortization');
+  const jsonLd = getCalculatorJsonLd(
+    'amortization',
+    calculatorLastModified('amortization').toISOString().slice(0, 10)
+  );
   return (
     <>
       {jsonLd && (

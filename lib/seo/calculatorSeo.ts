@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getCalculatorFaqs } from '@/lib/seo/calculatorFaqs';
 
 export interface CalculatorSeoConfig {
   slug: string;
@@ -556,18 +557,32 @@ export function getCalculatorMetadata(slug: string): Metadata {
   };
 }
 
-export function getCalculatorJsonLd(slug: string): Record<string, unknown> | null {
+/**
+ * Full structured data graph for a calculator page:
+ * WebApplication + BreadcrumbList + FAQPage (when FAQs exist).
+ *
+ * `dateModified` should be an ISO date derived at build time (see
+ * lib/seo/lastModified.ts) so it tracks actual content changes.
+ */
+export function getCalculatorJsonLd(
+  slug: string,
+  dateModified?: string
+): Record<string, unknown> | null {
   const config = calculatorSeoConfigs[slug];
   if (!config) return null;
 
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
+  const pageUrl = `${BASE_URL}/calculators/${config.slug}`;
+  const faqs = getCalculatorFaqs(slug);
+
+  const webApplication: Record<string, unknown> = {
+    '@type': ['WebApplication', 'SoftwareApplication'],
+    '@id': `${pageUrl}#webapp`,
     name: config.jsonLd.name,
     description: config.jsonLd.description,
-    url: `${BASE_URL}/calculators/${config.slug}`,
+    url: pageUrl,
     applicationCategory: config.jsonLd.applicationCategory,
     operatingSystem: 'Any',
+    browserRequirements: 'Requires JavaScript',
     offers: {
       '@type': 'Offer',
       price: '0',
@@ -575,10 +590,58 @@ export function getCalculatorJsonLd(slug: string): Record<string, unknown> | nul
     },
     provider: {
       '@type': 'Organization',
-      name: 'Dett',
+      name: 'Dett.io',
       url: BASE_URL,
     },
-    featureList: calculatorSeoConfigs[slug]?.keywords?.slice(0, 5).join(', '),
+    featureList: config.keywords?.slice(0, 5).join(', '),
     isAccessibleForFree: true,
+    ...(dateModified ? { dateModified } : {}),
+  };
+
+  const breadcrumbList: Record<string, unknown> = {
+    '@type': 'BreadcrumbList',
+    '@id': `${pageUrl}#breadcrumb`,
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Calculators',
+        item: `${BASE_URL}/calculators`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: config.jsonLd.name,
+        item: pageUrl,
+      },
+    ],
+  };
+
+  const graph: Record<string, unknown>[] = [webApplication, breadcrumbList];
+
+  if (faqs.length > 0) {
+    graph.push({
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
+      })),
+    });
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': graph,
   };
 }

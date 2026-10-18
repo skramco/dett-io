@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -15,7 +17,7 @@ import type { RecastVsRefinanceInputs } from '@/lib/calculators/types';
 export default function RecastVsRefiCalculator() {
   const [inputs, setInputs] = useState<RecastVsRefinanceInputs>({
     currentBalance: 320000, currentRate: 6.5, yearsRemaining: 27, lumpSumAmount: 50000,
-    recastFee: 250, newRate: 6.0, newTerm: 30, closingCosts: 6000,
+    recastFee: 250, newRate: DEFAULT_RATES.thirtyYearFixed, newTerm: 30, closingCosts: 6000,
   });
   useUrlInputs(inputs, setInputs);
   const deferredInputs = useDeferredInputs(inputs);

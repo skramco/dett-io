@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -51,7 +53,7 @@ export default function PMICalculator() {
     homePrice: 450000,
     downPaymentPercent: 10,
     loanAmount: 405000,
-    interestRate: 6.75,
+    interestRate: DEFAULT_RATES.thirtyYearFixed,
     loanTerm: 30,
     creditScore: 740,
     pmiType: 'borrower-paid',

@@ -1,9 +1,13 @@
 import { getCalculatorMetadata, getCalculatorJsonLd } from '@/lib/seo/calculatorSeo';
+import { calculatorLastModified } from '@/lib/seo/lastModified';
 
 export const metadata = getCalculatorMetadata('pmi');
 
 export default function PMILayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = getCalculatorJsonLd('pmi');
+  const jsonLd = getCalculatorJsonLd(
+    'pmi',
+    calculatorLastModified('pmi').toISOString().slice(0, 10)
+  );
   return (
     <>
       {jsonLd && (

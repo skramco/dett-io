@@ -20,7 +20,8 @@ import { RelatedGuides } from './calculator/RelatedGuides';
 import { LoanKnowCTA } from './calculator/LoanKnowCTA';
 import { ActionBar } from './calculator/ActionBar';
 import { ShowMeTheMath } from './calculator/ShowMeTheMath';
-import { CalculatorJsonLd } from '@/components/JsonLd';
+import { CalculatorFaq } from './calculator/CalculatorFaq';
+import { MethodologyNote } from './calculator/MethodologyNote';
 import { useIsEmbed } from '@/lib/embedContext';
 
 interface RelatedCalculator {
@@ -204,9 +205,8 @@ export default function CalculatorLayout({ children, title, description, related
   // ── Standard (non-embed) layout ──
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {calculatorSlug && (
-        <CalculatorJsonLd name={title} description={description} slug={calculatorSlug} />
-      )}
+      {/* Structured data (WebApplication + BreadcrumbList + FAQPage) is emitted
+          server-side by each calculator's route layout via getCalculatorJsonLd. */}
       <Header />
 
       <Box component="main" sx={{ flex: 1 }}>
@@ -401,7 +401,14 @@ export default function CalculatorLayout({ children, title, description, related
           {calculatorSlug && (
             <RelatedGuides calculatorSlug={calculatorSlug} />
           )}
+          {/* FAQ (visible counterpart to the FAQPage structured data) */}
+          {calculatorSlug && <CalculatorFaq slug={calculatorSlug} />}
           <LoanKnowCTA />
+        </Container>
+
+        {/* Default rates, methodology & last-updated disclosure */}
+        <Container maxWidth="lg" sx={{ pb: 3 }}>
+          <MethodologyNote />
         </Container>
 
         {/* Calculator Disclaimer */}

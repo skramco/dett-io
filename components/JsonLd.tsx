@@ -55,40 +55,8 @@ export function WebSiteJsonLd() {
   );
 }
 
-// WebApplication schema — used on each calculator page
-export function CalculatorJsonLd({
-  name,
-  description,
-  slug,
-}: {
-  name: string;
-  description: string;
-  slug: string;
-}) {
-  return (
-    <JsonLd
-      data={{
-        '@context': 'https://schema.org',
-        '@type': 'WebApplication',
-        name,
-        description,
-        url: `https://dett.io/calculators/${slug}`,
-        applicationCategory: 'FinanceApplication',
-        operatingSystem: 'Any',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
-        },
-        provider: {
-          '@type': 'Organization',
-          name: 'Dett.io',
-          url: 'https://dett.io',
-        },
-      }}
-    />
-  );
-}
+// Calculator pages emit WebApplication + BreadcrumbList + FAQPage server-side
+// via getCalculatorJsonLd in lib/seo/calculatorSeo.ts.
 
 // Article schema — used on each guide page
 export function ArticleJsonLd({

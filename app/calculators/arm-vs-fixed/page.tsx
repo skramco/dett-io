@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -45,8 +47,8 @@ import type { ArmVsFixedInputs } from '@/lib/calculators/types';
 export default function ArmVsFixedCalculator() {
   const [inputs, setInputs] = useState<ArmVsFixedInputs>({
     loanAmount: 360000,
-    fixedRate: 6.75,
-    armInitialRate: 5.75,
+    fixedRate: DEFAULT_RATES.thirtyYearFixed,
+    armInitialRate: DEFAULT_RATES.arm5Initial,
     armFixedPeriod: 5,
     armAdjustmentCap: 2,
     armLifetimeCap: 5,

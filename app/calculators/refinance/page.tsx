@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES, offsetRate } from '@/lib/rates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -40,17 +42,26 @@ import {
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateRefinance } from '@/lib/calculators';
+import { amortizedPayment } from '@/lib/calculators/refinance';
 import type { RefinanceInputs } from '@/lib/calculators/types';
+
+// Default scenario: a loan originated ~0.6% above today's market average
+// (e.g. a 2023-vintage mortgage), refinancing to the current market rate.
+const DEFAULT_CURRENT_BALANCE = 320000;
+const DEFAULT_CURRENT_RATE = offsetRate(DEFAULT_RATES.thirtyYearFixed, 0.6);
+const DEFAULT_YEARS_REMAINING = 27;
 
 export default function RefinanceCalculator() {
   const [inputs, setInputs] = useState<RefinanceInputs>({
-    currentBalance: 320000,
-    currentRate: 7.5,
-    // Amortized P&I for $320k at 7.5% with 27 years remaining — kept in sync
-    // with the balance/rate/term defaults so the math is self-consistent.
-    currentMonthlyPayment: 2306,
-    yearsRemaining: 27,
-    newRate: 6.25,
+    currentBalance: DEFAULT_CURRENT_BALANCE,
+    currentRate: DEFAULT_CURRENT_RATE,
+    // Derived from the defaults above so the pre-filled payment always stays
+    // self-consistent with the balance/rate/term.
+    currentMonthlyPayment: Math.round(
+      amortizedPayment(DEFAULT_CURRENT_BALANCE, DEFAULT_CURRENT_RATE, DEFAULT_YEARS_REMAINING * 12)
+    ),
+    yearsRemaining: DEFAULT_YEARS_REMAINING,
+    newRate: DEFAULT_RATES.thirtyYearFixed,
     newTerm: 30,
     closingCosts: 8000,
   });

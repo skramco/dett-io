@@ -1,9 +1,13 @@
 import { getCalculatorMetadata, getCalculatorJsonLd } from '@/lib/seo/calculatorSeo';
+import { calculatorLastModified } from '@/lib/seo/lastModified';
 
 export const metadata = getCalculatorMetadata('closing-costs');
 
 export default function ClosingCostsLayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = getCalculatorJsonLd('closing-costs');
+  const jsonLd = getCalculatorJsonLd(
+    'closing-costs',
+    calculatorLastModified('closing-costs').toISOString().slice(0, 10)
+  );
   return (
     <>
       {jsonLd && (

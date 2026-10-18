@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -49,7 +51,7 @@ export default function FHACalculator() {
   const [inputs, setInputs] = useState<FHAInputs>({
     homePrice: 350000,
     downPaymentPercent: 3.5,
-    interestRate: 6.5,
+    interestRate: DEFAULT_RATES.fha30,
     loanTerm: 30,
     creditScore: 680,
     propertyTax: 4200,

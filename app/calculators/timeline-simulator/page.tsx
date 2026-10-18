@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES, offsetRate } from '@/lib/rates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -14,8 +16,8 @@ import type { TimelineSimulatorInputs } from '@/lib/calculators/types';
 
 export default function TimelineSimulatorCalculator() {
   const [inputs, setInputs] = useState<TimelineSimulatorInputs>({
-    loanAmount: 360000, interestRate: 6.75, expectedMoveYear: 7, refiLikelihood: 30,
-    armInitialRate: 5.75, armFixedPeriod: 5, pointsCost: 7200, pointsRate: 6.25,
+    loanAmount: 360000, interestRate: DEFAULT_RATES.thirtyYearFixed, expectedMoveYear: 7, refiLikelihood: 30,
+    armInitialRate: DEFAULT_RATES.arm5Initial, armFixedPeriod: 5, pointsCost: 7200, pointsRate: offsetRate(DEFAULT_RATES.thirtyYearFixed, -0.5),
   });
   useUrlInputs(inputs, setInputs);
   const deferredInputs = useDeferredInputs(inputs);

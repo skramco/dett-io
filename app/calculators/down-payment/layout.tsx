@@ -1,9 +1,13 @@
 import { getCalculatorMetadata, getCalculatorJsonLd } from '@/lib/seo/calculatorSeo';
+import { calculatorLastModified } from '@/lib/seo/lastModified';
 
 export const metadata = getCalculatorMetadata('down-payment');
 
 export default function DownPaymentLayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = getCalculatorJsonLd('down-payment');
+  const jsonLd = getCalculatorJsonLd(
+    'down-payment',
+    calculatorLastModified('down-payment').toISOString().slice(0, 10)
+  );
   return (
     <>
       {jsonLd && (

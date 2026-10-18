@@ -1,7 +1,7 @@
 import type { RefinanceInputs, CalculatorResult } from './types';
 
 /** Standard amortization payment: P × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1] */
-function amortizedPayment(principal: number, annualRate: number, months: number): number {
+export function amortizedPayment(principal: number, annualRate: number, months: number): number {
   if (months <= 0 || principal <= 0) return 0;
   const r = annualRate / 100 / 12;
   if (r === 0) return principal / months;
