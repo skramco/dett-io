@@ -90,8 +90,7 @@ export interface PointsBuydownInputs {
   pointsRate: number;
   lenderCredit: number;
   lenderCreditRate: number;
-  buydownType: 'none' | '2-1' | '1-0';
-  buydownCost: number;
+  buydownType: 'none' | '3-2-1' | '2-1' | '1-0';
   yearsToHold: number;
 }
 
