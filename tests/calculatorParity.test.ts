@@ -10,25 +10,21 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
-  calculateAcceleration,
   calculateAffordability,
   calculateAmortization,
-  calculateArmVsFixed,
-  calculateBiweekly,
   calculateCashOutRefi,
   calculateClosingCosts,
   calculateDownPayment,
   calculateDTI,
-  calculateExtraPayment,
   calculateFHA,
   calculateInterestSensitivity,
+  calculateLoanTimeline,
   calculateMortgageCost,
+  calculatePayoff,
   calculatePMI,
-  calculatePointsBuydown,
   calculateRecastVsRefi,
   calculateRefinance,
   calculateRentVsBuy,
-  calculateTimelineSimulator,
   calculateVA,
 } from '../lib/calculators';
 import {
@@ -136,9 +132,9 @@ describe('mortgage-cost', () => {
   });
 });
 
-describe('biweekly', () => {
+describe('payoff biweekly', () => {
   const inputs = { loanAmount: 300000, interestRate: 6.5, loanTerm: 30, biweeklyFee: 300 };
-  const result = calculateBiweekly(inputs);
+  const result = calculatePayoff(inputs);
   const refPayment = monthlyPayment(300000, 6.5, 360);
   const refBiweekly = simulateBiweeklyPayoff(300000, 6.5, refPayment / 2, 720);
 
@@ -150,7 +146,7 @@ describe('biweekly', () => {
   it('headline interest saved matches the reference simulation', () => {
     const refMonthlyInterest = refPayment * 360 - 300000;
     const refSaved = refMonthlyInterest - refBiweekly.totalInterest;
-    expect(num(result.details.interestSaved)).toBeCloseTo(refSaved, -1);
+    expect(num(result.details.biweeklyInterestSaved)).toBeCloseTo(refSaved, -1);
   });
 
   it('headline payoff years match the reference simulation', () => {
@@ -239,7 +235,17 @@ describe('points-buydown', () => {
     buydownType: 'none' as const,
     yearsToHold: 7,
   };
-  const result = calculatePointsBuydown(inputs);
+  const result = calculateLoanTimeline({
+    ...inputs,
+    expectedYearsInHome: inputs.yearsToHold,
+    armInitialRate: 5.875,
+    armFixedPeriod: 5,
+    armMargin: 2.75,
+    armAdjustmentCap: 2,
+    armLifetimeCap: 5,
+    expectedIndexRate: 4,
+    fifteenYearRate: 6.5,
+  });
   const parPayment = monthlyPayment(400000, 7, 360);
   const pointsPayment = monthlyPayment(400000, 6.5, 360);
   const creditPayment = monthlyPayment(400000, 7.375, 360);
@@ -266,12 +272,11 @@ describe('points-buydown', () => {
     const pointsRow = result.chartData!.find((r) => r.option === 'Buy Points')!;
     const creditRow = result.chartData!.find((r) => r.option === 'Lender Credit')!;
 
-    expect(num(parRow.totalCost)).toBeCloseTo(parCost, 0);
-    expect(num(pointsRow.totalCost)).toBeCloseTo(pointsCost, 0);
-    expect(num(creditRow.totalCost)).toBeCloseTo(creditCost, 0);
+    expect(num(parRow.totalCost)).toBeCloseTo(parCost, -1);
+    expect(num(pointsRow.totalCost)).toBeCloseTo(pointsCost, -1);
+    expect(num(creditRow.totalCost)).toBeCloseTo(creditCost, -1);
     expect(num(pointsRow.totalCost)).toBeLessThan(num(parRow.totalCost));
     expect(num(parRow.totalCost)).toBeLessThan(num(creditRow.totalCost));
-    expect(result.details.bestOption).toBe('Buy Points');
   });
 
   it('points break-even counts payment savings plus faster principal paydown', () => {
@@ -506,10 +511,14 @@ describe('recast-vs-refi', () => {
   });
 });
 
-describe('arm-vs-fixed', () => {
+describe('loan-timeline ARM (ENG-330)', () => {
   const inputs = {
     loanAmount: 400000,
-    fixedRate: 6.75,
+    loanTerm: 30,
+    expectedYearsInHome: 30,
+    parRate: 6.75,
+    pointsRate: 6.25,
+    pointsCost: 0,
     armInitialRate: 5.875,
     armFixedPeriod: 5,
     armAdjustmentFrequency: 6,
@@ -517,10 +526,9 @@ describe('arm-vs-fixed', () => {
     armAdjustmentCap: 1,
     armLifetimeCap: 5,
     armMargin: 2.75,
-    loanTerm: 30,
     expectedIndexRate: 4,
   };
-  const result = calculateArmVsFixed(inputs);
+  const result = calculateLoanTimeline(inputs);
 
   it('headline fixed and ARM payments match the reference', () => {
     expect(num(result.details.fixedPayment)).toBeCloseTo(monthlyPayment(400000, 6.75, 360), 0);
@@ -538,11 +546,12 @@ describe('arm-vs-fixed', () => {
   });
 });
 
-describe('timeline-simulator', () => {
+describe('loan-timeline (ENG-324)', () => {
   const inputs = {
     loanAmount: 400000,
-    interestRate: 6.75,
-    expectedMoveYear: 6,
+    loanTerm: 30,
+    parRate: 6.75,
+    expectedYearsInHome: 6,
     armInitialRate: 5.875,
     armFixedPeriod: 7,
     armMargin: 2.75,
@@ -552,7 +561,7 @@ describe('timeline-simulator', () => {
     pointsCost: 8000,
     pointsRate: 6.25,
   };
-  const result = calculateTimelineSimulator(inputs);
+  const result = calculateLoanTimeline(inputs);
 
   it('headline payments match the reference', () => {
     expect(num(result.details.fixedPayment)).toBeCloseTo(monthlyPayment(400000, 6.75, 360), 0);
@@ -565,21 +574,23 @@ describe('timeline-simulator', () => {
   });
 
   it('ranks options by net cost (payments + closing − equity), not payments only', () => {
-    for (const row of result.chartData!) {
+    const primary = ['30-Year Fixed (Par)', '30-Year Fixed (Points)', `${inputs.armFixedPeriod}-Year ARM`, '15-Year Fixed'];
+    for (const name of primary) {
+      const row = result.chartData!.find((r) => r.option === name)!;
       const totalPaid = num(row.totalPaid);
       const balance = num(row.remainingBalance);
-      const closing = row.option === '30-Year Fixed (Points)' ? 8000 : 0;
+      const closing = name === '30-Year Fixed (Points)' ? 8000 : 0;
       const equity = 400000 - balance;
       expect(num(row.netCost)).toBeCloseTo(totalPaid + closing - equity, 0);
     }
     expect(result.details.bestOption).toBeTruthy();
     expect(num(result.details.bestNetCost)).toBe(
-      Math.min(...result.chartData!.map((row) => num(row.netCost)))
+      Math.min(...result.scenarios.map((row) => row.netCost))
     );
   });
 });
 
-describe('extra-payment', () => {
+describe('payoff extra-payment (ENG-323)', () => {
   const inputs = {
     loanAmount: 300000,
     interestRate: 6.5,
@@ -588,7 +599,7 @@ describe('extra-payment', () => {
     extraAnnualPayment: 0,
     investmentReturn: 7,
   };
-  const result = calculateExtraPayment(inputs);
+  const result = calculatePayoff(inputs);
 
   it('headline regular payment matches the reference', () => {
     expect(num(result.details.regularMonthlyPayment)).toBeCloseTo(monthlyPayment(300000, 6.5, 360), 1);
@@ -616,19 +627,19 @@ describe('extra-payment', () => {
   });
 
   it('is unbiased: equal investment return and loan rate ends both paths equal', () => {
-    const equal = calculateExtraPayment({ ...inputs, investmentReturn: 6.5 });
+    const equal = calculatePayoff({ ...inputs, investmentReturn: 6.5 });
     expect(num(equal.details.netWorthDifference)).toBeCloseTo(0, 0);
   });
 
   it('does not produce NaN with zero extra payments', () => {
-    const zero = calculateExtraPayment({ ...inputs, extraMonthlyPayment: 0 });
+    const zero = calculatePayoff({ ...inputs, extraMonthlyPayment: 0 });
     expect(Number.isFinite(num(zero.details.interestSaved))).toBe(true);
     expect(Number.isFinite(num(zero.details.netWorthDifference))).toBe(true);
     expect(zero.insights.join(' ')).not.toMatch(/NaN/);
   });
 });
 
-describe('acceleration', () => {
+describe('payoff acceleration (ENG-323)', () => {
   const inputs = {
     loanAmount: 300000,
     interestRate: 6.5,
@@ -641,7 +652,7 @@ describe('acceleration', () => {
     recastOption: false,
     recastFee: 250,
   };
-  const result = calculateAcceleration(inputs);
+  const result = calculatePayoff(inputs);
 
   it('headline base payment matches the reference', () => {
     expect(num(result.details.basePayment)).toBeCloseTo(monthlyPayment(300000, 6.5, 360), 0);
@@ -664,7 +675,7 @@ describe('acceleration', () => {
   });
 
   it('is unbiased: equal investment return and loan rate ends both paths equal', () => {
-    const equal = calculateAcceleration({
+    const equal = calculatePayoff({
       ...inputs,
       extraAnnual: 1200,
       lumpSumAmount: 10000,

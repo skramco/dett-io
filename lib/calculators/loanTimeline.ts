@@ -603,13 +603,33 @@ export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineR
     `⚠️ Worst case from your ${capStructure} caps: rate reaches ${worstCaseRate.toFixed(2)}% by year ${worstCaseYear}, pushing the payment to ${formatCurrency(worstCaseMaxPayment)}/month`
   );
 
-  if (Number.isFinite(pointsBreakEven) && pointsMonthlySavings > 0) {
-    const breakEvenYears = pointsBreakEven / 12;
+  if (pointsMonthlySavings > 0) {
+    const pointsBalanceAdvantage = Math.round(par.balance) - Math.round(points.balance);
+    let inclusiveBreakEvenMonths: number | null = null;
+    for (let month = 1; month <= termMonths; month++) {
+      const savings =
+        pointsMonthlySavings * month +
+        (remainingBalance(loanAmount, parRate, termMonths, month) -
+          remainingBalance(loanAmount, pointsRate, termMonths, month));
+      if (savings >= pointsCost) {
+        inclusiveBreakEvenMonths = month;
+        break;
+      }
+    }
     insights.push(
-      breakEvenYears < expectedYearsInHome
-        ? `Buying points breaks even in ${breakEvenYears.toFixed(1)} years — worth it for your ${expectedYearsInHome}-year timeline.`
-        : `Buying points breaks even in ${breakEvenYears.toFixed(1)} years — longer than your ${expectedYearsInHome}-year timeline, so skip the points.`
+      `Buying points: Saves $${pointsMonthlySavings.toLocaleString()}/month and leaves you owing $${pointsBalanceAdvantage.toLocaleString()} less after ${expectedYearsInHome} years` +
+        (inclusiveBreakEvenMonths
+          ? `, breaking even in ${inclusiveBreakEvenMonths} months (${(inclusiveBreakEvenMonths / 12).toFixed(1)} years)`
+          : '')
     );
+    const breakEvenYears = pointsBreakEven / 12;
+    if (Number.isFinite(pointsBreakEven)) {
+      insights.push(
+        breakEvenYears < expectedYearsInHome
+          ? `Buying points breaks even in ${breakEvenYears.toFixed(1)} years — worth it for your ${expectedYearsInHome}-year timeline.`
+          : `Buying points breaks even in ${breakEvenYears.toFixed(1)} years — longer than your ${expectedYearsInHome}-year timeline, so skip the points.`
+      );
+    }
   } else {
     insights.push('Points at this rate produce no monthly savings — skip them.');
   }

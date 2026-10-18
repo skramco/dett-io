@@ -126,7 +126,7 @@ export default function LoanTimelineCalculator() {
               />
               <NumberInput
                 label="Expected Years in Home"
-                value={inputs.expectedYearsInHome}
+                value={inputs.expectedYearsInHome ?? 7}
                 onChange={(v) => handleInputChange('expectedYearsInHome', v)}
                 suffix="years"
               />
