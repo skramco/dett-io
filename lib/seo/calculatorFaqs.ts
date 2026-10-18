@@ -152,7 +152,7 @@ export const calculatorFaqs: Record<string, CalculatorFaq[]> = {
     {
       question: 'What is the difference between an ARM and a fixed-rate mortgage?',
       answer:
-        'A fixed-rate mortgage keeps one rate for the whole term. An ARM (for example a 5/1 or 7/1) starts with a lower fixed rate for an initial period, then adjusts periodically based on a market index, subject to caps on each adjustment and over the life of the loan.',
+        'A fixed-rate mortgage keeps one rate for the whole term. An ARM (for example a 5/6 SOFR or 7/6) starts with a lower fixed rate for an initial period, then adjusts periodically based on a market index, subject to caps on each adjustment and over the life of the loan. Most ARMs written today are SOFR-indexed 5/6s that adjust every 6 months after the fixed period; older 5/1 products adjust annually.',
     },
     {
       question: 'When does an ARM make sense?',
@@ -162,7 +162,7 @@ export const calculatorFaqs: Record<string, CalculatorFaq[]> = {
     {
       question: 'How high can my ARM rate go?',
       answer:
-        'ARM caps are usually quoted like 2/2/5: a maximum 2-point increase at the first adjustment, 2 points per adjustment after that, and 5 points above the initial rate over the life of the loan. A 5.75% ARM with a 5-point lifetime cap could reach 10.75%.',
+        'ARM caps are usually quoted like 2/1/5: a maximum 2-point increase at the first adjustment, 1 point per later adjustment, and 5 points above the initial rate over the life of the loan. A 5.75% ARM with a 5-point lifetime cap could reach 10.75%. This calculator derives the worst-case rate from the caps you enter, not from an unstated assumption.',
     },
   ],
   'timeline-simulator': [

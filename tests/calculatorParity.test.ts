@@ -337,7 +337,9 @@ describe('arm-vs-fixed', () => {
     fixedRate: 6.75,
     armInitialRate: 5.875,
     armFixedPeriod: 5,
-    armAdjustmentCap: 2,
+    armAdjustmentFrequency: 6,
+    armInitialCap: 2,
+    armAdjustmentCap: 1,
     armLifetimeCap: 5,
     armMargin: 2.75,
     loanTerm: 30,
@@ -350,9 +352,14 @@ describe('arm-vs-fixed', () => {
     expect(num(result.details.armInitialPayment)).toBeCloseTo(monthlyPayment(400000, 5.875, 360), 0);
   });
 
-  it('worst-case payment matches the reference at the capped rate', () => {
-    const worstRate = Math.min(5.875 + 5, 6.75 + 3);
-    expect(num(result.details.worstCasePayment)).toBeCloseTo(monthlyPayment(400000, worstRate, 360), 0);
+  it('worst-case rate is initial + lifetime cap, payment follows the amortized path', () => {
+    const lifetimeMax = 5.875 + 5;
+    const dayOneMaxPayment = monthlyPayment(400000, lifetimeMax, 360);
+    expect(num(result.details.worstCaseRate)).toBeCloseTo(lifetimeMax, 3);
+    // Peak payment is lower than charging the max rate from day one because
+    // the loan amortizes at the initial rate through the fixed period.
+    expect(num(result.details.worstCasePayment)).toBeLessThan(dayOneMaxPayment);
+    expect(num(result.details.worstCasePayment)).toBeGreaterThan(num(result.details.armInitialPayment));
   });
 });
 

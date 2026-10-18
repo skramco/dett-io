@@ -150,9 +150,19 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       title: 'ARM vs Fixed Comparison',
       steps: [
         { label: 'Fixed Monthly Payment', formula: 'Loan × r_fixed × (1+r_fixed)ⁿ ÷ [(1+r_fixed)ⁿ − 1]', description: 'Payment stays the same for the entire loan term.', computedValue: `$${fmt(d.fixedPayment as number)}` },
-        { label: 'ARM Initial Payment', formula: 'Loan × r_arm × (1+r_arm)ⁿ ÷ [(1+r_arm)ⁿ − 1]', description: 'Lower initial rate during the fixed period (e.g., 5 years).', computedValue: `$${fmt(d.armInitialPayment as number)}` },
-        { label: 'ARM Adjusted Payment', formula: 'Remaining Balance × r_adj × (1+r_adj)ⁿ ÷ [(1+r_adj)ⁿ − 1]', description: 'Payment after the ARM adjusts — could go up significantly.' },
+        { label: 'ARM Initial Payment', formula: 'Loan × r_arm × (1+r_arm)ⁿ ÷ [(1+r_arm)ⁿ − 1]', description: `Lower initial rate during the fixed period of the ${d.productName ?? 'ARM'}.`, computedValue: `$${fmt(d.armInitialPayment as number)}` },
+        { label: 'Fully Indexed Rate', formula: 'Expected Index Rate + Margin', description: 'After the fixed period, the ARM rate moves toward index + margin at each adjustment, limited by the caps below.', computedValue: `${fmtDec(d.fullyIndexedRate as number, 2)}%` },
+        { label: 'ARM Adjusted Payment', formula: 'Remaining Balance × r_adj × (1+r_adj)ᵐ ÷ [(1+r_adj)ᵐ − 1]', description: 'Re-amortized over the remaining months (m) at each adjustment.' },
         { label: 'Initial Monthly Savings', formula: 'Fixed Payment − ARM Initial Payment', description: 'How much you save during the ARM fixed period.', computedValue: `$${fmt((d.fixedPayment as number) - (d.armInitialPayment as number))}` },
+      ],
+    },
+    {
+      title: `Worst-Case Rate from Caps (${d.capStructure ?? 'initial/periodic/lifetime'})`,
+      steps: [
+        { label: 'First Adjustment', formula: 'Initial Rate + Initial Cap', description: 'The worst case assumes the index rises enough that the first adjustment hits the initial cap.' },
+        { label: 'Later Adjustments', formula: 'Previous Rate + Periodic Cap (each adjustment)', description: 'Each subsequent adjustment adds the periodic cap until the lifetime cap is reached.' },
+        { label: 'Worst-Case Rate', formula: 'Initial Rate + Lifetime Cap', description: 'The lifetime cap limits the total increase above the initial rate.', computedValue: `${fmtDec(d.worstCaseRate as number, 2)}%${d.worstCaseYear ? ` (reached by year ${d.worstCaseYear})` : ''}` },
+        { label: 'Worst-Case Payment', formula: 'Remaining Balance re-amortized at the Worst-Case Rate', description: 'The highest payment along the cap-driven path, based on the balance remaining when the rate peaks.', computedValue: `$${fmt(d.worstCasePayment as number)}` },
       ],
     },
   ],

@@ -229,8 +229,10 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
       'adjustable rate mortgage calculator',
       'ARM vs fixed rate comparison',
       'should I get an ARM or fixed rate',
+      '5/6 SOFR ARM calculator',
       '5/1 ARM calculator',
-      '7/1 ARM vs 30 year fixed',
+      'ARM rate caps calculator',
+      '7/6 ARM vs 30 year fixed',
     ],
     relatedCalculators: [
       { slug: 'points-buydown', name: 'Points & Buydown' },

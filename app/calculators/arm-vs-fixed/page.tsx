@@ -29,7 +29,6 @@ import {
   CurrencyInput,
   PercentageInput,
   SelectInput,
-  NumberInput,
 } from '@/components/mui/calculator/InputPanel';
 import {
   HeroMetric,
@@ -44,6 +43,7 @@ import {
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateArmVsFixed } from '@/lib/calculators';
+import { getArmCapStructure, getArmProductName, getWorstCaseRatePath } from '@/lib/calculators/armVsFixed';
 import type { ArmVsFixedInputs } from '@/lib/calculators/types';
 
 export default function ArmVsFixedCalculator() {
@@ -52,7 +52,9 @@ export default function ArmVsFixedCalculator() {
     fixedRate: DEFAULT_RATES.thirtyYearFixed,
     armInitialRate: DEFAULT_RATES.fiveOneArm,
     armFixedPeriod: 5,
-    armAdjustmentCap: 2,
+    armAdjustmentFrequency: 6,
+    armInitialCap: 2,
+    armAdjustmentCap: 1,
     armLifetimeCap: 5,
     armMargin: 2.75,
     loanTerm: 30,
@@ -85,12 +87,16 @@ export default function ArmVsFixedCalculator() {
   // Derived values
   const armWins = result ? (result.details.armTotalPaid as number) < (result.details.fixedTotalPaid as number) : false;
   const initialSavings = result ? (result.details.fixedPayment as number) - (result.details.armInitialPayment as number) : 0;
+  const productName = getArmProductName(inputs.armFixedPeriod, inputs.armAdjustmentFrequency);
+  const capStructure = getArmCapStructure(inputs.armInitialCap, inputs.armAdjustmentCap, inputs.armLifetimeCap);
+  const lifetimeMaxRate = inputs.armInitialRate + inputs.armLifetimeCap;
+  const worstCaseSteps = useMemo(() => getWorstCaseRatePath(deferredInputs), [deferredInputs]);
 
   return (
     <CalculatorLayout
       calculatorSlug="arm-vs-fixed"
       title="ARM vs Fixed Rate Calculator"
-      description="Compare adjustable-rate mortgages (ARM) to fixed-rate loans. See initial savings, rate adjustment scenarios, and worst-case payment projections."
+      description="Compare adjustable-rate mortgages (like the 5/6 SOFR ARM) to fixed-rate loans. Set initial, periodic, and lifetime rate caps to see initial savings, adjustment scenarios, and a caps-derived worst case."
       relatedCalculators={[
         { slug: 'points-buydown', name: 'Points & Buydown' },
         { slug: 'timeline-simulator', name: 'Decision Timeline' },
@@ -130,7 +136,7 @@ export default function ArmVsFixedCalculator() {
               <MarketRateNote rates={marketRates} />
             </InputSection>
 
-            <InputSection title="ARM Option" icon={<TrendingUp />}>
+            <InputSection title={`ARM Option (${productName})`} icon={<TrendingUp />}>
               <PercentageInput
                 label="Initial ARM Rate"
                 value={inputs.armInitialRate}
@@ -143,11 +149,23 @@ export default function ArmVsFixedCalculator() {
                 value={inputs.armFixedPeriod}
                 onChange={(v) => handleInputChange('armFixedPeriod', v as number)}
                 options={[
-                  { value: 3, label: '3 years (3/1 ARM)' },
-                  { value: 5, label: '5 years (5/1 ARM)' },
-                  { value: 7, label: '7 years (7/1 ARM)' },
-                  { value: 10, label: '10 years (10/1 ARM)' },
+                  { value: 3, label: '3 years' },
+                  { value: 5, label: '5 years' },
+                  { value: 7, label: '7 years' },
+                  { value: 10, label: '10 years' },
                 ]}
+                helperText="How long the initial rate is locked"
+              />
+
+              <SelectInput
+                label="Adjustment Frequency"
+                value={inputs.armAdjustmentFrequency}
+                onChange={(v) => handleInputChange('armAdjustmentFrequency', v as number)}
+                options={[
+                  { value: 6, label: 'Every 6 months — e.g. 5/6 SOFR ARM (most common today)' },
+                  { value: 12, label: 'Every 12 months — e.g. 5/1 ARM (older style)' },
+                ]}
+                helperText="Most ARMs written today are SOFR-indexed and adjust every 6 months"
               />
 
               <PercentageInput
@@ -164,6 +182,35 @@ export default function ArmVsFixedCalculator() {
                 onChange={(v) => handleInputChange('armMargin', v)}
                 step={0.25}
                 helperText="Added to index rate after fixed period"
+              />
+            </InputSection>
+
+            <InputSection title={`Rate Caps (${capStructure})`} icon={<Warning />} color="secondary">
+              <PercentageInput
+                label="Initial Adjustment Cap"
+                value={inputs.armInitialCap}
+                onChange={(v) => handleInputChange('armInitialCap', v)}
+                step={0.5}
+                max={10}
+                helperText="Max rate change at the first adjustment"
+              />
+
+              <PercentageInput
+                label="Periodic Adjustment Cap"
+                value={inputs.armAdjustmentCap}
+                onChange={(v) => handleInputChange('armAdjustmentCap', v)}
+                step={0.5}
+                max={10}
+                helperText="Max rate change at each later adjustment"
+              />
+
+              <PercentageInput
+                label="Lifetime Cap"
+                value={inputs.armLifetimeCap}
+                onChange={(v) => handleInputChange('armLifetimeCap', v)}
+                step={0.5}
+                max={15}
+                helperText={`Max total increase above the initial rate. Most SOFR ARMs today use 2/1/5 caps — rate can never exceed ${lifetimeMaxRate.toFixed(2)}%`}
               />
             </InputSection>
           </Box>
@@ -202,7 +249,7 @@ export default function ArmVsFixedCalculator() {
                   <MetricCard
                     label="ARM Worst Case"
                     value={`$${(result.details.worstCasePayment as number).toLocaleString()}`}
-                    sublabel={`At ${result.details.worstCaseRate}% rate`}
+                    sublabel={`At ${result.details.worstCaseRate}% (from ${capStructure} caps)`}
                     color="error"
                   />
                 </Grid>
@@ -247,7 +294,7 @@ export default function ArmVsFixedCalculator() {
                       <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2, textAlign: 'center', height: '100%' }}>
                         <TrendingDown sx={{ fontSize: 40, color: '#22C55E', mb: 1 }} />
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
-                          ARM (INITIAL)
+                          {productName} (INITIAL)
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>
                           ${(result.details.armInitialPayment as number).toLocaleString()}
@@ -259,7 +306,7 @@ export default function ArmVsFixedCalculator() {
                         <Typography variant="body2" sx={{ color: '#065F46' }}>
                           ✓ Lower initial payment<br />
                           ✓ Good if moving/refi soon<br />
-                          ⚠️ Rate adjusts after {inputs.armFixedPeriod} years
+                          ⚠️ Adjusts every {inputs.armAdjustmentFrequency} months after year {inputs.armFixedPeriod}
                         </Typography>
                       </Box>
                     </Grid>
@@ -286,7 +333,7 @@ export default function ArmVsFixedCalculator() {
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <TimelineChart 
                     data={timelineData}
-                    labels={{ optionA: 'Fixed Rate', optionB: 'ARM' }}
+                    labels={{ optionA: 'Fixed Rate', optionB: productName }}
                     height={280}
                   />
                   
@@ -294,7 +341,8 @@ export default function ArmVsFixedCalculator() {
                   
                   <Alert severity="info" sx={{ borderRadius: 2 }}>
                     <Typography variant="body2">
-                      <strong>After year {inputs.armFixedPeriod}:</strong> ARM rate adjusts annually based on market conditions. 
+                      <strong>After year {inputs.armFixedPeriod}:</strong> the {productName} rate adjusts every {inputs.armAdjustmentFrequency} months 
+                      toward the fully indexed rate (index + margin = {(result.details.fullyIndexedRate as number).toFixed(2)}%), limited by your {capStructure} caps. 
                       This projection assumes the index rate stays around {inputs.expectedIndexRate}%.
                     </Typography>
                   </Alert>
@@ -330,12 +378,55 @@ export default function ArmVsFixedCalculator() {
                   
                   <Alert severity="warning" icon={<Warning />} sx={{ borderRadius: 2 }}>
                     <Typography variant="body2">
-                      <strong>Worst case scenario:</strong> If rates spike, your ARM payment could reach 
+                      <strong>Worst case scenario:</strong> If rates spike, your {productName} payment could reach 
                       <strong> ${(result.details.worstCasePayment as number).toLocaleString()}/month</strong> at a 
-                      <strong> {result.details.worstCaseRate}%</strong> rate. That's 
-                      <strong> ${((result.details.worstCasePayment as number) - (result.details.fixedPayment as number)).toLocaleString()}/month more</strong> than the fixed option.
+                      <strong> {result.details.worstCaseRate}%</strong> rate (reached by year {result.details.worstCaseYear as number}). That's 
+                      <strong> ${((result.details.worstCasePayment as number) - (result.details.fixedPayment as number)).toLocaleString()}/month more</strong> than the fixed option. 
+                      This rate is derived from your {capStructure} caps, not an arbitrary assumption.
                     </Typography>
                   </Alert>
+                </Paper>
+              </ResultsSection>
+
+              {/* Worst-Case Path Documentation */}
+              <ResultsSection 
+                title="How the Worst Case Is Derived" 
+                subtitle={`Cap-driven rate path for the ${productName} with ${capStructure} caps`}
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    The worst case assumes the index rises so far that <strong>every adjustment hits its cap</strong>: 
+                    the first adjustment adds the initial cap ({inputs.armInitialCap}%), each later adjustment (every {inputs.armAdjustmentFrequency} months) 
+                    adds the periodic cap ({inputs.armAdjustmentCap}%), and the rate can never exceed the initial rate plus the 
+                    lifetime cap ({inputs.armInitialRate}% + {inputs.armLifetimeCap}% = {lifetimeMaxRate.toFixed(2)}%).
+                  </Typography>
+
+                  <Stack spacing={1}>
+                    <Stack direction="row" justifyContent="space-between" sx={{ py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+                      <Typography variant="body2">
+                        Years 1–{inputs.armFixedPeriod} (fixed period)
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                        {inputs.armInitialRate.toFixed(2)}%
+                      </Typography>
+                    </Stack>
+                    {worstCaseSteps.map((step, i) => (
+                      <Stack key={i} direction="row" justifyContent="space-between" sx={{ py: 1, borderBottom: i < worstCaseSteps.length - 1 ? '1px solid' : 'none', borderColor: 'divider' }}>
+                        <Typography variant="body2">
+                          Month {step.month} ({step.cap}){step.rate >= lifetimeMaxRate ? ' — lifetime cap reached' : ''}
+                        </Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: step.rate >= lifetimeMaxRate ? '#EF4444' : 'text.primary' }}>
+                          {step.rate.toFixed(2)}%
+                        </Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
+                    At the peak rate, the payment is re-amortized on the balance remaining at that point — 
+                    ${(result.details.worstCasePayment as number).toLocaleString()}/month. Assumes a {capStructure} cap structure 
+                    (initial / periodic / lifetime) and that the rate never falls below the margin ({inputs.armMargin}%).
+                  </Typography>
                 </Paper>
               </ResultsSection>
 
@@ -413,7 +504,7 @@ export default function ArmVsFixedCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: armWins ? 'success.dark' : 'primary.dark' }}>
-                      The {inputs.armFixedPeriod}/1 ARM saves <strong>${initialSavings.toLocaleString()}/month</strong> initially 
+                      The {productName} saves <strong>${initialSavings.toLocaleString()}/month</strong> initially 
                       (<strong>${(result.details.savingsInFixedPeriod as number).toLocaleString()}</strong> over {inputs.armFixedPeriod} years). 
                       {armWins 
                         ? ` Based on expected rates, the ARM saves $${Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)).toLocaleString()} total. Good choice if you'll move or refinance within ${inputs.armFixedPeriod} years.`
