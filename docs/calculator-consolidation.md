@@ -66,6 +66,9 @@ Rationale:
 - **Biweekly servicer note (ENG-350):** Pay Off Faster warns that many servicers
   reject half-payments or a true biweekly schedule, and points users to the
   DIY extra-principal method instead.
+- **Assumptions above the fold (ENG-343):** both merged tools pass an
+  `assumptions` list to `CalculatorLayout` so rate/term/timeline caveats (and
+  the standing "not an APR" note) sit above the fold.
 - **SEO surface updates:** sitemap, internal links (nav, footers, wizard, guides,
   comparisons, definitions), `llms.txt`, and per-page metadata/JSON-LD all point
   at the new slugs only.

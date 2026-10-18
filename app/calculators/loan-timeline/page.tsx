@@ -105,6 +105,11 @@ export default function LoanTimelineCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="loan-timeline"
+      assumptions={[
+        `${inputs.loanTerm}-year loan of ${formatCurrency(inputs.loanAmount)}; 30-year par ${inputs.parRate}%, points ${inputs.pointsRate}%, ARM ${inputs.armInitialRate}% for the first ${inputs.armFixedPeriod} years`,
+        `ARM adjustments are estimates from a ${inputs.expectedIndexRate}% index plus a ${inputs.armMargin}% margin, limited by your entered caps — actual adjustments will differ`,
+        `Assumes you move in year ${stayYears} — actual plans and future rates will differ`,
+      ]}
       title="Best Loan for My Timeline"
       description="Compare fixed-rate, discount points, ARM, and 15-year options based on how long you plan to stay. Models ARM adjustments across named rate paths and a Monte Carlo range — not just the teaser vs worst case."
       relatedCalculators={[
