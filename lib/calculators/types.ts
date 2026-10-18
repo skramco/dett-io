@@ -76,6 +76,8 @@ export interface RentVsBuyInputs {
   propertyTaxRate: number;
   homeInsuranceAnnual: number;
   maintenanceRate: number;
+  /** Annual PMI rate as % of loan amount; applies while down payment < 20% */
+  pmiRate: number;
   closingCosts: number;
   sellingCosts: number;
   investmentReturn: number;

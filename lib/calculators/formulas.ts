@@ -85,11 +85,12 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'Buy vs Rent Comparison',
       steps: [
-        { label: 'Monthly Mortgage Cost', formula: 'P&I + Tax + Insurance + PMI + HOA', description: 'Total monthly cost of owning.' },
+        { label: 'Monthly Ownership Cost', formula: 'P&I + Property Tax + Insurance + PMI + Maintenance', description: 'Full monthly cost of owning (year 1). PMI applies when the down payment is under 20% and drops once the balance reaches 78% of the purchase price. Tax and maintenance grow with home value.', computedValue: `$${fmt(d.monthlyBuyTotal as number)}` },
         { label: 'Monthly Rent', formula: 'Current Rent × (1 + Annual Increase)ʸ', description: 'Rent grows each year by the annual increase rate.' },
-        { label: 'Home Equity Built', formula: 'Principal Paid + Appreciation', description: 'Equity = cumulative principal payments + home value growth.' },
-        { label: 'Investment Alternative', formula: 'Down Payment × (1 + Return Rate)ʸ', description: 'What your down payment could earn if invested instead.' },
-        { label: 'Break-Even Year', formula: 'Year where Buy Net Worth > Rent Net Worth', description: 'The year when buying becomes financially better than renting.', computedValue: d.breakEvenYear ? `Year ${d.breakEvenYear}` : 'N/A' },
+        { label: 'Invest the Difference', formula: 'max(0, Ownership Cost − Rent) invested monthly', description: 'Whichever side pays less each month invests the difference at your expected return. This applies symmetrically to both sides.' },
+        { label: 'Rent Net Worth', formula: '(Down Payment + Closing Costs) × (1 + Return)ᵗ + Invested Savings', description: 'The renter keeps the cash to close invested — the opportunity cost of buying.', computedValue: `$${fmt(d.cashToClose as number)} cash to close` },
+        { label: 'Buy Net Worth', formula: 'Home Value − Loan Balance − Selling Costs + Invested Savings', description: 'Equity net of selling costs (agent commissions + fees, typically 6–8% of the sale price).', computedValue: `$${fmt(d.sellingCostAtHorizon as number)} selling costs at horizon` },
+        { label: 'Break-Even Year', formula: 'Year where Buy Net Worth > Rent Net Worth', description: 'The year when buying becomes financially better than renting.', computedValue: d.breakEvenYear ? `Year ${d.breakEvenYear}` : 'Never within horizon' },
       ],
     },
   ],

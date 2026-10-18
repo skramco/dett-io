@@ -28,7 +28,6 @@ import {
   InputSection,
   CurrencyInput,
   PercentageInput,
-  NumberInput,
   SelectInput,
 } from '@/components/mui/calculator/InputPanel';
 import {
@@ -40,8 +39,6 @@ import {
 } from '@/components/mui/calculator/ResultsPanel';
 import {
   LazyTimelineChart as TimelineChart,
-  HorizontalBar,
-  CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateRentVsBuy } from '@/lib/calculators';
 import type { RentVsBuyInputs } from '@/lib/calculators/types';
@@ -58,6 +55,7 @@ export default function RentVsBuyCalculator() {
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1800,
     maintenanceRate: 1,
+    pmiRate: 0.5,
     closingCosts: 13500,
     sellingCosts: 6,
     investmentReturn: 7,
@@ -136,6 +134,53 @@ export default function RentVsBuyCalculator() {
                 onChange={(v) => handleInputChange('homeAppreciation', v)}
                 step={0.5}
                 helperText="Expected annual home value increase"
+              />
+            </InputSection>
+
+            <InputSection title="Ownership Costs" icon={<TrendingUp />}>
+              <PercentageInput
+                label="Property Tax Rate"
+                value={inputs.propertyTaxRate}
+                onChange={(v) => handleInputChange('propertyTaxRate', v)}
+                step={0.1}
+                helperText="Annual, as % of home value"
+              />
+
+              <CurrencyInput
+                label="Home Insurance (Annual)"
+                value={inputs.homeInsuranceAnnual}
+                onChange={(v) => handleInputChange('homeInsuranceAnnual', v)}
+              />
+
+              <PercentageInput
+                label="Maintenance Rate"
+                value={inputs.maintenanceRate}
+                onChange={(v) => handleInputChange('maintenanceRate', v)}
+                step={0.25}
+                helperText="Annual upkeep, typically ~1% of home value"
+              />
+
+              <PercentageInput
+                label="PMI Rate"
+                value={inputs.pmiRate}
+                onChange={(v) => handleInputChange('pmiRate', v)}
+                step={0.1}
+                helperText="Applies when down payment is under 20%; drops at 78% LTV"
+              />
+
+              <CurrencyInput
+                label="Closing Costs (Buy)"
+                value={inputs.closingCosts}
+                onChange={(v) => handleInputChange('closingCosts', v)}
+                helperText="Upfront cash at purchase — counted as opportunity cost"
+              />
+
+              <PercentageInput
+                label="Selling Costs"
+                value={inputs.sellingCosts}
+                onChange={(v) => handleInputChange('sellingCosts', v)}
+                step={0.5}
+                helperText="Agent commissions + fees when you sell, typically 6–8%"
               />
             </InputSection>
 
@@ -242,8 +287,9 @@ export default function RentVsBuyCalculator() {
                   
                   <Alert severity="info" sx={{ borderRadius: 2 }}>
                     <Typography variant="body2">
-                      <strong>Key assumption:</strong> When renting, you invest the difference between buying costs and rent. 
-                      If you don't invest the difference, buying almost always wins.
+                      <strong>What&apos;s included:</strong> Buy net worth is sale proceeds — home value minus loan balance minus {inputs.sellingCosts}% selling costs.
+                      The rent scenario invests your ${(result.details.cashToClose as number).toLocaleString()} cash to close (down payment + closing costs) at {inputs.investmentReturn}%,
+                      and whichever side pays less each month invests the difference. If you don&apos;t invest the savings, the cheaper option loses its edge.
                     </Typography>
                   </Alert>
                 </Paper>
@@ -281,14 +327,31 @@ export default function RentVsBuyCalculator() {
                           BUYING
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#166534', my: 1 }}>
-                          ${(result.details.monthlyPI as number).toLocaleString()}
+                          ${(result.details.monthlyBuyTotal as number).toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          P&I only (+ taxes, insurance, maintenance)
+                          all-in per month (year 1)
                         </Typography>
                         <Divider sx={{ my: 2 }} />
+                        <Stack spacing={0.5} sx={{ textAlign: 'left' }}>
+                          {([
+                            ['Principal & Interest', result.details.monthlyPI as number],
+                            ['Property Tax', result.details.monthlyTax as number],
+                            ['Insurance', result.details.monthlyInsurance as number],
+                            ['PMI', result.details.monthlyPMI as number],
+                            ['Maintenance', result.details.monthlyMaintenance as number],
+                          ] as const)
+                            .filter(([label, amount]) => label !== 'PMI' || amount > 0)
+                            .map(([label, amount]) => (
+                              <Stack key={label} direction="row" justifyContent="space-between">
+                                <Typography variant="body2" color="text.secondary">{label}</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>${amount.toLocaleString()}</Typography>
+                              </Stack>
+                            ))}
+                        </Stack>
+                        <Divider sx={{ my: 2 }} />
                         <Typography variant="body2" color="text.secondary">
-                          Payment stays fixed for {inputs.loanTerm} years
+                          P&I fixed for {inputs.loanTerm} years; tax & maintenance grow with home value
                         </Typography>
                       </Box>
                     </Grid>

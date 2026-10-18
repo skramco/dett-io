@@ -580,15 +580,65 @@ describe('rent-vs-buy', () => {
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1500,
     maintenanceRate: 1,
+    pmiRate: 0.5,
     closingCosts: 8000,
     sellingCosts: 6,
     investmentReturn: 7,
     yearsToAnalyze: 10,
   };
   const result = calculateRentVsBuy(inputs);
+  const refPI = monthlyPayment(320000, 6.5, 360);
 
   it('headline monthly P&I matches the reference', () => {
-    expect(num(result.details.monthlyPI)).toBeCloseTo(monthlyPayment(320000, 6.5, 360), 0);
+    expect(num(result.details.monthlyPI)).toBeCloseTo(refPI, 0);
+  });
+
+  it('zero-rate P&I is principal divided by term months', () => {
+    const zeroRate = calculateRentVsBuy({ ...inputs, interestRate: 0 });
+    expect(num(zeroRate.details.monthlyPI)).toBeCloseTo(320000 / 360, 0);
+  });
+
+  it('year-1 buy-side monthly total is P&I + tax + insurance + maintenance (no PMI at 20% down)', () => {
+    const expected = refPI + (400000 * 1.2) / 100 / 12 + 1500 / 12 + (400000 * 1) / 100 / 12;
+    expect(num(result.details.monthlyPMI)).toBe(0);
+    expect(num(result.details.monthlyBuyTotal)).toBeCloseTo(expected, 0);
+  });
+
+  it('horizon comparison nets selling costs and seeds rent with cash to close', () => {
+    expect(num(result.details.cashToClose)).toBe(88000);
+    const homeValueAtHorizon = 400000 * Math.pow(1.035, 10);
+    expect(num(result.details.sellingCostAtHorizon)).toBeCloseTo(homeValueAtHorizon * 0.06, -1);
+  });
+});
+
+describe('rent-vs-buy with PMI', () => {
+  const result = calculateRentVsBuy({
+    homePrice: 400000,
+    downPayment: 40000,
+    interestRate: 6.5,
+    loanTerm: 30,
+    monthlyRent: 2200,
+    rentInflation: 3,
+    homeAppreciation: 3.5,
+    propertyTaxRate: 1.2,
+    homeInsuranceAnnual: 1500,
+    maintenanceRate: 1,
+    pmiRate: 0.5,
+    closingCosts: 8000,
+    sellingCosts: 6,
+    investmentReturn: 7,
+    yearsToAnalyze: 10,
+  });
+  const loan = 360000;
+  const refPI = monthlyPayment(loan, 6.5, 360);
+  const refPMI = monthlyPmiAmount(loan, 0.5);
+
+  it('includes PMI in the year-1 monthly buy total until 78% LTV', () => {
+    expect(num(result.details.monthlyPMI)).toBeCloseTo(refPMI, 0);
+    const expected =
+      refPI + (400000 * 1.2) / 100 / 12 + 1500 / 12 + (400000 * 1) / 100 / 12 + refPMI;
+    expect(num(result.details.monthlyBuyTotal)).toBeCloseTo(expected, 0);
+    expect(num(result.details.pmiEndMonth)).toBe(monthsToReachLtv(loan, 400000, 6.5, 360, 78));
   });
 });
 
