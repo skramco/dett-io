@@ -322,34 +322,38 @@ export default function DTICalculator() {
               </ResultsSection>
 
               {/* Lender Thresholds */}
-              <ResultsSection title="What Lenders See" subtitle="DTI thresholds for different loan programs">
+              <ResultsSection title="What Lenders See" subtitle="Typical DTI guidelines for different loan programs">
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Stack spacing={2}>
                     {[
-                      { label: 'Conventional (Ideal)', threshold: 28, color: DTI_COLORS.excellent, desc: 'Front-end ≤ 28%, Back-end ≤ 36%' },
-                      { label: 'Conventional (Max)', threshold: 36, color: DTI_COLORS.good, desc: 'Back-end ≤ 43% with strong credit' },
-                      { label: 'FHA', threshold: 43, color: DTI_COLORS.acceptable, desc: 'Back-end ≤ 43%, up to 50% with compensating factors' },
-                      { label: 'VA', threshold: 41, color: DTI_COLORS.acceptable, desc: 'Back-end ≤ 41%, no hard cap with residual income' },
+                      { label: 'Conventional (Ideal)', frontMax: 28, backMax: 36, desc: 'Front-end ≤ 28%, Back-end ≤ 36%' },
+                      { label: 'Conventional (Max)', backMax: 50, desc: 'Back-end up to ~50% with automated underwriting (DU/LP) approval' },
+                      { label: 'FHA', backMax: 50, desc: 'Back-end ≤ 43%, up to 50% with compensating factors' },
+                      { label: 'VA', backMax: 41, desc: 'Back-end ≤ 41% guideline, no hard cap with sufficient residual income' },
                     ].map((item) => {
+                      const frontEnd = result.details.frontEndDTI as number;
                       const backEnd = result.details.backEndDTI as number;
-                      const qualifies = backEnd <= item.threshold;
+                      const meetsGuidelines = backEnd <= item.backMax && (item.frontMax === undefined || frontEnd <= item.frontMax);
                       return (
-                        <Box key={item.label} sx={{ p: 2, borderRadius: 2, bgcolor: qualifies ? '#F0FDF4' : '#FEF2F2', border: '1px solid', borderColor: qualifies ? '#BBF7D0' : '#FECACA' }}>
+                        <Box key={item.label} sx={{ p: 2, borderRadius: 2, bgcolor: meetsGuidelines ? '#F0FDF4' : '#FFFBEB', border: '1px solid', borderColor: meetsGuidelines ? '#BBF7D0' : '#FDE68A' }}>
                           <Stack direction="row" justifyContent="space-between" alignItems="center">
                             <Box>
                               <Stack direction="row" spacing={1} alignItems="center">
-                                {qualifies ? <CheckCircle sx={{ fontSize: 18, color: '#22C55E' }} /> : <ErrorIcon sx={{ fontSize: 18, color: '#EF4444' }} />}
+                                {meetsGuidelines ? <CheckCircle sx={{ fontSize: 18, color: '#22C55E' }} /> : <Warning sx={{ fontSize: 18, color: '#F59E0B' }} />}
                                 <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{item.label}</Typography>
                               </Stack>
                               <Typography variant="caption" color="text.secondary">{item.desc}</Typography>
                             </Box>
-                            <Typography variant="body2" sx={{ fontWeight: 700, color: qualifies ? '#22C55E' : '#EF4444' }}>
-                              {qualifies ? 'Likely Qualifies' : 'May Not Qualify'}
+                            <Typography variant="body2" sx={{ fontWeight: 700, color: meetsGuidelines ? '#22C55E' : '#D97706', textAlign: 'right' }}>
+                              {meetsGuidelines ? 'May meet typical guidelines' : 'Above typical guidelines'}
                             </Typography>
                           </Stack>
                         </Box>
                       );
                     })}
+                    <Typography variant="caption" color="text.secondary">
+                      Typical guidelines only — actual approval is determined by automated underwriting (AUS) and lender overlays, and depends on credit, reserves, and your full financial profile.
+                    </Typography>
                   </Stack>
                 </Paper>
               </ResultsSection>
@@ -377,26 +381,26 @@ export default function DTICalculator() {
                 sx={{
                   p: 4,
                   borderRadius: 3,
-                  background: (result.details.backEndDTI as number) <= 43
+                  background: (result.details.backEndDTI as number) <= 50
                     ? 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)'
                     : 'linear-gradient(135deg, #FEF2F2 0%, #FECACA 100%)',
                   border: '1px solid',
-                  borderColor: (result.details.backEndDTI as number) <= 43 ? 'success.light' : 'error.light',
+                  borderColor: (result.details.backEndDTI as number) <= 50 ? 'success.light' : 'error.light',
                 }}
               >
                 <Stack direction="row" spacing={2} alignItems="flex-start">
-                  <AccountBalance sx={{ fontSize: 32, color: (result.details.backEndDTI as number) <= 43 ? 'success.main' : 'error.main' }} />
+                  <AccountBalance sx={{ fontSize: 32, color: (result.details.backEndDTI as number) <= 50 ? 'success.main' : 'error.main' }} />
                   <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: (result.details.backEndDTI as number) <= 43 ? 'success.dark' : 'error.dark', mb: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: (result.details.backEndDTI as number) <= 50 ? 'success.dark' : 'error.dark', mb: 1 }}>
                       The Bottom Line
                     </Typography>
-                    <Typography variant="body1" sx={{ color: (result.details.backEndDTI as number) <= 43 ? 'success.dark' : 'error.dark' }}>
+                    <Typography variant="body1" sx={{ color: (result.details.backEndDTI as number) <= 50 ? 'success.dark' : 'error.dark' }}>
                       Your front-end DTI is <strong>{result.details.frontEndDTI}%</strong> and back-end DTI is <strong>{result.details.backEndDTI}%</strong>.
                       {' '}After all debts, you have <strong>${fmt(result.details.remainingIncome as number)}</strong> remaining each month
                       ({result.details.remainingPercent}% of gross income).
-                      {(result.details.backEndDTI as number) <= 43
-                        ? ' Your DTI is within conventional loan limits.'
-                        : ' You may need to reduce debts or increase income to qualify for most mortgage programs.'}
+                      {(result.details.backEndDTI as number) <= 50
+                        ? ' Your DTI is within the range typical loan program guidelines allow, though final approval depends on automated underwriting and your full financial profile.'
+                        : ' Your DTI is above typical guidelines for most mortgage programs — reducing debts or increasing income would improve your position.'}
                     </Typography>
                   </Box>
                 </Stack>

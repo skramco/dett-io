@@ -54,8 +54,13 @@ export function calculateDTI(inputs: DTIInputs): CalculatorResult {
     return 'Very High';
   };
 
-  const frontEndRating = getDTIRating(frontEndDTI);
-  const backEndRating = getDTIRating(backEndDTI);
+  // Round to one decimal before rating/messaging so the copy always matches
+  // the displayed value (e.g. 28.04% displays as 28.0% and must be treated as 28%)
+  const frontEndDisplay = Math.round(frontEndDTI * 10) / 10;
+  const backEndDisplay = Math.round(backEndDTI * 10) / 10;
+
+  const frontEndRating = getDTIRating(frontEndDisplay);
+  const backEndRating = getDTIRating(backEndDisplay);
 
   // Max mortgage payment at different DTI thresholds
   const maxAt28 = monthlyGrossIncome * 0.28 - nonHousingDebts;
@@ -79,22 +84,22 @@ export function calculateDTI(inputs: DTIInputs): CalculatorResult {
   // Insights
   const insights: string[] = [];
 
-  if (frontEndDTI <= 28) {
-    insights.push(`Your front-end DTI of ${frontEndDTI.toFixed(1)}% is excellent. Most lenders prefer housing costs under 28% of gross income.`);
-  } else if (frontEndDTI <= 36) {
-    insights.push(`Your front-end DTI of ${frontEndDTI.toFixed(1)}% is acceptable but above the ideal 28%. Consider a less expensive home or larger down payment.`);
+  if (frontEndDisplay <= 28) {
+    insights.push(`Your front-end DTI of ${frontEndDisplay.toFixed(1)}% is within the ideal 28% guideline most lenders prefer for housing costs.`);
+  } else if (frontEndDisplay <= 36) {
+    insights.push(`Your front-end DTI of ${frontEndDisplay.toFixed(1)}% is above the ideal 28% guideline, though many lenders accept higher ratios. A less expensive home or larger down payment would bring it down.`);
   } else {
-    insights.push(`Your front-end DTI of ${frontEndDTI.toFixed(1)}% is high. Most conventional loans require under 28-31%. You may need to reduce housing costs or increase income.`);
+    insights.push(`Your front-end DTI of ${frontEndDisplay.toFixed(1)}% is high. Typical guidelines suggest keeping housing costs under 28-31% of gross income. You may need to reduce housing costs or increase income.`);
   }
 
-  if (backEndDTI <= 36) {
-    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% is strong. You have good financial flexibility with ${remainingPercent.toFixed(0)}% of income remaining.`);
-  } else if (backEndDTI <= 43) {
-    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% is at the upper limit for most conventional loans (43% max). FHA loans may allow up to 50%.`);
-  } else if (backEndDTI <= 50) {
-    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% exceeds conventional loan limits (43%). FHA loans may still qualify you at up to 50% with compensating factors.`);
+  if (backEndDisplay <= 36) {
+    insights.push(`Your total DTI of ${backEndDisplay.toFixed(1)}% is strong. You have good financial flexibility with ${remainingPercent.toFixed(0)}% of income remaining.`);
+  } else if (backEndDisplay <= 45) {
+    insights.push(`Your total DTI of ${backEndDisplay.toFixed(1)}% is above the traditional 36% guideline but within the range conventional loans commonly allow — automated underwriting (Fannie Mae/Freddie Mac) may approve up to about 50% with a strong overall profile.`);
+  } else if (backEndDisplay <= 50) {
+    insights.push(`Your total DTI of ${backEndDisplay.toFixed(1)}% is near the upper end of typical guidelines. Conventional automated underwriting can approve up to about 50%, and FHA loans may allow up to 50% with compensating factors, but approval depends on your full profile.`);
   } else {
-    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% exceeds most loan program limits. Consider paying down debts before applying for a mortgage.`);
+    insights.push(`Your total DTI of ${backEndDisplay.toFixed(1)}% is above typical guidelines for most loan programs. Consider paying down debts before applying for a mortgage.`);
   }
 
   if (nonHousingDebts > 0) {
@@ -114,10 +119,10 @@ export function calculateDTI(inputs: DTIInputs): CalculatorResult {
   insights.push(`With your income, the maximum total housing payment to stay at 28% DTI is $${Math.max(0, Math.round(monthlyGrossIncome * 0.28)).toLocaleString()}/month.`);
 
   return {
-    summary: `Front-end DTI: ${frontEndDTI.toFixed(1)}% (${frontEndRating}) | Back-end DTI: ${backEndDTI.toFixed(1)}% (${backEndRating})`,
+    summary: `Front-end DTI: ${frontEndDisplay.toFixed(1)}% (${frontEndRating}) | Back-end DTI: ${backEndDisplay.toFixed(1)}% (${backEndRating})`,
     details: {
-      frontEndDTI: Math.round(frontEndDTI * 10) / 10,
-      backEndDTI: Math.round(backEndDTI * 10) / 10,
+      frontEndDTI: frontEndDisplay,
+      backEndDTI: backEndDisplay,
       frontEndRating,
       backEndRating,
       housingCosts: Math.round(housingCosts),
