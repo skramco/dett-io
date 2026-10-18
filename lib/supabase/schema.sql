@@ -141,3 +141,27 @@ CREATE TRIGGER update_calculator_sessions_updated_at
   BEFORE UPDATE ON calculator_sessions
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
+
+-- Embed load counts by referring domain (no visitor PII — no IP, UA, path, or inputs)
+CREATE TABLE embed_hits (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  calculator_slug TEXT NOT NULL,
+  referrer_domain TEXT NOT NULL
+);
+
+CREATE INDEX idx_embed_hits_domain ON embed_hits(referrer_domain);
+CREATE INDEX idx_embed_hits_slug ON embed_hits(calculator_slug);
+CREATE INDEX idx_embed_hits_created ON embed_hits(created_at);
+
+ALTER TABLE embed_hits ENABLE ROW LEVEL SECURITY;
+
+-- Widgets can record a hit; nobody can read rows via the anon key.
+CREATE POLICY "Allow anonymous embed hit insert" ON embed_hits
+  FOR INSERT
+  WITH CHECK (
+    calculator_slug IS NOT NULL
+    AND referrer_domain IS NOT NULL
+    AND char_length(calculator_slug) <= 64
+    AND char_length(referrer_domain) <= 253
+  );

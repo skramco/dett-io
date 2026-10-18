@@ -38,6 +38,27 @@ export interface Database {
           user_id?: string | null
         }
       }
+      embed_hits: {
+        Row: {
+          id: string
+          created_at: string
+          calculator_slug: string
+          referrer_domain: string
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          calculator_slug: string
+          referrer_domain: string
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          calculator_slug?: string
+          referrer_domain?: string
+        }
+        Relationships: []
+      }
       scenarios: {
         Row: {
           id: string

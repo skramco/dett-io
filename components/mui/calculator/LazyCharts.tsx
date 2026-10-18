@@ -1,8 +1,9 @@
 'use client';
 
-import { createContext, useContext } from 'react';
+import { createContext, useContext, type ComponentType } from 'react';
 import dynamic from 'next/dynamic';
 import { Box, LinearProgress, Typography } from '@mui/material';
+import { useEmbedOptions, useIsEmbed } from '@/lib/embedContext';
 import type {
   DonutChartProps,
   AmortizationChartProps,
@@ -11,6 +12,20 @@ import type {
   StackedBarChartProps,
   CategoryStackedBarChartProps,
 } from './ChartComponents';
+import {
+  HorizontalBar as HorizontalBarInner,
+  ChartLegend,
+  CHART_COLORS,
+} from './ChartComponents';
+
+function hideIfEmbedChartsOff<P extends object>(Chart: ComponentType<P>) {
+  return function EmbedAwareChart(props: P) {
+    const isEmbed = useIsEmbed();
+    const options = useEmbedOptions();
+    if (isEmbed && !options.showCharts) return null;
+    return <Chart {...props} />;
+  };
+}
 
 // next/dynamic with `ssr: false` renders the `loading` component into the
 // server HTML. Instead of only showing "Loading chart...", each lazy chart
@@ -170,7 +185,7 @@ const DynamicCategoryStackedBarChart = dynamic(
   { loading: () => <ChartSkeleton height={220} />, ssr: false }
 );
 
-export function LazyDonutChart(props: DonutChartProps) {
+function LazyDonutChartInner(props: DonutChartProps) {
   return (
     <ChartFallbackContext.Provider value={{ summary: summarizeDonut(props), height: props.height }}>
       <DynamicDonutChart {...props} />
@@ -178,7 +193,7 @@ export function LazyDonutChart(props: DonutChartProps) {
   );
 }
 
-export function LazyAmortizationChart(props: AmortizationChartProps) {
+function LazyAmortizationChartInner(props: AmortizationChartProps) {
   return (
     <ChartFallbackContext.Provider
       value={{ summary: summarizeAmortization(props), height: props.height }}
@@ -188,7 +203,7 @@ export function LazyAmortizationChart(props: AmortizationChartProps) {
   );
 }
 
-export function LazyComparisonBarChart(props: ComparisonBarChartProps) {
+function LazyComparisonBarChartInner(props: ComparisonBarChartProps) {
   return (
     <ChartFallbackContext.Provider
       value={{ summary: summarizeComparison(props), height: props.height }}
@@ -198,7 +213,7 @@ export function LazyComparisonBarChart(props: ComparisonBarChartProps) {
   );
 }
 
-export function LazyTimelineChart(props: TimelineChartProps) {
+function LazyTimelineChartInner(props: TimelineChartProps) {
   return (
     <ChartFallbackContext.Provider
       value={{ summary: summarizeTimeline(props), height: props.height }}
@@ -208,7 +223,7 @@ export function LazyTimelineChart(props: TimelineChartProps) {
   );
 }
 
-export function LazyStackedBarChart(props: StackedBarChartProps) {
+function LazyStackedBarChartInner(props: StackedBarChartProps) {
   return (
     <ChartFallbackContext.Provider
       value={{ summary: summarizeStacked(props), height: props.height }}
@@ -218,7 +233,7 @@ export function LazyStackedBarChart(props: StackedBarChartProps) {
   );
 }
 
-export function LazyCategoryStackedBarChart(props: CategoryStackedBarChartProps) {
+function LazyCategoryStackedBarChartInner(props: CategoryStackedBarChartProps) {
   return (
     <ChartFallbackContext.Provider
       value={{ summary: summarizeCategoryStacked(props), height: props.height }}
@@ -228,5 +243,11 @@ export function LazyCategoryStackedBarChart(props: CategoryStackedBarChartProps)
   );
 }
 
-// Re-export non-recharts components directly (no lazy needed — they're lightweight)
-export { HorizontalBar, ChartLegend, CHART_COLORS } from './ChartComponents';
+export const LazyDonutChart = hideIfEmbedChartsOff(LazyDonutChartInner);
+export const LazyAmortizationChart = hideIfEmbedChartsOff(LazyAmortizationChartInner);
+export const LazyComparisonBarChart = hideIfEmbedChartsOff(LazyComparisonBarChartInner);
+export const LazyTimelineChart = hideIfEmbedChartsOff(LazyTimelineChartInner);
+export const LazyStackedBarChart = hideIfEmbedChartsOff(LazyStackedBarChartInner);
+export const LazyCategoryStackedBarChart = hideIfEmbedChartsOff(LazyCategoryStackedBarChartInner);
+export const HorizontalBar = hideIfEmbedChartsOff(HorizontalBarInner);
+export { ChartLegend, CHART_COLORS };

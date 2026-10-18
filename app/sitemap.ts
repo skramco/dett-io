@@ -65,6 +65,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'yearly',
       priority: 0.3,
     },
+    {
+      url: `${BASE_URL}/embed`,
+      lastModified: new Date(staticPageLastUpdated['/embed']),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
   ];
 
   const calculatorPages: MetadataRoute.Sitemap = Object.entries(calculatorLastUpdated).map(

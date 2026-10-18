@@ -10,6 +10,7 @@ export type AnalyticsEvent =
   | 'calculator_pdf_downloaded'
   | 'embed_calculator_used'
   | 'embed_click_through'
+  | 'embed_load'
   | 'wizard_started'
   | 'wizard_completed'
   | 'guide_read'

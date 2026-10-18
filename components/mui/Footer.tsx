@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Container, Typography, Grid, Stack, Divider } from '@mui/material';
+import { Box, Container, Typography, Grid, Stack } from '@mui/material';
 import Link from 'next/link';
 
 const footerLinks = {
@@ -14,7 +14,7 @@ const footerLinks = {
     { label: 'Mortgage Guides', href: '/guides' },
     { label: 'Loan Comparisons', href: '/compare' },
     { label: 'Learn About Debt', href: '/learn' },
-    { label: 'Embed Calculators', href: '/partners' },
+    { label: 'Embed Calculators', href: '/embed' },
   ],
   company: [
     { label: 'About', href: '/about' },
