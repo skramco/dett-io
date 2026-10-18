@@ -26,6 +26,7 @@ import {
   CurrencyInput,
   PercentageInput,
   SelectInput,
+  SliderInput,
 } from '@/components/mui/calculator/InputPanel';
 import {
   HeroMetric,
@@ -50,7 +51,7 @@ export default function DownPaymentCalculator() {
     loanTerm: 30,
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1800,
-    pmiRate: 0.5,
+    creditScore: 740,
   });
   useUrlInputs(inputs, setInputs);
   const deferredInputs = useDeferredInputs(inputs);
@@ -139,12 +140,13 @@ export default function DownPaymentCalculator() {
                 onChange={(v) => handleInputChange('homeInsuranceAnnual', v)}
               />
 
-              <PercentageInput
-                label="PMI Rate"
-                value={inputs.pmiRate}
-                onChange={(v) => handleInputChange('pmiRate', v)}
-                step={0.1}
-                helperText="Annual PMI as % of loan (typically 0.3-1.5%)"
+              <SliderInput
+                label="Credit Score"
+                value={inputs.creditScore}
+                onChange={(v) => handleInputChange('creditScore', v)}
+                min={620}
+                max={850}
+                step={10}
               />
             </InputSection>
           </Box>

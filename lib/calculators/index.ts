@@ -1,4 +1,5 @@
 export * from './types';
+export { getPMIRate, getAnnualPMIRate, estimateMonthlyPMI, FALLBACK_PMI_RATE } from './pmiRates';
 export { calculateMortgageCost } from './mortgageCost';
 export { calculateRefinance } from './refinance';
 export { calculateExtraPayment } from './extraPayment';

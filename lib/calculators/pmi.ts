@@ -1,4 +1,5 @@
 import type { CalculatorResult } from './types';
+import { getPMIRate } from './pmiRates';
 
 export interface PMIInputs {
   homePrice: number;
@@ -20,41 +21,6 @@ interface PMIScenario {
   monthsUntilRemoval: number;
   totalPMICost: number;
   monthlyPaymentWithPMI: number;
-}
-
-function getPMIRate(ltv: number, creditScore: number): number {
-  // Approximate PMI rates based on LTV and credit score
-  if (creditScore >= 760) {
-    if (ltv <= 85) return 0.19;
-    if (ltv <= 90) return 0.30;
-    if (ltv <= 95) return 0.46;
-    return 0.55;
-  } else if (creditScore >= 740) {
-    if (ltv <= 85) return 0.25;
-    if (ltv <= 90) return 0.35;
-    if (ltv <= 95) return 0.55;
-    return 0.65;
-  } else if (creditScore >= 720) {
-    if (ltv <= 85) return 0.31;
-    if (ltv <= 90) return 0.47;
-    if (ltv <= 95) return 0.65;
-    return 0.80;
-  } else if (creditScore >= 700) {
-    if (ltv <= 85) return 0.40;
-    if (ltv <= 90) return 0.58;
-    if (ltv <= 95) return 0.82;
-    return 0.95;
-  } else if (creditScore >= 680) {
-    if (ltv <= 85) return 0.50;
-    if (ltv <= 90) return 0.72;
-    if (ltv <= 95) return 1.05;
-    return 1.15;
-  } else {
-    if (ltv <= 85) return 0.65;
-    if (ltv <= 90) return 0.90;
-    if (ltv <= 95) return 1.25;
-    return 1.50;
-  }
 }
 
 export function calculatePMI(inputs: PMIInputs): CalculatorResult {

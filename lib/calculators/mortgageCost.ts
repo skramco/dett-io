@@ -1,4 +1,5 @@
 import type { MortgageCostInputs, CalculatorResult } from './types';
+import { getAnnualPMIRate } from './pmiRates';
 
 export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorResult {
   const {
@@ -9,7 +10,8 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
     propertyTax,
     homeInsurance,
     hoaFees,
-    pmi = 0,
+    pmi,
+    creditScore,
   } = inputs;
 
   const loanAmount = homePrice - downPayment;
@@ -24,7 +26,17 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
 
   const monthlyPropertyTax = propertyTax / 12;
   const monthlyInsurance = homeInsurance / 12;
-  const monthlyPMI = pmi / 12;
+
+  // PMI applies when LTV > 80%. A user-supplied annual PMI amount overrides
+  // the estimate from the shared LTV × credit score rate grid.
+  const ltv = homePrice > 0 ? (loanAmount / homePrice) * 100 : 0;
+  let pmiRate = 0;
+  let annualPMI = 0;
+  if (ltv > 80) {
+    pmiRate = getAnnualPMIRate(ltv, creditScore);
+    annualPMI = pmi && pmi > 0 ? pmi : loanAmount * (pmiRate / 100);
+  }
+  const monthlyPMI = annualPMI / 12;
 
   const totalMonthlyPayment =
     principalAndInterest +
@@ -40,8 +52,11 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
   const insights: string[] = [];
 
   if (monthlyPMI > 0) {
+    const rateNote = pmi && pmi > 0
+      ? ''
+      : ` (${pmiRate.toFixed(2)}% of your loan annually${creditScore ? `, based on a ${creditScore} credit score` : ''})`;
     insights.push(
-      `You're paying $${monthlyPMI.toFixed(2)}/month in PMI because your down payment is less than 20%. This adds $${(monthlyPMI * 12).toFixed(0)}/year.`
+      `You're paying $${monthlyPMI.toFixed(2)}/month in PMI${rateNote} because your down payment is less than 20%. This adds $${(monthlyPMI * 12).toFixed(0)}/year until you reach 20% equity.`
     );
   }
 
@@ -79,6 +94,8 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
       monthlyInsurance: parseFloat(monthlyInsurance.toFixed(2)),
       monthlyHOA: parseFloat(hoaFees.toFixed(2)),
       monthlyPMI: parseFloat(monthlyPMI.toFixed(2)),
+      pmiRate: parseFloat(pmiRate.toFixed(2)),
+      ltv: parseFloat(ltv.toFixed(1)),
       loanAmount: parseFloat(loanAmount.toFixed(2)),
       downPaymentPercent: parseFloat(downPaymentPercent.toFixed(2)),
       totalPaid: parseFloat(totalPaid.toFixed(2)),

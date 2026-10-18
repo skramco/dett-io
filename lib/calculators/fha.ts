@@ -1,4 +1,5 @@
 import type { CalculatorResult } from './types';
+import { getAnnualPMIRate } from './pmiRates';
 
 export interface FHAInputs {
   homePrice: number;
@@ -96,8 +97,9 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
     ? convLoanAmount / numberOfPayments
     : (convLoanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
       (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-  // Conventional PMI estimate
-  const convPMIRate = creditScore >= 740 ? 0.30 : creditScore >= 720 ? 0.47 : creditScore >= 700 ? 0.58 : 0.90;
+  // Conventional PMI estimate from the shared LTV × credit score rate grid
+  const convLTV = (convLoanAmount / homePrice) * 100;
+  const convPMIRate = getAnnualPMIRate(convLTV, creditScore);
   const convMonthlyPMI = (convLoanAmount * (convPMIRate / 100)) / 12;
   const convTotalMonthly = convMonthlyPI + convMonthlyPMI + monthlyPropertyTax + monthlyInsurance;
 

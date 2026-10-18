@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
@@ -46,7 +46,7 @@ import {
   HorizontalBar,
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
-import { calculateMortgageCost } from '@/lib/calculators';
+import { calculateMortgageCost, getAnnualPMIRate } from '@/lib/calculators';
 import type { MortgageCostInputs } from '@/lib/calculators/types';
 
 export default function MortgageCostCalculator() {
@@ -59,6 +59,7 @@ export default function MortgageCostCalculator() {
     homeInsurance: 1800,
     hoaFees: 0,
     pmi: 0,
+    creditScore: 740,
   });
   useUrlInputs(inputs, setInputs);
   const deferredInputs = useDeferredInputs(inputs);
@@ -74,16 +75,12 @@ export default function MortgageCostCalculator() {
   const downPaymentPercent = inputs.homePrice > 0 ? (inputs.downPayment / inputs.homePrice) * 100 : 0;
   const needsPMI = downPaymentPercent < 20;
 
-  // Auto-calculate PMI if needed
-  useEffect(() => {
-    if (needsPMI && (inputs.pmi ?? 0) === 0) {
-      // Estimate PMI at 0.5% of loan amount annually
-      const estimatedPMI = loanAmount * 0.005;
-      setInputs(prev => ({ ...prev, pmi: Math.round(estimatedPMI) }));
-    } else if (!needsPMI && (inputs.pmi ?? 0) > 0) {
-      setInputs(prev => ({ ...prev, pmi: 0 }));
-    }
-  }, [needsPMI, loanAmount]);
+  // PMI estimate from the shared LTV × credit score rate grid.
+  // The user can override the dollar amount; 0 means "use the estimate".
+  const ltv = inputs.homePrice > 0 ? (loanAmount / inputs.homePrice) * 100 : 0;
+  const estimatedPMIRate = getAnnualPMIRate(ltv, inputs.creditScore);
+  const estimatedAnnualPMI = Math.round(loanAmount * (estimatedPMIRate / 100));
+  const pmiIsOverridden = (inputs.pmi ?? 0) > 0;
 
   const handleInputChange = (field: keyof MortgageCostInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));
@@ -260,12 +257,26 @@ export default function MortgageCostCalculator() {
               />
 
               {needsPMI && (
-                <CurrencyInput
-                  label="Annual PMI"
-                  value={inputs.pmi ?? 0}
-                  onChange={(v) => handleInputChange('pmi', v)}
-                  helperText="Usually 0.5-1% of loan amount per year"
-                />
+                <>
+                  <SliderInput
+                    label="Credit Score"
+                    value={inputs.creditScore ?? 740}
+                    onChange={(v) => handleInputChange('creditScore', v)}
+                    min={620}
+                    max={850}
+                    step={10}
+                  />
+                  <CurrencyInput
+                    label="Annual PMI"
+                    value={pmiIsOverridden ? (inputs.pmi ?? 0) : estimatedAnnualPMI}
+                    onChange={(v) => handleInputChange('pmi', v)}
+                    helperText={
+                      pmiIsOverridden
+                        ? 'Custom amount — set to $0 to use our estimate'
+                        : `Estimated at ${estimatedPMIRate.toFixed(2)}% of loan based on your LTV and credit score`
+                    }
+                  />
+                </>
               )}
             </InputSection>
 

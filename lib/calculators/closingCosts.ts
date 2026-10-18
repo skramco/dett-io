@@ -1,4 +1,5 @@
 import type { CalculatorResult } from './types';
+import { getAnnualPMIRate } from './pmiRates';
 
 export interface ClosingCostInputs {
   homePrice: number;
@@ -72,9 +73,10 @@ export function calculateClosingCosts(inputs: ClosingCostInputs): CalculatorResu
   const escrowInsurance = Math.round(prepaidInsurance / 12) * 3; // 3 months escrow
   const escrowTaxes = monthlyTax * 3; // 3 months escrow
 
-  // PMI at closing (if applicable)
-  const needsPMI = downPaymentPercent < 20;
-  const pmiAtClosing = needsPMI ? Math.round(loanAmount * 0.005 / 12 * 2) : 0; // 2 months upfront
+  // PMI at closing (if applicable) — 2 months upfront, using the shared grid's
+  // fallback rate since this calculator has no credit score input
+  const ltv = (loanAmount / homePrice) * 100;
+  const pmiAtClosing = Math.round(loanAmount * (getAnnualPMIRate(ltv) / 100) / 12 * 2);
 
   // Build line items
   const lineItems: CostLineItem[] = [
@@ -105,7 +107,7 @@ export function calculateClosingCosts(inputs: ClosingCostInputs): CalculatorResu
     { name: 'Escrow - Taxes (3 months)', category: 'prepaid', amount: escrowTaxes, isEstimate: true },
   ];
 
-  if (needsPMI) {
+  if (pmiAtClosing > 0) {
     lineItems.push({ name: 'PMI (2 months upfront)', category: 'prepaid', amount: pmiAtClosing, isEstimate: true });
   }
 

@@ -1,4 +1,5 @@
 import type { AffordabilityInputs, CalculatorResult } from './types';
+import { estimateMonthlyPMI } from './pmiRates';
 
 export function calculateAffordability(inputs: AffordabilityInputs): CalculatorResult {
   const {
@@ -10,6 +11,7 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
     propertyTaxRate,
     homeInsuranceAnnual,
     hoaFees,
+    creditScore,
   } = inputs;
 
   const monthlyIncome = annualIncome / 12;
@@ -49,7 +51,9 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
       const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
                        (Math.pow(1 + monthlyRate, numPayments) - 1);
       const monthlyTaxIns = (mid * propertyTaxRate / 100 / 12) + (homeInsuranceAnnual / 12);
-      const totalPITI = monthlyPI + monthlyTaxIns;
+      // PMI (from the shared LTV × credit score grid) when down payment < 20%
+      const monthlyPMI = estimateMonthlyPMI(loanAmount, mid, creditScore);
+      const totalPITI = monthlyPI + monthlyTaxIns + monthlyPMI;
       
       if (totalPITI <= availableForPITI) {
         maxHomePrice = mid;
@@ -63,10 +67,12 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
     const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
                      (Math.pow(1 + monthlyRate, numPayments) - 1);
     const monthlyTaxIns = (maxHomePrice * propertyTaxRate / 100 / 12) + (homeInsuranceAnnual / 12);
-    const totalPITI = monthlyPI + monthlyTaxIns + hoaFees;
+    const monthlyPMI = estimateMonthlyPMI(loanAmount, maxHomePrice, creditScore);
+    const totalPITI = monthlyPI + monthlyTaxIns + monthlyPMI + hoaFees;
     
     results[`${level}Price`] = Math.round(maxHomePrice);
     results[`${level}Payment`] = Math.round(totalPITI);
+    results[`${level}PMI`] = Math.round(monthlyPMI);
     results[`${level}DTI`] = Math.round((totalPITI / monthlyIncome) * 100);
   });
 
@@ -93,9 +99,9 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
     );
   }
 
-  if (downPayment < results.conservativePrice * 0.2) {
+  if (results.moderatePMI > 0) {
     insights.push(
-      `💡 With less than 20% down, you'll likely pay PMI. Budget an extra $${Math.round((results.moderatePrice - downPayment) * 0.005 / 12)}/month.`
+      `💡 With less than 20% down, you'll pay PMI. We've included ~$${results.moderatePMI.toLocaleString()}/month of PMI in your moderate estimate${creditScore ? ` (based on a ${creditScore} credit score)` : ''} — it drops off once you reach 20% equity.`
     );
   }
 
@@ -111,6 +117,7 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
       conservativeDTI: results.conservativeDTI,
       moderatePrice: results.moderatePrice,
       moderatePayment: results.moderatePayment,
+      moderatePMI: results.moderatePMI,
       moderateDTI: results.moderateDTI,
       aggressivePrice: results.aggressivePrice,
       aggressivePayment: results.aggressivePayment,

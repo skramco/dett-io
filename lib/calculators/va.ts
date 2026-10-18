@@ -1,4 +1,5 @@
 import type { CalculatorResult } from './types';
+import { getAnnualPMIRate } from './pmiRates';
 
 export interface VAInputs {
   homePrice: number;
@@ -108,7 +109,9 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
     ? convLoanAmount / numberOfPayments
     : (convLoanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) /
       (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-  const convPMIRate = 0.005; // ~0.5% estimate
+  // Shared PMI grid (falls back to the flat rate since VA inputs have no credit score)
+  const convLTV = (convLoanAmount / homePrice) * 100;
+  const convPMIRate = getAnnualPMIRate(convLTV) / 100;
   const convMonthlyPMI = (convLoanAmount * convPMIRate) / 12;
   const convTotalMonthly = convMonthlyPI + convMonthlyPMI + monthlyPropertyTax + monthlyInsurance;
 

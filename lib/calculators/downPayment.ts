@@ -1,4 +1,5 @@
 import type { DownPaymentInputs, CalculatorResult } from './types';
+import { getAnnualPMIRate } from './pmiRates';
 
 export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResult {
   const {
@@ -8,7 +9,7 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
     loanTerm,
     propertyTaxRate,
     homeInsuranceAnnual,
-    pmiRate,
+    creditScore,
   } = inputs;
 
   const downPaymentOptions = [3, 5, 10, 15, 20];
@@ -24,8 +25,10 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
     const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
                      (Math.pow(1 + monthlyRate, numPayments) - 1);
     
-    // Calculate monthly PMI
-    const monthlyPMI = needsPMI ? (loanAmount * pmiRate / 100 / 12) : 0;
+    // Monthly PMI from the shared LTV × credit score rate grid
+    const ltv = (loanAmount / homePrice) * 100;
+    const pmiRate = needsPMI ? getAnnualPMIRate(ltv, creditScore) : 0;
+    const monthlyPMI = loanAmount * pmiRate / 100 / 12;
     
     // Calculate monthly tax and insurance
     const monthlyTax = homePrice * propertyTaxRate / 100 / 12;
@@ -66,6 +69,7 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
       downPaymentAmount,
       loanAmount,
       monthlyPI: Math.round(monthlyPI),
+      pmiRate,
       monthlyPMI: Math.round(monthlyPMI),
       monthlyTax: Math.round(monthlyTax),
       monthlyInsurance: Math.round(monthlyInsurance),

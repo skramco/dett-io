@@ -13,7 +13,10 @@ export interface MortgageCostInputs {
   propertyTax: number;
   homeInsurance: number;
   hoaFees: number;
+  /** Annual PMI in dollars. Leave 0/undefined to auto-estimate from the shared LTV × credit score grid. */
   pmi?: number;
+  /** Used to look up the PMI rate grid when LTV > 80%. */
+  creditScore?: number;
 }
 
 export interface RefinanceInputs {
@@ -52,6 +55,8 @@ export interface AffordabilityInputs {
   propertyTaxRate: number;
   homeInsuranceAnnual: number;
   hoaFees: number;
+  /** Used to estimate PMI from the shared grid when down payment < 20%. */
+  creditScore?: number;
 }
 
 export interface DownPaymentInputs {
@@ -61,7 +66,8 @@ export interface DownPaymentInputs {
   loanTerm: number;
   propertyTaxRate: number;
   homeInsuranceAnnual: number;
-  pmiRate: number;
+  /** PMI rates are derived per scenario from the shared LTV × credit score grid. */
+  creditScore: number;
 }
 
 export interface RentVsBuyInputs {

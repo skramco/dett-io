@@ -25,6 +25,7 @@ import {
   CurrencyInput,
   PercentageInput,
   SelectInput,
+  SliderInput,
 } from '@/components/mui/calculator/InputPanel';
 import {
   HeroMetric,
@@ -51,6 +52,7 @@ export default function AffordabilityCalculator() {
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1800,
     hoaFees: 0,
+    creditScore: 740,
   });
   useUrlInputs(inputs, setInputs);
   const deferredInputs = useDeferredInputs(inputs);
@@ -124,6 +126,15 @@ export default function AffordabilityCalculator() {
                 label="Down Payment Available"
                 value={inputs.downPayment}
                 onChange={(v) => handleInputChange('downPayment', v)}
+              />
+
+              <SliderInput
+                label="Credit Score"
+                value={inputs.creditScore ?? 740}
+                onChange={(v) => handleInputChange('creditScore', v)}
+                min={620}
+                max={850}
+                step={10}
               />
             </InputSection>
 
