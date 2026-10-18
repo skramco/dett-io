@@ -20,6 +20,8 @@ type FormulaGenerator = (details: Record<string, number | string>) => FormulaSet
 
 const fmt = (v: number) => (Number.isFinite(v) ? v : 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 const fmtDec = (v: number, d = 2) => (Number.isFinite(v) ? v : 0).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+/** Currency with an explicit minus sign for negative values, e.g. −$217. */
+const fmtSigned = (v: number) => `${Number.isFinite(v) && v < 0 ? '−' : ''}$${fmt(Math.abs(Number.isFinite(v) ? v : 0))}`;
 
 export const calculatorFormulas: Record<string, FormulaGenerator> = {
   affordability: (d) => [
@@ -91,10 +93,11 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'Refinance Analysis',
       steps: [
-        { label: 'New Monthly Payment', formula: 'New Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Payment at the new rate and term.', computedValue: `$${fmt(d.newPayment as number)}` },
-        { label: 'Monthly Savings', formula: 'Current Payment − New Payment', description: 'How much less you pay each month.', computedValue: `$${fmt(d.monthlySavings as number)}` },
-        { label: 'Break-Even Months', formula: 'Closing Costs ÷ Monthly Savings', description: 'Months to recoup refinance costs through savings.', computedValue: `${fmt(d.breakEvenMonths as number)} months` },
-        { label: 'Total Interest Saved', formula: 'Old Total Interest − New Total Interest', description: 'Lifetime interest savings from the lower rate.', computedValue: `$${fmt(d.interestSaved as number)}` },
+        { label: 'New Loan Amount', formula: 'Current Balance + Closing Costs', description: 'Closing costs are financed — rolled into the new loan balance rather than paid upfront.', computedValue: `$${fmt(d.newLoanAmount as number)}` },
+        { label: 'New Monthly Payment', formula: 'New Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Payment at the new rate and term.', computedValue: `$${fmt(d.newMonthlyPayment as number)}` },
+        { label: 'Monthly Savings', formula: 'Current Payment − New Payment', description: 'How much less you pay each month. Negative means the refinance raises your payment.', computedValue: fmtSigned(d.monthlySavings as number) },
+        { label: 'Break-Even Months', formula: 'Closing Costs ÷ Monthly Savings', description: 'Months of payment savings needed to recoup the financed closing costs. This method ignores the term reset and slower equity build.', computedValue: (d.monthlySavings as number) > 0 ? `${fmt(d.breakEvenMonths as number)} months` : 'N/A — no monthly savings' },
+        { label: 'Total Interest Saved', formula: 'Old Total Interest − New Total Interest', description: 'Lifetime interest savings from the lower rate. Negative means you pay more interest overall.', computedValue: fmtSigned(d.interestSavings as number) },
       ],
     },
   ],
