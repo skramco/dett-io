@@ -362,6 +362,34 @@ describe('extra-payment', () => {
     expect(num(result.details.interestSaved)).toBeGreaterThan(0);
     expect(num(result.details.monthsSaved)).toBeGreaterThan(0);
   });
+
+  it('effective return is the mortgage rate, not interest-saved ÷ extra-paid', () => {
+    expect(num(result.details.effectiveReturnRate)).toBe(6.5);
+    expect(result.insights.join(' ')).toMatch(/6\.5%/);
+    expect(result.insights.join(' ')).not.toMatch(/195/);
+    const fakeRatio =
+      (num(result.details.interestSaved) / num(result.details.totalExtraPaid)) * 100;
+    expect(result.insights.join(' ')).not.toContain(fakeRatio.toFixed(1));
+  });
+
+  it('compares net worth at the original term under both paths', () => {
+    expect(num(result.details.horizonYears)).toBe(30);
+    expect(num(result.details.prepayPortfolio)).toBeGreaterThan(0);
+    expect(num(result.details.investmentValue)).toBeGreaterThan(0);
+    expect(Number.isFinite(num(result.details.netWorthDifference))).toBe(true);
+  });
+
+  it('is unbiased: equal investment return and loan rate ends both paths equal', () => {
+    const equal = calculateExtraPayment({ ...inputs, investmentReturn: 6.5 });
+    expect(num(equal.details.netWorthDifference)).toBeCloseTo(0, 0);
+  });
+
+  it('does not produce NaN with zero extra payments', () => {
+    const zero = calculateExtraPayment({ ...inputs, extraMonthlyPayment: 0 });
+    expect(Number.isFinite(num(zero.details.interestSaved))).toBe(true);
+    expect(Number.isFinite(num(zero.details.netWorthDifference))).toBe(true);
+    expect(zero.insights.join(' ')).not.toMatch(/NaN/);
+  });
 });
 
 describe('acceleration', () => {
@@ -385,6 +413,29 @@ describe('acceleration', () => {
 
   it('headline regular interest matches the reference', () => {
     expect(num(result.details.regularInterest)).toBeCloseTo(totalInterestOverTerm(300000, 6.5, 360), 0);
+  });
+
+  it('effective return is the mortgage rate', () => {
+    expect(num(result.details.effectiveReturnRate)).toBe(6.5);
+    expect(result.insights.join(' ')).toMatch(/6\.5%/);
+  });
+
+  it('compares net worth at the original term under both paths', () => {
+    expect(num(result.details.horizonYears)).toBe(30);
+    expect(num(result.details.prepayPortfolio)).toBeGreaterThan(0);
+    expect(num(result.details.investPortfolio)).toBeGreaterThan(0);
+    expect(Number.isFinite(num(result.details.netWorthDifference))).toBe(true);
+  });
+
+  it('is unbiased: equal investment return and loan rate ends both paths equal', () => {
+    const equal = calculateAcceleration({
+      ...inputs,
+      extraAnnual: 1200,
+      lumpSumAmount: 10000,
+      lumpSumYear: 5,
+      investmentReturn: 6.5,
+    });
+    expect(num(equal.details.netWorthDifference)).toBeCloseTo(0, 0);
   });
 });
 
