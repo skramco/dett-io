@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
 import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -53,6 +54,7 @@ import type { MortgageCostInputs } from '@/lib/calculators/types';
 
 export default function MortgageCostCalculator() {
   const [inputs, setInputs] = useState<MortgageCostInputs>({ ...MORTGAGE_COST_DEFAULT_INPUTS });
+  useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate' });
   const deferredInputs = useDeferredInputs(inputs);

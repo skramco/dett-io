@@ -70,6 +70,12 @@ export function useLiveRateDefaults<T extends object>(
     const urlParams = new URLSearchParams(window.location.search);
 
     setInputs((prev) => {
+      // If the user, a shared URL, or My scenario already set the anchor rate,
+      // leave the whole rate family alone — don't independently shift offsets.
+      if (urlParams.has(anchorField)) return prev;
+      const currentAnchor = (prev as Record<string, unknown>)[anchorField];
+      if (currentAnchor !== anchorDefault) return prev;
+
       const next = { ...prev } as Record<string, unknown>;
       let changed = false;
       for (const field of [anchorField, ...offsetFields]) {

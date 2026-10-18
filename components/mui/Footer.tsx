@@ -8,6 +8,7 @@ const footerLinks = {
     { label: 'Refinance', href: '/calculators/refinance' },
     { label: 'Extra Payments', href: '/calculators/extra-payment' },
     { label: 'Rent vs Buy', href: '/calculators/rent-vs-buy' },
+    { label: 'My scenario', href: '/scenario' },
     { label: 'View All', href: '/calculators' },
   ],
   resources: [

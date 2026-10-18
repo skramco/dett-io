@@ -10,7 +10,7 @@ import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
 
 export default function PrivacyPolicyPage() {
-  const effectiveDate = 'February 13, 2026';
+  const effectiveDate = 'October 18, 2026';
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -57,6 +57,7 @@ export default function PrivacyPolicyPage() {
             <p>We may collect information that you voluntarily provide when using our Services, including:</p>
             <ul>
               <li><strong>Calculator Inputs:</strong> Financial data you enter into our calculators, such as income, loan amounts, interest rates, and property values. This data is processed locally in your browser and is not stored on our servers unless you explicitly choose to save or email your results.</li>
+              <li><strong>My scenario profile:</strong> If you use My scenario, those values (income, debts, home price, rate, and optional details you choose to save) are stored in your browser&apos;s local storage so other calculators can pre-fill. They are not sent to our servers. You can edit or delete this profile at any time from the My scenario page.</li>
               <li><strong>Email Address:</strong> If you choose to email your calculator results to yourself, we collect the email address you provide solely for the purpose of delivering that email.</li>
               <li><strong>Contact Information:</strong> If you contact us directly, we may collect your name, email address, and the content of your communication.</li>
             </ul>

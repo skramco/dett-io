@@ -381,6 +381,19 @@ export default function CalculatorsPage() {
               >
                 Crystal-clear calculators that show you the real numbers. Pick one and start calculating.
               </Typography>
+              <Link href="/scenario" style={{ textDecoration: 'none' }}>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    bgcolor: 'background.paper',
+                    px: 2.5,
+                  }}
+                >
+                  Set up My scenario — enter numbers once
+                </Button>
+              </Link>
             </Stack>
           </Container>
         </Box>

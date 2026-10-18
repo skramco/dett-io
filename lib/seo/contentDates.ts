@@ -42,8 +42,9 @@ export const staticPageLastUpdated: Record<string, string> = {
   '/guides': '2026-02-16',
   '/learn': '2026-02-16',
   '/compare': '2026-02-16',
-  '/privacy': '2026-02-13',
+  '/privacy': '2026-10-18',
   '/terms': '2026-02-14',
+  '/scenario': '2026-10-18',
 };
 
 /** Guide articles (content lives in lib/guides/guideContent.tsx). */

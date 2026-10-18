@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
 import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -28,6 +29,7 @@ export default function RecastVsRefiCalculator() {
     currentBalance: 320000, currentRate: 6.5, yearsRemaining: 27, lumpSumAmount: 50000,
     recastFee: 250, newRate: 6.0, newTerm: 30, closingCosts: 6000, savingsRate: 4,
   });
+  useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'newRate' });
   const deferredInputs = useDeferredInputs(inputs);

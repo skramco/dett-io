@@ -23,6 +23,7 @@ import { ActionBar } from './calculator/ActionBar';
 import { ShowMeTheMath } from './calculator/ShowMeTheMath';
 import { CalculatorSeoFooter } from './calculator/CalculatorSeoFooter';
 import { useIsEmbed } from '@/lib/embedContext';
+import { ScenarioBar } from './scenario/ScenarioBar';
 import { calculatorBodySx } from './calculator/calculatorBodySx';
 
 interface RelatedCalculator {
@@ -342,6 +343,7 @@ export default function CalculatorLayout({ children, title, description, related
         {/* Calculator columns: inputs flow with the page; results stick on desktop */}
         <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
           <Box sx={calculatorBodySx(88)}>
+            <ScenarioBar calculatorInputs={actionBarData?.inputs} />
             <Box data-pdf-capture>
               {children}
             </Box>

@@ -25,6 +25,7 @@ import {
   MenuBook,
   Article,
   CompareArrows,
+  Tune,
 } from '@mui/icons-material';
 import Link from 'next/link';
 
@@ -58,6 +59,18 @@ export function Header() {
                   }}
                 >
                   Calculators
+                </Button>
+              </Link>
+              <Link href="/scenario" style={{ textDecoration: 'none' }}>
+                <Button
+                  color="inherit"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 500,
+                    '&:hover': { color: 'primary.main', bgcolor: 'transparent' },
+                  }}
+                >
+                  My scenario
                 </Button>
               </Link>
               <Link href="/guides" style={{ textDecoration: 'none' }}>
@@ -141,6 +154,24 @@ export function Header() {
               <ListItemText
                 primary="Calculators"
                 secondary="20 free mortgage tools"
+                primaryTypographyProps={{ fontWeight: 600 }}
+                secondaryTypographyProps={{ variant: 'caption' }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              component={Link}
+              href="/scenario"
+              onClick={() => setDrawerOpen(false)}
+              sx={{ borderRadius: 2, mb: 0.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <Tune sx={{ color: 'primary.main' }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="My scenario"
+                secondary="Pre-fill every calculator"
                 primaryTypographyProps={{ fontWeight: 600 }}
                 secondaryTypographyProps={{ variant: 'caption' }}
               />
