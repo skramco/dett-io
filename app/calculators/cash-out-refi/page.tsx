@@ -35,7 +35,7 @@ export default function CashOutRefiCalculator() {
   const scenarios = useMemo(() => (result?.chartData || []) as Array<{ scenario: string; payment: number; totalInterest: number }>, [result]);
 
   return (
-    <CalculatorLayout calculatorSlug="cash-out-refi" title="Cash-Out Refinance Calculator" description="Analyze the true cost of accessing your home equity through a cash-out refinance." relatedCalculators={[{ slug: 'refinance', name: 'Should I Refinance?' }, { slug: 'recast-vs-refi', name: 'Recast vs Refinance' }, { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' }]} actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}>
+    <CalculatorLayout calculatorSlug="cash-out-refi" assumptions={[`New loan: ${inputs.newRate}% fixed for ${inputs.newTerm} years; current loan: ${inputs.currentRate}% with ${inputs.yearsRemaining} years remaining`, `Closing costs of $${inputs.closingCosts.toLocaleString()} and the cash-out amount are financed into the new loan`]} title="Cash-Out Refinance Calculator" description="Analyze the true cost of accessing your home equity through a cash-out refinance." relatedCalculators={[{ slug: 'refinance', name: 'Should I Refinance?' }, { slug: 'recast-vs-refi', name: 'Recast vs Refinance' }, { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' }]} actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}>
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, lg: 5 }}>
           <Box className="calculator-inputs">
@@ -60,7 +60,7 @@ export default function CashOutRefiCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric label="Extra Interest for Your Cash" value={`${formatCurrency(result.details.totalInterestIncrease as number)}`} sublabel={`Total additional interest to get ${formatCurrency(inputs.cashOutAmount)} via refi vs keeping your current mortgage`} />
+              <HeroMetric label="Extra Interest for Your Cash" value={`${formatCurrency(result.details.totalInterestIncrease as number)}`} sublabel={`Total additional interest to get ${formatCurrency(inputs.cashOutAmount)} via a ${inputs.newTerm}-year refinance vs keeping your current mortgage — a dollar cost, not an interest rate or APR`} />
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={`${formatCurrency((result.details.currentPayment as number))}`} color="primary" /></Grid>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New Payment" value={`${formatCurrency((result.details.newPayment as number))}`} color="warning" /></Grid>
@@ -150,9 +150,9 @@ export default function CashOutRefiCalculator() {
                   <Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, color: '#92400E', mb: 1 }}>The Bottom Line</Typography>
                     <Typography variant="body1" sx={{ color: '#92400E' }}>
-                      Getting <strong>{formatCurrency(inputs.cashOutAmount)}</strong> via cash-out refi adds
+                      Getting <strong>{formatCurrency(inputs.cashOutAmount)}</strong> via a <strong>{inputs.newTerm}-year</strong> cash-out refi adds
                       <strong> {formatCurrency(result.details.totalInterestIncrease as number)}</strong> in interest vs keeping your current mortgage, and your payment changes by
-                      <strong> {formatCurrency((result.details.newPayment as number) - (result.details.currentPayment as number))}/month</strong>. Compare that against keeping your {inputs.currentRate}% mortgage and borrowing separately at {inputs.alternativeRate}%.
+                      <strong> {formatCurrency((result.details.newPayment as number) - (result.details.currentPayment as number))}/month</strong>. Compare that against keeping your {inputs.currentRate}% mortgage and borrowing separately at {inputs.alternativeRate}%. These figures are not an APR.
                     </Typography>
                   </Box>
                 </Stack>

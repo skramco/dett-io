@@ -45,7 +45,14 @@ interface CalculatorLayoutProps {
   relatedCalculators?: RelatedCalculator[];
   actionBarData?: ActionBarData;
   calculatorSlug?: string;
+  /** Key assumptions shown above the fold (e.g. rate, term). A standing rate/APR note is always appended. */
+  assumptions?: string[];
 }
+
+// Reg Z hygiene: shown with every assumptions block so rate figures are never
+// mistaken for an advertised APR or an offer of credit.
+const RATE_APR_NOTE =
+  'Rates shown are interest rates used for estimation only — not APRs and not offers. APR reflects fees and other loan costs and may differ from the interest rate shown.';
 
 // Dotted background pattern
 const dottedBackground = {
@@ -53,7 +60,7 @@ const dottedBackground = {
   backgroundSize: '24px 24px',
 };
 
-export default function CalculatorLayout({ children, title, description, relatedCalculators, actionBarData, calculatorSlug }: CalculatorLayoutProps) {
+export default function CalculatorLayout({ children, title, description, relatedCalculators, actionBarData, calculatorSlug, assumptions }: CalculatorLayoutProps) {
   const hasTracked = useRef(false);
   const isEmbed = useIsEmbed();
   const lastUpdated = calculatorSlug ? getCalculatorLastUpdated(calculatorSlug) : null;
@@ -116,6 +123,15 @@ export default function CalculatorLayout({ children, title, description, related
             />
           </Stack>
         </Box>
+
+        {/* Assumptions (above the fold) */}
+        {assumptions && assumptions.length > 0 && (
+          <Box sx={{ px: { xs: 2, md: 3 }, py: 1.25, bgcolor: 'grey.100', borderBottom: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.5, display: 'block' }}>
+              <strong>Assumptions:</strong> {assumptions.join(' · ')} · {RATE_APR_NOTE}
+            </Typography>
+          </Box>
+        )}
 
         {/* Calculator content */}
         <Box component="main" sx={{ flex: 1 }}>
@@ -334,6 +350,37 @@ export default function CalculatorLayout({ children, title, description, related
                       </Typography>
                     </Link>
                   </Stack>
+                )}
+
+                {/* Assumptions (above the fold) */}
+                {assumptions && assumptions.length > 0 && (
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      mt: 2.5,
+                      px: 2,
+                      py: 1.5,
+                      maxWidth: 700,
+                      borderRadius: 2,
+                      bgcolor: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, color: 'text.secondary' }}>
+                      Assumptions
+                    </Typography>
+                    <Box component="ul" sx={{ m: 0, mt: 0.5, pl: 2.5 }}>
+                      {assumptions.map((item, index) => (
+                        <Typography key={index} component="li" variant="caption" sx={{ color: 'text.secondary', lineHeight: 1.6, display: 'list-item' }}>
+                          {item}
+                        </Typography>
+                      ))}
+                      <Typography component="li" variant="caption" sx={{ color: 'text.secondary', lineHeight: 1.6, display: 'list-item' }}>
+                        {RATE_APR_NOTE}
+                      </Typography>
+                    </Box>
+                  </Paper>
                 )}
               </Box>
             </Box>

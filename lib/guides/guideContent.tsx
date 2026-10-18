@@ -46,7 +46,7 @@ function AffordHouse40K() {
 
       <h2>What Lenders See</h2>
       <p>At $40K, your gross monthly income is about $3,333. The 28% front-end DTI rule gives you a maximum housing payment of roughly <strong>$933 per month</strong>. That's your ceiling for principal, interest, taxes, insurance, and any PMI or HOA fees combined.</p>
-      <p>The challenge at this income level isn't qualification — it's finding a home in your price range that doesn't need major repairs. Lenders will approve you, but the real question is whether the housing stock in your area works at $120K-$170K.</p>
+      <p>The challenge at this income level usually isn't meeting lender guidelines — it's finding a home in your price range that doesn't need major repairs. Your numbers may fit typical guidelines, but the real question is whether the housing stock in your area works at $120K-$170K.</p>
 
       <h2>Loan Programs That Help</h2>
       <p>At $40K, government-backed loans are your best friend:</p>

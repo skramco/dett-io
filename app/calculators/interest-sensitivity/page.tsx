@@ -94,6 +94,9 @@ export default function InterestSensitivityCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="interest-sensitivity"
+      assumptions={[
+        `${inputs.loanTerm}-year fixed-rate loan of $${inputs.loanAmount.toLocaleString()}, fully amortizing; scenarios vary the interest rate around your ${inputs.baseRate}% base`,
+      ]}
       title="Interest Rate Sensitivity Calculator"
       description="See how interest rate changes affect your monthly payment and total cost. Understand the impact of rate timing, points, and market movements."
       relatedCalculators={[

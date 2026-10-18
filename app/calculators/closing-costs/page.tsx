@@ -133,6 +133,10 @@ export default function ClosingCostCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="closing-costs"
+      assumptions={[
+        `${inputs.loanTerm}-year fixed-rate loan at ${inputs.interestRate}% interest`,
+        `Fees are typical estimates for ${inputs.state} and vary by lender, provider, and transaction`,
+      ]}
       title="Closing Cost Estimator"
       description="Get a detailed estimate of your mortgage closing costs. See lender fees, third-party fees, government charges, and prepaid items — so you know exactly how much cash you need at the closing table."
       relatedCalculators={[

@@ -258,7 +258,7 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'Front-End DTI', formula: 'Housing Costs ÷ Gross Monthly Income × 100', description: 'Only housing expenses (PITI). Lenders want this under 28%.', computedValue: `${fmtDec(d.frontEndDTI as number, 1)}%` },
         { label: 'Back-End DTI', formula: '(Housing + All Debts) ÷ Gross Monthly Income × 100', description: 'All monthly obligations. Lenders want this under 36-43%.', computedValue: `${fmtDec(d.backEndDTI as number, 1)}%` },
-        { label: 'Maximum Housing Payment', formula: 'Gross Income × Target DTI% − Existing Debts', description: 'How much housing payment you can qualify for at a given DTI limit.' },
+        { label: 'Maximum Housing Payment', formula: 'Gross Income × Target DTI% − Existing Debts', description: 'The housing payment that fits within a given DTI guideline.' },
       ],
     },
   ],

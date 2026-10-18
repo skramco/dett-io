@@ -185,6 +185,10 @@ export default function MortgageCostCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="mortgage-cost"
+      assumptions={[
+        `${inputs.loanTerm}-year fixed-rate loan at ${inputs.interestRate}% interest, fully amortizing`,
+        'Taxes, insurance, HOA, and PMI as entered — actual costs vary by property and insurer',
+      ]}
       title="True Monthly Mortgage Cost"
       description="See your real monthly payment including PITI (Principal, Interest, Taxes, Insurance), HOA fees, and PMI. Most calculators only show principal and interest—we show you the full picture."
       relatedCalculators={[

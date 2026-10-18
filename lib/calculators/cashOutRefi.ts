@@ -134,12 +134,12 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
   }
 
   insights.push(
-    `Blended-rate comparison: keeping your ${currentRate}% mortgage and borrowing ${formatCurrency(cashOutAmount)} at ${alternativeRate}% works out to a ${blendedKeepRate.toFixed(2)}% weighted-average note rate, vs ${newRate}% on the entire ${formatCurrency(newLoanAmount)} refi balance.`
+    `Blended-rate comparison: keeping your ${currentRate}% mortgage and borrowing ${formatCurrency(cashOutAmount)} at ${alternativeRate}% works out to a ${blendedKeepRate.toFixed(2)}% weighted-average note rate, vs ${newRate}% on the entire ${formatCurrency(newLoanAmount)} refi balance. The blended figure is a note-rate mix, not an APR.`
   );
 
   if (newLTV > maxLTV) {
     insights.push(
-      `⚠️ New LTV is ${newLTV.toFixed(1)}% - you may not qualify or will pay higher rates above 80% LTV`
+      `⚠️ New LTV is ${newLTV.toFixed(1)}% - above the typical 80% guideline for cash-out refinancing, which may mean higher pricing or fewer loan options`
     );
   }
 

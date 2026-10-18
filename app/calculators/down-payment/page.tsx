@@ -105,6 +105,10 @@ export default function DownPaymentCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="down-payment"
+      assumptions={[
+        `${inputs.loanTerm}-year fixed-rate loan at ${inputs.interestRate}% interest, fully amortizing`,
+        `PMI estimated from credit score (${inputs.creditScore}) and LTV when the down payment is under 20% — actual premiums vary by insurer`,
+      ]}
       title="Down Payment Comparison"
       description="Compare different down payment amounts to see how they affect your monthly payment, PMI costs, and total cash needed at closing."
       relatedCalculators={[

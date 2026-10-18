@@ -99,6 +99,10 @@ export default function ArmVsFixedCalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="arm-vs-fixed"
+      assumptions={[
+        `Fixed option: ${inputs.fixedRate}% for ${inputs.loanTerm} years; ARM option: ${inputs.armInitialRate}% for the first ${inputs.armFixedPeriod} years`,
+        `ARM adjustments are estimates from a ${inputs.expectedIndexRate}% index plus a ${inputs.armMargin}% margin, limited by your entered caps — actual adjustments will differ`,
+      ]}
       title="ARM vs Fixed Rate Calculator"
       description="Compare adjustable-rate mortgages (like the 5/6 SOFR ARM) to fixed-rate loans. Set initial, periodic, and lifetime rate caps to see initial savings, adjustment scenarios, and a caps-derived worst case."
       relatedCalculators={[

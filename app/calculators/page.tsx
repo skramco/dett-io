@@ -78,7 +78,7 @@ const calculatorDetails = {
     value: 'Compares three ways to use a lump sum: (1) Recast - make a large principal payment and have your lender recalculate a lower monthly payment for a small fee (~$250), (2) Refinance - get a new loan with better terms but pay closing costs (~2-5% of loan), or (3) Prepay Only - make principal-only payments to save interest without changing your monthly payment. Shows which strategy saves you the most money based on your situation.',
   },
   'points-buydown': {
-    outputs: ['Break-even timeline for buying points', 'Total interest saved', 'Effective interest rate', 'Comparison: points vs. lender credits'],
+    outputs: ['Break-even timeline for buying points', 'Total interest saved', 'Net cost after upfront points', 'Comparison: points vs. lender credits'],
     value: 'Answers whether you should pay points to lower your rate. Shows exactly when you\'ll break even and if it\'s worth the upfront cost.',
   },
   'arm-vs-fixed': {
@@ -110,8 +110,8 @@ const calculatorDetails = {
     value: 'See exactly where every dollar of your mortgage payment goes. The full amortization table shows how your balance decreases over time and how much of each payment is interest vs principal.',
   },
   dti: {
-    outputs: ['Front-end DTI ratio (housing only)', 'Back-end DTI ratio (all debts)', 'Qualification status for Conventional, FHA, VA loans', 'Debt breakdown visualization', 'Maximum housing payment at each DTI threshold'],
-    value: 'DTI is the #1 factor lenders use to determine how much mortgage you qualify for. See both your front-end and back-end ratios and understand exactly what lenders see.',
+    outputs: ['Front-end DTI ratio (housing only)', 'Back-end DTI ratio (all debts)', 'Comparison to typical Conventional, FHA, and VA guidelines', 'Debt breakdown visualization', 'Maximum housing payment at each DTI threshold'],
+    value: 'DTI is one of the first numbers lenders review when sizing a mortgage. See both your front-end and back-end ratios and understand exactly what lenders see.',
   },
   'closing-costs': {
     outputs: ['Itemized closing cost estimate', 'Lender fees vs third-party fees', 'Prepaid items breakdown', 'Total cash needed at closing', 'Seller credit scenarios'],
@@ -122,7 +122,7 @@ const calculatorDetails = {
     value: 'PMI is required when you put less than 20% down. See exactly how much it costs, when it drops off, and whether a larger down payment is worth it to avoid PMI.',
   },
   fha: {
-    outputs: ['Total monthly FHA payment with MIP', 'Upfront & monthly MIP costs', 'FHA eligibility check (credit, DTI, down payment)', 'FHA vs Conventional comparison', 'MIP duration and total cost'],
+    outputs: ['Total monthly FHA payment with MIP', 'Upfront & monthly MIP costs', 'FHA guideline check (credit, DTI, down payment)', 'FHA vs Conventional comparison', 'MIP duration and total cost'],
     value: 'FHA loans allow as little as 3.5% down with a 580+ credit score. See your full payment including mortgage insurance and whether FHA or conventional is the better deal.',
   },
   va: {
@@ -188,7 +188,7 @@ const calculatorCategories = [
       {
         id: "fha",
         name: "FHA Loan Calculator",
-        description: "Calculate your FHA payment with MIP and check eligibility.",
+        description: "Calculate your FHA payment with MIP and compare against typical FHA guidelines.",
         icon: AccountBalance,
         href: "/calculators/fha",
       },

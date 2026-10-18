@@ -124,6 +124,10 @@ export default function VACalculator() {
   return (
     <CalculatorLayout
       calculatorSlug="va"
+      assumptions={[
+        `${inputs.loanTerm}-year fixed-rate VA loan at ${inputs.interestRate}% interest, fully amortizing`,
+        'VA funding fee per the current published fee schedule, financed into the loan',
+      ]}
       title="VA Loan Calculator"
       description="Calculate your VA mortgage payment with $0 down and no PMI. See your VA funding fee, compare VA vs FHA vs conventional, and understand the financial benefits of your VA loan benefit."
       relatedCalculators={[
