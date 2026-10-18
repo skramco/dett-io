@@ -23,6 +23,7 @@ import { ActionBar } from './calculator/ActionBar';
 import { ShowMeTheMath } from './calculator/ShowMeTheMath';
 import { CalculatorSeoFooter } from './calculator/CalculatorSeoFooter';
 import { useIsEmbed } from '@/lib/embedContext';
+import { calculatorBodySx } from './calculator/calculatorBodySx';
 
 interface RelatedCalculator {
   slug: string;
@@ -118,28 +119,7 @@ export default function CalculatorLayout({ children, title, description, related
         {/* Calculator content */}
         <Box component="main" sx={{ flex: 1 }}>
           <Container maxWidth="lg" sx={{ py: { xs: 2, md: 3 } }}>
-            <Box
-              sx={{
-                '& .MuiPaper-root': {
-                  borderRadius: 3,
-                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                },
-                '& input, & select': { borderRadius: 2 },
-                '& .calculator-inputs': {
-                  maxHeight: { xs: 'none', lg: 'calc(100vh - 200px)' },
-                  overflowY: { xs: 'visible', lg: 'auto' },
-                  overflowX: 'hidden',
-                  position: { xs: 'relative', lg: 'sticky' },
-                  top: { lg: 60 },
-                  pr: { lg: 2 },
-                  '&::-webkit-scrollbar': { width: '6px' },
-                  '&::-webkit-scrollbar-track': { background: '#f1f1f1', borderRadius: '4px' },
-                  '&::-webkit-scrollbar-thumb': { background: '#888', borderRadius: '4px' },
-                },
-              }}
-            >
+            <Box sx={calculatorBodySx(16)}>
               <Box data-pdf-capture>{children}</Box>
             </Box>
           </Container>
@@ -359,44 +339,9 @@ export default function CalculatorLayout({ children, title, description, related
           </Container>
         </Box>
 
-        {/* Calculator content with enhanced styling and scrollable inputs */}
+        {/* Calculator columns: inputs flow with the page; results stick on desktop */}
         <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
-          <Box
-            sx={{
-              '& .MuiPaper-root': {
-                borderRadius: 3,
-                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-                border: '1px solid',
-                borderColor: 'divider',
-              },
-              '& input, & select': {
-                borderRadius: 2,
-              },
-              // Make input panels scrollable
-              '& .calculator-inputs': {
-                maxHeight: { xs: 'none', lg: 'calc(100vh - 280px)' },
-                overflowY: { xs: 'visible', lg: 'auto' },
-                overflowX: 'hidden',
-                position: { xs: 'relative', lg: 'sticky' },
-                top: { lg: 100 },
-                pr: { lg: 2 },
-                '&::-webkit-scrollbar': {
-                  width: '8px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  background: '#f1f1f1',
-                  borderRadius: '4px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  background: '#888',
-                  borderRadius: '4px',
-                  '&:hover': {
-                    background: '#555',
-                  },
-                },
-              },
-            }}
-          >
+          <Box sx={calculatorBodySx(88)}>
             <Box data-pdf-capture>
               {children}
             </Box>
