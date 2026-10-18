@@ -68,6 +68,12 @@ export default function AffordabilityCalculator() {
   // Derived values
   const monthlyIncome = inputs.annualIncome / 12;
 
+  // Human-readable label for the constraint that actually set each tier's price
+  const bindingLabel = (binding: string, dtiPercent: number) =>
+    binding === 'back-end'
+      ? `${dtiPercent}% back-end DTI (incl. debts)`
+      : `${dtiPercent}% front-end DTI (housing only)`;
+
   // Chart data for comparison
   const comparisonData = useMemo(() => {
     if (!result) return [];
@@ -177,7 +183,7 @@ export default function AffordabilityCalculator() {
               <HeroMetric
                 label="Recommended Home Price"
                 value={`$${(result.details.moderatePrice as number).toLocaleString()}`}
-                sublabel={`Based on 36% DTI with $${(result.details.moderatePayment as number).toLocaleString()}/month payment`}
+                sublabel={`Based on ${bindingLabel(result.details.moderateBinding as string, 36)} with $${(result.details.moderatePayment as number).toLocaleString()}/month payment${(result.details.moderatePMI as number) > 0 ? ` incl. $${(result.details.moderatePMI as number).toLocaleString()} PMI` : ''}`}
               />
 
               {/* Key Metrics Grid */}
@@ -236,11 +242,14 @@ export default function AffordabilityCalculator() {
                         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
                           <CheckCircle sx={{ color: '#22C55E', fontSize: 20 }} />
                           <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#166534' }}>
-                            Conservative (28% DTI)
+                            Conservative (28/36 Rule)
                           </Typography>
                         </Stack>
                         <Typography variant="body2" sx={{ color: '#166534' }}>
                           Safest option with breathing room for unexpected expenses
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#166534', fontWeight: 600 }}>
+                          Binding constraint: {bindingLabel(result.details.conservativeBinding as string, result.details.conservativeBinding === 'back-end' ? 36 : 28)}
                         </Typography>
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
@@ -249,6 +258,7 @@ export default function AffordabilityCalculator() {
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#166534' }}>
                           ${(result.details.conservativePayment as number).toLocaleString()}/month
+                          {(result.details.conservativePMI as number) > 0 && ` (incl. $${(result.details.conservativePMI as number).toLocaleString()} PMI)`}
                         </Typography>
                       </Box>
                     </Stack>
@@ -270,11 +280,14 @@ export default function AffordabilityCalculator() {
                         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
                           <TrendingUp sx={{ color: '#196bc0', fontSize: 20 }} />
                           <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0F4F8F' }}>
-                            Moderate (36% DTI) — Recommended
+                            Moderate (36% Back-End DTI) — Recommended
                           </Typography>
                         </Stack>
                         <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
                           Balanced approach - most common choice for stable income
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#0F4F8F', fontWeight: 600 }}>
+                          Binding constraint: {bindingLabel(result.details.moderateBinding as string, 36)}
                         </Typography>
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
@@ -283,6 +296,7 @@ export default function AffordabilityCalculator() {
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#0F4F8F' }}>
                           ${(result.details.moderatePayment as number).toLocaleString()}/month
+                          {(result.details.moderatePMI as number) > 0 && ` (incl. $${(result.details.moderatePMI as number).toLocaleString()} PMI)`}
                         </Typography>
                       </Box>
                     </Stack>
@@ -304,11 +318,14 @@ export default function AffordabilityCalculator() {
                         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
                           <Warning sx={{ color: '#F59E0B', fontSize: 20 }} />
                           <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#92400E' }}>
-                            Aggressive (43% DTI)
+                            Aggressive (43% Back-End DTI)
                           </Typography>
                         </Stack>
                         <Typography variant="body2" sx={{ color: '#92400E' }}>
                           Maximum qualification - leaves little room for error
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: '#92400E', fontWeight: 600 }}>
+                          Binding constraint: {bindingLabel(result.details.aggressiveBinding as string, 43)}
                         </Typography>
                       </Box>
                       <Box sx={{ textAlign: 'right' }}>
@@ -317,6 +334,7 @@ export default function AffordabilityCalculator() {
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#92400E' }}>
                           ${(result.details.aggressivePayment as number).toLocaleString()}/month
+                          {(result.details.aggressivePMI as number) > 0 && ` (incl. $${(result.details.aggressivePMI as number).toLocaleString()} PMI)`}
                         </Typography>
                       </Box>
                     </Stack>
