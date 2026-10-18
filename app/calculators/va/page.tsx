@@ -46,6 +46,14 @@ import type { VAInputs } from '@/lib/calculators/va';
 
 const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
+function BestValueBadge({ color }: { color: string }) {
+  return (
+    <Box sx={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', bgcolor: color, color: 'white', px: 2, py: 0.25, borderRadius: 2, fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap' }}>
+      BEST VALUE
+    </Box>
+  );
+}
+
 export default function VACalculator() {
   const [inputs, setInputs] = useState<VAInputs>({
     homePrice: 400000,
@@ -92,6 +100,15 @@ export default function VACalculator() {
       color: colors[i % colors.length],
       percentage: total > 0 ? ((item.value as number) / total) * 100 : 0,
     }));
+  }, [result]);
+
+  const comparison = useMemo(() => {
+    if (!result) return null;
+    const va = result.details.totalMonthlyPayment as number;
+    const fha = result.details.fhaTotalMonthly as number;
+    const conv = result.details.convTotalMonthly as number;
+    const cheapest: 'va' | 'fha' | 'conv' = va <= fha && va <= conv ? 'va' : fha <= conv ? 'fha' : 'conv';
+    return { cheapest, vaVsFHA: fha - va, vaVsConv: conv - va };
   }, [result]);
 
   return (
@@ -292,10 +309,8 @@ export default function VACalculator() {
                   <Grid container spacing={2}>
                     {/* VA */}
                     <Grid size={{ xs: 12, sm: 4 }}>
-                      <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, bgcolor: '#F0FDF4', border: '2px solid #22C55E', textAlign: 'center', position: 'relative' }}>
-                        <Box sx={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', bgcolor: '#22C55E', color: 'white', px: 2, py: 0.25, borderRadius: 2, fontSize: '0.7rem', fontWeight: 700 }}>
-                          BEST VALUE
-                        </Box>
+                      <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, bgcolor: '#F0FDF4', border: comparison?.cheapest === 'va' ? '2px solid #22C55E' : '1px solid #BBF7D0', textAlign: 'center', position: 'relative' }}>
+                        {comparison?.cheapest === 'va' && <BestValueBadge color="#22C55E" />}
                         <MilitaryTech sx={{ fontSize: 32, color: '#22C55E', mb: 1 }} />
                         <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', color: '#166534' }}>
                           VA Loan
@@ -315,7 +330,8 @@ export default function VACalculator() {
 
                     {/* FHA */}
                     <Grid size={{ xs: 12, sm: 4 }}>
-                      <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, bgcolor: '#FEF3C7', border: '1px solid #FDE68A', textAlign: 'center' }}>
+                      <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, bgcolor: '#FEF3C7', border: comparison?.cheapest === 'fha' ? '2px solid #D97706' : '1px solid #FDE68A', textAlign: 'center', position: 'relative' }}>
+                        {comparison?.cheapest === 'fha' && <BestValueBadge color="#D97706" />}
                         <AccountBalance sx={{ fontSize: 32, color: '#D97706', mb: 1 }} />
                         <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', color: '#92400E' }}>
                           FHA Loan (3.5% Down)
@@ -335,7 +351,8 @@ export default function VACalculator() {
 
                     {/* Conventional */}
                     <Grid size={{ xs: 12, sm: 4 }}>
-                      <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, bgcolor: '#EBF5FF', border: '1px solid #93C5FD', textAlign: 'center' }}>
+                      <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, bgcolor: '#EBF5FF', border: comparison?.cheapest === 'conv' ? '2px solid #2563EB' : '1px solid #93C5FD', textAlign: 'center', position: 'relative' }}>
+                        {comparison?.cheapest === 'conv' && <BestValueBadge color="#2563EB" />}
                         <Home sx={{ fontSize: 32, color: '#2563EB', mb: 1 }} />
                         <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', color: '#1E40AF' }}>
                           Conventional (5% Down)
@@ -355,12 +372,28 @@ export default function VACalculator() {
                   </Grid>
 
                   {/* Savings summary */}
-                  <Paper elevation={0} sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: '#F0FDF4', border: '1px solid #BBF7D0' }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#166534', textAlign: 'center' }}>
-                      VA saves you <strong>${fmt((result.details.fhaTotalMonthly as number) - (result.details.totalMonthlyPayment as number))}/month vs FHA</strong> and{' '}
-                      <strong>${fmt((result.details.convTotalMonthly as number) - (result.details.totalMonthlyPayment as number))}/month vs Conventional</strong>
-                    </Typography>
-                  </Paper>
+                  {comparison && (
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        mt: 3,
+                        p: 2,
+                        borderRadius: 2,
+                        bgcolor: comparison.cheapest === 'va' ? '#F0FDF4' : '#EBF5FF',
+                        border: '1px solid',
+                        borderColor: comparison.cheapest === 'va' ? '#BBF7D0' : '#93C5FD',
+                      }}
+                    >
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: comparison.cheapest === 'va' ? '#166534' : '#1E40AF', textAlign: 'center' }}>
+                        VA {comparison.vaVsFHA >= 0
+                          ? <>saves you <strong>${fmt(comparison.vaVsFHA)}/month vs FHA</strong></>
+                          : <>costs <strong>${fmt(-comparison.vaVsFHA)}/month more vs FHA</strong></>}{' '}
+                        and {comparison.vaVsConv >= 0
+                          ? <>saves you <strong>${fmt(comparison.vaVsConv)}/month vs Conventional</strong></>
+                          : <>costs <strong>${fmt(-comparison.vaVsConv)}/month more vs Conventional</strong></>}
+                      </Typography>
+                    </Paper>
+                  )}
                 </Paper>
               </ResultsSection>
 
@@ -460,8 +493,16 @@ export default function VACalculator() {
                       {(result.details.disabilityExempt as number) === 0 && (
                         <> The {result.details.fundingFeeRate}% funding fee (${fmt(result.details.fundingFee as number)}) is financed into the loan.</>
                       )}
-                      {' '}Compared to FHA, you save <strong>${fmt((result.details.fhaTotalMonthly as number) - (result.details.totalMonthlyPayment as number))}/month</strong>.
-                      Compared to conventional with 5% down, you save <strong>${fmt((result.details.convTotalMonthly as number) - (result.details.totalMonthlyPayment as number))}/month</strong>.
+                      {comparison && (
+                        <>
+                          {' '}Compared to FHA, you {comparison.vaVsFHA >= 0
+                            ? <>save <strong>${fmt(comparison.vaVsFHA)}/month</strong></>
+                            : <>pay <strong>${fmt(-comparison.vaVsFHA)}/month more</strong></>}.
+                          {' '}Compared to conventional with 5% down, you {comparison.vaVsConv >= 0
+                            ? <>save <strong>${fmt(comparison.vaVsConv)}/month</strong></>
+                            : <>pay <strong>${fmt(-comparison.vaVsConv)}/month more</strong></>}.
+                        </>
+                      )}
                     </Typography>
                   </Box>
                 </Stack>
