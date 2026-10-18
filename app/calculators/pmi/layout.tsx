@@ -1,17 +1,12 @@
-import { getCalculatorMetadata, getCalculatorJsonLd } from '@/lib/seo/calculatorSeo';
+import { getCalculatorMetadata } from '@/lib/seo/calculatorSeo';
+import { CalculatorStructuredData } from '@/components/seo/CalculatorStructuredData';
 
 export const metadata = getCalculatorMetadata('pmi');
 
-export default function PMILayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = getCalculatorJsonLd('pmi');
+export default function PmiLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
+      <CalculatorStructuredData slug="pmi" />
       {children}
     </>
   );

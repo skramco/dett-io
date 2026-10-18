@@ -1,17 +1,12 @@
-import { getCalculatorMetadata, getCalculatorJsonLd } from '@/lib/seo/calculatorSeo';
+import { getCalculatorMetadata } from '@/lib/seo/calculatorSeo';
+import { CalculatorStructuredData } from '@/components/seo/CalculatorStructuredData';
 
 export const metadata = getCalculatorMetadata('va');
 
-export default function VALayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = getCalculatorJsonLd('va');
+export default function VaLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
+      <CalculatorStructuredData slug="va" />
       {children}
     </>
   );

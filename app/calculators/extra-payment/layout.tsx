@@ -1,17 +1,12 @@
-import { getCalculatorMetadata, getCalculatorJsonLd } from '@/lib/seo/calculatorSeo';
+import { getCalculatorMetadata } from '@/lib/seo/calculatorSeo';
+import { CalculatorStructuredData } from '@/components/seo/CalculatorStructuredData';
 
 export const metadata = getCalculatorMetadata('extra-payment');
 
 export default function ExtraPaymentLayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = getCalculatorJsonLd('extra-payment');
   return (
     <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
+      <CalculatorStructuredData slug="extra-payment" />
       {children}
     </>
   );

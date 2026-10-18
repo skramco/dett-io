@@ -20,7 +20,7 @@ import { RelatedGuides } from './calculator/RelatedGuides';
 import { LoanKnowCTA } from './calculator/LoanKnowCTA';
 import { ActionBar } from './calculator/ActionBar';
 import { ShowMeTheMath } from './calculator/ShowMeTheMath';
-import { CalculatorJsonLd } from '@/components/JsonLd';
+import { CalculatorSeoFooter } from './calculator/CalculatorSeoFooter';
 import { useIsEmbed } from '@/lib/embedContext';
 
 interface RelatedCalculator {
@@ -204,9 +204,8 @@ export default function CalculatorLayout({ children, title, description, related
   // ── Standard (non-embed) layout ──
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {calculatorSlug && (
-        <CalculatorJsonLd name={title} description={description} slug={calculatorSlug} />
-      )}
+      {/* JSON-LD (WebApplication + FAQPage + BreadcrumbList) is emitted by the
+          server route layout via CalculatorStructuredData — not duplicated here. */}
       <Header />
 
       <Box component="main" sx={{ flex: 1 }}>
@@ -403,6 +402,13 @@ export default function CalculatorLayout({ children, title, description, related
           )}
           <LoanKnowCTA />
         </Container>
+
+        {/* FAQ + Methodology / sources / last updated (matches FAQPage JSON-LD) */}
+        {calculatorSlug && (
+          <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 } }}>
+            <CalculatorSeoFooter calculatorSlug={calculatorSlug} />
+          </Container>
+        )}
 
         {/* Calculator Disclaimer */}
         <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 } }}>
