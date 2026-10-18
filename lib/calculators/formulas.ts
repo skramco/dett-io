@@ -27,8 +27,9 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       title: 'Maximum Monthly Payment',
       steps: [
         { label: 'Monthly Gross Income', formula: 'Annual Income ÷ 12', description: 'Convert annual salary to monthly.', computedValue: `$${fmt(d.monthlyIncome as number)}` },
-        { label: 'Max Housing Payment (28% rule)', formula: 'Monthly Income × 0.28', description: 'Lenders typically cap housing costs at 28% of gross income.', computedValue: `$${fmt((d.monthlyIncome as number) * 0.28)}` },
-        { label: 'Max Total Debt Payment (36% rule)', formula: 'Monthly Income × 0.36 − Other Debts', description: 'Total debt payments (housing + other) should stay under 36%.', computedValue: `$${fmt((d.monthlyIncome as number) * 0.36 - (d.monthlyDebts as number || 0))}` },
+        { label: 'Max Housing Payment (28% front-end rule)', formula: 'Monthly Income × 0.28', description: 'Lenders typically cap housing costs at 28% of gross income.', computedValue: `$${fmt((d.monthlyIncome as number) * 0.28)}` },
+        { label: 'Max Housing Payment (36% back-end rule)', formula: 'Monthly Income × 0.36 − Other Debts', description: 'Total debt payments (housing + other) should stay under 36%, so other debts reduce your housing budget.', computedValue: `$${fmt((d.monthlyIncome as number) * 0.36 - (d.monthlyDebts as number || 0))}` },
+        { label: 'Binding Constraint (recommended)', formula: 'min(front-end limit, back-end limit)', description: 'The recommended price uses whichever limit is lower.', computedValue: d.moderateConstraintLabel ? String(d.moderateConstraintLabel) : undefined },
       ],
     },
     {
@@ -36,7 +37,8 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'Monthly Rate', formula: 'Annual Rate ÷ 12 ÷ 100', description: 'Convert annual percentage to monthly decimal.' },
         { label: 'Number of Payments', formula: 'Loan Term × 12', description: 'Total months over the life of the loan.' },
-        { label: 'Loan Amount', formula: 'Payment × [(1+r)ⁿ − 1] ÷ [r × (1+r)ⁿ]', description: 'Standard present value of annuity formula, solving for principal.' },
+        { label: 'PMI (if LTV > 80%)', formula: 'Loan × 0.5% ÷ 12', description: 'When your down payment is under 20%, estimated PMI is included in the payment before solving for price.', computedValue: `$${fmt(d.moderatePMI as number || 0)}` },
+        { label: 'Loan Amount', formula: 'Payment × [(1+r)ⁿ − 1] ÷ [r × (1+r)ⁿ]', description: 'Standard present value of annuity formula, solving for principal (after taxes, insurance, HOA, and PMI).' },
         { label: 'Max Home Price', formula: 'Loan Amount + Down Payment', description: 'Add your down payment to the loan amount.', computedValue: `$${fmt(d.maxHomePrice as number)}` },
       ],
     },
