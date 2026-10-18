@@ -305,7 +305,7 @@ export default function MortgageCostCalculator() {
               <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>
                 Calculate Results
               </Typography>
-              <Typography variant="caption" sx={{ color: 'primary.light', display: 'block', mt: 0.5 }}>
+              <Typography variant="caption" sx={{ color: '#EBF5FF', display: 'block', mt: 0.5 }}>
                 Results update automatically as you type
               </Typography>
             </Paper>
@@ -542,7 +542,7 @@ export default function MortgageCostCalculator() {
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                           TOTAL INTEREST PAID
                         </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: CHART_COLORS.quaternary, my: 1 }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#B45309', my: 1 }}>
                           ${(result.details.totalInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">

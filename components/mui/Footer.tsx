@@ -131,7 +131,7 @@ export function Footer() {
 
         {/* Legal Disclaimer */}
         <Box sx={{ mt: 5, pt: 4, borderTop: '1px solid', borderColor: 'divider' }}>
-          <Typography variant="caption" color="text.disabled" sx={{ display: 'block', lineHeight: 1.7, maxWidth: 900 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.8125rem', lineHeight: 1.7, maxWidth: 900 }}>
             <strong>Disclaimer:</strong> Dett.io is an educational resource operated by Skramco Holdings LLC. Dett.io is not a mortgage lender, broker, financial advisor, or licensed professional of any kind. All calculator results, estimates, and content are for informational and educational purposes only and do not constitute financial, legal, or tax advice. Actual mortgage terms, rates, and eligibility are determined by lenders based on your complete financial profile. Consult qualified professionals before making financial decisions. See our{' '}
             <Link href="/terms" style={{ color: 'inherit' }}>Terms of Use</Link>{' '}and{' '}
             <Link href="/privacy" style={{ color: 'inherit' }}>Privacy Policy</Link>{' '}for full details.
@@ -151,17 +151,17 @@ export function Footer() {
             gap: 2,
           }}
         >
-          <Typography variant="caption" color="text.disabled">
+          <Typography variant="caption" color="text.secondary">
             © {new Date().getFullYear()} Skramco Holdings LLC d/b/a Dett.io. All rights reserved.
           </Typography>
           <Stack direction="row" spacing={2}>
             <Link href="/privacy" style={{ textDecoration: 'none' }}>
-              <Typography variant="caption" sx={{ color: 'text.disabled', '&:hover': { color: 'text.secondary' } }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary' } }}>
                 Privacy
               </Typography>
             </Link>
             <Link href="/terms" style={{ textDecoration: 'none' }}>
-              <Typography variant="caption" sx={{ color: 'text.disabled', '&:hover': { color: 'text.secondary' } }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary' } }}>
                 Terms
               </Typography>
             </Link>

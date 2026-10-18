@@ -68,7 +68,7 @@ export function HeroMetric({ label, value, sublabel, trend, trendLabel }: HeroMe
         }}
       />
       
-      <Typography variant="subtitle2" sx={{ opacity: 0.9, mb: 1, fontWeight: 500 }}>
+      <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 500 }}>
         {label}
       </Typography>
       <Typography 
@@ -83,7 +83,7 @@ export function HeroMetric({ label, value, sublabel, trend, trendLabel }: HeroMe
         {value}
       </Typography>
       {sublabel && (
-        <Typography variant="body2" sx={{ opacity: 0.8 }}>
+        <Typography variant="body2" sx={{ color: '#EBF5FF' }}>
           {sublabel}
         </Typography>
       )}
@@ -94,9 +94,10 @@ export function HeroMetric({ label, value, sublabel, trend, trendLabel }: HeroMe
           size="small"
           sx={{
             mt: 2,
-            bgcolor: trend === 'up' ? 'rgba(16, 185, 129, 0.2)' : trend === 'down' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255,255,255,0.2)',
-            color: 'white',
-            '& .MuiChip-icon': { color: 'white' },
+            bgcolor: 'white',
+            color: 'primary.dark',
+            fontWeight: 600,
+            '& .MuiChip-icon': { color: 'primary.dark' },
           }}
         />
       )}
@@ -118,10 +119,10 @@ interface MetricCardProps {
 export function MetricCard({ label, value, sublabel, icon, color = 'primary' }: MetricCardProps) {
   const colorMap = {
     primary: { bg: '#EBF5FF', border: '#196bc0', text: '#0F4F8F' },
-    secondary: { bg: '#F0FDF4', border: '#10B981', text: '#059669' },
-    success: { bg: '#F0FDF4', border: '#22C55E', text: '#16A34A' },
-    warning: { bg: '#FFFBEB', border: '#F59E0B', text: '#D97706' },
-    error: { bg: '#FEF2F2', border: '#EF4444', text: '#DC2626' },
+    secondary: { bg: '#F0FDF4', border: '#10B981', text: '#047857' },
+    success: { bg: '#F0FDF4', border: '#22C55E', text: '#15803D' },
+    warning: { bg: '#FFFBEB', border: '#F59E0B', text: '#B45309' },
+    error: { bg: '#FEF2F2', border: '#EF4444', text: '#B91C1C' },
   };
   const colors = colorMap[color];
 
@@ -215,8 +216,8 @@ interface InsightCalloutProps {
 export function InsightCallout({ type, title, children }: InsightCalloutProps) {
   const config = {
     info: { icon: <Info />, bg: '#EBF5FF', border: '#196bc0', color: '#0F4F8F' },
-    success: { icon: <CheckCircle />, bg: '#F0FDF4', border: '#22C55E', color: '#16A34A' },
-    warning: { icon: <Warning />, bg: '#FFFBEB', border: '#F59E0B', color: '#D97706' },
+    success: { icon: <CheckCircle />, bg: '#F0FDF4', border: '#22C55E', color: '#15803D' },
+    warning: { icon: <Warning />, bg: '#FFFBEB', border: '#F59E0B', color: '#B45309' },
     tip: { icon: <Lightbulb />, bg: '#FDF4FF', border: '#A855F7', color: '#7C3AED' },
   };
   const c = config[type];

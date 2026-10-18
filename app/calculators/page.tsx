@@ -533,7 +533,7 @@ export default function CalculatorsPage() {
               <Chip
                 label="Interactive Guide"
                 size="small"
-                sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'white', fontWeight: 600 }}
+                sx={{ bgcolor: 'primary.dark', color: 'white', fontWeight: 600 }}
               />
               <Typography 
                 variant="h2" 
@@ -543,7 +543,7 @@ export default function CalculatorsPage() {
               </Typography>
               <Typography 
                 variant="h6" 
-                sx={{ color: 'rgba(255,255,255,0.7)', maxWidth: 500, fontWeight: 400 }}
+                sx={{ color: '#EBF5FF', maxWidth: 500, fontWeight: 400 }}
               >
                 Answer a couple questions and we'll point you to the right calculator.
               </Typography>
