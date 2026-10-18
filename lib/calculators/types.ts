@@ -138,6 +138,8 @@ export interface RecastVsRefinanceInputs {
   newRate: number;
   newTerm: number;
   closingCosts: number;
+  /** Annual return (%) earned on cash flow freed up by a lower payment. */
+  savingsRate: number;
 }
 
 // Category 4: Payoff & Wealth

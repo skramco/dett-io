@@ -114,6 +114,7 @@ const detailsBySlug: Record<string, Record<string, number | string>> = {
     newRate: 5.75,
     newTerm: 30,
     closingCosts: 6500,
+    savingsRate: 4,
   }).details,
   'points-buydown': calculatePointsBuydown({
     loanAmount: 400000,

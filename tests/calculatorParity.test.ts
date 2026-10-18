@@ -44,6 +44,7 @@ import {
   monthlyPmiAmount,
   monthsToReachLtv,
   remainingBalance,
+  remainingBalanceWithPayment,
   simulateBiweeklyPayoff,
   totalInterestOverTerm,
   vaFundingFeeRatePercent,
@@ -321,6 +322,7 @@ describe('recast-vs-refi', () => {
     newRate: 5.75,
     newTerm: 30,
     closingCosts: 6500,
+    savingsRate: 4,
   };
   const result = calculateRecastVsRefi(inputs);
 
@@ -328,6 +330,85 @@ describe('recast-vs-refi', () => {
     expect(num(result.details.currentPayment)).toBeCloseTo(monthlyPayment(300000, 6.5, 300), 0);
     expect(num(result.details.recastPayment)).toBeCloseTo(monthlyPayment(250000, 6.5, 300), 0);
     expect(num(result.details.refiPayment)).toBeCloseTo(monthlyPayment(250000, 5.75, 360), 0);
+  });
+
+  it('compares every option over the current loan remaining term', () => {
+    expect(num(result.details.horizonYears)).toBe(25);
+    expect(result.chartData).toHaveLength(3);
+    for (const row of result.chartData ?? []) {
+      expect(row).toHaveProperty('remainingBalance');
+      expect(row).toHaveProperty('netCost');
+      expect(row).toHaveProperty('cashFlowValue');
+    }
+  });
+
+  it('remaining balances at the horizon match the reference schedule', () => {
+    const currentPayment = monthlyPayment(300000, 6.5, 300);
+    expect(num(result.details.recastRemainingBalance)).toBeCloseTo(
+      remainingBalance(250000, 6.5, 300, 300),
+      0
+    );
+    expect(num(result.details.refiRemainingBalance)).toBeCloseTo(
+      remainingBalance(250000, 5.75, 360, 300),
+      0
+    );
+    expect(num(result.details.prepayRemainingBalance)).toBeCloseTo(
+      remainingBalanceWithPayment(250000, 6.5, currentPayment, 300),
+      0
+    );
+  });
+
+  it('recommendation matches the lowest net-cost option', () => {
+    const recast = num(result.details.recastNetCost);
+    const refi = num(result.details.refiNetCost);
+    const prepay = num(result.details.prepayNetCost);
+    const lowest = Math.min(recast, refi, prepay);
+    const winner =
+      recast === lowest ? 'Recast' : refi === lowest ? 'Refinance' : 'Prepay Only';
+    expect(result.details.bestOption).toBe(winner);
+    expect(result.summary).toContain(winner);
+    expect(result.insights.some((tip) => tip.includes(winner) && tip.includes('💡'))).toBe(true);
+  });
+
+  it('gives recast and refinance the same net cost when rate, term, and fees match', () => {
+    const tied = calculateRecastVsRefi({
+      ...inputs,
+      newRate: 6.5,
+      newTerm: 25,
+      closingCosts: 350,
+    });
+    expect(num(tied.details.recastNetCost)).toBe(num(tied.details.refiNetCost));
+    expect(num(tied.details.recastPayment)).toBe(num(tied.details.refiPayment));
+  });
+
+  it('ties recast and prepay when the savings rate equals the loan rate', () => {
+    const tied = calculateRecastVsRefi({
+      ...inputs,
+      recastFee: 0,
+      savingsRate: 6.5,
+    });
+    expect(num(tied.details.recastNetCost)).toBeCloseTo(num(tied.details.prepayNetCost), 0);
+  });
+
+  it('credits invested cash flow: 4% prefers prepay, 8% flips to refinance', () => {
+    const pageDefaults = {
+      currentBalance: 320000,
+      currentRate: 6.5,
+      yearsRemaining: 27,
+      lumpSumAmount: 50000,
+      recastFee: 250,
+      newRate: 6.0,
+      newTerm: 30,
+      closingCosts: 6000,
+      savingsRate: 4,
+    };
+    const atFour = calculateRecastVsRefi(pageDefaults);
+    const atEight = calculateRecastVsRefi({ ...pageDefaults, savingsRate: 8 });
+    expect(atFour.details.bestOption).toBe('Prepay Only');
+    expect(num(atFour.details.refiRemainingBalance)).toBeGreaterThan(0);
+    expect(atEight.details.bestOption).toBe('Refinance');
+    expect(atFour.summary).toContain('Prepay Only');
+    expect(atEight.summary).toContain('Refinance');
   });
 });
 
