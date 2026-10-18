@@ -246,17 +246,59 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     },
   ],
 
-  pmi: (d) => [
-    {
-      title: 'PMI Calculation',
-      steps: [
-        { label: 'LTV Ratio', formula: 'Loan Amount ÷ Home Value × 100', description: 'Loan-to-Value ratio determines if PMI is required (> 80%).', computedValue: `${fmtDec(d.ltv as number, 1)}%` },
-        { label: 'Annual PMI Rate', formula: 'Based on LTV and credit score (0.2% - 1.5%)', description: 'Higher LTV and lower credit scores mean higher PMI rates.', computedValue: `${fmtDec(d.pmiRate as number, 2)}%` },
-        { label: 'Monthly PMI', formula: 'Loan Amount × Annual PMI Rate ÷ 12', description: 'Added to your monthly payment until you reach 80% LTV.', computedValue: `$${fmt(d.monthlyPMI as number)}` },
-        { label: 'PMI Removal', formula: 'When LTV reaches 80% (auto-cancels at 78%)', description: 'You can request removal at 80% LTV; it auto-cancels at 78%.', computedValue: d.monthsUntilRemoval ? `Month ${d.monthsUntilRemoval}` : 'N/A' },
-      ],
-    },
-  ],
+  pmi: (d) => {
+    const noPMI = (d.noPMI as number) === 1;
+    const removalMonth = (d.monthsUntilRemoval as number) || 0;
+    const removalYears = (d.yearsUntilRemoval as number) || 0;
+    return [
+      {
+        title: 'PMI Calculation',
+        steps: [
+          {
+            label: 'Starting LTV Ratio',
+            formula: 'Loan Amount ÷ Home Price × 100',
+            description: 'Your Loan-to-Value ratio at closing. Conventional loans require PMI when LTV is above 80% (down payment under 20%).',
+            computedValue: `${fmtDec(d.ltv as number, 1)}%`,
+          },
+          ...(noPMI
+            ? [
+                {
+                  label: 'PMI Required?',
+                  formula: 'LTV ≤ 80% → no PMI',
+                  description: 'With 20% or more down, your starting LTV is at or below 80%, so no PMI is required.',
+                  computedValue: 'Not required',
+                },
+              ]
+            : [
+                {
+                  label: 'Annual PMI Rate',
+                  formula: 'Based on LTV and credit score (0.2% – 1.5%)',
+                  description: 'Higher LTV and lower credit scores mean higher PMI rates.',
+                  computedValue: `${fmtDec(d.pmiRate as number, 2)}%`,
+                },
+                {
+                  label: 'Monthly PMI',
+                  formula: 'Original Loan Amount × Annual PMI Rate ÷ 12',
+                  description: 'PMI is calculated on your original loan amount — not your current balance — so the premium stays flat until it is removed.',
+                  computedValue: `$${fmt(d.monthlyPMI as number)}`,
+                },
+                {
+                  label: 'Request Cancellation at 80% LTV',
+                  formula: 'Balance ≤ Home Price × 0.80',
+                  description: 'You can ask your servicer to cancel PMI once your balance reaches 80% of the original home value (requires good payment history).',
+                  computedValue: `$${fmt(d.requestRemovalBalance as number)} balance`,
+                },
+                {
+                  label: 'Automatic Removal at 78% LTV',
+                  formula: 'Balance ≤ Home Price × 0.78',
+                  description: 'If you never request cancellation, your lender must terminate PMI automatically when the balance reaches 78% of the original home value.',
+                  computedValue: removalMonth > 0 ? `Month ${removalMonth} (~${fmtDec(removalYears, 1)} yrs)` : 'N/A',
+                },
+              ]),
+        ],
+      },
+    ];
+  },
 
   fha: (d) => [
     {

@@ -106,7 +106,7 @@ export function calculatePMI(inputs: PMIInputs): CalculatorResult {
     insights.push('With 20% or more down, you avoid PMI entirely. This saves you hundreds per month compared to a lower down payment.');
   } else {
     insights.push(
-      `Your PMI rate is ${pmiRate.toFixed(2)}% ($${Math.round(monthlyPMI)}/month). PMI automatically drops off after ${monthsUntilRemoval} months (${(monthsUntilRemoval / 12).toFixed(1)} years) when your loan balance reaches 78% of the home value.`
+      `Your PMI rate is ${pmiRate.toFixed(2)}% ($${Math.round(monthlyPMI)}/month), calculated on your original loan amount — not your current balance. PMI is automatically removed after ${monthsUntilRemoval} months (${(monthsUntilRemoval / 12).toFixed(1)} years) when your loan balance reaches 78% of the original home value.`
     );
 
     insights.push(
@@ -133,7 +133,7 @@ export function calculatePMI(inputs: PMIInputs): CalculatorResult {
   }
 
   insights.push(
-    `You can request PMI removal when your loan reaches 80% LTV (balance of $${Math.round(homePrice * 0.80).toLocaleString()}). It's automatically removed at 78% LTV.`
+    `Two removal rules: you can request cancellation once your balance reaches 80% of the original home value ($${Math.round(homePrice * 0.80).toLocaleString()}, good payment history required), and your lender must remove PMI automatically at 78% ($${Math.round(homePrice * 0.78).toLocaleString()}).`
   );
 
   return {
