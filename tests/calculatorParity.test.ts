@@ -198,22 +198,58 @@ describe('points-buydown', () => {
     lenderCredit: 4000,
     lenderCreditRate: 7.375,
     buydownType: 'none' as const,
-    buydownCost: 0,
     yearsToHold: 7,
   };
   const result = calculatePointsBuydown(inputs);
   const parPayment = monthlyPayment(400000, 7, 360);
   const pointsPayment = monthlyPayment(400000, 6.5, 360);
+  const creditPayment = monthlyPayment(400000, 7.375, 360);
+  const holdMonths = 84;
+  const parEnding = remainingBalance(400000, 7, 360, holdMonths);
+  const pointsEnding = remainingBalance(400000, 6.5, 360, holdMonths);
+  const creditEnding = remainingBalance(400000, 7.375, 360, holdMonths);
 
   it('headline par payment matches the reference', () => {
     expect(num(result.details.parPayment)).toBeCloseTo(parPayment, 0);
   });
 
-  it('points break-even matches the reference', () => {
+  it('ending balances match the reference schedule', () => {
+    expect(num(result.details.parEndingBalance)).toBeCloseTo(parEnding, 0);
+    expect(num(result.details.pointsEndingBalance)).toBeCloseTo(pointsEnding, 0);
+  });
+
+  it('net cost includes remaining balance so points beat credits when balances diverge', () => {
+    const parCost = Math.round(parPayment * holdMonths + parEnding - 400000);
+    const pointsCost = Math.round(8000 + pointsPayment * holdMonths + pointsEnding - 400000);
+    const creditCost = Math.round(-4000 + creditPayment * holdMonths + creditEnding - 400000);
+
+    const parRow = result.chartData!.find((r) => r.option === 'Par Rate')!;
+    const pointsRow = result.chartData!.find((r) => r.option === 'Buy Points')!;
+    const creditRow = result.chartData!.find((r) => r.option === 'Lender Credit')!;
+
+    expect(num(parRow.totalCost)).toBeCloseTo(parCost, 0);
+    expect(num(pointsRow.totalCost)).toBeCloseTo(pointsCost, 0);
+    expect(num(creditRow.totalCost)).toBeCloseTo(creditCost, 0);
+    expect(num(pointsRow.totalCost)).toBeLessThan(num(parRow.totalCost));
+    expect(num(parRow.totalCost)).toBeLessThan(num(creditRow.totalCost));
+    expect(result.details.bestOption).toBe('Buy Points');
+  });
+
+  it('points break-even counts payment savings plus faster principal paydown', () => {
     const monthlySavings = Math.round(parPayment) - Math.round(pointsPayment);
-    const refBreakEven = breakEvenMonths(8000, monthlySavings);
-    const insight = result.insights.find((i) => i.includes('breaks even'))!;
-    expect(insight).toContain(`${Math.round(refBreakEven)} months`);
+    let inclusiveBreakEven = 0;
+    for (let month = 1; month <= 360; month++) {
+      const savings =
+        monthlySavings * month +
+        (remainingBalance(400000, 7, 360, month) - remainingBalance(400000, 6.5, 360, month));
+      if (savings >= 8000) {
+        inclusiveBreakEven = month;
+        break;
+      }
+    }
+    const insight = result.insights.find((i) => i.includes('breaking even'))!;
+    expect(insight).toContain(`${inclusiveBreakEven} months`);
+    expect(inclusiveBreakEven).toBeLessThan(breakEvenMonths(8000, monthlySavings));
   });
 });
 

@@ -122,8 +122,7 @@ const detailsBySlug: Record<string, Record<string, number | string>> = {
     pointsRate: 6.5,
     lenderCredit: 4000,
     lenderCreditRate: 7.375,
-    buydownType: 'none',
-    buydownCost: 0,
+    buydownType: '2-1',
     yearsToHold: 7,
   }).details,
   'arm-vs-fixed': calculateArmVsFixed({

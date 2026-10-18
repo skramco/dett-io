@@ -133,8 +133,10 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       title: 'Points & Buydown Math',
       steps: [
         { label: 'Cost of 1 Point', formula: 'Loan Amount × 1%', description: 'Each point costs 1% of the loan and typically reduces the rate by 0.25%.' },
-        { label: 'Monthly Savings from Points', formula: 'Payment at Par Rate − Payment at Bought-Down Rate', description: 'The monthly payment reduction from buying points.' },
-        { label: 'Break-Even', formula: 'Points Cost ÷ Monthly Savings', description: 'Months to recoup the upfront cost of buying points.' },
+        { label: 'Monthly Savings from Points', formula: 'Payment at Par Rate − Payment at Bought-Down Rate', description: 'The monthly payment reduction from buying points.', computedValue: d.pointsMonthlySavings !== undefined ? `$${fmt(d.pointsMonthlySavings as number)}` : undefined },
+        { label: 'Remaining Balance at Payoff', formula: 'Standard amortization balance at the end of your hold', description: 'A lower rate pays down principal faster, so the bought-down loan leaves a smaller balance when you sell or refinance.', computedValue: d.parEndingBalance !== undefined ? `$${fmt(d.parEndingBalance as number)} (par) vs $${fmt(d.pointsEndingBalance as number)} (points)` : undefined },
+        { label: 'Net Cost Over Hold', formula: 'Upfront Cost + Σ Payments + Remaining Balance − Loan Amount', description: 'The true cost of each option: everything paid out plus the payoff still owed, net of the amount borrowed. Equivalent to upfront cost plus interest accrued.' },
+        { label: 'Temporary Buydown Subsidy', formula: 'Σ (Par Payment − Reduced Payment) over buydown months', description: '3-2-1, 2-1, and 1-0 buydowns lower the payment for the first years; the difference is prepaid into escrow. The note rate and amortization stay at par.', computedValue: (d.buydownCost as number) > 0 ? `$${fmt(d.buydownCost as number)}` : undefined },
       ],
     },
   ],
