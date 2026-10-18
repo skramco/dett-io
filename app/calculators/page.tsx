@@ -126,7 +126,7 @@ const calculatorDetails = {
     value: 'FHA loans allow as little as 3.5% down with a 580+ credit score. See your full payment including mortgage insurance and whether FHA or conventional is the better deal.',
   },
   va: {
-    outputs: ['Total monthly VA payment (no PMI)', 'VA funding fee calculation', 'VA vs FHA vs Conventional comparison', 'DTI and residual income check', 'Funding fee by down payment tier'],
+    outputs: ['Total monthly VA payment (no PMI)', 'VA funding fee calculation (purchase, IRRRL, cash-out)', 'VA vs FHA vs Conventional comparison', 'Residual income guidance by region and family size', 'Funding fee by down payment and use tier'],
     value: 'VA loans offer $0 down and no PMI — the best mortgage benefit available. See your funding fee, compare loan types, and understand the full financial advantage of your VA benefit.',
   },
 };

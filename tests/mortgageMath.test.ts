@@ -201,6 +201,11 @@ describe('VA funding fee', () => {
     expect(vaFundingFee(0, true, 'regular', true)).toBe(0);
   });
 
+  it('is waived for eligible surviving spouses', () => {
+    expect(vaFundingFee(0, true, 'surviving-spouse', false)).toBe(0);
+    expect(vaFundingFee(0, false, 'surviving-spouse', false, 'cash-out')).toBe(0);
+  });
+
   it('follows the down-payment tiers for regular service', () => {
     expect(vaFundingFee(0, true, 'regular', false)).toBe(2.15);
     expect(vaFundingFee(0, false, 'regular', false)).toBe(3.3);
@@ -208,9 +213,24 @@ describe('VA funding fee', () => {
     expect(vaFundingFee(10, false, 'regular', false)).toBe(1.25);
   });
 
-  it('uses reserves/guard rates below 5% down', () => {
-    expect(vaFundingFee(0, true, 'reserves-guard', false)).toBe(2.5);
-    expect(vaFundingFee(0, false, 'reserves-guard', false)).toBe(2.5);
+  it('uses the same rates for Reserve/Guard as regular military', () => {
+    expect(vaFundingFee(0, true, 'reserves-guard', false)).toBe(2.15);
+    expect(vaFundingFee(0, false, 'reserves-guard', false)).toBe(3.3);
+    expect(vaFundingFee(5, true, 'reserves-guard', false)).toBe(1.5);
+    expect(vaFundingFee(10, false, 'reserves-guard', false)).toBe(1.25);
+  });
+
+  it('uses a flat 0.5% fee for IRRRL regardless of use or equity', () => {
+    expect(vaFundingFee(0, true, 'regular', false, 'irrrl')).toBe(0.5);
+    expect(vaFundingFee(0, false, 'regular', false, 'irrrl')).toBe(0.5);
+    expect(vaFundingFee(20, false, 'reserves-guard', false, 'irrrl')).toBe(0.5);
+  });
+
+  it('uses cash-out tiers that do not decrease with equity', () => {
+    expect(vaFundingFee(0, true, 'regular', false, 'cash-out')).toBe(2.15);
+    expect(vaFundingFee(20, true, 'regular', false, 'cash-out')).toBe(2.15);
+    expect(vaFundingFee(0, false, 'regular', false, 'cash-out')).toBe(3.3);
+    expect(vaFundingFee(20, false, 'regular', false, 'cash-out')).toBe(3.3);
   });
 });
 

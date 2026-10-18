@@ -46,5 +46,12 @@ export { calculatePMI } from './pmi';
 export type { PMIInputs } from './pmi';
 export { calculateFHA } from './fha';
 export type { FHAInputs } from './fha';
-export { calculateVA } from './va';
-export type { VAInputs } from './va';
+export {
+  calculateVA,
+  VA_REGION_LABELS,
+  VA_RESIDUAL_INCOME_80K_PLUS,
+  VA_RESIDUAL_INCOME_UNDER_80K,
+  getResidualIncomeTable,
+  getRequiredResidualIncome,
+} from './va';
+export type { VAInputs, VARegion } from './va';

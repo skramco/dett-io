@@ -267,20 +267,36 @@ export function fhaMonthlyMip(baseLoanAmount: number, annualMipRatePercent: numb
 // ---------------------------------------------------------------------------
 
 export type VAServiceType = 'regular' | 'reserves-guard' | 'surviving-spouse';
+export type VALoanPurpose = 'purchase' | 'cash-out' | 'irrrl';
 
-/** VA funding fee rate (%) per current guidelines. */
+/**
+ * VA funding fee rate (%) per current guidelines (effective since April 7, 2023).
+ * Since Jan 1, 2020 (Blue Water Navy Act), Reserve/National Guard members pay
+ * the same rates as regular military. Eligible surviving spouses receiving
+ * Dependency and Indemnity Compensation are exempt, same as disability.
+ */
 export function vaFundingFeeRatePercent(
   downPaymentPercent: number,
   firstTimeUse: boolean,
   serviceType: VAServiceType | string,
-  disabilityExempt: boolean
+  disabilityExempt: boolean,
+  loanPurpose: VALoanPurpose | string = 'purchase'
 ): number {
-  if (disabilityExempt) return 0;
-  const isReservesGuard = serviceType === 'reserves-guard';
+  // Exempt: 10%+ VA disability rating, Purple Heart recipients, and eligible
+  // surviving spouses receiving Dependency and Indemnity Compensation.
+  if (disabilityExempt || serviceType === 'surviving-spouse') return 0;
+
+  if (loanPurpose === 'irrrl') return 0.5; // IRRRL (streamline refi) flat fee
+
+  if (loanPurpose === 'cash-out') {
+    // Cash-out refinance has no down-payment tiers
+    return firstTimeUse ? 2.15 : 3.3;
+  }
+
+  // Purchase / construction loans
   if (downPaymentPercent >= 10) return 1.25;
   if (downPaymentPercent >= 5) return 1.5;
-  if (firstTimeUse) return isReservesGuard ? 2.5 : 2.15;
-  return isReservesGuard ? 2.5 : 3.3;
+  return firstTimeUse ? 2.15 : 3.3;
 }
 
 // ---------------------------------------------------------------------------

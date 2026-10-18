@@ -831,16 +831,19 @@ describe('va', () => {
     downPaymentPercent: 0,
     interestRate: 6.25,
     loanTerm: 30,
+    loanPurpose: 'purchase' as const,
     serviceType: 'regular' as const,
     firstTimeUse: true,
     disabilityExempt: false,
+    region: 'south' as const,
+    familySize: 3,
     propertyTax: 4800,
     homeInsurance: 1600,
     monthlyGrossIncome: 9000,
     monthlyDebts: 400,
   };
   const result = calculateVA(inputs);
-  const refFeeRate = vaFundingFeeRatePercent(0, true, 'regular', false);
+  const refFeeRate = vaFundingFeeRatePercent(0, true, 'regular', false, 'purchase');
   const refFee = Math.round(400000 * (refFeeRate / 100));
   const refPI = monthlyPayment(400000 + refFee, 6.25, 360);
 
