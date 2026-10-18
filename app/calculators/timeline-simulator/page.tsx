@@ -4,6 +4,7 @@ import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
 import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -21,6 +22,7 @@ export default function TimelineSimulatorCalculator() {
     loanAmount: 360000, interestRate: DEFAULT_RATES.thirtyYearFixed, expectedMoveYear: 7, refiLikelihood: 30,
     armInitialRate: DEFAULT_RATES.fiveOneArm, armFixedPeriod: 5, pointsCost: 7200, pointsRate: 6.25,
   });
+  useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate', offsetFields: ['armInitialRate', 'pointsRate'] });
   const deferredInputs = useDeferredInputs(inputs);

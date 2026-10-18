@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
 import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -57,6 +58,7 @@ export default function RefinanceCalculator() {
     newTerm: 30,
     closingCosts: 8000,
   });
+  useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'newRate' });
   const deferredInputs = useDeferredInputs(inputs);

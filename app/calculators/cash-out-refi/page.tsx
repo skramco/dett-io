@@ -4,6 +4,7 @@ import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
 import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -21,6 +22,7 @@ export default function CashOutRefiCalculator() {
     currentBalance: 280000, currentRate: 4.5, yearsRemaining: 25, homeValue: 500000,
     cashOutAmount: 50000, newRate: DEFAULT_RATES.thirtyYearFixed, newTerm: 30, closingCosts: 8000, alternativeRate: 10,
   });
+  useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'newRate' });
   const deferredInputs = useDeferredInputs(inputs);

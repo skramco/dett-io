@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
@@ -82,6 +83,7 @@ export default function DTICalculator() {
     childSupport: 0,
     otherDebts: 0,
   });
+  useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
   const deferredInputs = useDeferredInputs(inputs);
 

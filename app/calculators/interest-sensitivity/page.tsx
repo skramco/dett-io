@@ -4,6 +4,7 @@ import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
 import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -51,6 +52,7 @@ export default function InterestSensitivityCalculator() {
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1800,
   });
+  useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'baseRate' });
   const deferredInputs = useDeferredInputs(inputs);

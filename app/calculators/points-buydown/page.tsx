@@ -4,6 +4,7 @@ import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
 import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -21,6 +22,7 @@ export default function PointsBuydownCalculator() {
     loanAmount: 360000, parRate: DEFAULT_RATES.thirtyYearFixed, loanTerm: 30, pointsCost: 7200, pointsRate: 6.25,
     lenderCredit: 3600, lenderCreditRate: 7.0, buydownType: 'none', yearsToHold: 7,
   });
+  useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'parRate', offsetFields: ['pointsRate', 'lenderCreditRate'] });
   const deferredInputs = useDeferredInputs(inputs);

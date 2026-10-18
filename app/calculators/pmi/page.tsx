@@ -4,6 +4,7 @@ import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
 import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -60,6 +61,7 @@ export default function PMICalculator() {
     creditScore: 740,
     pmiType: 'borrower-paid',
   });
+  useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate' });
   const deferredInputs = useDeferredInputs(inputs);

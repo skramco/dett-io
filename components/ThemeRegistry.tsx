@@ -3,6 +3,7 @@
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import { ReactNode } from 'react';
 import { RESULT_TOKENS } from '@/lib/theme/resultTokens';
+import { ScenarioProvider } from '@/lib/scenario';
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -222,7 +223,9 @@ export function ThemeRegistry({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {children}
+      <ScenarioProvider>
+        {children}
+      </ScenarioProvider>
     </ThemeProvider>
   );
 }
