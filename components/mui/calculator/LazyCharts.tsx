@@ -228,5 +228,8 @@ export function LazyCategoryStackedBarChart(props: CategoryStackedBarChartProps)
   );
 }
 
-// Re-export non-recharts components directly (no lazy needed — they're lightweight)
-export { HorizontalBar, ChartLegend, CHART_COLORS } from './ChartComponents';
+// Re-export non-recharts components directly (no lazy needed — they're lightweight).
+// IMPORTANT: these come from ChartPrimitives, NOT ChartComponents — a static
+// re-export from ChartComponents would pull recharts into the page bundle and
+// defeat the code-splitting above.
+export { HorizontalBar, ChartLegend, CHART_COLORS } from './ChartPrimitives';
