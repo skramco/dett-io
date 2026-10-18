@@ -15,6 +15,7 @@ export type AnalyticsEvent =
   | 'guide_read'
   | 'show_me_the_math_opened'
   | 'cta_click'
+  | 'lead_captured'
   | 'outbound_click';
 
 interface EventParams {
