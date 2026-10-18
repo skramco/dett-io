@@ -48,16 +48,18 @@ export default function AboutPage() {
           <Stack spacing={0}>
             <h2>Who&apos;s behind this</h2>
             <p>
-              Dett.io is built and operated by <strong>Skramco Holdings LLC</strong>, a Delaware
-              limited liability company. We are a small team of software engineers who kept
-              finding that the mortgage calculators ranking at the top of search results were
-              designed to capture leads first and answer questions second — rate quotes behind
-              email gates, &ldquo;results&rdquo; that trigger sales calls, and math that quietly
-              flatters whichever loan product pays the referral fee.
+              Dett.io is built by <strong>Knowe LLC</strong>, a team of 30+ year mortgage industry
+              veterans and mortgage technologists by trade. We&apos;ve worked with and built
+              technology for some of the largest lenders, banks, and credit unions in the country.
+              We built these calculators to give borrowers the same clear math we use every day
+              — free, with no signup.
             </p>
             <p>
-              So we built the tool we wanted: calculators that use the same amortization math
-              lenders use, show every formula behind every number, and never ask who you are.
+              Knowe LLC is a Delaware limited liability company.{' '}
+              <a href="https://knowe.one" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                Dett.io is a Knowe LLC company
+              </a>
+              . LoanKnow is a sibling Knowe platform; it is not required to use these calculators.
             </p>
 
             <h2>Our independence</h2>
@@ -83,7 +85,7 @@ export default function AboutPage() {
 
             <h2>What we are not</h2>
             <p>
-              We are engineers, not licensed financial professionals. Our calculators are
+              We are mortgage technologists, not licensed financial professionals. Our calculators are
               educational tools that produce estimates — they are not loan offers,
               pre-qualifications, or financial advice. Before making decisions, compare official
               Loan Estimates from multiple lenders and consult qualified professionals. See our{' '}

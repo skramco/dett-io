@@ -23,5 +23,7 @@ describe('renderCalculatorPdf', () => {
     expect(output).toContain('Headline Results');
     expect(output).toContain('Home Price');
     expect(output).toContain('Interest Rate');
+    expect(output).toContain('Knowe LLC');
+    expect(output).toContain('a Knowe LLC company');
   });
 });

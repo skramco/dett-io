@@ -25,7 +25,7 @@ function addFooter(pdf: PdfDoc) {
       MARGIN_X,
       PAGE_HEIGHT - 10
     );
-    pdf.text(`dett.io | Page ${i} of ${pageCount}`, PAGE_WIDTH - MARGIN_X, PAGE_HEIGHT - 10, {
+    pdf.text(`Knowe LLC · dett.io | Page ${i} of ${pageCount}`, PAGE_WIDTH - MARGIN_X, PAGE_HEIGHT - 10, {
       align: 'right',
     });
   }
@@ -93,7 +93,7 @@ export function renderCalculatorPdf(
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(10);
   pdf.setTextColor(100, 116, 139);
-  pdf.text('Free Mortgage Calculators | dett.io', MARGIN_X, 23);
+  pdf.text('Free Mortgage Calculators | dett.io — a Knowe LLC company', MARGIN_X, 23);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(16);

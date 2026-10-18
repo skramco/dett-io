@@ -2,7 +2,7 @@
 
 > Free mortgage calculators and educational guides. No ads, no lead capture, no signup required.
 
-Dett.io is a free mortgage education platform built by Skramco Holdings LLC. It provides 20 interactive calculators, side-by-side loan comparisons, salary-based affordability guides, and a mortgage glossary — all designed to help consumers make smarter mortgage decisions with transparent math.
+Dett.io is a free mortgage education platform built by Knowe LLC. It provides 20 interactive calculators, side-by-side loan comparisons, salary-based affordability guides, and a mortgage glossary — all designed to help consumers make smarter mortgage decisions with transparent math.
 
 ## Calculators
 
@@ -67,4 +67,6 @@ Dett.io is a free mortgage education platform built by Skramco Holdings LLC. It 
 
 ## About
 
-Dett.io is operated by Skramco Holdings LLC. The site is free to use, requires no account creation, and does not sell user data. All calculators run client-side with no data sent to servers. Dett.io is not a lender, broker, or financial advisor.
+Dett.io is built by Knowe LLC, a team of 30+ year mortgage industry veterans and mortgage technologists by trade. We've worked with and built technology for some of the largest lenders, banks, and credit unions in the country. We built these calculators to give borrowers the same clear math we use every day — free, with no signup.
+
+Dett.io is a Knowe LLC company (https://knowe.one). LoanKnow is a sibling Knowe platform. The site is free to use, requires no account creation, and does not sell user data. All calculators run client-side with no data sent to servers. Dett.io is not a lender, broker, or financial advisor.

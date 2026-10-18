@@ -48,7 +48,7 @@ export default function PrivacyPolicyPage() {
         >
           <Stack spacing={0}>
             <h2>1. Introduction</h2>
-            <p>Dett.io (&quot;Dett,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) is a website operated by Skramco Holdings LLC, a limited liability company organized under the laws of the State of Delaware. This Privacy Policy describes how we collect, use, disclose, and protect your information when you visit our website at dett.io (the &quot;Site&quot;) and use our free mortgage calculators, educational guides, and related services (collectively, the &quot;Services&quot;).</p>
+            <p>Dett.io (&quot;Dett,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) is a website operated by Knowe LLC, a limited liability company organized under the laws of the State of Delaware. This Privacy Policy describes how we collect, use, disclose, and protect your information when you visit our website at dett.io (the &quot;Site&quot;) and use our free mortgage calculators, educational guides, and related services (collectively, the &quot;Services&quot;).</p>
             <p>By accessing or using the Site, you acknowledge that you have read, understood, and agree to be bound by this Privacy Policy. If you do not agree with this Privacy Policy, please do not access or use the Site.</p>
 
             <h2>2. Information We Collect</h2>
@@ -156,7 +156,7 @@ export default function PrivacyPolicyPage() {
             <p>The Site is not directed to children under the age of thirteen (13), and we do not knowingly collect personal information from children under 13. If we become aware that we have inadvertently collected personal information from a child under 13, we will take reasonable steps to delete such information promptly. If you believe we may have collected information from a child under 13, please contact us immediately.</p>
 
             <h2>11. Third-Party Links</h2>
-            <p>The Site may contain links to third-party websites or services that are not operated by us. We are not responsible for the privacy practices of such third parties. We encourage you to review the privacy policies of any third-party sites you visit. The inclusion of any link does not imply endorsement by Dett or Skramco Holdings LLC.</p>
+            <p>The Site may contain links to third-party websites or services that are not operated by us. We are not responsible for the privacy practices of such third parties. We encourage you to review the privacy policies of any third-party sites you visit. The inclusion of any link does not imply endorsement by Dett or Knowe LLC.</p>
 
             <h2>12. Changes to This Privacy Policy</h2>
             <p>We may update this Privacy Policy from time to time to reflect changes in our practices, technology, legal requirements, or other factors. When we make material changes, we will update the &quot;Effective Date&quot; at the top of this page and, where required by law, provide you with additional notice (such as a prominent notice on the Site). Your continued use of the Site after any changes constitutes your acceptance of the updated Privacy Policy.</p>
@@ -164,9 +164,10 @@ export default function PrivacyPolicyPage() {
             <h2>13. Contact Us</h2>
             <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us at:</p>
             <p>
-              <strong>Skramco Holdings LLC</strong><br />
+              <strong>Knowe LLC</strong><br />
               d/b/a Dett.io<br />
               Email: privacy@dett.io<br />
+              Web: <a href="https://knowe.one" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>knowe.one</a><br />
             </p>
             <p>We will make every reasonable effort to respond to your inquiry within thirty (30) days.</p>
 

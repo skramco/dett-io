@@ -178,7 +178,7 @@ export default function PartnersPage() {
             </Typography>
             <Typography variant="h6" sx={{ color: 'grey.400', fontWeight: 400, maxWidth: 600, mx: 'auto', mb: 4 }}>
               Add any of our 20 mortgage calculators to your website for free. 
-              No signup, no API key, no limits. Just copy and paste.
+              No signup, no API key, no limits. Just copy and paste. Dett.io is a Knowe LLC company.
             </Typography>
             <Stack direction="row" spacing={1.5} justifyContent="center" flexWrap="wrap" useFlexGap>
               {Object.keys(ROLE_BENEFITS).map((role) => (

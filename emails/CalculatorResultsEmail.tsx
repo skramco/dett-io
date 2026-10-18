@@ -160,7 +160,10 @@ export default function CalculatorResultsEmail({
               This calculator provides estimates for educational purposes only. Results are not a loan offer, pre-qualification, or commitment to lend. Dett.io is not a mortgage lender, broker, or financial advisor. Consult qualified professionals before making financial decisions.
             </Text>
             <Text style={footerCopyright}>
-              © {new Date().getFullYear()} Skramco Holdings LLC d/b/a Dett.io. All rights reserved.
+              © {new Date().getFullYear()} Knowe LLC. All rights reserved.
+            </Text>
+            <Text style={footerCopyright}>
+              <Link href="https://knowe.one" style={footerLink}>Dett.io is a Knowe LLC company</Link>
             </Text>
           </Section>
         </Container>
