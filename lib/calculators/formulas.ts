@@ -52,7 +52,7 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'Monthly Rate (r)', formula: 'Annual Rate ÷ 12 ÷ 100', description: 'Convert annual percentage rate to a monthly decimal.' },
         { label: 'Number of Payments (n)', formula: 'Loan Term × 12', description: 'Total number of monthly payments.' },
-        { label: 'Monthly P&I', formula: 'P × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Standard amortization formula. P = loan amount.', computedValue: `$${fmt(d.monthlyPI as number)}` },
+        { label: 'Monthly P&I', formula: 'P × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Standard amortization formula. P = loan amount.', computedValue: `$${fmt(d.principalAndInterest as number)}` },
       ],
     },
     {
@@ -250,10 +250,10 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'PMI Calculation',
       steps: [
-        { label: 'LTV Ratio', formula: 'Loan Amount ÷ Home Value × 100', description: 'Loan-to-Value ratio determines if PMI is required (> 80%).', computedValue: `${fmtDec(d.ltvPercent as number, 1)}%` },
+        { label: 'LTV Ratio', formula: 'Loan Amount ÷ Home Value × 100', description: 'Loan-to-Value ratio determines if PMI is required (> 80%).', computedValue: `${fmtDec(d.ltv as number, 1)}%` },
         { label: 'Annual PMI Rate', formula: 'Based on LTV and credit score (0.2% - 1.5%)', description: 'Higher LTV and lower credit scores mean higher PMI rates.', computedValue: `${fmtDec(d.pmiRate as number, 2)}%` },
         { label: 'Monthly PMI', formula: 'Loan Amount × Annual PMI Rate ÷ 12', description: 'Added to your monthly payment until you reach 80% LTV.', computedValue: `$${fmt(d.monthlyPMI as number)}` },
-        { label: 'PMI Removal', formula: 'When LTV reaches 80% (auto-cancels at 78%)', description: 'You can request removal at 80% LTV; it auto-cancels at 78%.', computedValue: d.pmiRemovalMonth ? `Month ${d.pmiRemovalMonth}` : 'N/A' },
+        { label: 'PMI Removal', formula: 'When LTV reaches 80% (auto-cancels at 78%)', description: 'You can request removal at 80% LTV; it auto-cancels at 78%.', computedValue: d.monthsUntilRemoval ? `Month ${d.monthsUntilRemoval}` : 'N/A' },
       ],
     },
   ],
