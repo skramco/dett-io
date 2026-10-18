@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -43,7 +45,7 @@ import type { ExtraPaymentInputs } from '@/lib/calculators/types';
 export default function ExtraPaymentCalculator() {
   const [inputs, setInputs] = useState<ExtraPaymentInputs>({
     loanAmount: 360000,
-    interestRate: 6.75,
+    interestRate: DEFAULT_RATES.thirtyYearFixed,
     loanTerm: 30,
     extraMonthlyPayment: 300,
     extraAnnualPayment: 0,

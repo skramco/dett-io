@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -15,7 +17,7 @@ import type { CashOutRefinanceInputs } from '@/lib/calculators/types';
 export default function CashOutRefiCalculator() {
   const [inputs, setInputs] = useState<CashOutRefinanceInputs>({
     currentBalance: 280000, currentRate: 4.5, yearsRemaining: 25, homeValue: 500000,
-    cashOutAmount: 50000, newRate: 6.75, newTerm: 30, closingCosts: 8000, alternativeRate: 10,
+    cashOutAmount: 50000, newRate: DEFAULT_RATES.thirtyYearFixed, newTerm: 30, closingCosts: 8000, alternativeRate: 10,
   });
   useUrlInputs(inputs, setInputs);
   const deferredInputs = useDeferredInputs(inputs);

@@ -1,17 +1,12 @@
-import { getCalculatorMetadata, getCalculatorJsonLd } from '@/lib/seo/calculatorSeo';
+import { getCalculatorMetadata } from '@/lib/seo/calculatorSeo';
+import { CalculatorStructuredData } from '@/components/seo/CalculatorStructuredData';
 
 export const metadata = getCalculatorMetadata('arm-vs-fixed');
 
 export default function ArmVsFixedLayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = getCalculatorJsonLd('arm-vs-fixed');
   return (
     <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
+      <CalculatorStructuredData slug="arm-vs-fixed" />
       {children}
     </>
   );

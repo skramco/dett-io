@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -45,7 +47,7 @@ import type { AccelerationInputs } from '@/lib/calculators/types';
 export default function AccelerationCalculator() {
   const [inputs, setInputs] = useState<AccelerationInputs>({
     loanAmount: 360000,
-    interestRate: 6.75,
+    interestRate: DEFAULT_RATES.thirtyYearFixed,
     loanTerm: 30,
     extraMonthly: 200,
     extraAnnual: 0,

@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -14,7 +16,7 @@ import type { PointsBuydownInputs } from '@/lib/calculators/types';
 
 export default function PointsBuydownCalculator() {
   const [inputs, setInputs] = useState<PointsBuydownInputs>({
-    loanAmount: 360000, parRate: 6.75, loanTerm: 30, pointsCost: 7200, pointsRate: 6.25,
+    loanAmount: 360000, parRate: DEFAULT_RATES.thirtyYearFixed, loanTerm: 30, pointsCost: 7200, pointsRate: 6.25,
     lenderCredit: 3600, lenderCreditRate: 7.0, buydownType: 'none', buydownCost: 0, yearsToHold: 7,
   });
   useUrlInputs(inputs, setInputs);

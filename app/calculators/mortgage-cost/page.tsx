@@ -1,5 +1,7 @@
 'use client';
 
+import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
+
 import { useState, useMemo, useEffect } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
@@ -53,7 +55,7 @@ export default function MortgageCostCalculator() {
   const [inputs, setInputs] = useState<MortgageCostInputs>({
     homePrice: 450000,
     downPayment: 90000,
-    interestRate: 6.75,
+    interestRate: DEFAULT_RATES.thirtyYearFixed,
     loanTerm: 30,
     propertyTax: 5400,
     homeInsurance: 1800,

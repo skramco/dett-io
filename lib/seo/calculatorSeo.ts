@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { calculatorFaqs } from './calculatorFaqs';
+import { getCalculatorLastUpdated } from './contentDates';
 
 export interface CalculatorSeoConfig {
   slug: string;
@@ -562,12 +564,13 @@ export function getCalculatorJsonLd(slug: string): Record<string, unknown> | nul
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'WebApplication',
+    '@type': ['WebApplication', 'SoftwareApplication'],
     name: config.jsonLd.name,
     description: config.jsonLd.description,
     url: `${BASE_URL}/calculators/${config.slug}`,
     applicationCategory: config.jsonLd.applicationCategory,
     operatingSystem: 'Any',
+    dateModified: getCalculatorLastUpdated(slug),
     offers: {
       '@type': 'Offer',
       price: '0',
@@ -581,4 +584,64 @@ export function getCalculatorJsonLd(slug: string): Record<string, unknown> | nul
     featureList: calculatorSeoConfigs[slug]?.keywords?.slice(0, 5).join(', '),
     isAccessibleForFree: true,
   };
+}
+
+export function getCalculatorFaqJsonLd(slug: string): Record<string, unknown> | null {
+  const faqs = calculatorFaqs[slug];
+  if (!faqs || faqs.length === 0) return null;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+}
+
+export function getCalculatorBreadcrumbJsonLd(slug: string): Record<string, unknown> | null {
+  const config = calculatorSeoConfigs[slug];
+  if (!config) return null;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Calculators',
+        item: `${BASE_URL}/calculators`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: config.jsonLd.name,
+        item: `${BASE_URL}/calculators/${config.slug}`,
+      },
+    ],
+  };
+}
+
+/**
+ * All structured data for a calculator page:
+ * WebApplication/SoftwareApplication + FAQPage + BreadcrumbList.
+ */
+export function getCalculatorStructuredData(slug: string): Record<string, unknown>[] {
+  return [
+    getCalculatorJsonLd(slug),
+    getCalculatorFaqJsonLd(slug),
+    getCalculatorBreadcrumbJsonLd(slug),
+  ].filter((d): d is Record<string, unknown> => d !== null);
 }
