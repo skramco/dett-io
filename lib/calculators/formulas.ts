@@ -153,9 +153,10 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'Timeline Decision Math',
       steps: [
-        { label: 'Total Cost at Year X', formula: 'Σ Monthly Payments + Closing Costs − Equity Built', description: 'Net cost of each option over your expected time in the home.' },
+        { label: 'Net Cost at Year X', formula: 'Σ Monthly Payments + Upfront Costs − Equity Built', description: 'Net cost of each option over your expected time in the home. Upfront costs include points; equity built is the principal you pay down.' },
+        { label: 'ARM Adjusted Rate', formula: 'min(Index + Margin, Prior Rate + Periodic Cap, Initial Rate + Lifetime Cap)', description: 'Applied annually after the fixed period; the payment is recast on the remaining balance and term.' },
         { label: 'Remaining Balance', formula: 'Standard amortization balance at month M', description: 'How much you still owe when you sell or move.' },
-        { label: 'Best Option', formula: 'Lowest Total Cost at your timeline', description: 'The option that costs the least over your expected holding period.' },
+        { label: 'Best Option', formula: 'Lowest Net Cost at your timeline', description: 'The option that costs the least over your expected holding period.' },
       ],
     },
   ],
