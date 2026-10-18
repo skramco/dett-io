@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
@@ -55,6 +57,7 @@ export default function RefinanceCalculator() {
     closingCosts: 8000,
   });
   useUrlInputs(inputs, setInputs);
+  const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'newRate' });
   const deferredInputs = useDeferredInputs(inputs);
 
   // Calculate results in real-time
@@ -163,6 +166,7 @@ export default function RefinanceCalculator() {
                 onChange={(v) => handleInputChange('newRate', v)}
                 step={0.125}
               />
+              <MarketRateNote rates={marketRates} />
 
               <SelectInput
                 label="New Loan Term"

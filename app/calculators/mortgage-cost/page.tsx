@@ -4,6 +4,8 @@ import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
@@ -63,6 +65,7 @@ export default function MortgageCostCalculator() {
     pmi: 0,
   });
   useUrlInputs(inputs, setInputs);
+  const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate' });
   const deferredInputs = useDeferredInputs(inputs);
 
   // Calculate results in real-time
@@ -234,6 +237,7 @@ export default function MortgageCostCalculator() {
                 onChange={(v) => handleInputChange('interestRate', v)}
                 step={0.125}
               />
+              <MarketRateNote rates={marketRates} />
 
               <SelectInput
                 label="Loan Term"

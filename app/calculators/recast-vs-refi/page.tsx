@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { Refresh, AccountBalance, Speed, CheckCircle, CompareArrows } from '@mui/icons-material';
@@ -18,6 +20,7 @@ export default function RecastVsRefiCalculator() {
     recastFee: 250, newRate: 6.0, newTerm: 30, closingCosts: 6000,
   });
   useUrlInputs(inputs, setInputs);
+  const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'newRate' });
   const deferredInputs = useDeferredInputs(inputs);
 
   const result = useMemo(() => deferredInputs.currentBalance <= 0 ? null : calculateRecastVsRefi(deferredInputs), [deferredInputs]);
@@ -42,6 +45,7 @@ export default function RecastVsRefiCalculator() {
             </InputSection>
             <InputSection title="Refinance Option" icon={<Refresh />}>
               <PercentageInput label="New Rate" value={inputs.newRate} onChange={(v) => handleInputChange('newRate', v)} step={0.125} />
+              <MarketRateNote rates={marketRates} />
               <SelectInput label="New Term" value={inputs.newTerm} onChange={(v) => handleInputChange('newTerm', v as number)} options={[{ value: 15, label: '15 years' }, { value: 20, label: '20 years' }, { value: 30, label: '30 years' }]} />
               <CurrencyInput label="Closing Costs" value={inputs.closingCosts} onChange={(v) => handleInputChange('closingCosts', v)} />
             </InputSection>

@@ -4,6 +4,8 @@ import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
@@ -59,6 +61,7 @@ export default function PMICalculator() {
     pmiType: 'borrower-paid',
   });
   useUrlInputs(inputs, setInputs);
+  const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate' });
   const deferredInputs = useDeferredInputs(inputs);
 
   const result = useMemo(() => {
@@ -106,6 +109,7 @@ export default function PMICalculator() {
                 onChange={(v) => handleInputChange('interestRate', v)}
                 step={0.125}
               />
+              <MarketRateNote rates={marketRates} />
               <SelectInput
                 label="Loan Term"
                 value={inputs.loanTerm}
