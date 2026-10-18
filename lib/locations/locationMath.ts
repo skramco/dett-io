@@ -10,6 +10,7 @@ import {
 } from '@/lib/calculators/closingCosts';
 import { calculateMortgageCost } from '@/lib/calculators/mortgageCost';
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
+import { formatCurrency } from '@/lib/format';
 import {
   LOCATION_ASSUMPTIONS,
   locationLabel,
@@ -59,7 +60,7 @@ export interface LocationPageData {
   faqs: LocationFaq[];
 }
 
-const usd = (v: number) => `$${Math.round(v).toLocaleString()}`;
+const usd = formatCurrency;
 
 const FHA_2026_FLOOR = 541_288;
 

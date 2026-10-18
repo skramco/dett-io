@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
@@ -136,7 +138,7 @@ export default function MortgageCostCalculator() {
     const total = result.details.totalMonthlyPayment as number;
     return result.chartData.map((item, index) => ({
       name: item.name as string,
-      value: `$${(item.value as number).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
+      value: `${formatCurrency((item.value as number))}`,
       color: CHART_COLORS.gradient[index % CHART_COLORS.gradient.length],
       percentage: ((item.value as number) / total) * 100,
     }));
@@ -219,7 +221,7 @@ export default function MortgageCostCalculator() {
                   min={0}
                   max={inputs.homePrice * 0.5}
                   step={5000}
-                  valueLabelFormat={(v) => `$${v.toLocaleString()} (${((v / inputs.homePrice) * 100).toFixed(0)}%)`}
+                  valueLabelFormat={(v) => `${formatCurrency(v)} (${((v / inputs.homePrice) * 100).toFixed(0)}%)`}
                 />
                 {needsPMI && (
                   <Alert severity="warning" sx={{ mt: 1 }}>
@@ -289,7 +291,7 @@ export default function MortgageCostCalculator() {
                     (inputs.pmi ?? 0) > 0
                       ? 'Using your override. Set to $0 to auto-estimate from LTV and credit score.'
                       : result && (result.details.pmiEstimated as number) === 1
-                        ? `Auto-estimated: $${(result.details.annualPMI as number).toLocaleString()}/yr (${(result.details.pmiRate as number).toFixed(2)}% of loan, based on your LTV and credit score)`
+                        ? `Auto-estimated: ${formatCurrency(result.details.annualPMI as number)}/yr (${(result.details.pmiRate as number).toFixed(2)}% of loan, based on your LTV and credit score)`
                         : 'Leave at $0 to auto-estimate from LTV and credit score'
                   }
                 />
@@ -305,8 +307,8 @@ export default function MortgageCostCalculator() {
               {/* Hero Metric */}
               <HeroMetric
                 label="Your True Monthly Payment"
-                value={`$${(result.details.totalMonthlyPayment as number).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
-                sublabel={`That's $${((result.details.totalMonthlyPayment as number) - (result.details.principalAndInterest as number)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} more than just P&I`}
+                value={`${formatCurrency((result.details.totalMonthlyPayment as number))}`}
+                sublabel={`That's ${formatCurrency(((result.details.totalMonthlyPayment as number) - (result.details.principalAndInterest as number)))} more than just P&I`}
               />
 
               {/* Key Metrics Grid */}
@@ -314,7 +316,7 @@ export default function MortgageCostCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Loan Amount"
-                    value={`$${(result.details.loanAmount as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                    value={`${formatCurrency((result.details.loanAmount as number))}`}
                     color="primary"
                   />
                 </Grid>
@@ -322,14 +324,14 @@ export default function MortgageCostCalculator() {
                   <MetricCard
                     label="Down Payment"
                     value={`${(result.details.downPaymentPercent as number).toFixed(0)}%`}
-                    sublabel={`$${inputs.downPayment.toLocaleString()}`}
+                    sublabel={`${formatCurrency(inputs.downPayment)}`}
                     color={needsPMI ? 'warning' : 'success'}
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total Interest"
-                    value={`$${(result.details.totalInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                    value={`${formatCurrency((result.details.totalInterest as number))}`}
                     sublabel={`Over ${inputs.loanTerm} years`}
                     color="warning"
                   />
@@ -337,7 +339,7 @@ export default function MortgageCostCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total Cost"
-                    value={`$${(result.details.totalPaid as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                    value={`${formatCurrency((result.details.totalPaid as number))}`}
                     sublabel="All payments combined"
                     color="error"
                   />
@@ -355,7 +357,7 @@ export default function MortgageCostCalculator() {
                       <DonutChart
                         data={chartData}
                         centerLabel="per month"
-                        centerValue={`$${(result.details.totalMonthlyPayment as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                        centerValue={`${formatCurrency((result.details.totalMonthlyPayment as number))}`}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
@@ -369,7 +371,7 @@ export default function MortgageCostCalculator() {
                             P&I Only (what most show)
                           </Typography>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            ${(result.details.principalAndInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            {formatCurrency((result.details.principalAndInterest as number))}
                           </Typography>
                         </Stack>
                         <Stack direction="row" justifyContent="space-between">
@@ -377,7 +379,7 @@ export default function MortgageCostCalculator() {
                             True Total (what you pay)
                           </Typography>
                           <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                            ${(result.details.totalMonthlyPayment as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            {formatCurrency((result.details.totalMonthlyPayment as number))}
                           </Typography>
                         </Stack>
                         <Stack direction="row" justifyContent="space-between">
@@ -385,7 +387,7 @@ export default function MortgageCostCalculator() {
                             Hidden costs
                           </Typography>
                           <Typography variant="body2" sx={{ fontWeight: 600, color: 'error.main' }}>
-                            +${((result.details.totalMonthlyPayment as number) - (result.details.principalAndInterest as number)).toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo
+                            +{formatCurrency(((result.details.totalMonthlyPayment as number) - (result.details.principalAndInterest as number)))}/mo
                           </Typography>
                         </Stack>
                       </Stack>
@@ -410,7 +412,7 @@ export default function MortgageCostCalculator() {
                         After 5 years
                       </Typography>
                       <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        ${(amortizationData[1]?.balance || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        {formatCurrency((amortizationData[1]?.balance || 0))}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         remaining
@@ -421,7 +423,7 @@ export default function MortgageCostCalculator() {
                         After 10 years
                       </Typography>
                       <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        ${(amortizationData[2]?.balance || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        {formatCurrency((amortizationData[2]?.balance || 0))}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         remaining
@@ -432,7 +434,7 @@ export default function MortgageCostCalculator() {
                         After 15 years
                       </Typography>
                       <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        ${(amortizationData[3]?.balance || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        {formatCurrency((amortizationData[3]?.balance || 0))}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         remaining
@@ -454,7 +456,7 @@ export default function MortgageCostCalculator() {
                         Annual Housing Cost
                       </Typography>
                       <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                        ${annualCostData.total.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        {formatCurrency(annualCostData.total)}
                       </Typography>
                     </Stack>
                   </Box>
@@ -516,7 +518,7 @@ export default function MortgageCostCalculator() {
                           TOTAL AMOUNT BORROWED
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: CHART_COLORS.primary, my: 1 }}>
-                          ${loanAmount.toLocaleString()}
+                          {formatCurrency(loanAmount)}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Your original loan amount
@@ -529,7 +531,7 @@ export default function MortgageCostCalculator() {
                           TOTAL INTEREST PAID
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#B45309', my: 1 }}>
-                          ${(result.details.totalInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                          {formatCurrency((result.details.totalInterest as number))}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {(((result.details.totalInterest as number) / loanAmount) * 100).toFixed(0)}% of loan amount
@@ -553,7 +555,7 @@ export default function MortgageCostCalculator() {
                       TOTAL COST OF HOMEOWNERSHIP
                     </Typography>
                     <Typography variant="h3" sx={{ fontWeight: 700, color: 'result.costText', my: 1 }}>
-                      ${(result.details.totalPaid as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      {formatCurrency((result.details.totalPaid as number))}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Principal + Interest + Taxes + Insurance over {inputs.loanTerm} years
@@ -597,10 +599,10 @@ export default function MortgageCostCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'success.dark' }}>
-                      Your true monthly housing cost is <strong>${(result.details.totalMonthlyPayment as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong>, 
-                      not the ${(result.details.principalAndInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })} that most calculators show. 
-                      Over {inputs.loanTerm} years, you'll pay a total of <strong>${(result.details.totalPaid as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong> — 
-                      that's ${(result.details.totalInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })} in interest alone.
+                      Your true monthly housing cost is <strong>{formatCurrency((result.details.totalMonthlyPayment as number))}</strong>, 
+                      not the {formatCurrency((result.details.principalAndInterest as number))} that most calculators show. 
+                      Over {inputs.loanTerm} years, you'll pay a total of <strong>{formatCurrency((result.details.totalPaid as number))}</strong> — 
+                      that's {formatCurrency((result.details.totalInterest as number))} in interest alone.
                     </Typography>
                   </Box>
                 </Stack>

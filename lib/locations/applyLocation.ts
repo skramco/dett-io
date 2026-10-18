@@ -1,3 +1,4 @@
+import { formatCurrency } from '@/lib/format';
 import { calculateClosingCosts } from '../calculators/closingCosts';
 import type { AffordabilityInputs, MortgageCostInputs, RentVsBuyInputs } from '../calculators/types';
 import type { ClosingCostInputs } from '../calculators/closingCosts';
@@ -174,7 +175,7 @@ export function locationHelperText(resolved: ResolvedLocationDefaults): string {
     `${resolved.insuranceRate.toFixed(2)}% homeowners insurance`,
   ];
   if (resolved.attorneyCustomary) {
-    bits.push(`attorney closing (~$${resolved.attorneyFee.toLocaleString()})`);
+    bits.push(`attorney closing (~${formatCurrency(resolved.attorneyFee)})`);
   } else if (resolved.state) {
     bits.push('title/escrow closing (no attorney required)');
   }

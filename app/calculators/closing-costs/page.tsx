@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -50,8 +52,6 @@ import {
 import { calculateClosingCosts } from '@/lib/calculators';
 import { applyLocationToClosingCosts, rescaleClosingCostsOnPrice } from '@/lib/locations';
 import type { ClosingCostInputs } from '@/lib/calculators/closingCosts';
-
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
 const CATEGORY_COLORS: Record<string, string> = {
   lender: CHART_COLORS.primary,
@@ -124,7 +124,7 @@ export default function ClosingCostCalculator() {
     const colors = [CHART_COLORS.primary, CHART_COLORS.secondary, CHART_COLORS.tertiary, CHART_COLORS.quaternary];
     return result.chartData.map((item, i) => ({
       name: item.name as string,
-      value: `$${fmt(item.value as number)}`,
+      value: `${formatCurrency(item.value as number)}`,
       color: colors[i % colors.length],
       percentage: total > 0 ? ((item.value as number) / total) * 100 : 0,
     }));
@@ -240,8 +240,8 @@ export default function ClosingCostCalculator() {
               {/* Hero Metric */}
               <HeroMetric
                 label="Total Cash Needed at Closing"
-                value={`$${fmt(result.details.totalCashNeeded as number)}`}
-                sublabel={`$${fmt(result.details.downPayment as number)} down + $${fmt(result.details.netClosingCosts as number)} closing costs`}
+                value={`${formatCurrency(result.details.totalCashNeeded as number)}`}
+                sublabel={`${formatCurrency(result.details.downPayment as number)} down + ${formatCurrency(result.details.netClosingCosts as number)} closing costs`}
               />
 
               {/* Key Metrics */}
@@ -249,7 +249,7 @@ export default function ClosingCostCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Closing Costs"
-                    value={`$${fmt(result.details.totalClosingCosts as number)}`}
+                    value={`${formatCurrency(result.details.totalClosingCosts as number)}`}
                     sublabel={`${result.details.closingCostPercent}% of price`}
                     color="primary"
                   />
@@ -257,7 +257,7 @@ export default function ClosingCostCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Down Payment"
-                    value={`$${fmt(result.details.downPayment as number)}`}
+                    value={`${formatCurrency(result.details.downPayment as number)}`}
                     sublabel={`${inputs.downPaymentPercent}% down`}
                     color="secondary"
                   />
@@ -265,7 +265,7 @@ export default function ClosingCostCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Seller Credit"
-                    value={`$${fmt(result.details.sellerCredit as number)}`}
+                    value={`${formatCurrency(result.details.sellerCredit as number)}`}
                     sublabel={(result.details.sellerCredit as number) > 0 ? 'Applied' : 'None'}
                     color={(result.details.sellerCredit as number) > 0 ? 'success' : 'primary'}
                   />
@@ -273,7 +273,7 @@ export default function ClosingCostCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Loan Amount"
-                    value={`$${fmt(result.details.loanAmount as number)}`}
+                    value={`${formatCurrency(result.details.loanAmount as number)}`}
                     color="warning"
                   />
                 </Grid>
@@ -313,7 +313,7 @@ export default function ClosingCostCalculator() {
                             </Typography>
                           </Stack>
                           <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                            ${fmt(categoryTotal)}
+                            {formatCurrency(categoryTotal)}
                           </Typography>
                         </Box>
                         <Box sx={{ p: 2 }}>
@@ -327,7 +327,7 @@ export default function ClosingCostCalculator() {
                                   )}
                                 </Stack>
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                  ${fmt(item.amount)}
+                                  {formatCurrency(item.amount)}
                                 </Typography>
                               </Box>
                             ))}
@@ -343,7 +343,7 @@ export default function ClosingCostCalculator() {
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Total Closing Costs</Typography>
                         <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                          ${fmt(result.details.totalClosingCosts as number)}
+                          {formatCurrency(result.details.totalClosingCosts as number)}
                         </Typography>
                       </Box>
                       {(result.details.sellerCredit as number) > 0 && (
@@ -354,14 +354,14 @@ export default function ClosingCostCalculator() {
                               Seller Credit
                             </Typography>
                             <Typography variant="body2" color="success.main" sx={{ fontWeight: 700 }}>
-                              -${fmt(result.details.sellerCredit as number)}
+                              -{formatCurrency(result.details.sellerCredit as number)}
                             </Typography>
                           </Box>
                           <Divider />
                           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Net Closing Costs</Typography>
                             <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                              ${fmt(result.details.netClosingCosts as number)}
+                              {formatCurrency(result.details.netClosingCosts as number)}
                             </Typography>
                           </Box>
                         </>
@@ -380,7 +380,7 @@ export default function ClosingCostCalculator() {
                           <Chip label="Not in cash to close" size="small" sx={{ height: 20, fontSize: '0.65rem', bgcolor: 'grey.200' }} />
                         </Stack>
                         <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                          ${fmt(result.details.outsideClosingTotal as number)}
+                          {formatCurrency(result.details.outsideClosingTotal as number)}
                         </Typography>
                       </Box>
                       <Box sx={{ p: 2 }}>
@@ -390,7 +390,7 @@ export default function ClosingCostCalculator() {
                               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Typography variant="body2">{item.name}</Typography>
                                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                  ${fmt(item.amount)}
+                                  {formatCurrency(item.amount)}
                                 </Typography>
                               </Box>
                               {item.note && (
@@ -442,13 +442,13 @@ export default function ClosingCostCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'primary.dark' }}>
-                      To buy a <strong>${fmt(inputs.homePrice)}</strong> home with <strong>{inputs.downPaymentPercent}% down</strong>,
-                      you&apos;ll need approximately <strong>${fmt(result.details.totalCashNeeded as number)}</strong> in cash at closing.
-                      That&apos;s <strong>${fmt(result.details.downPayment as number)}</strong> for the down payment
-                      plus <strong>${fmt(result.details.netClosingCosts as number)}</strong> in closing costs
+                      To buy a <strong>{formatCurrency(inputs.homePrice)}</strong> home with <strong>{inputs.downPaymentPercent}% down</strong>,
+                      you&apos;ll need approximately <strong>{formatCurrency(result.details.totalCashNeeded as number)}</strong> in cash at closing.
+                      That&apos;s <strong>{formatCurrency(result.details.downPayment as number)}</strong> for the down payment
+                      plus <strong>{formatCurrency(result.details.netClosingCosts as number)}</strong> in closing costs
                       ({result.details.closingCostPercent}% of the home price).
                       {(result.details.sellerCredit as number) > 0 && (
-                        <> The seller credit saves you <strong>${fmt(result.details.sellerCredit as number)}</strong>.</>
+                        <> The seller credit saves you <strong>{formatCurrency(result.details.sellerCredit as number)}</strong>.</>
                       )}
                     </Typography>
                   </Box>

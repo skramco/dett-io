@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { MortgageCostInputs, CalculatorResult } from './types';
 import {
   conventionalPmiRatePercent,
@@ -63,14 +64,14 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
   if (monthlyPMI > 0) {
     insights.push(
       pmiEstimated
-        ? `You're paying an estimated $${Math.round(monthlyPMI).toLocaleString()}/month in PMI (${pmiRate.toFixed(2)}% annually at ${ltv.toFixed(0)}% LTV and a ${creditScore} credit score) because your down payment is less than 20%. This adds $${Math.round(monthlyPMI * 12).toLocaleString()}/year until you reach 20% equity.`
-        : `You're paying $${Math.round(monthlyPMI).toLocaleString()}/month in PMI because your down payment is less than 20%. This adds $${Math.round(monthlyPMI * 12).toLocaleString()}/year.`
+        ? `You're paying an estimated ${formatCurrency(monthlyPMI)}/month in PMI (${pmiRate.toFixed(2)}% annually at ${ltv.toFixed(0)}% LTV and a ${creditScore} credit score) because your down payment is less than 20%. This adds ${formatCurrency(monthlyPMI * 12)}/year until you reach 20% equity.`
+        : `You're paying ${formatCurrency(monthlyPMI)}/month in PMI because your down payment is less than 20%. This adds ${formatCurrency(monthlyPMI * 12)}/year.`
     );
   }
 
   if (totalInterest > loanAmount) {
     insights.push(
-      `Over ${loanTerm} years, you'll pay $${Math.round(totalInterest).toLocaleString()} in interest - that's ${((totalInterest / loanAmount) * 100).toFixed(0)}% of your loan amount.`
+      `Over ${loanTerm} years, you'll pay ${formatCurrency(totalInterest)} in interest - that's ${((totalInterest / loanAmount) * 100).toFixed(0)}% of your loan amount.`
     );
   }
 
@@ -81,7 +82,7 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
 
   if (hoaFees > 0) {
     insights.push(
-      `HOA fees add $${Math.round(hoaFees * 12).toLocaleString()}/year to your housing costs.`
+      `HOA fees add ${formatCurrency(hoaFees * 12)}/year to your housing costs.`
     );
   }
 
@@ -94,7 +95,7 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
   ].filter(item => item.value > 0);
 
   return {
-    summary: `Your true monthly mortgage cost is $${Math.round(totalMonthlyPayment).toLocaleString()}, not just the $${Math.round(principalAndInterest).toLocaleString()} principal and interest most calculators show.`,
+    summary: `Your true monthly mortgage cost is ${formatCurrency(totalMonthlyPayment)}, not just the ${formatCurrency(principalAndInterest)} principal and interest most calculators show.`,
     details: {
       totalMonthlyPayment: parseFloat(totalMonthlyPayment.toFixed(2)),
       principalAndInterest: parseFloat(principalAndInterest.toFixed(2)),

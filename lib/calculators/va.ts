@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { CalculatorResult } from './types';
 import {
   backEndDtiPercent,
@@ -171,30 +172,30 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
   const insights: string[] = [];
 
   insights.push(
-    `VA loans require no down payment and no monthly mortgage insurance — saving you $${Math.round(pmiSavingsVsConv)}/month vs a conventional loan with PMI.`
+    `VA loans require no down payment and no monthly mortgage insurance — saving you ${formatCurrency(pmiSavingsVsConv)}/month vs a conventional loan with PMI.`
   );
 
   if (fundingFee > 0) {
     if (loanPurpose === 'irrrl') {
       insights.push(
-        `The IRRRL (streamline refinance) funding fee is a flat 0.5% ($${fundingFee.toLocaleString()}) — the lowest VA fee tier, regardless of prior use or equity.`
+        `The IRRRL (streamline refinance) funding fee is a flat 0.5% (${formatCurrency(fundingFee)}) — the lowest VA fee tier, regardless of prior use or equity.`
       );
     } else if (loanPurpose === 'cash-out') {
       insights.push(
-        `The cash-out refinance funding fee is ${fundingFeeRate}% ($${fundingFee.toLocaleString()}) for ${firstTimeUse ? 'first' : 'subsequent'} use. Unlike purchase loans, equity or down payment does not reduce this fee.`
+        `The cash-out refinance funding fee is ${fundingFeeRate}% (${formatCurrency(fundingFee)}) for ${firstTimeUse ? 'first' : 'subsequent'} use. Unlike purchase loans, equity or down payment does not reduce this fee.`
       );
     } else {
       insights.push(
-        `The VA funding fee is ${fundingFeeRate}% ($${fundingFee.toLocaleString()}), financed into the loan. ${firstTimeUse ? 'First-time' : 'Subsequent'} use rate applies. Putting 5%+ down reduces this fee significantly.`
+        `The VA funding fee is ${fundingFeeRate}% (${formatCurrency(fundingFee)}), financed into the loan. ${firstTimeUse ? 'First-time' : 'Subsequent'} use rate applies. Putting 5%+ down reduces this fee significantly.`
       );
     }
   } else if (serviceType === 'surviving-spouse' && !disabilityExempt) {
     insights.push(
-      `Eligible surviving spouses receiving Dependency and Indemnity Compensation are exempt from the VA funding fee — saving $${Math.round(baseLoanAmount * 0.0215).toLocaleString()} vs a typical first-use borrower.`
+      `Eligible surviving spouses receiving Dependency and Indemnity Compensation are exempt from the VA funding fee — saving ${formatCurrency(baseLoanAmount * 0.0215)} vs a typical first-use borrower.`
     );
   } else {
     insights.push(
-      `You're exempt from the VA funding fee due to disability status, saving you $${Math.round(baseLoanAmount * 0.0215).toLocaleString()} that most VA borrowers pay.`
+      `You're exempt from the VA funding fee due to disability status, saving you ${formatCurrency(baseLoanAmount * 0.0215)} that most VA borrowers pay.`
     );
   }
 
@@ -208,28 +209,28 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
   const vaVsConv = convTotalMonthly - totalMonthlyPayment;
   if (isPurchase && vaVsFHA > 0) {
     insights.push(
-      `VA saves you $${Math.round(vaVsFHA)}/month vs FHA ($${Math.round(vaVsFHA * 12).toLocaleString()}/year) — primarily because VA has no monthly mortgage insurance.`
+      `VA saves you ${formatCurrency(vaVsFHA)}/month vs FHA (${formatCurrency(vaVsFHA * 12)}/year) — primarily because VA has no monthly mortgage insurance.`
     );
   }
   if (isPurchase && vaVsConv > 0) {
     insights.push(
-      `VA saves you $${Math.round(vaVsConv)}/month vs conventional with 5% down ($${Math.round(vaVsConv * 12).toLocaleString()}/year).`
+      `VA saves you ${formatCurrency(vaVsConv)}/month vs conventional with 5% down (${formatCurrency(vaVsConv * 12)}/year).`
     );
   } else if (isPurchase && vaVsConv < 0) {
     insights.push(
-      `In this scenario, a conventional loan with 5% down would cost $${Math.round(-vaVsConv)}/month less than VA, because the financed funding fee outweighs the PMI difference. VA may still win if minimizing upfront cash matters most to you.`
+      `In this scenario, a conventional loan with 5% down would cost ${formatCurrency(-vaVsConv)}/month less than VA, because the financed funding fee outweighs the PMI difference. VA may still win if minimizing upfront cash matters most to you.`
     );
   }
 
   // Residual income guidance — VA's primary affordability measure
-  const residualContext = `VA guidance for a ${familySize}-person household in the ${VA_REGION_LABELS[region]} is $${Math.round(effectiveRequiredResidual).toLocaleString()}/month residual income${dtiAboveGuideline ? ' (20% above the standard table because DTI exceeds 41%)' : ''}.`;
+  const residualContext = `VA guidance for a ${familySize}-person household in the ${VA_REGION_LABELS[region]} is ${formatCurrency(effectiveRequiredResidual)}/month residual income${dtiAboveGuideline ? ' (20% above the standard table because DTI exceeds 41%)' : ''}.`;
   if (residualIncomeSurplus >= 0) {
     insights.push(
-      `Your estimated residual income of $${Math.round(monthlyResidualIncome).toLocaleString()}/month is above the guideline. ${residualContext}`
+      `Your estimated residual income of ${formatCurrency(monthlyResidualIncome)}/month is above the guideline. ${residualContext}`
     );
   } else {
     insights.push(
-      `Your estimated residual income of $${Math.round(monthlyResidualIncome).toLocaleString()}/month falls short of the guideline by $${Math.abs(Math.round(residualIncomeSurplus)).toLocaleString()}. ${residualContext} Lenders weigh residual income alongside the full picture — this is guidance, not a denial.`
+      `Your estimated residual income of ${formatCurrency(monthlyResidualIncome)}/month falls short of the guideline by ${formatCurrency(Math.abs(residualIncomeSurplus))}. ${residualContext} Lenders weigh residual income alongside the full picture — this is guidance, not a denial.`
     );
   }
 
@@ -241,13 +242,13 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
 
   if (isPurchase && downPaymentPercent === 0 && fundingFeeRate > 1.5) {
     insights.push(
-      `Putting just 5% down ($${Math.round(homePrice * 0.05).toLocaleString()}) would reduce your funding fee from ${fundingFeeRate}% to 1.5%, saving $${Math.round(baseLoanAmount * (fundingFeeRate / 100) - baseLoanAmount * 0.015).toLocaleString()}.`
+      `Putting just 5% down (${formatCurrency(homePrice * 0.05)}) would reduce your funding fee from ${fundingFeeRate}% to 1.5%, saving ${formatCurrency(baseLoanAmount * (fundingFeeRate / 100) - baseLoanAmount * 0.015)}.`
     );
   }
 
   const purposeLabel = loanPurpose === 'irrrl' ? 'VA IRRRL' : loanPurpose === 'cash-out' ? 'VA cash-out refi' : 'VA';
   return {
-    summary: `${purposeLabel} monthly payment: $${Math.round(totalMonthlyPayment).toLocaleString()} with no PMI. Funding fee: $${fundingFee.toLocaleString()} (${fundingFeeRate}%).`,
+    summary: `${purposeLabel} monthly payment: ${formatCurrency(totalMonthlyPayment)} with no PMI. Funding fee: ${formatCurrency(fundingFee)} (${fundingFeeRate}%).`,
     details: {
       homePrice,
       downPayment: Math.round(downPayment),

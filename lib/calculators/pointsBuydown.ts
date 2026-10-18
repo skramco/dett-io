@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { PointsBuydownInputs, CalculatorResult } from './types';
 import { monthlyPayment, remainingBalance } from './mortgageMath';
 
@@ -119,7 +120,7 @@ export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorR
   const insights: string[] = [];
 
   insights.push(
-    `Par rate (${parRate}%): $${parOption.monthlyPayment.toLocaleString()}/month, no upfront cost, $${parOption.endingBalance.toLocaleString()} still owed after ${yearsToHold} years`
+    `Par rate (${parRate}%): ${formatCurrency(parOption.monthlyPayment)}/month, no upfront cost, ${formatCurrency(parOption.endingBalance)} still owed after ${yearsToHold} years`
   );
 
   const pointsOption = results.find((r) => r.name === 'Buy Points')!;
@@ -140,7 +141,7 @@ export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorR
       }
     }
     insights.push(
-      `Buying points: Saves $${pointsMonthlySavings.toLocaleString()}/month and leaves you owing $${pointsBalanceAdvantage.toLocaleString()} less after ${yearsToHold} years` +
+      `Buying points: Saves ${formatCurrency(pointsMonthlySavings)}/month and leaves you owing ${formatCurrency(pointsBalanceAdvantage)} less after ${yearsToHold} years` +
         (pointsBreakEvenMonths
           ? `, breaking even in ${pointsBreakEvenMonths} months (${(pointsBreakEvenMonths / 12).toFixed(1)} years)`
           : '')
@@ -153,18 +154,18 @@ export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorR
   const creditExtraMonthly = creditOption.monthlyPayment - parOption.monthlyPayment;
   const creditExtraBalance = creditOption.endingBalance - parOption.endingBalance;
   insights.push(
-    `Lender credit: Get $${lenderCredit.toLocaleString()} upfront, but pay $${creditExtraMonthly.toLocaleString()}/month more and owe $${creditExtraBalance.toLocaleString()} more after ${yearsToHold} years`
+    `Lender credit: Get ${formatCurrency(lenderCredit)} upfront, but pay ${formatCurrency(creditExtraMonthly)}/month more and owe ${formatCurrency(creditExtraBalance)} more after ${yearsToHold} years`
   );
 
   const buydownOption = results.find((r) => r.name.endsWith('Buydown'));
   if (buydownOption) {
     insights.push(
-      `${buydownType} buydown: Payments start at $${buydownOption.monthlyPayment.toLocaleString()}/month and step up to $${parOption.monthlyPayment.toLocaleString()} after the buydown period. The $${buydownOption.upfrontCost.toLocaleString()} subsidy is usually seller- or builder-paid — if you pay it yourself, it roughly cancels out the payment relief`
+      `${buydownType} buydown: Payments start at ${formatCurrency(buydownOption.monthlyPayment)}/month and step up to ${formatCurrency(parOption.monthlyPayment)} after the buydown period. The ${formatCurrency(buydownOption.upfrontCost)} subsidy is usually seller- or builder-paid — if you pay it yourself, it roughly cancels out the payment relief`
     );
   }
 
   insights.push(
-    `Best option for ${yearsToHold} years: ${bestOption.name} (net cost: $${bestOption.totalCost.toLocaleString()}, including the remaining balance you'd pay off when you sell or refinance)`
+    `Best option for ${yearsToHold} years: ${bestOption.name} (net cost: ${formatCurrency(bestOption.totalCost)}, including the remaining balance you'd pay off when you sell or refinance)`
   );
 
   if (yearsToHold < 5) {
@@ -177,7 +178,7 @@ export function calculatePointsBuydown(inputs: PointsBuydownInputs): CalculatorR
     );
   }
 
-  const summary = `For a ${yearsToHold}-year hold, ${bestOption.name} is cheapest at $${bestOption.totalCost.toLocaleString()} net cost (upfront + payments + remaining balance − loan amount).`;
+  const summary = `For a ${yearsToHold}-year hold, ${bestOption.name} is cheapest at ${formatCurrency(bestOption.totalCost)} net cost (upfront + payments + remaining balance − loan amount).`;
 
   return {
     summary,

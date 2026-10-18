@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency, formatSignedCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -48,8 +50,6 @@ import {
 import { calculateVA } from '@/lib/calculators';
 import { getResidualIncomeTable, VA_REGION_LABELS } from '@/lib/calculators/va';
 import type { VAInputs, VARegion } from '@/lib/calculators/va';
-
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
 export default function VACalculator() {
   const [inputs, setInputs] = useState<VAInputs>({
@@ -100,7 +100,7 @@ export default function VACalculator() {
     const colors = [CHART_COLORS.primary, CHART_COLORS.tertiary, CHART_COLORS.quaternary];
     return result.chartData.map((item, i) => ({
       name: item.name as string,
-      value: `$${fmt(item.value as number)}`,
+      value: `${formatCurrency(item.value as number)}`,
       color: colors[i % colors.length],
       percentage: total > 0 ? ((item.value as number) / total) * 100 : 0,
     }));
@@ -289,15 +289,15 @@ export default function VACalculator() {
                   VA Benefit: No PMI Required
                 </Typography>
                 <Typography variant="body2">
-                  VA loans never require private mortgage insurance — saving you ${fmt(result.details.pmiSavingsVsConv as number)}/month vs a conventional loan.
+                  VA loans never require private mortgage insurance — saving you {formatCurrency(result.details.pmiSavingsVsConv as number)}/month vs a conventional loan.
                 </Typography>
               </Alert>
 
               {/* Hero Metric */}
               <HeroMetric
                 label="Total Monthly VA Payment"
-                value={`$${fmt(result.details.totalMonthlyPayment as number)}`}
-                sublabel={`P&I: $${fmt(result.details.monthlyPI as number)} + Tax: $${fmt(result.details.monthlyPropertyTax as number)} + Ins: $${fmt(result.details.monthlyInsurance as number)} • No PMI`}
+                value={`${formatCurrency(result.details.totalMonthlyPayment as number)}`}
+                sublabel={`P&I: ${formatCurrency(result.details.monthlyPI as number)} + Tax: ${formatCurrency(result.details.monthlyPropertyTax as number)} + Ins: ${formatCurrency(result.details.monthlyInsurance as number)} • No PMI`}
               />
 
               {/* Key Metrics */}
@@ -305,7 +305,7 @@ export default function VACalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label={isPurchase ? 'Down Payment' : 'Equity Kept'}
-                    value={inputs.downPaymentPercent === 0 ? '$0' : `$${fmt(result.details.downPayment as number)}`}
+                    value={inputs.downPaymentPercent === 0 ? '$0' : `${formatCurrency(result.details.downPayment as number)}`}
                     sublabel={inputs.downPaymentPercent === 0 ? (isPurchase ? 'Zero down!' : 'Full value borrowed') : `${inputs.downPaymentPercent}%${isPurchase ? ' down' : ' not borrowed'}`}
                     color="success"
                   />
@@ -313,7 +313,7 @@ export default function VACalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Funding Fee"
-                    value={(result.details.feeExempt as number) === 1 ? 'Exempt' : `$${fmt(result.details.fundingFee as number)}`}
+                    value={(result.details.feeExempt as number) === 1 ? 'Exempt' : `${formatCurrency(result.details.fundingFee as number)}`}
                     sublabel={(result.details.feeExempt as number) === 1 ? (inputs.serviceType === 'surviving-spouse' && !inputs.disabilityExempt ? 'Surviving spouse' : 'Disability waiver') : `${result.details.fundingFeeRate}% (financed)`}
                     color={(result.details.feeExempt as number) === 1 ? 'success' : 'warning'}
                   />
@@ -321,7 +321,7 @@ export default function VACalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total Loan"
-                    value={`$${fmt(result.details.totalLoanAmount as number)}`}
+                    value={`${formatCurrency(result.details.totalLoanAmount as number)}`}
                     sublabel="incl. funding fee"
                     color="primary"
                   />
@@ -344,7 +344,7 @@ export default function VACalculator() {
                       <DonutChart
                         data={chartData}
                         centerLabel="monthly"
-                        centerValue={`$${fmt(result.details.totalMonthlyPayment as number)}`}
+                        centerValue={`${formatCurrency(result.details.totalMonthlyPayment as number)}`}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
@@ -373,7 +373,7 @@ export default function VACalculator() {
                       <Grid size={{ xs: 12, sm: 4 }}>
                         <Typography variant="caption" color="text.secondary">Your Estimated Residual</Typography>
                         <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                          ${fmt(result.details.monthlyResidualIncome as number)}/mo
+                          {formatCurrency(result.details.monthlyResidualIncome as number)}/mo
                         </Typography>
                       </Grid>
                       <Grid size={{ xs: 12, sm: 4 }}>
@@ -381,7 +381,7 @@ export default function VACalculator() {
                           VA Guideline ({VA_REGION_LABELS[inputs.region]}, family of {inputs.familySize})
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                          ${fmt(result.details.effectiveRequiredResidual as number)}/mo
+                          {formatCurrency(result.details.effectiveRequiredResidual as number)}/mo
                         </Typography>
                         {(result.details.dtiAboveGuideline as number) === 1 && (
                           <Typography variant="caption" color="text.secondary">
@@ -395,7 +395,7 @@ export default function VACalculator() {
                           variant="h6"
                           sx={{ fontWeight: 700, color: (result.details.residualIncomeSurplus as number) >= 0 ? '#166534' : '#B45309' }}
                         >
-                          {(result.details.residualIncomeSurplus as number) >= 0 ? '+' : '−'}${fmt(Math.abs(result.details.residualIncomeSurplus as number))}/mo
+                          {formatSignedCurrency(result.details.residualIncomeSurplus as number)}/mo
                         </Typography>
                       </Grid>
                     </Grid>
@@ -434,7 +434,7 @@ export default function VACalculator() {
                                     key={i}
                                     sx={region === inputs.region && Math.min(inputs.familySize, 5) === i + 1 ? { fontWeight: 700, bgcolor: '#DBEAFE' } : undefined}
                                   >
-                                    ${fmt(amount)}
+                                    {formatCurrency(amount)}
                                   </Box>
                                 ))}
                               </Box>
@@ -474,14 +474,14 @@ export default function VACalculator() {
                           VA Loan
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, my: 1 }}>
-                          ${fmt(result.details.totalMonthlyPayment as number)}
+                          {formatCurrency(result.details.totalMonthlyPayment as number)}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">/month</Typography>
                         <Divider sx={{ my: 1.5 }} />
                         <Stack spacing={0.5}>
-                          <Typography variant="caption">Down: ${fmt(result.details.downPayment as number)} ({inputs.downPaymentPercent}%)</Typography>
+                          <Typography variant="caption">Down: {formatCurrency(result.details.downPayment as number)} ({inputs.downPaymentPercent}%)</Typography>
                           <Typography variant="caption" sx={{ fontWeight: 700, color: '#22C55E' }}>PMI: $0</Typography>
-                          <Typography variant="caption">Fee: ${fmt(result.details.fundingFee as number)}</Typography>
+                          <Typography variant="caption">Fee: {formatCurrency(result.details.fundingFee as number)}</Typography>
                         </Stack>
                       </Paper>
                     </Grid>
@@ -495,13 +495,13 @@ export default function VACalculator() {
                           FHA Loan (3.5% Down)
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, my: 1 }}>
-                          ${fmt(result.details.fhaTotalMonthly as number)}
+                          {formatCurrency(result.details.fhaTotalMonthly as number)}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">/month</Typography>
                         <Divider sx={{ my: 1.5 }} />
                         <Stack spacing={0.5}>
-                          <Typography variant="caption">Down: ${fmt(result.details.fhaDownPayment as number)} (3.5%)</Typography>
-                          <Typography variant="caption" sx={{ color: '#DC2626' }}>MIP: ${fmt(result.details.fhaMonthlyMIP as number)}/mo</Typography>
+                          <Typography variant="caption">Down: {formatCurrency(result.details.fhaDownPayment as number)} (3.5%)</Typography>
+                          <Typography variant="caption" sx={{ color: '#DC2626' }}>MIP: {formatCurrency(result.details.fhaMonthlyMIP as number)}/mo</Typography>
                           <Typography variant="caption">+1.75% upfront MIP</Typography>
                         </Stack>
                       </Paper>
@@ -516,13 +516,13 @@ export default function VACalculator() {
                           Conventional (5% Down)
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, my: 1 }}>
-                          ${fmt(result.details.convTotalMonthly as number)}
+                          {formatCurrency(result.details.convTotalMonthly as number)}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">/month</Typography>
                         <Divider sx={{ my: 1.5 }} />
                         <Stack spacing={0.5}>
-                          <Typography variant="caption">Down: ${fmt(result.details.convDownPayment as number)} (5%)</Typography>
-                          <Typography variant="caption" sx={{ color: '#DC2626' }}>PMI: ${fmt(result.details.convMonthlyPMI as number)}/mo</Typography>
+                          <Typography variant="caption">Down: {formatCurrency(result.details.convDownPayment as number)} (5%)</Typography>
+                          <Typography variant="caption" sx={{ color: '#DC2626' }}>PMI: {formatCurrency(result.details.convMonthlyPMI as number)}/mo</Typography>
                           <Typography variant="caption">Until 80% LTV</Typography>
                         </Stack>
                       </Paper>
@@ -534,15 +534,15 @@ export default function VACalculator() {
                     <Paper elevation={0} sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: comparison.cheapest === 'va' ? '#F0FDF4' : '#EBF5FF', border: comparison.cheapest === 'va' ? '1px solid #BBF7D0' : '1px solid #93C5FD' }}>
                       <Typography variant="body2" sx={{ fontWeight: 600, color: comparison.cheapest === 'va' ? '#166534' : '#1E40AF', textAlign: 'center' }}>
                         {comparison.vsFha >= 0 ? (
-                          <>VA saves you <strong>${fmt(comparison.vsFha)}/month vs FHA</strong></>
+                          <>VA saves you <strong>{formatCurrency(comparison.vsFha)}/month vs FHA</strong></>
                         ) : (
-                          <>VA costs <strong>${fmt(-comparison.vsFha)}/month more vs FHA</strong></>
+                          <>VA costs <strong>{formatCurrency(-comparison.vsFha)}/month more vs FHA</strong></>
                         )}
                         {' • '}
                         {comparison.vsConv >= 0 ? (
-                          <>VA saves you <strong>${fmt(comparison.vsConv)}/month vs Conventional</strong></>
+                          <>VA saves you <strong>{formatCurrency(comparison.vsConv)}/month vs Conventional</strong></>
                         ) : (
-                          <>VA costs <strong>${fmt(-comparison.vsConv)}/month more vs Conventional</strong></>
+                          <>VA costs <strong>{formatCurrency(-comparison.vsConv)}/month more vs Conventional</strong></>
                         )}
                       </Typography>
                     </Paper>
@@ -560,7 +560,7 @@ export default function VACalculator() {
                         {inputs.disabilityExempt
                           ? <>You&apos;re exempt from the VA funding fee due to a 10%+ VA disability rating.</>
                           : <>Eligible surviving spouses receiving Dependency and Indemnity Compensation are exempt from the VA funding fee.</>}
-                        {' '}This saves you ${fmt(Math.round((result.details.baseLoanAmount as number) * 0.0215))} compared to a first-time VA borrower.
+                        {' '}This saves you {formatCurrency((result.details.baseLoanAmount as number) * 0.0215)} compared to a first-time VA borrower.
                       </Typography>
                     </Alert>
                   ) : (
@@ -572,7 +572,7 @@ export default function VACalculator() {
                         </Grid>
                         <Grid size={{ xs: 4 }}>
                           <Typography variant="caption" color="text.secondary">Fee Amount</Typography>
-                          <Typography variant="h6" sx={{ fontWeight: 700 }}>${fmt(result.details.fundingFee as number)}</Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 700 }}>{formatCurrency(result.details.fundingFee as number)}</Typography>
                         </Grid>
                         <Grid size={{ xs: 4 }}>
                           <Typography variant="caption" color="text.secondary">Financed Into Loan</Typography>
@@ -582,7 +582,7 @@ export default function VACalculator() {
                       <Divider />
                       <Typography variant="body2" color="text.secondary">
                         The funding fee is a one-time charge that funds the VA loan program. It can be financed into the loan
-                        (adding ${fmt(result.details.fundingFee as number)} to your balance) or paid upfront at closing.
+                        (adding {formatCurrency(result.details.fundingFee as number)} to your balance) or paid upfront at closing.
                         {isPurchase && ' Putting more down reduces the fee rate.'}
                         {' '}Since 2020, Reserve and National Guard members pay the same rates as active duty.
                       </Typography>
@@ -676,27 +676,27 @@ export default function VACalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: '#14532D' }}>
-                      Your {inputs.loanPurpose === 'irrrl' ? 'VA IRRRL' : inputs.loanPurpose === 'cash-out' ? 'VA cash-out refinance' : 'VA loan'} on a <strong>${fmt(inputs.homePrice)}</strong> home costs{' '}
-                      <strong>${fmt(result.details.totalMonthlyPayment as number)}/month</strong>
+                      Your {inputs.loanPurpose === 'irrrl' ? 'VA IRRRL' : inputs.loanPurpose === 'cash-out' ? 'VA cash-out refinance' : 'VA loan'} on a <strong>{formatCurrency(inputs.homePrice)}</strong> home costs{' '}
+                      <strong>{formatCurrency(result.details.totalMonthlyPayment as number)}/month</strong>
                       {isPurchase && (
-                        <>{' '}with {inputs.downPaymentPercent === 0 ? <strong>zero down payment</strong> : <><strong>${fmt(result.details.downPayment as number)}</strong> down</>}</>
+                        <>{' '}with {inputs.downPaymentPercent === 0 ? <strong>zero down payment</strong> : <><strong>{formatCurrency(result.details.downPayment as number)}</strong> down</>}</>
                       )}
                       {' '}and <strong>no monthly mortgage insurance</strong>.
                       {(result.details.feeExempt as number) === 0 && (
-                        <> The {result.details.fundingFeeRate}% funding fee (${fmt(result.details.fundingFee as number)}) is financed into the loan.</>
+                        <> The {result.details.fundingFeeRate}% funding fee ({formatCurrency(result.details.fundingFee as number)}) is financed into the loan.</>
                       )}
                       {isPurchase && comparison && (comparison.vsFha >= 0 ? (
-                        <> Compared to FHA, you save <strong>${fmt(comparison.vsFha)}/month</strong>.</>
+                        <> Compared to FHA, you save <strong>{formatCurrency(comparison.vsFha)}/month</strong>.</>
                       ) : (
-                        <> Compared to FHA, you pay <strong>${fmt(-comparison.vsFha)}/month more</strong>.</>
+                        <> Compared to FHA, you pay <strong>{formatCurrency(-comparison.vsFha)}/month more</strong>.</>
                       ))}
                       {isPurchase && comparison && (comparison.vsConv >= 0 ? (
-                        <> Compared to conventional with 5% down, you save <strong>${fmt(comparison.vsConv)}/month</strong>.</>
+                        <> Compared to conventional with 5% down, you save <strong>{formatCurrency(comparison.vsConv)}/month</strong>.</>
                       ) : (
-                        <> Compared to conventional with 5% down, you pay <strong>${fmt(-comparison.vsConv)}/month more</strong>.</>
+                        <> Compared to conventional with 5% down, you pay <strong>{formatCurrency(-comparison.vsConv)}/month more</strong>.</>
                       ))}
-                      {' '}Your estimated residual income is <strong>${fmt(result.details.monthlyResidualIncome as number)}/month</strong> vs
-                      a VA guideline of <strong>${fmt(result.details.effectiveRequiredResidual as number)}/month</strong> for your region and family size.
+                      {' '}Your estimated residual income is <strong>{formatCurrency(result.details.monthlyResidualIncome as number)}/month</strong> vs
+                      a VA guideline of <strong>{formatCurrency(result.details.effectiveRequiredResidual as number)}/month</strong> for your region and family size.
                     </Typography>
                   </Box>
                 </Stack>

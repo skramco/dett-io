@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -129,7 +131,7 @@ export default function BiweeklyCalculator() {
               {/* Hero Metric */}
               <HeroMetric
                 label="Interest Saved with True Biweekly"
-                value={`$${(result.details.interestSaved as number).toLocaleString()}`}
+                value={`${formatCurrency((result.details.interestSaved as number))}`}
                 sublabel={`Pay off ${result.details.yearsSaved} years early`}
               />
 
@@ -150,14 +152,14 @@ export default function BiweeklyCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Monthly Payment"
-                    value={`$${(result.details.monthlyPayment as number).toLocaleString()}`}
+                    value={`${formatCurrency((result.details.monthlyPayment as number))}`}
                     color="primary"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Biweekly Payment"
-                    value={`$${(result.details.biweeklyPayment as number).toLocaleString()}`}
+                    value={`${formatCurrency((result.details.biweeklyPayment as number))}`}
                     sublabel="Every 2 weeks"
                     color="success"
                   />
@@ -173,7 +175,7 @@ export default function BiweeklyCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="DIY Extra"
-                    value={`$${(result.details.extraMonthlyEquivalent as number).toLocaleString()}/mo`}
+                    value={`${formatCurrency((result.details.extraMonthlyEquivalent as number))}/mo`}
                     sublabel="Same result, no fees"
                     color="secondary"
                   />
@@ -209,13 +211,13 @@ export default function BiweeklyCalculator() {
                       <Grid size={{ xs: 4, sm: 2 }}>
                         <Typography variant="caption" color="text.secondary">Payment</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                          ${(result.details.monthlyPayment as number).toLocaleString()}
+                          {formatCurrency((result.details.monthlyPayment as number))}
                         </Typography>
                       </Grid>
                       <Grid size={{ xs: 4, sm: 3 }}>
                         <Typography variant="caption" color="text.secondary">Total Interest</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                          ${(result.details.monthlyInterest as number).toLocaleString()}
+                          {formatCurrency((result.details.monthlyInterest as number))}
                         </Typography>
                       </Grid>
                       <Grid size={{ xs: 4, sm: 3 }}>
@@ -253,13 +255,13 @@ export default function BiweeklyCalculator() {
                       <Grid size={{ xs: 4, sm: 2 }}>
                         <Typography variant="caption" color="text.secondary">Payment</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600, color: '#166534' }}>
-                          ${(result.details.biweeklyPayment as number).toLocaleString()}
+                          {formatCurrency((result.details.biweeklyPayment as number))}
                         </Typography>
                       </Grid>
                       <Grid size={{ xs: 4, sm: 3 }}>
                         <Typography variant="caption" color="text.secondary">Total Interest</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600, color: '#166534' }}>
-                          ${(result.details.biweeklyInterest as number).toLocaleString()}
+                          {formatCurrency((result.details.biweeklyInterest as number))}
                         </Typography>
                       </Grid>
                       <Grid size={{ xs: 4, sm: 3 }}>
@@ -297,19 +299,19 @@ export default function BiweeklyCalculator() {
                       <Grid size={{ xs: 4, sm: 2 }}>
                         <Typography variant="caption" color="text.secondary">Payment</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600, color: '#991B1B' }}>
-                          ${(result.details.biweeklyPayment as number).toLocaleString()}
+                          {formatCurrency((result.details.biweeklyPayment as number))}
                         </Typography>
                       </Grid>
                       <Grid size={{ xs: 4, sm: 3 }}>
                         <Typography variant="caption" color="text.secondary">Total Interest</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600, color: '#991B1B' }}>
-                          ${(result.details.monthlyInterest as number).toLocaleString()}
+                          {formatCurrency((result.details.monthlyInterest as number))}
                         </Typography>
                       </Grid>
                       <Grid size={{ xs: 4, sm: 3 }}>
                         <Typography variant="caption" color="text.secondary">+ Fees</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600, color: '#991B1B' }}>
-                          ${(inputs.biweeklyFee * inputs.loanTerm).toLocaleString()}
+                          {formatCurrency((inputs.biweeklyFee * inputs.loanTerm))}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -340,7 +342,7 @@ export default function BiweeklyCalculator() {
                   
                   <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2, textAlign: 'center' }}>
                     <Typography variant="h5" sx={{ fontWeight: 700, color: '#065F46' }}>
-                      Save ${(result.details.interestSaved as number).toLocaleString()} in Interest
+                      Save {formatCurrency((result.details.interestSaved as number))} in Interest
                     </Typography>
                   </Box>
                 </Paper>
@@ -356,14 +358,14 @@ export default function BiweeklyCalculator() {
                     <Savings sx={{ fontSize: 40, color: '#196bc0' }} />
                     <Box sx={{ flex: 1 }}>
                       <Typography variant="h6" sx={{ fontWeight: 700, color: '#0F4F8F', mb: 1 }}>
-                        Just Add ${(result.details.extraMonthlyEquivalent as number).toLocaleString()} to Your Monthly Payment
+                        Just Add {formatCurrency((result.details.extraMonthlyEquivalent as number))} to Your Monthly Payment
                       </Typography>
                       <Typography variant="body1" sx={{ color: '#0F4F8F', mb: 2 }}>
                         The "magic" of biweekly payments is simple: you make 26 half-payments per year, 
                         which equals 13 full payments instead of 12. That's one extra payment per year.
                       </Typography>
                       <Typography variant="body1" sx={{ color: '#0F4F8F' }}>
-                        <strong>DIY Method:</strong> Add ${(result.details.extraMonthlyEquivalent as number).toLocaleString()} 
+                        <strong>DIY Method:</strong> Add {formatCurrency((result.details.extraMonthlyEquivalent as number))} 
                         (1/12 of your payment) to each monthly payment. Same result, zero fees!
                       </Typography>
                     </Box>
@@ -376,7 +378,7 @@ export default function BiweeklyCalculator() {
                       <Box sx={{ p: 2, bgcolor: '#FFFFFF', borderRadius: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="text.secondary">Your Current Payment</Typography>
                         <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                          ${(result.details.monthlyPayment as number).toLocaleString()}
+                          {formatCurrency((result.details.monthlyPayment as number))}
                         </Typography>
                       </Box>
                     </Grid>
@@ -384,7 +386,7 @@ export default function BiweeklyCalculator() {
                       <Box sx={{ p: 2, bgcolor: '#FFFFFF', borderRadius: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="text.secondary">New Payment (DIY)</Typography>
                         <Typography variant="h6" sx={{ fontWeight: 700, color: '#196bc0' }}>
-                          ${((result.details.monthlyPayment as number) + (result.details.extraMonthlyEquivalent as number)).toLocaleString()}
+                          {formatCurrency(((result.details.monthlyPayment as number) + (result.details.extraMonthlyEquivalent as number)))}
                         </Typography>
                       </Box>
                     </Grid>
@@ -402,9 +404,9 @@ export default function BiweeklyCalculator() {
                   Beware of "Fake" Biweekly Services
                 </Typography>
                 <Typography variant="body2">
-                  Some companies charge ${inputs.biweeklyFee}/year to collect biweekly payments, but only forward 
+                  Some companies charge {formatCurrency(inputs.biweeklyFee)}/year to collect biweekly payments, but only forward 
                   them to your lender monthly (24 payments/year). This provides <strong>zero benefit</strong> and 
-                  costs you <strong>${(inputs.biweeklyFee * inputs.loanTerm).toLocaleString()}</strong> over the life of your loan. 
+                  costs you <strong>{formatCurrency((inputs.biweeklyFee * inputs.loanTerm))}</strong> over the life of your loan. 
                   Always verify that payments are applied biweekly, not held and paid monthly.
                 </Typography>
               </Alert>
@@ -444,9 +446,9 @@ export default function BiweeklyCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'success.dark' }}>
-                      True biweekly payments save <strong>${(result.details.interestSaved as number).toLocaleString()}</strong> and 
+                      True biweekly payments save <strong>{formatCurrency((result.details.interestSaved as number))}</strong> and 
                       pay off your mortgage <strong>{result.details.yearsSaved} years early</strong>. 
-                      Skip the paid services—just add <strong>${(result.details.extraMonthlyEquivalent as number).toLocaleString()}</strong> to 
+                      Skip the paid services—just add <strong>{formatCurrency((result.details.extraMonthlyEquivalent as number))}</strong> to 
                       your monthly payment for the same result with zero fees.
                     </Typography>
                   </Box>

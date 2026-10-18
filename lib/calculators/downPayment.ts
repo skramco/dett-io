@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { DownPaymentInputs, CalculatorResult } from './types';
 import { calculateClosingCosts } from './closingCosts';
 import {
@@ -92,16 +93,16 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
   const option3PmiYears = option3.pmiMonths / 12;
 
   insights.push(
-    `3% down: Lowest upfront cost ($${option3.cashToClose.toLocaleString()}), but you'll pay $${option3.pmiTotalCost.toLocaleString()} in PMI over about ${option3PmiYears.toFixed(1)} years (${option3.pmiMonths} months) until your balance reaches 78% of the home value`
+    `3% down: Lowest upfront cost (${formatCurrency(option3.cashToClose)}), but you'll pay ${formatCurrency(option3.pmiTotalCost)} in PMI over about ${option3PmiYears.toFixed(1)} years (${option3.pmiMonths} months) until your balance reaches 78% of the home value`
   );
 
   insights.push(
-    `20% down: No PMI, saves $${(option3.totalMonthly - option20.totalMonthly).toLocaleString()}/month, but requires $${option20.cashToClose.toLocaleString()} upfront`
+    `20% down: No PMI, saves ${formatCurrency((option3.totalMonthly - option20.totalMonthly))}/month, but requires ${formatCurrency(option20.cashToClose)} upfront`
   );
 
   if (option3.pmiRate > option15.pmiRate) {
     insights.push(
-      `PMI gets cheaper as you put more down: at a ${creditScore} credit score, the annual rate is ${option3.pmiRate.toFixed(2)}% with 3% down vs ${option15.pmiRate.toFixed(2)}% with 15% down ($${option3.monthlyPMI.toLocaleString()}/mo vs $${option15.monthlyPMI.toLocaleString()}/mo)`
+      `PMI gets cheaper as you put more down: at a ${creditScore} credit score, the annual rate is ${option3.pmiRate.toFixed(2)}% with 3% down vs ${option15.pmiRate.toFixed(2)}% with 15% down (${formatCurrency(option3.monthlyPMI)}/mo vs ${formatCurrency(option15.monthlyPMI)}/mo)`
     );
   }
 
@@ -124,7 +125,7 @@ export function calculateDownPayment(inputs: DownPaymentInputs): CalculatorResul
     `Cash to close includes itemized closing costs and prepaids (${Math.min(...closingCostPercents).toFixed(1)}-${Math.max(...closingCostPercents).toFixed(1)}% of the home price), estimated with the same engine and California defaults as our Closing Costs calculator`
   );
 
-  const summary = `Comparing down payments from 3% to 20% on a $${homePrice.toLocaleString()} home. PMI adds $${option3.pmiTotalCost.toLocaleString()} total with 3% down.`;
+  const summary = `Comparing down payments from 3% to 20% on a ${formatCurrency(homePrice)} home. PMI adds ${formatCurrency(option3.pmiTotalCost)} total with 3% down.`;
 
   // Details for the user's selected down payment (used by "Show Me the Math")
   const selectedDownPayment = homePrice * (downPaymentPercent / 100);

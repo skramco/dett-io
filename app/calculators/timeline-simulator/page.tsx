@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -64,12 +66,12 @@ export default function TimelineSimulatorCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric label={`Best for ${inputs.expectedMoveYear}-Year Hold`} value={result.details.bestOption as string} sublabel={`Net cost: $${(result.details.bestNetCost as number).toLocaleString()}`} />
+              <HeroMetric label={`Best for ${inputs.expectedMoveYear}-Year Hold`} value={result.details.bestOption as string} sublabel={`Net cost: ${formatCurrency(result.details.bestNetCost as number)}`} />
               <Grid container spacing={2}>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Best Payment" value={`$${(result.details.bestPayment as number).toLocaleString()}`} color="success" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Fixed Payment" value={`$${(result.details.fixedPayment as number).toLocaleString()}`} color="primary" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label={result.details.armAdjusts ? 'ARM Start Payment' : 'ARM Payment'} value={`$${(result.details.armPayment as number).toLocaleString()}`} color="secondary" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Balance at Move" value={`$${(result.details.bestBalance as number).toLocaleString()}`} color="warning" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Best Payment" value={`${formatCurrency(result.details.bestPayment as number)}`} color="success" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Fixed Payment" value={`${formatCurrency(result.details.fixedPayment as number)}`} color="primary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label={result.details.armAdjusts ? 'ARM Start Payment' : 'ARM Payment'} value={`${formatCurrency(result.details.armPayment as number)}`} color="secondary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Balance at Move" value={`${formatCurrency(result.details.bestBalance as number)}`} color="warning" /></Grid>
               </Grid>
               <ResultsSection title="All Options Compared" subtitle={`Net cost over ${inputs.expectedMoveYear} years (payments + closing costs − equity built)`}>
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
@@ -86,19 +88,19 @@ export default function TimelineSimulatorCalculator() {
                           </Grid>
                           <Grid size={{ xs: 6, sm: 2 }}>
                             <Typography variant="body2" color="text.secondary">Payment</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>${opt.monthlyPayment.toLocaleString()}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700 }}>{formatCurrency(opt.monthlyPayment)}</Typography>
                           </Grid>
                           <Grid size={{ xs: 6, sm: 2.5 }}>
                             <Typography variant="body2" color="text.secondary">Total Paid</Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 600 }}>${opt.totalPaid.toLocaleString()}</Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 600, color: opt.option === bestOption.option ? '#065F46' : 'inherit' }}>{formatCurrency(opt.totalPaid)}</Typography>
                           </Grid>
                           <Grid size={{ xs: 6, sm: 2.5 }}>
                             <Typography variant="body2" color="text.secondary">Net Cost</Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 600, color: opt.option === bestOption.option ? '#065F46' : 'inherit' }}>${opt.netCost.toLocaleString()}</Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 600, color: opt.option === bestOption.option ? '#065F46' : 'inherit' }}>{formatCurrency(opt.netCost)}</Typography>
                           </Grid>
                           <Grid size={{ xs: 6, sm: 2 }}>
                             <Typography variant="body2" color="text.secondary">Balance Left</Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 600 }}>${opt.remainingBalance.toLocaleString()}</Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 600 }}>{formatCurrency(opt.remainingBalance)}</Typography>
                           </Grid>
                         </Grid>
                       </Box>
@@ -129,7 +131,7 @@ export default function TimelineSimulatorCalculator() {
                         <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>After the ARM Adjusts</Typography>
                         <Typography variant="body2">
                           {result.details.armAdjusts
-                            ? `At a ${inputs.expectedIndexRate}% index + ${inputs.armMargin}% margin (capped), the rate becomes ${(result.details.armAdjustedRate as number).toFixed(2)}% and the payment rises to $${(result.details.armAdjustedPayment as number).toLocaleString()}/month.`
+                            ? `At a ${inputs.expectedIndexRate}% index + ${inputs.armMargin}% margin (capped), the rate becomes ${(result.details.armAdjustedRate as number).toFixed(2)}% and the payment rises to ${formatCurrency(result.details.armAdjustedPayment as number)}/month.`
                             : `If you stayed past year ${inputs.armFixedPeriod}, the rate would move toward ${(inputs.expectedIndexRate + inputs.armMargin).toFixed(2)}% (index + margin, subject to caps).`}
                         </Typography>
                       </Box>
@@ -150,9 +152,9 @@ export default function TimelineSimulatorCalculator() {
                   <Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, color: 'success.dark', mb: 1 }}>The Bottom Line</Typography>
                     <Typography variant="body1" sx={{ color: 'success.dark' }}>
-                      For a <strong>{inputs.expectedMoveYear}-year</strong> hold, <strong>{result.details.bestOption}</strong> has the lowest 
-                      net cost at <strong>${(result.details.bestNetCost as number).toLocaleString()}</strong> (payments + closing costs − equity built). 
-                      You&apos;ll owe <strong>${(result.details.bestBalance as number).toLocaleString()}</strong> when you sell.
+                      For a <strong>{inputs.expectedMoveYear}-year</strong> hold, <strong>{result.details.bestOption}</strong> has the lowest
+                      net cost at <strong>{formatCurrency(result.details.bestNetCost as number)}</strong> (payments + closing costs − equity built).
+                      You&apos;ll owe <strong>{formatCurrency(result.details.bestBalance as number)}</strong> when you sell.
                     </Typography>
                   </Box>
                 </Stack>

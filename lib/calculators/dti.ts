@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { CalculatorResult } from './types';
 import { backEndDtiPercent, frontEndDtiPercent } from './mortgageMath';
 
@@ -113,11 +114,11 @@ export function calculateDTI(inputs: DTIInputs): CalculatorResult {
 
     if (largestDebt.amount > 0) {
       const dtiReduction = (largestDebt.amount / monthlyGrossIncome) * 100;
-      insights.push(`Your largest non-housing debt is ${largestDebt.name} at $${largestDebt.amount.toLocaleString()}/mo. Eliminating it would reduce your DTI by ${dtiReduction.toFixed(1)} percentage points.`);
+      insights.push(`Your largest non-housing debt is ${largestDebt.name} at ${formatCurrency(largestDebt.amount)}/mo. Eliminating it would reduce your DTI by ${dtiReduction.toFixed(1)} percentage points.`);
     }
   }
 
-  insights.push(`With your income, the maximum total housing payment to stay at 28% DTI is $${Math.max(0, Math.round(monthlyGrossIncome * 0.28)).toLocaleString()}/month.`);
+  insights.push(`With your income, the maximum total housing payment to stay at 28% DTI is ${formatCurrency(Math.max(0, Math.round(monthlyGrossIncome * 0.28)))}/month.`);
 
   return {
     summary: `Front-end DTI: ${frontEndDisplay.toFixed(1)}% (${frontEndRating}) | Back-end DTI: ${backEndDisplay.toFixed(1)}% (${backEndRating})`,

@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -177,7 +179,7 @@ export default function AccelerationCalculator() {
               {/* Hero Metric */}
               <HeroMetric
                 label="Interest Saved"
-                value={`$${(result.details.interestSaved as number).toLocaleString()}`}
+                value={`${formatCurrency((result.details.interestSaved as number))}`}
                 sublabel={`Pay off ${result.details.yearsSaved} years early`}
               />
 
@@ -186,14 +188,14 @@ export default function AccelerationCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Base Payment"
-                    value={`$${(result.details.basePayment as number).toLocaleString()}`}
+                    value={`${formatCurrency((result.details.basePayment as number))}`}
                     color="primary"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Regular Interest"
-                    value={`$${(result.details.regularInterest as number).toLocaleString()}`}
+                    value={`${formatCurrency((result.details.regularInterest as number))}`}
                     sublabel={`${result.details.regularYears} years`}
                     color="warning"
                   />
@@ -201,7 +203,7 @@ export default function AccelerationCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Prepay Interest"
-                    value={`$${(result.details.prepayInterest as number).toLocaleString()}`}
+                    value={`${formatCurrency((result.details.prepayInterest as number))}`}
                     sublabel={`${result.details.prepayYears} years`}
                     color="success"
                   />
@@ -209,7 +211,7 @@ export default function AccelerationCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Invest Portfolio"
-                    value={`$${(result.details.investPortfolio as number).toLocaleString()}`}
+                    value={`${formatCurrency((result.details.investPortfolio as number))}`}
                     sublabel={`If invested instead, at year ${result.details.horizonYears}`}
                     color="secondary"
                   />
@@ -229,7 +231,7 @@ export default function AccelerationCalculator() {
                           REGULAR PAYMENTS
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#92400E', my: 1 }}>
-                          ${(result.details.regularInterest as number).toLocaleString()}
+                          {formatCurrency((result.details.regularInterest as number))}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Total interest over {result.details.regularYears} years
@@ -242,7 +244,7 @@ export default function AccelerationCalculator() {
                           WITH EXTRA PAYMENTS
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>
-                          ${(result.details.prepayInterest as number).toLocaleString()}
+                          {formatCurrency((result.details.prepayInterest as number))}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Total interest over {result.details.prepayYears} years
@@ -255,7 +257,7 @@ export default function AccelerationCalculator() {
 
                   <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2, textAlign: 'center' }}>
                     <Typography variant="h5" sx={{ fontWeight: 700, color: '#196bc0' }}>
-                      You Save ${(result.details.interestSaved as number).toLocaleString()} + {result.details.yearsSaved} Years
+                      You Save {formatCurrency((result.details.interestSaved as number))} + {result.details.yearsSaved} Years
                     </Typography>
                   </Box>
                 </Paper>
@@ -284,7 +286,7 @@ export default function AccelerationCalculator() {
                   
                   <Alert severity="success" sx={{ borderRadius: 2 }}>
                     <Typography variant="body2">
-                      <strong>Extra ${inputs.extraMonthly}/month</strong> saves you <strong>${(result.details.interestSaved as number).toLocaleString()}</strong> in interest 
+                      <strong>Extra {formatCurrency(inputs.extraMonthly)}/month</strong> saves you <strong>{formatCurrency((result.details.interestSaved as number))}</strong> in interest 
                       and pays off your mortgage <strong>{result.details.yearsSaved} years early</strong>.
                     </Typography>
                   </Alert>
@@ -305,7 +307,7 @@ export default function AccelerationCalculator() {
                           Prepay Mortgage
                         </Typography>
                         <Typography variant="h5" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>
-                          ${(result.details.prepayPortfolio as number).toLocaleString()}
+                          {formatCurrency((result.details.prepayPortfolio as number))}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Portfolio at year {result.details.horizonYears}: payoff in {result.details.prepayYears} years, then the freed-up payment is invested at {inputs.investmentReturn}%
@@ -325,7 +327,7 @@ export default function AccelerationCalculator() {
                           Invest Instead
                         </Typography>
                         <Typography variant="h5" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
-                          ${(result.details.investPortfolio as number).toLocaleString()}
+                          {formatCurrency((result.details.investPortfolio as number))}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Portfolio at year {result.details.horizonYears}: extra payments invested at {inputs.investmentReturn}% while the loan runs its full term
@@ -348,8 +350,8 @@ export default function AccelerationCalculator() {
                   >
                     <Typography variant="body2">
                       {(result.details.netWorthDifference as number) > 0 
-                        ? `At year ${result.details.horizonYears}, investing ends $${(result.details.netWorthDifference as number).toLocaleString()} ahead of prepaying. But remember: that assumes you earn ${inputs.investmentReturn}% every year, while prepaying's ${inputs.interestRate}% return is guaranteed.`
-                        : `At year ${result.details.horizonYears}, prepaying ends $${Math.abs(result.details.netWorthDifference as number).toLocaleString()} ahead of investing. The guaranteed ${inputs.interestRate}% return from prepaying beats the expected ${inputs.investmentReturn}% investment return.`
+                        ? `At year ${result.details.horizonYears}, investing ends ${formatCurrency((result.details.netWorthDifference as number))} ahead of prepaying. But remember: that assumes you earn ${inputs.investmentReturn}% every year, while prepaying's ${inputs.interestRate}% return is guaranteed.`
+                        : `At year ${result.details.horizonYears}, prepaying ends ${formatCurrency(Math.abs(result.details.netWorthDifference as number))} ahead of investing. The guaranteed ${inputs.interestRate}% return from prepaying beats the expected ${inputs.investmentReturn}% investment return.`
                       }
                     </Typography>
                   </Alert>
@@ -391,8 +393,8 @@ export default function AccelerationCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'success.dark' }}>
-                      Adding <strong>${inputs.extraMonthly}/month</strong> to your mortgage payment saves 
-                      <strong> ${(result.details.interestSaved as number).toLocaleString()}</strong> in interest and 
+                      Adding <strong>{formatCurrency(inputs.extraMonthly)}/month</strong> to your mortgage payment saves 
+                      <strong> {formatCurrency((result.details.interestSaved as number))}</strong> in interest and 
                       pays off your loan <strong>{result.details.yearsSaved} years early</strong>. 
                       That's a guaranteed <strong>{inputs.interestRate}%</strong> return on every extra dollar you pay.
                     </Typography>

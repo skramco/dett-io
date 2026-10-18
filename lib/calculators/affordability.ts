@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { AffordabilityInputs, CalculatorResult } from './types';
 import {
   conventionalPmiRatePercent,
@@ -111,20 +112,20 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
   const insights: string[] = [];
 
   insights.push(
-    `Conservative ($${results.conservativePrice.toLocaleString()}): Safest option with breathing room for unexpected expenses`
+    `Conservative (${formatCurrency(results.conservativePrice)}): Safest option with breathing room for unexpected expenses`
   );
 
   insights.push(
-    `Moderate ($${results.moderatePrice.toLocaleString()}): Balanced approach - most common choice for stable income`
+    `Moderate (${formatCurrency(results.moderatePrice)}): Balanced approach - most common choice for stable income`
   );
 
   insights.push(
-    `Aggressive ($${results.aggressivePrice.toLocaleString()}): Maximum qualification - leaves little room for error`
+    `Aggressive (${formatCurrency(results.aggressivePrice)}): Maximum qualification - leaves little room for error`
   );
 
   if (monthlyDebts > 0 && binding.moderate === 'back-end') {
     insights.push(
-      `Your $${monthlyDebts.toLocaleString()}/month in other debts is the binding constraint: the 36% back-end rule caps your housing payment at $${Math.round(Math.max(0, monthlyIncome * 0.36 - monthlyDebts)).toLocaleString()}/month instead of $${Math.round(monthlyIncome * 0.36).toLocaleString()}. Paying down debts raises your budget dollar-for-dollar.`
+      `Your ${formatCurrency(monthlyDebts)}/month in other debts is the binding constraint: the 36% back-end rule caps your housing payment at ${formatCurrency(Math.max(0, monthlyIncome * 0.36 - monthlyDebts))}/month instead of ${formatCurrency(monthlyIncome * 0.36)}. Paying down debts raises your budget dollar-for-dollar.`
     );
   }
 
@@ -140,21 +141,21 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
 
   if (results.moderateIsJumbo === 1) {
     insights.push(
-      `At the recommended price, your loan of $${results.moderateLoanAmount.toLocaleString()} would exceed the ${LOAN_LIMIT_YEAR} conforming limit of $${CONFORMING_LOAN_LIMIT.toLocaleString()} that applies in most counties — jumbo territory, which typically means higher credit score and down payment requirements. High-cost counties have conforming limits up to $${CONFORMING_HIGH_COST_LIMIT.toLocaleString()}.`
+      `At the recommended price, your loan of ${formatCurrency(results.moderateLoanAmount)} would exceed the ${LOAN_LIMIT_YEAR} conforming limit of ${formatCurrency(CONFORMING_LOAN_LIMIT)} that applies in most counties — jumbo territory, which typically means higher credit score and down payment requirements. High-cost counties have conforming limits up to ${formatCurrency(CONFORMING_HIGH_COST_LIMIT)}.`
     );
   } else if (results.aggressiveIsJumbo === 1) {
     insights.push(
-      `At the aggressive price, your loan of $${results.aggressiveLoanAmount.toLocaleString()} would exceed the ${LOAN_LIMIT_YEAR} conforming limit of $${CONFORMING_LOAN_LIMIT.toLocaleString()} (most counties), so you'd likely need a jumbo loan at the top of your range. Staying at or below the moderate price keeps you in conforming territory.`
+      `At the aggressive price, your loan of ${formatCurrency(results.aggressiveLoanAmount)} would exceed the ${LOAN_LIMIT_YEAR} conforming limit of ${formatCurrency(CONFORMING_LOAN_LIMIT)} (most counties), so you'd likely need a jumbo loan at the top of your range. Staying at or below the moderate price keeps you in conforming territory.`
     );
   }
 
   if (results.moderatePMI > 0) {
     insights.push(
-      `💡 Your down payment is below 20% at the recommended price, so $${results.moderatePMI.toLocaleString()}/month PMI is already included in these payments. PMI drops off once you reach 20% equity.`
+      `💡 Your down payment is below 20% at the recommended price, so ${formatCurrency(results.moderatePMI)}/month PMI is already included in these payments. PMI drops off once you reach 20% equity.`
     );
   }
 
-  const summary = `Based on $${monthlyIncome.toLocaleString()}/month income, you can afford $${results.conservativePrice.toLocaleString()} (safe) to $${results.aggressivePrice.toLocaleString()} (max).`;
+  const summary = `Based on ${formatCurrency(monthlyIncome)}/month income, you can afford ${formatCurrency(results.conservativePrice)} (safe) to ${formatCurrency(results.aggressivePrice)} (max).`;
 
   return {
     summary,

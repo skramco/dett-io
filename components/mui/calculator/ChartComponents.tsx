@@ -20,7 +20,7 @@ import {
   AreaChart,
   ReferenceLine,
 } from 'recharts';
-import { formatAxisCurrency } from '@/lib/format/currency';
+import { formatAxisCurrency, formatCurrency } from '@/lib/format/currency';
 import { RESULT_TOKENS } from '@/lib/theme/resultTokens';
 import { CHART_COLORS } from './ChartPrimitives';
 
@@ -113,7 +113,7 @@ export function DonutChart({ data, centerLabel, centerValue, height = 280 }: Don
             ))}
           </Pie>
           <Tooltip
-            formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+            formatter={(value: any) => `${formatCurrency(Number(value))}`}
             contentStyle={{
               borderRadius: 8,
               border: '1px solid #E5E7EB',
@@ -204,7 +204,7 @@ export function AmortizationChart({ data, height = 300 }: AmortizationChartProps
             width={68}
           />
           <Tooltip
-            formatter={(value: any) => [`$${Number(value).toLocaleString()}`, 'Balance']}
+            formatter={(value: any) => [`${formatCurrency(Number(value))}`, 'Balance']}
             labelFormatter={(label) => `Year ${label}`}
             contentStyle={{
               borderRadius: 8,
@@ -277,7 +277,7 @@ export function ComparisonBarChart({
             width={68}
           />
           <Tooltip
-            formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+            formatter={(value: any) => `${formatCurrency(Number(value))}`}
             contentStyle={{
               borderRadius: 8,
               border: '1px solid #E5E7EB',
@@ -347,7 +347,7 @@ export function TimelineChart({
             width={68}
           />
           <Tooltip
-            formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+            formatter={(value: any) => `${formatCurrency(Number(value))}`}
             labelFormatter={(label) => `Month ${label}`}
             contentStyle={{
               borderRadius: 8,
@@ -435,7 +435,7 @@ export function StackedBarChart({ data, height = 300 }: StackedBarChartProps) {
             width={68}
           />
           <Tooltip
-            formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+            formatter={(value: any) => `${formatCurrency(Number(value))}`}
             contentStyle={{
               borderRadius: 8,
               border: '1px solid #E5E7EB',
@@ -542,7 +542,7 @@ export function CategoryStackedBarChart({
             </>
           )}
           <Tooltip
-            formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+            formatter={(value: any) => `${formatCurrency(Number(value))}`}
             contentStyle={{
               borderRadius: 8,
               border: '1px solid #E5E7EB',

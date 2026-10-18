@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -49,8 +51,6 @@ import {
 } from '@/components/mui/calculator/LazyCharts';
 import { calculatePMI } from '@/lib/calculators';
 import type { PMIInputs } from '@/lib/calculators/pmi';
-
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
 export default function PMICalculator() {
   const [inputs, setInputs] = useState<PMIInputs>({
@@ -164,7 +164,7 @@ export default function PMICalculator() {
                   {/* Hero Metric */}
                   <HeroMetric
                     label="Monthly PMI Cost"
-                    value={`$${fmt(result.details.monthlyPMI as number)}`}
+                    value={`${formatCurrency(result.details.monthlyPMI as number)}`}
                     sublabel={`${result.details.pmiRate}% annual rate • drops off in ${result.details.yearsUntilRemoval} years`}
                   />
                 </>
@@ -175,14 +175,14 @@ export default function PMICalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Monthly P&I"
-                    value={`$${fmt(result.details.monthlyPI as number)}`}
+                    value={`${formatCurrency(result.details.monthlyPI as number)}`}
                     color="primary"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Monthly PMI"
-                    value={noPMI ? '$0' : `$${fmt(result.details.monthlyPMI as number)}`}
+                    value={noPMI ? '$0' : `${formatCurrency(result.details.monthlyPMI as number)}`}
                     sublabel={noPMI ? 'Not required' : `${result.details.pmiRate}%/yr`}
                     color={noPMI ? 'success' : 'warning'}
                   />
@@ -190,7 +190,7 @@ export default function PMICalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total w/ PMI"
-                    value={`$${fmt(result.details.monthlyPaymentWithPMI as number)}`}
+                    value={`${formatCurrency(result.details.monthlyPaymentWithPMI as number)}`}
                     sublabel="/month"
                     color="error"
                   />
@@ -198,7 +198,7 @@ export default function PMICalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total PMI Cost"
-                    value={noPMI ? '$0' : `$${fmt(result.details.totalPMICost as number)}`}
+                    value={noPMI ? '$0' : `${formatCurrency(result.details.totalPMICost as number)}`}
                     sublabel={noPMI ? 'Saved!' : `over ${result.details.yearsUntilRemoval} yrs`}
                     color={noPMI ? 'success' : 'warning'}
                   />
@@ -238,7 +238,7 @@ export default function PMICalculator() {
                               REQUEST REMOVAL AT 80% LTV
                             </Typography>
                             <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                              ${fmt(result.details.requestRemovalBalance as number)}
+                              {formatCurrency(result.details.requestRemovalBalance as number)}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
                               Balance must reach this amount
@@ -251,7 +251,7 @@ export default function PMICalculator() {
                               AUTO-REMOVAL AT 78% LTV
                             </Typography>
                             <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                              ${fmt(result.details.targetBalance as number)}
+                              {formatCurrency(result.details.targetBalance as number)}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
                               {result.details.monthsUntilRemoval} months ({result.details.yearsUntilRemoval} years)
@@ -296,19 +296,19 @@ export default function PMICalculator() {
                             <Grid size={{ xs: 3 }}>
                               <Typography variant="body2" color="text.secondary">Monthly PMI</Typography>
                               <Typography variant="body2" sx={{ fontWeight: 700, color: isNoPMI ? '#22C55E' : '#EF4444' }}>
-                                {isNoPMI ? 'None' : `$${fmt(scenario.monthlyPMI)}/mo`}
+                                {isNoPMI ? 'None' : `${formatCurrency(scenario.monthlyPMI)}/mo`}
                               </Typography>
                             </Grid>
                             <Grid size={{ xs: 3 }}>
                               <Typography variant="body2" color="text.secondary">Total PMI</Typography>
                               <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                                {isNoPMI ? '$0' : `$${fmt(scenario.totalPMICost)}`}
+                                {isNoPMI ? '$0' : `${formatCurrency(scenario.totalPMICost)}`}
                               </Typography>
                             </Grid>
                             <Grid size={{ xs: 3 }}>
                               <Typography variant="body2" color="text.secondary">Payment</Typography>
                               <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                                ${fmt(scenario.monthlyPayment)}/mo
+                                {formatCurrency(scenario.monthlyPayment)}/mo
                               </Typography>
                             </Grid>
                           </Grid>
@@ -358,16 +358,16 @@ export default function PMICalculator() {
                     <Typography variant="body1" sx={{ color: noPMI ? 'success.dark' : 'warning.dark' }}>
                       {noPMI ? (
                         <>
-                          With <strong>{inputs.downPaymentPercent}% down</strong> on a <strong>${fmt(inputs.homePrice)}</strong> home,
-                          you avoid PMI entirely. Your monthly payment is <strong>${fmt(result.details.monthlyPI as number)}</strong> (principal &amp; interest only).
+                          With <strong>{inputs.downPaymentPercent}% down</strong> on a <strong>{formatCurrency(inputs.homePrice)}</strong> home,
+                          you avoid PMI entirely. Your monthly payment is <strong>{formatCurrency(result.details.monthlyPI as number)}</strong> (principal &amp; interest only).
                         </>
                       ) : (
                         <>
                           With <strong>{inputs.downPaymentPercent}% down</strong> and a <strong>{inputs.creditScore}</strong> credit score,
-                          your PMI costs <strong>${fmt(result.details.monthlyPMI as number)}/month</strong> ({result.details.pmiRate}% annual rate).
+                          your PMI costs <strong>{formatCurrency(result.details.monthlyPMI as number)}/month</strong> ({result.details.pmiRate}% annual rate).
                           PMI automatically drops off after <strong>{result.details.yearsUntilRemoval} years</strong>,
-                          costing you <strong>${fmt(result.details.totalPMICost as number)}</strong> total.
-                          Your full monthly payment including PMI is <strong>${fmt(result.details.monthlyPaymentWithPMI as number)}</strong>.
+                          costing you <strong>{formatCurrency(result.details.totalPMICost as number)}</strong> total.
+                          Your full monthly payment including PMI is <strong>{formatCurrency(result.details.monthlyPaymentWithPMI as number)}</strong>.
                         </>
                       )}
                     </Typography>

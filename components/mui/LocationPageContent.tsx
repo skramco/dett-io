@@ -21,9 +21,10 @@ import { ExpandMore, Calculate, ArrowBack, Place } from '@mui/icons-material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
 import { FAQJsonLd, JsonLd } from '@/components/JsonLd';
+import { formatCurrency } from '@/lib/format';
 import type { LocationPageData } from '@/lib/locations/locationMath';
 
-const usd = (v: number) => `$${Math.round(v).toLocaleString()}`;
+const usd = formatCurrency;
 
 const CATEGORY_LABELS: Record<string, string> = {
   lender: 'Lender fees',

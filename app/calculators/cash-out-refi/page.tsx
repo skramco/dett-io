@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -58,12 +60,12 @@ export default function CashOutRefiCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric label="Extra Interest for Your Cash" value={`$${(result.details.totalInterestIncrease as number).toLocaleString()}`} sublabel={`Total additional interest to get $${inputs.cashOutAmount.toLocaleString()} via refi vs keeping your current mortgage`} />
+              <HeroMetric label="Extra Interest for Your Cash" value={`${formatCurrency(result.details.totalInterestIncrease as number)}`} sublabel={`Total additional interest to get ${formatCurrency(inputs.cashOutAmount)} via refi vs keeping your current mortgage`} />
               <Grid container spacing={2}>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={`$${(result.details.currentPayment as number).toLocaleString()}`} color="primary" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New Payment" value={`$${(result.details.newPayment as number).toLocaleString()}`} color="warning" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={`${formatCurrency((result.details.currentPayment as number))}`} color="primary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New Payment" value={`${formatCurrency((result.details.newPayment as number))}`} color="warning" /></Grid>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New LTV" value={`${result.details.newLTV}%`} color={(result.details.newLTV as number) > 80 ? 'error' : 'success'} /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New Loan Amount" value={`$${(result.details.newLoanAmount as number).toLocaleString()}`} color="secondary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New Loan Amount" value={`${formatCurrency(result.details.newLoanAmount as number)}`} color="secondary" /></Grid>
               </Grid>
               <ResultsSection title="Cost of Cash Comparison" subtitle="Two educational ways to compare — neither is an APR">
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
@@ -74,7 +76,7 @@ export default function CashOutRefiCalculator() {
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#5B21B6', my: 1 }}>{(result.details.impliedCashCostIrr as number) > 0 ? `${result.details.impliedCashCostIrr}%` : '—'}</Typography>
                         <Typography variant="body2" color="text.secondary">
                           {(result.details.impliedCashCostIrr as number) > 0
-                            ? `Internal rate of return on the extra payments you'd make for the $${inputs.cashOutAmount.toLocaleString()} cash. Educational estimate — not an APR.`
+                            ? `Internal rate of return on the extra payments you'd make for the ${formatCurrency(inputs.cashOutAmount)} cash. Educational estimate — not an APR.`
                             : 'Not meaningful for this scenario — compare payments and total interest instead.'}
                         </Typography>
                       </Box>
@@ -84,7 +86,7 @@ export default function CashOutRefiCalculator() {
                         <Typography variant="caption" color="text.secondary">BLENDED-RATE ALTERNATIVE</Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#1E40AF', my: 1 }}>{result.details.blendedKeepRate}% vs {inputs.newRate}%</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Keep your {inputs.currentRate}% mortgage + borrow ${inputs.cashOutAmount.toLocaleString()} at {inputs.alternativeRate}% (HELOC/home equity loan) = {result.details.blendedKeepRate}% weighted-average note rate, vs {inputs.newRate}% on the full refi balance.
+                          Keep your {inputs.currentRate}% mortgage + borrow {formatCurrency(inputs.cashOutAmount)} at {inputs.alternativeRate}% (HELOC/home equity loan) = {result.details.blendedKeepRate}% weighted-average note rate, vs {inputs.newRate}% on the full refi balance.
                         </Typography>
                       </Box>
                     </Grid>
@@ -97,14 +99,14 @@ export default function CashOutRefiCalculator() {
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="text.secondary">CURRENT MORTGAGE</Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>${(result.details.currentPayment as number).toLocaleString()}/mo</Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>{formatCurrency((result.details.currentPayment as number))}/mo</Typography>
                         <Typography variant="body2" color="text.secondary">{inputs.currentRate}% • {inputs.yearsRemaining} years left</Typography>
                       </Box>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Box sx={{ p: 3, bgcolor: '#FEF3C7', borderRadius: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="text.secondary">CASH-OUT REFI</Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#92400E', my: 1 }}>${(result.details.newPayment as number).toLocaleString()}/mo</Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#92400E', my: 1 }}>{formatCurrency((result.details.newPayment as number))}/mo</Typography>
                         <Typography variant="body2" color="text.secondary">{inputs.newRate}% • {inputs.newTerm} years</Typography>
                       </Box>
                     </Grid>
@@ -124,8 +126,8 @@ export default function CashOutRefiCalculator() {
                   {scenarios.map((s, i) => <HorizontalBar key={i} label={s.scenario} value={s.totalInterest} maxValue={Math.max(...scenarios.map(x => x.totalInterest))} color={i === 0 ? CHART_COLORS.primary : i === 1 ? CHART_COLORS.quaternary : CHART_COLORS.secondary} />)}
                   <Divider sx={{ my: 3 }} />
                   <Box sx={{ p: 3, bgcolor: '#FEE2E2', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#DC2626' }}>Extra Interest Cost: ${(result.details.totalInterestIncrease as number).toLocaleString()}</Typography>
-                    <Typography variant="body2" color="text.secondary">This is the true cost of your ${inputs.cashOutAmount.toLocaleString()} cash</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#DC2626' }}>Extra Interest Cost: {formatCurrency((result.details.totalInterestIncrease as number))}</Typography>
+                    <Typography variant="body2" color="text.secondary">This is the true cost of your {formatCurrency(inputs.cashOutAmount)} cash</Typography>
                   </Box>
                 </Paper>
               </ResultsSection>
@@ -148,9 +150,9 @@ export default function CashOutRefiCalculator() {
                   <Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, color: '#92400E', mb: 1 }}>The Bottom Line</Typography>
                     <Typography variant="body1" sx={{ color: '#92400E' }}>
-                      Getting <strong>${inputs.cashOutAmount.toLocaleString()}</strong> via cash-out refi adds 
-                      <strong> ${(result.details.totalInterestIncrease as number).toLocaleString()}</strong> in interest vs keeping your current mortgage, and your payment changes by 
-                      <strong> ${((result.details.newPayment as number) - (result.details.currentPayment as number)).toLocaleString()}/month</strong>. Compare that against keeping your {inputs.currentRate}% mortgage and borrowing separately at {inputs.alternativeRate}%.
+                      Getting <strong>{formatCurrency(inputs.cashOutAmount)}</strong> via cash-out refi adds
+                      <strong> {formatCurrency(result.details.totalInterestIncrease as number)}</strong> in interest vs keeping your current mortgage, and your payment changes by
+                      <strong> {formatCurrency((result.details.newPayment as number) - (result.details.currentPayment as number))}/month</strong>. Compare that against keeping your {inputs.currentRate}% mortgage and borrowing separately at {inputs.alternativeRate}%.
                     </Typography>
                   </Box>
                 </Stack>

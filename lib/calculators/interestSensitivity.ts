@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { InterestSensitivityInputs, CalculatorResult } from './types';
 import { monthlyPayment } from './mortgageMath';
 
@@ -45,35 +46,35 @@ export function calculateInterestSensitivity(inputs: InterestSensitivityInputs):
   const insights: string[] = [];
   
   insights.push(
-    `Base rate (${baseRate}%): $${baseResult.monthlyPI.toLocaleString()}/month, $${baseResult.totalInterest.toLocaleString()} total interest`
+    `Base rate (${baseRate}%): ${formatCurrency(baseResult.monthlyPI)}/month, ${formatCurrency(baseResult.totalInterest)} total interest`
   );
   
   const quarterUpDiff = quarterUp.monthlyPI - baseResult.monthlyPI;
   const quarterDownDiff = baseResult.monthlyPI - quarterDown.monthlyPI;
   insights.push(
-    `±0.25%: Changes payment by ~$${Math.round((quarterUpDiff + quarterDownDiff) / 2).toLocaleString()}/month`
+    `±0.25%: Changes payment by ~${formatCurrency((quarterUpDiff + quarterDownDiff) / 2)}/month`
   );
 
   const halfUpDiff = halfUp.monthlyPI - baseResult.monthlyPI;
   const halfDownDiff = baseResult.monthlyPI - halfDown.monthlyPI;
   insights.push(
-    `±0.5%: Changes payment by ~$${Math.round((halfUpDiff + halfDownDiff) / 2).toLocaleString()}/month`
+    `±0.5%: Changes payment by ~${formatCurrency((halfUpDiff + halfDownDiff) / 2)}/month`
   );
 
   const fullUpDiff = fullUp.monthlyPI - baseResult.monthlyPI;
   const fullDownDiff = baseResult.monthlyPI - fullDown.monthlyPI;
   insights.push(
-    `±1.0%: Changes payment by ~$${Math.round((fullUpDiff + fullDownDiff) / 2).toLocaleString()}/month`
+    `±1.0%: Changes payment by ~${formatCurrency((fullUpDiff + fullDownDiff) / 2)}/month`
   );
 
   const interestDiff1Pct = fullUp.totalInterest - fullDown.totalInterest;
   insights.push(
-    `💡 A 1% rate difference costs/saves $${Math.round(interestDiff1Pct / 2).toLocaleString()} in interest over ${loanTerm} years`
+    `💡 A 1% rate difference costs/saves ${formatCurrency(interestDiff1Pct / 2)} in interest over ${loanTerm} years`
   );
 
   if (quarterUpDiff > 100) {
     insights.push(
-      `⚠️ Even 0.25% matters: That's $${quarterUpDiff}/month or $${quarterUpDiff * 12}/year more`
+      `⚠️ Even 0.25% matters: That's ${formatCurrency(quarterUpDiff)}/month or ${formatCurrency(quarterUpDiff * 12)}/year more`
     );
   }
 
@@ -81,7 +82,7 @@ export function calculateInterestSensitivity(inputs: InterestSensitivityInputs):
     `Use this to decide: Is it worth paying points to buy down? Should you float or lock? How much does timing matter?`
   );
 
-  const summary = `Every 0.25% rate change affects your payment by ~$${Math.round((quarterUpDiff + quarterDownDiff) / 2).toLocaleString()}/month on a $${loanAmount.toLocaleString()} loan.`;
+  const summary = `Every 0.25% rate change affects your payment by ~${formatCurrency((quarterUpDiff + quarterDownDiff) / 2)}/month on a ${formatCurrency(loanAmount)} loan.`;
 
   return {
     summary,

@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { AccelerationInputs, CalculatorResult } from './types';
 import { monthlyPayment, toMonthlyRate } from './mortgageMath';
 
@@ -183,11 +184,11 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
   const insights: string[] = [];
 
   insights.push(
-    `Regular payments: $${Math.round(basePayment).toLocaleString()}/month, $${Math.round(regularTotalInterest).toLocaleString()} interest over ${loanTerm} years`
+    `Regular payments: ${formatCurrency(basePayment)}/month, ${formatCurrency(regularTotalInterest)} interest over ${loanTerm} years`
   );
 
   insights.push(
-    `Prepay strategy: Pay off in ${(prepayMonths / 12).toFixed(1)} years, save $${Math.round(interestSaved).toLocaleString()} in interest - a guaranteed ${interestRate}% return on every extra dollar`
+    `Prepay strategy: Pay off in ${(prepayMonths / 12).toFixed(1)} years, save ${formatCurrency(interestSaved)} in interest - a guaranteed ${interestRate}% return on every extra dollar`
   );
 
   if (recastOption && recastMonths < prepayMonths) {
@@ -199,11 +200,11 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
   if (extraMonthly > 0 || extraAnnual > 0 || lumpSumAmount > 0) {
     if (netWorthDifference > 0) {
       insights.push(
-        `💡 Fair comparison at year ${loanTerm}: investing the extra at ${investmentReturn}% grows to $${Math.round(investPortfolio).toLocaleString()}, while prepaying (then investing the freed-up $${Math.round(basePayment + extraMonthly).toLocaleString()}/month after payoff) reaches $${Math.round(prepayPortfolio).toLocaleString()} - investing comes out $${Math.round(netWorthDifference).toLocaleString()} ahead, if returns hold`
+        `💡 Fair comparison at year ${loanTerm}: investing the extra at ${investmentReturn}% grows to ${formatCurrency(investPortfolio)}, while prepaying (then investing the freed-up ${formatCurrency(basePayment + extraMonthly)}/month after payoff) reaches ${formatCurrency(prepayPortfolio)} - investing comes out ${formatCurrency(netWorthDifference)} ahead, if returns hold`
       );
     } else {
       insights.push(
-        `Fair comparison at year ${loanTerm}: prepaying (then investing the freed-up $${Math.round(basePayment + extraMonthly).toLocaleString()}/month after payoff) reaches $${Math.round(prepayPortfolio).toLocaleString()}, versus $${Math.round(investPortfolio).toLocaleString()} from investing at ${investmentReturn}% - prepaying wins by $${Math.round(Math.abs(netWorthDifference)).toLocaleString()}`
+        `Fair comparison at year ${loanTerm}: prepaying (then investing the freed-up ${formatCurrency(basePayment + extraMonthly)}/month after payoff) reaches ${formatCurrency(prepayPortfolio)}, versus ${formatCurrency(investPortfolio)} from investing at ${investmentReturn}% - prepaying wins by ${formatCurrency(Math.abs(netWorthDifference))}`
       );
     }
   }
@@ -212,7 +213,7 @@ export function calculateAcceleration(inputs: AccelerationInputs): CalculatorRes
     `The "right" choice depends on: your guaranteed ${interestRate}% mortgage rate vs uncertain ${investmentReturn}% investment returns, risk tolerance, and peace of mind value`
   );
 
-  const summary = `Prepaying saves $${Math.round(interestSaved).toLocaleString()} and pays off ${prepayYearsSaved.toFixed(1)} years early.`;
+  const summary = `Prepaying saves ${formatCurrency(interestSaved)} and pays off ${prepayYearsSaved.toFixed(1)} years early.`;
 
   return {
     summary,

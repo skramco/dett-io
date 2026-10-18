@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
@@ -69,11 +71,11 @@ export default function RecastVsRefiCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric label={`Best Option Over ${horizonYears} Years`} value={bestOption.option} sublabel={`Lowest net cost: $${bestOption.netCost.toLocaleString()} over ${horizonYears} years`} />
+              <HeroMetric label={`Best Option Over ${horizonYears} Years`} value={bestOption.option} sublabel={`Lowest net cost: ${formatCurrency(bestOption.netCost)} over ${horizonYears} years`} />
               <Grid container spacing={2}>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={`$${(result.details.currentPayment as number).toLocaleString()}`} color="primary" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Recast Payment" value={`$${(result.details.recastPayment as number).toLocaleString()}`} sublabel={`Fee: $${result.details.recastFee}`} color="success" /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Refi Payment" value={`$${(result.details.refiPayment as number).toLocaleString()}`} sublabel={`Costs: $${result.details.refiCosts}`} color="secondary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={`${formatCurrency((result.details.currentPayment as number))}`} color="primary" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Recast Payment" value={`${formatCurrency((result.details.recastPayment as number))}`} sublabel={`Fee: ${formatCurrency(result.details.recastFee as number)}`} color="success" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Refi Payment" value={`${formatCurrency((result.details.refiPayment as number))}`} sublabel={`Costs: ${formatCurrency(result.details.refiCosts as number)}`} color="secondary" /></Grid>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Prepay Saves" value={`${Math.round((result.details.prepayMonthsSaved as number) / 12)} years`} color="warning" /></Grid>
               </Grid>
               <ResultsSection title="Options Compared" subtitle={`Three ways to use your lump sum, all measured over the same ${horizonYears}-year horizon`}>
@@ -91,19 +93,19 @@ export default function RecastVsRefiCalculator() {
                           </Grid>
                           <Grid size={{ xs: 6, sm: 3 }}>
                             <Typography variant="body2" color="text.secondary">Monthly Payment</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>${opt.payment.toLocaleString()}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700 }}>{formatCurrency(opt.payment)}</Typography>
                           </Grid>
                           <Grid size={{ xs: 6, sm: 3 }}>
                             <Typography variant="body2" color="text.secondary">Interest ({horizonYears} yr)</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>${opt.totalInterest.toLocaleString()}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700 }}>{formatCurrency(opt.totalInterest)}</Typography>
                           </Grid>
                           <Grid size={{ xs: 6, sm: 3 }}>
                             <Typography variant="body2" color="text.secondary">Still Owed at Yr {horizonYears}</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>${opt.remainingBalance.toLocaleString()}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700 }}>{formatCurrency(opt.remainingBalance)}</Typography>
                           </Grid>
                           <Grid size={{ xs: 6, sm: 3 }}>
                             <Typography variant="body2" color="text.secondary">Net Cost</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700, color: opt.option === bestOption.option ? '#065F46' : 'inherit' }}>${opt.netCost.toLocaleString()}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700, color: opt.option === bestOption.option ? '#065F46' : 'inherit' }}>{formatCurrency(opt.netCost)}</Typography>
                           </Grid>
                         </Grid>
                       </Box>
@@ -122,13 +124,13 @@ export default function RecastVsRefiCalculator() {
                     <Grid size={{ xs: 12, md: 4 }}>
                       <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2, height: '100%' }}>
                         <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#065F46', mb: 1 }}>Recast</Typography>
-                        <Typography variant="body2" sx={{ color: '#065F46' }}>✓ Low fee (${result.details.recastFee})<br />✓ Keep current rate<br />✓ Lower payment<br />✓ Quick process</Typography>
+                        <Typography variant="body2" sx={{ color: '#065F46' }}>✓ Low fee ({formatCurrency(result.details.recastFee as number)})<br />✓ Keep current rate<br />✓ Lower payment<br />✓ Quick process</Typography>
                       </Box>
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
                       <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2, height: '100%' }}>
                         <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0F4F8F', mb: 1 }}>Refinance</Typography>
-                        <Typography variant="body2" sx={{ color: '#0F4F8F' }}>✓ New rate ({inputs.newRate}%)<br />✓ Reset term<br />✓ Higher costs (${inputs.closingCosts})<br />✓ More paperwork</Typography>
+                        <Typography variant="body2" sx={{ color: '#0F4F8F' }}>✓ New rate ({inputs.newRate}%)<br />✓ Reset term<br />✓ Higher costs ({formatCurrency(inputs.closingCosts)})<br />✓ More paperwork</Typography>
                       </Box>
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
@@ -153,8 +155,8 @@ export default function RecastVsRefiCalculator() {
                   <Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, color: 'success.dark', mb: 1 }}>The Bottom Line</Typography>
                     <Typography variant="body1" sx={{ color: 'success.dark' }}>
-                      With ${inputs.lumpSumAmount.toLocaleString()} to apply, <strong>{bestOption.option}</strong> has the lowest net cost over the next {horizonYears} years 
-                      (${bestOption.netCost.toLocaleString()}, counting fees, any balance still owed at year {horizonYears}, and earnings on freed-up cash flow invested at {inputs.savingsRate}%).
+                      With {formatCurrency(inputs.lumpSumAmount)} to apply, <strong>{bestOption.option}</strong> has the lowest net cost over the next {horizonYears} years
+                      ({formatCurrency(bestOption.netCost)}, counting fees, any balance still owed at year {horizonYears}, and earnings on freed-up cash flow invested at {inputs.savingsRate}%).
                     </Typography>
                   </Box>
                 </Stack>

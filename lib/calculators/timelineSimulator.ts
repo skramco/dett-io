@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { TimelineSimulatorInputs, CalculatorResult } from './types';
 import { armAdjustedRate, monthlyInterest, monthlyPayment, remainingBalance } from './mortgageMath';
 
@@ -156,7 +157,7 @@ export function calculateTimelineSimulator(inputs: TimelineSimulatorInputs): Cal
     );
   } else {
     insights.push(
-      `⚠️ ARM adjusts in year ${armFixedPeriod + 1}: at a ${expectedIndexRate}% index + ${armMargin}% margin (capped), the rate becomes ${cappedAdjustedRate.toFixed(2)}% and the payment rises from $${Math.round(arm.payment).toLocaleString()} to $${Math.round(arm.adjustedPayment).toLocaleString()}/month before you move`
+      `⚠️ ARM adjusts in year ${armFixedPeriod + 1}: at a ${expectedIndexRate}% index + ${armMargin}% margin (capped), the rate becomes ${cappedAdjustedRate.toFixed(2)}% and the payment rises from ${formatCurrency(arm.payment)} to ${formatCurrency(arm.adjustedPayment)}/month before you move`
     );
     if (fullyIndexedRate > cappedAdjustedRate) {
       insights.push(
@@ -178,11 +179,11 @@ export function calculateTimelineSimulator(inputs: TimelineSimulatorInputs): Cal
 
   if (bestOption.name === '15-Year Fixed') {
     insights.push(
-      `15-Year Fixed wins on net cost because it builds equity fastest - but the payment is $${Math.round(fifteen.payment).toLocaleString()}/month vs $${Math.round(fixed.payment).toLocaleString()} for the 30-year. Make sure it fits your budget`
+      `15-Year Fixed wins on net cost because it builds equity fastest - but the payment is ${formatCurrency(fifteen.payment)}/month vs ${formatCurrency(fixed.payment)} for the 30-year. Make sure it fits your budget`
     );
   } else if (expectedMoveYear <= 7 && fifteen.payment < fixed.payment * 1.3) {
     insights.push(
-      `15-year option: Higher payment ($${Math.round(fifteen.payment).toLocaleString()}) but builds equity faster and lower rate`
+      `15-year option: Higher payment (${formatCurrency(fifteen.payment)}) but builds equity faster and lower rate`
     );
   }
 
@@ -195,10 +196,10 @@ export function calculateTimelineSimulator(inputs: TimelineSimulatorInputs): Cal
   const bestNetCost = displayedNetCost(bestOption);
 
   insights.push(
-    `Best for ${expectedMoveYear} years: ${bestOption.name} (net cost: $${bestNetCost.toLocaleString()})`
+    `Best for ${expectedMoveYear} years: ${bestOption.name} (net cost: ${formatCurrency(bestNetCost)})`
   );
 
-  const summary = `For a ${expectedMoveYear}-year hold, ${bestOption.name} has the lowest net cost at $${bestNetCost.toLocaleString()} (payments + closing costs − equity built).`;
+  const summary = `For a ${expectedMoveYear}-year hold, ${bestOption.name} has the lowest net cost at ${formatCurrency(bestNetCost)} (payments + closing costs − equity built).`;
 
   return {
     summary,
