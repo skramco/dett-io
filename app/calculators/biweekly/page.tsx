@@ -133,6 +133,18 @@ export default function BiweeklyCalculator() {
                 sublabel={`Pay off ${result.details.yearsSaved} years early`}
               />
 
+              <Alert severity="info" sx={{ borderRadius: 3 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
+                  Some servicers will not accept true biweekly or partial payments
+                </Typography>
+                <Typography variant="body2">
+                  Many mortgage servicers reject half-payments or hold extra funds until a full monthly
+                  amount arrives, so a true 26-payment biweekly schedule is not always available.
+                  If your servicer will not apply payments every two weeks, use the DIY extra monthly
+                  payment below instead — extra principal is accepted on almost every loan.
+                </Typography>
+              </Alert>
+
               {/* Key Metrics Grid */}
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6, sm: 3 }}>

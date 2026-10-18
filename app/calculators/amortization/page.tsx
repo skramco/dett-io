@@ -25,12 +25,13 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Chip,
+  Button,
 } from '@mui/material';
 import {
   TableChart,
   AccountBalance,
-  TrendingDown,
   Savings,
+  FileDownload,
 } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
 import {
@@ -51,7 +52,13 @@ import {
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateAmortization } from '@/lib/calculators';
+import {
+  amortizationCsvFilename,
+  buildAmortizationCsv,
+  triggerCsvDownload,
+} from '@/lib/calculators/amortizationCsv';
 import type { AmortizationInputs } from '@/lib/calculators/amortization';
+import { trackEvent } from '@/lib/analytics';
 
 const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
@@ -80,6 +87,18 @@ export default function AmortizationCalculator() {
   };
 
   const schedule = result?.amortizationSchedule;
+
+  const handleCsvDownload = () => {
+    if (!schedule) return;
+    triggerCsvDownload(
+      amortizationCsvFilename(viewMode),
+      buildAmortizationCsv(schedule, viewMode)
+    );
+    trackEvent('calculator_csv_downloaded', {
+      calculator_slug: 'amortization',
+      view_mode: viewMode,
+    });
+  };
 
   return (
     <CalculatorLayout
@@ -260,21 +279,47 @@ export default function AmortizationCalculator() {
                 subtitle="Complete payment breakdown"
               >
                 <Paper elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
-                  <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box
+                    sx={{
+                      p: 2,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: 1.5,
+                    }}
+                  >
                     <ToggleButtonGroup
                       value={viewMode}
                       exclusive
                       onChange={(_, v) => v && setViewMode(v)}
                       size="small"
+                      aria-label="Amortization schedule view"
                     >
                       <ToggleButton value="yearly">Yearly</ToggleButton>
                       <ToggleButton value="monthly">Monthly</ToggleButton>
                     </ToggleButtonGroup>
-                    <Chip
-                      label={`${viewMode === 'yearly' ? schedule?.yearlySummary.length : schedule?.schedule.length} rows`}
-                      size="small"
-                      variant="outlined"
-                    />
+                    <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                      <Chip
+                        label={`${viewMode === 'yearly' ? schedule?.yearlySummary.length : schedule?.schedule.length} rows`}
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        startIcon={<FileDownload />}
+                        onClick={handleCsvDownload}
+                        aria-label={`Download ${viewMode} amortization schedule as CSV`}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: 'none',
+                          fontWeight: 600,
+                        }}
+                      >
+                        Download CSV
+                      </Button>
+                    </Stack>
                   </Box>
 
                   <TableContainer sx={{ maxHeight: 500 }}>

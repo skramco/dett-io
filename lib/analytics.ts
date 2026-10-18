@@ -8,6 +8,7 @@ export type AnalyticsEvent =
   | 'calculator_result_emailed'
   | 'calculator_link_shared'
   | 'calculator_pdf_downloaded'
+  | 'calculator_csv_downloaded'
   | 'embed_calculator_used'
   | 'embed_click_through'
   | 'wizard_started'
