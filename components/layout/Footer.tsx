@@ -41,7 +41,12 @@ export function Footer() {
         
         <div className="mt-12 border-t border-slate-200 pt-8">
           <p className="text-center text-sm text-slate-600">
-            © {new Date().getFullYear()} Dett. Built to help, not to sell.
+            © {new Date().getFullYear()} Knowe LLC. All rights reserved.
+          </p>
+          <p className="text-center text-sm text-slate-600 mt-1">
+            <a href="https://knowe.one" target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:text-blue-600">
+              Dett.io is a Knowe LLC company
+            </a>
           </p>
         </div>
       </Container>

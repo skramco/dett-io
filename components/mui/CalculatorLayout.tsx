@@ -174,7 +174,7 @@ export default function CalculatorLayout({ children, title, description, related
                   '&:hover': { color: 'white' },
                 }}
               >
-                More calculators at dett.io
+                More calculators at dett.io · a Knowe LLC company
               </Typography>
               <OpenInNew sx={{ fontSize: 12, color: 'grey.500' }} />
             </Stack>

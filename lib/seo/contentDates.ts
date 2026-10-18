@@ -43,7 +43,8 @@ export const staticPageLastUpdated: Record<string, string> = {
   '/learn': '2026-02-16',
   '/compare': '2026-02-16',
   '/privacy': '2026-10-18',
-  '/terms': '2026-02-14',
+  '/terms': '2026-10-18',
+  '/about': '2026-10-18',
   '/scenario': '2026-10-18',
 };
 

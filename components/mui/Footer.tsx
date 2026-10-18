@@ -48,7 +48,7 @@ export function Footer() {
             />
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 280 }}>
               Free, independent mortgage calculators with documented formulas and cited data
-              sources. Built by Skramco Holdings LLC — not a lender, and we don&apos;t sell leads.
+              sources. Built by Knowe LLC — not a lender, and we don&apos;t sell leads.
             </Typography>
           </Grid>
           
@@ -134,7 +134,7 @@ export function Footer() {
         {/* Legal Disclaimer */}
         <Box sx={{ mt: 5, pt: 4, borderTop: '1px solid', borderColor: 'divider' }}>
           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.8125rem', lineHeight: 1.7, maxWidth: 900 }}>
-            <strong>Disclaimer:</strong> Dett.io is an educational resource operated by Skramco Holdings LLC. Dett.io is not a mortgage lender, broker, financial advisor, or licensed professional of any kind. All calculator results, estimates, and content are for informational and educational purposes only and do not constitute financial, legal, or tax advice. Actual mortgage terms, rates, and eligibility are determined by lenders based on your complete financial profile. Consult qualified professionals before making financial decisions. See our{' '}
+            <strong>Disclaimer:</strong> Dett.io is an educational resource operated by Knowe LLC. Dett.io is not a mortgage lender, broker, financial advisor, or licensed professional of any kind. All calculator results, estimates, and content are for informational and educational purposes only and do not constitute financial, legal, or tax advice. Actual mortgage terms, rates, and eligibility are determined by lenders based on your complete financial profile. Consult qualified professionals before making financial decisions. See our{' '}
             <Link href="/terms" style={{ color: 'inherit' }}>Terms of Use</Link>{' '}and{' '}
             <Link href="/privacy" style={{ color: 'inherit' }}>Privacy Policy</Link>{' '}for full details.
           </Typography>
@@ -153,9 +153,21 @@ export function Footer() {
             gap: 2,
           }}
         >
-          <Typography variant="caption" color="text.secondary">
-            © {new Date().getFullYear()} Skramco Holdings LLC d/b/a Dett.io. All rights reserved.
-          </Typography>
+          <Stack spacing={0.5} sx={{ alignItems: { xs: 'center', sm: 'flex-start' } }}>
+            <Typography variant="caption" color="text.secondary">
+              © {new Date().getFullYear()} Knowe LLC. All rights reserved.
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              <Link
+                href="https://knowe.one"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'inherit' }}
+              >
+                Dett.io is a Knowe LLC company
+              </Link>
+            </Typography>
+          </Stack>
           <Stack direction="row" spacing={2}>
             <Link href="/privacy" style={{ textDecoration: 'none' }}>
               <Typography variant="caption" sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary' } }}>

@@ -24,5 +24,8 @@ describe('CalculatorResultsEmail', () => {
     expect(html).toContain('Moderate Price');
     expect(html).toContain('YOUR SAVED CALCULATION');
     expect(html).toContain('https://dett.io/calculators/affordability?annualIncome=120000&amp;interestRate=6.5');
+    expect(html).toContain('Knowe LLC');
+    expect(html).toContain('https://knowe.one');
+    expect(html).not.toContain('Skramco');
   });
 });
