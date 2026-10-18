@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useEffect, useId } from 'react';
+import { ReactNode, useId, useLayoutEffect, useRef, useState } from 'react';
 import {
   Box,
   Paper,
@@ -10,14 +10,27 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
   Checkbox,
   FormControlLabel,
   Slider,
   Stack,
-  Divider,
   Chip,
 } from '@mui/material';
+import {
+  formatCurrencyInput,
+  formatCurrencyInputValue,
+  mapFormattedCaret,
+  parseCurrencyInput,
+} from '@/lib/format';
+
+const LABEL_SX = {
+  display: 'block',
+  fontSize: '0.875rem', // 14px minimum
+  fontWeight: 600,
+  color: '#1F2937', // ~16:1 on white
+  mb: 0.75,
+  letterSpacing: '0.01em',
+} as const;
 
 // Shared input styling for strong visual prominence
 const inputStyles = {
@@ -46,12 +59,6 @@ const inputStyles = {
     fontSize: '1rem',
     py: 1.75,
     minHeight: '1.5em',
-  },
-  '& .MuiInputLabel-root': {
-    fontWeight: 500,
-    '&.Mui-focused': {
-      color: '#196bc0',
-    },
   },
 };
 
@@ -127,50 +134,82 @@ interface CurrencyInputProps {
 }
 
 export function CurrencyInput({ label, value, onChange, helperText, min, max }: CurrencyInputProps) {
-  const [display, setDisplay] = useState(String(value));
+  const id = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const caretRef = useRef<number | null>(null);
+  const [draft, setDraft] = useState<string | null>(null);
+  const display = draft ?? formatCurrencyInputValue(value);
 
-  useEffect(() => {
-    const num = parseFloat(display);
-    if (isNaN(num) || num !== value) {
-      setDisplay(value === 0 && display === '' ? '' : String(value));
-    }
-  }, [value]);
+  useLayoutEffect(() => {
+    if (caretRef.current === null || !inputRef.current) return;
+    inputRef.current.setSelectionRange(caretRef.current, caretRef.current);
+    caretRef.current = null;
+  }, [display]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    setDisplay(raw);
-    const num = parseFloat(raw);
-    if (!isNaN(num)) {
-      onChange(num);
-    }
+    const caret = e.target.selectionStart ?? raw.length;
+    const formatted = formatCurrencyInput(raw);
+    caretRef.current = mapFormattedCaret(raw, formatted, caret);
+    setDraft(formatted);
+
+    const num = parseCurrencyInput(formatted);
+    if (num === null) return;
+    let next = num;
+    if (min !== undefined) next = Math.max(min, next);
+    if (max !== undefined) next = Math.min(max, next);
+    onChange(next);
   };
 
   const handleBlur = () => {
-    if (display === '' || isNaN(parseFloat(display))) {
-      setDisplay('0');
+    const num = parseCurrencyInput(display);
+    if (num === null) {
       onChange(0);
+    } else {
+      let next = num;
+      if (min !== undefined) next = Math.max(min, next);
+      if (max !== undefined) next = Math.min(max, next);
+      if (next !== num) onChange(next);
     }
+    setDraft(null);
   };
 
   return (
-    <TextField
-      fullWidth
-      label={label}
-      type="number"
-      value={display}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      inputProps={{ min, max }}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <Typography sx={{ fontWeight: 600, color: '#374151' }}>$</Typography>
-          </InputAdornment>
-        ),
-      }}
-      helperText={helperText}
-      sx={inputStyles}
-    />
+    <Box>
+      <Typography component="label" htmlFor={id} sx={LABEL_SX}>
+        {label}
+      </Typography>
+      <TextField
+        id={id}
+        fullWidth
+        hiddenLabel
+        type="text"
+        value={display}
+        onChange={handleChange}
+        onFocus={() => {
+          setDraft((current) => current ?? formatCurrencyInputValue(value));
+        }}
+        onBlur={handleBlur}
+        inputRef={inputRef}
+        inputProps={{
+          inputMode: 'decimal',
+          autoComplete: 'off',
+          spellCheck: false,
+          min,
+          max,
+          'aria-label': label,
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Typography sx={{ fontWeight: 600, color: '#374151' }}>$</Typography>
+            </InputAdornment>
+          ),
+        }}
+        helperText={helperText}
+        sx={inputStyles}
+      />
+    </Box>
   );
 }
 
@@ -188,18 +227,13 @@ interface PercentageInputProps {
 }
 
 export function PercentageInput({ label, value, onChange, helperText, step = 0.125, min = 0, max = 100 }: PercentageInputProps) {
-  const [display, setDisplay] = useState(String(value));
-
-  useEffect(() => {
-    const num = parseFloat(display);
-    if (isNaN(num) || num !== value) {
-      setDisplay(value === 0 && display === '' ? '' : String(value));
-    }
-  }, [value]);
+  const id = useId();
+  const [draft, setDraft] = useState<string | null>(null);
+  const display = draft ?? String(value);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    setDisplay(raw);
+    setDraft(raw);
     const num = parseFloat(raw);
     if (!isNaN(num)) {
       onChange(num);
@@ -208,30 +242,36 @@ export function PercentageInput({ label, value, onChange, helperText, step = 0.1
 
   const handleBlur = () => {
     if (display === '' || isNaN(parseFloat(display))) {
-      setDisplay('0');
       onChange(0);
     }
+    setDraft(null);
   };
 
   return (
-    <TextField
-      fullWidth
-      label={label}
-      type="number"
-      value={display}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      inputProps={{ step, min, max }}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position="end">
-            <Typography sx={{ fontWeight: 600, color: '#374151' }}>%</Typography>
-          </InputAdornment>
-        ),
-      }}
-      helperText={helperText}
-      sx={inputStyles}
-    />
+    <Box>
+      <Typography component="label" htmlFor={id} sx={LABEL_SX}>
+        {label}
+      </Typography>
+      <TextField
+        id={id}
+        fullWidth
+        hiddenLabel
+        type="text"
+        value={display}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        inputProps={{ step, min, max, inputMode: 'decimal', autoComplete: 'off', 'aria-label': label }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Typography sx={{ fontWeight: 600, color: '#374151' }}>%</Typography>
+            </InputAdornment>
+          ),
+        }}
+        helperText={helperText}
+        sx={inputStyles}
+      />
+    </Box>
   );
 }
 
@@ -250,18 +290,13 @@ interface NumberInputProps {
 }
 
 export function NumberInput({ label, value, onChange, helperText, suffix, step = 1, min, max }: NumberInputProps) {
-  const [display, setDisplay] = useState(String(value));
-
-  useEffect(() => {
-    const num = parseFloat(display);
-    if (isNaN(num) || num !== value) {
-      setDisplay(value === 0 && display === '' ? '' : String(value));
-    }
-  }, [value]);
+  const id = useId();
+  const [draft, setDraft] = useState<string | null>(null);
+  const display = draft ?? String(value);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    setDisplay(raw);
+    setDraft(raw);
     const num = parseFloat(raw);
     if (!isNaN(num)) {
       onChange(num);
@@ -270,30 +305,36 @@ export function NumberInput({ label, value, onChange, helperText, suffix, step =
 
   const handleBlur = () => {
     if (display === '' || isNaN(parseFloat(display))) {
-      setDisplay('0');
       onChange(0);
     }
+    setDraft(null);
   };
 
   return (
-    <TextField
-      fullWidth
-      label={label}
-      type="number"
-      value={display}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      inputProps={{ step, min, max }}
-      InputProps={{
-        endAdornment: suffix ? (
-          <InputAdornment position="end">
-            <Typography sx={{ fontWeight: 600, color: '#374151' }}>{suffix}</Typography>
-          </InputAdornment>
-        ) : undefined,
-      }}
-      helperText={helperText}
-      sx={inputStyles}
-    />
+    <Box>
+      <Typography component="label" htmlFor={id} sx={LABEL_SX}>
+        {label}
+      </Typography>
+      <TextField
+        id={id}
+        fullWidth
+        hiddenLabel
+        type="text"
+        value={display}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        inputProps={{ step, min, max, inputMode: 'decimal', autoComplete: 'off', 'aria-label': label }}
+        InputProps={{
+          endAdornment: suffix ? (
+            <InputAdornment position="end">
+              <Typography sx={{ fontWeight: 600, color: '#374151' }}>{suffix}</Typography>
+            </InputAdornment>
+          ) : undefined,
+        }}
+        helperText={helperText}
+        sx={inputStyles}
+      />
+    </Box>
   );
 }
 
@@ -309,22 +350,30 @@ interface ZipInputProps {
 }
 
 export function ZipInput({ label = 'ZIP', value, onChange, helperText, error }: ZipInputProps) {
+  const id = useId();
   return (
-    <TextField
-      fullWidth
-      label={label}
-      value={value}
-      onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, 5))}
-      inputProps={{
-        inputMode: 'numeric',
-        pattern: '[0-9]*',
-        maxLength: 5,
-        autoComplete: 'postal-code',
-      }}
-      helperText={helperText}
-      error={error}
-      sx={inputStyles}
-    />
+    <Box>
+      <Typography component="label" htmlFor={id} sx={LABEL_SX}>
+        {label}
+      </Typography>
+      <TextField
+        id={id}
+        fullWidth
+        hiddenLabel
+        value={value}
+        onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, 5))}
+        inputProps={{
+          inputMode: 'numeric',
+          pattern: '[0-9]*',
+          maxLength: 5,
+          autoComplete: 'postal-code',
+          'aria-label': label,
+        }}
+        helperText={helperText}
+        error={error}
+        sx={inputStyles}
+      />
+    </Box>
   );
 }
 
@@ -340,17 +389,21 @@ interface SelectInputProps {
 }
 
 export function SelectInput({ label, value, onChange, options, helperText }: SelectInputProps) {
+  const id = useId();
   const labelId = useId();
   const helperId = useId();
   return (
     <FormControl fullWidth>
-      <InputLabel id={labelId} sx={{ fontWeight: 500, '&.Mui-focused': { color: '#196bc0' } }}>{label}</InputLabel>
+      <Typography component="label" htmlFor={id} id={labelId} sx={LABEL_SX}>
+        {label}
+      </Typography>
       <Select
+        id={id}
         labelId={labelId}
         value={value}
-        label={label}
         displayEmpty
         onChange={(e) => onChange(e.target.value)}
+        aria-label={label}
         aria-describedby={helperText ? helperId : undefined}
         sx={{
           borderRadius: 1.5,
@@ -402,20 +455,24 @@ interface DateInputProps {
 }
 
 export function DateInput({ label, value, onChange, helperText, min, max }: DateInputProps) {
+  const id = useId();
   return (
-    <TextField
-      fullWidth
-      label={label}
-      type="date"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      helperText={helperText}
-      slotProps={{
-        htmlInput: { min, max },
-        inputLabel: { shrink: true },
-      }}
-      sx={inputStyles}
-    />
+    <Box>
+      <Typography component="label" htmlFor={id} sx={LABEL_SX}>
+        {label}
+      </Typography>
+      <TextField
+        id={id}
+        fullWidth
+        hiddenLabel
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        helperText={helperText}
+        inputProps={{ min, max, 'aria-label': label }}
+        sx={inputStyles}
+      />
+    </Box>
   );
 }
 
@@ -459,7 +516,7 @@ export function CheckboxInput({ label, checked, onChange, helperText }: Checkbox
           />
         }
         label={
-          <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151' }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, color: '#1F2937', fontSize: '0.875rem' }}>
             {label}
           </Typography>
         }
@@ -514,7 +571,7 @@ export function SliderInput({
       }}
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Typography id={labelId} variant="body2" sx={{ fontWeight: 600, color: '#374151' }}>
+        <Typography id={labelId} sx={{ ...LABEL_SX, mb: 0 }}>
           {label}
         </Typography>
         <Chip 

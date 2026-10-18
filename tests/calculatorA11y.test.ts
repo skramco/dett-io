@@ -8,9 +8,20 @@ describe('calculator accessibility + chart code-splitting (ENG-335)', () => {
   it('wires SelectInput to its visible label and helper text', () => {
     const src = read('components/mui/calculator/InputPanel.tsx');
     expect(src).toMatch(/export function SelectInput[\s\S]*const labelId = useId\(\)/);
-    expect(src).toMatch(/<InputLabel id=\{labelId\}/);
+    expect(src).toMatch(/component="label"[\s\S]*id=\{labelId\}/);
     expect(src).toMatch(/labelId=\{labelId\}/);
     expect(src).toMatch(/aria-describedby=\{helperText \? helperId : undefined\}/);
+  });
+
+  it('formats currency fields with a decimal keypad and live thousands separators', () => {
+    const src = read('components/mui/calculator/InputPanel.tsx');
+    expect(src).toMatch(/export function CurrencyInput[\s\S]*inputMode: 'decimal'/);
+    expect(src).toContain('formatCurrencyInput');
+    expect(src).toContain('parseCurrencyInput');
+    expect(src).toContain('mapFormattedCaret');
+    expect(src).toMatch(/fontSize: '0\.875rem'/);
+    expect(src).toMatch(/fontWeight: 600/);
+    expect(src).toMatch(/color: '#1F2937'/);
   });
 
   it('gives SliderInput an accessible name and formatted value text', () => {
