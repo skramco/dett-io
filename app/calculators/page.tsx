@@ -39,6 +39,10 @@ import {
   CheckCircle,
   ArrowForward,
   Shield,
+  EventAvailable,
+  Functions,
+  MenuBook,
+  VerifiedUser,
 } from '@mui/icons-material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
@@ -388,7 +392,7 @@ export default function CalculatorsPage() {
           </Container>
         </Box>
 
-        {/* Happy Homeowners Visual */}
+        {/* Trust Signals */}
         <Box sx={{ py: { xs: 6, md: 8 }, bgcolor: 'background.paper' }}>
           <Container maxWidth="lg">
             <Grid container spacing={4} alignItems="center">
@@ -401,36 +405,41 @@ export default function CalculatorsPage() {
                     Know your numbers before you commit
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.125rem' }}>
-                    Join thousands who've used our calculators to make informed decisions about their biggest investment.
+                    Every result is backed by documented formulas and cited data sources, and each
+                    calculator shows when it was last reviewed. See{' '}
+                    <Link href="/methodology" style={{ color: 'inherit', fontWeight: 600 }}>
+                      how our math works
+                    </Link>{' '}
+                    and{' '}
+                    <Link href="/about" style={{ color: 'inherit', fontWeight: 600 }}>
+                      who builds these tools
+                    </Link>.
                   </Typography>
                 </Stack>
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
                 <Grid container spacing={2}>
                   {[
-                    { emoji: '🏡', label: 'Happy in their home', color: 'primary.light' },
-                    { emoji: '✨', label: 'Clear on the numbers', color: 'secondary.light' },
-                    { emoji: '💪', label: 'Confident in their choice', color: 'primary.light' },
-                    { emoji: '🎯', label: 'On track financially', color: 'secondary.light' },
-                  ].map((item, index) => (
-                    <Grid size={{ xs: 6 }} key={index}>
-                      <Card 
-                        sx={{ 
-                          p: 3, 
-                          textAlign: 'center',
-                          bgcolor: item.color,
-                          border: 'none',
-                        }}
-                      >
-                        <Typography sx={{ fontSize: '3rem', mb: 1 }}>
-                          {item.emoji}
-                        </Typography>
-                        <Typography variant="body2" fontWeight={600}>
-                          {item.label}
-                        </Typography>
-                      </Card>
-                    </Grid>
-                  ))}
+                    { icon: Functions, label: 'Documented formulas', detail: 'Expand "Show Me the Math" on any result' },
+                    { icon: MenuBook, label: 'Cited data sources', detail: 'Freddie Mac PMMS, FHFA, HUD, VA tables' },
+                    { icon: VerifiedUser, label: 'Independent', detail: 'Not a lender — no leads sold, ever' },
+                    { icon: EventAvailable, label: 'Dated reviews', detail: '"Last updated" shown on every calculator' },
+                  ].map((item, index) => {
+                    const Icon = item.icon;
+                    return (
+                      <Grid size={{ xs: 6 }} key={index}>
+                        <Card sx={{ p: 3, height: '100%' }}>
+                          <Icon sx={{ color: 'primary.main', fontSize: 28, mb: 1 }} />
+                          <Typography variant="body2" fontWeight={600}>
+                            {item.label}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                            {item.detail}
+                          </Typography>
+                        </Card>
+                      </Grid>
+                    );
+                  })}
                 </Grid>
               </Grid>
             </Grid>

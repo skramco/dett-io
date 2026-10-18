@@ -21,6 +21,9 @@ import {
   Autorenew,
   Bolt,
   ArrowForward,
+  EventAvailable,
+  Functions,
+  VerifiedUser,
 } from '@mui/icons-material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
@@ -131,7 +134,7 @@ export default function Home() {
                     color="text.secondary" 
                     sx={{ fontWeight: 400 }}
                   >
-                    Crystal-clear calculators. No hidden fees. No email required. Just honest math to help you decide.
+                    Crystal-clear calculators with documented formulas and cited data sources. Honest math to help you decide.
                   </Typography>
                   
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ pt: 2 }}>
@@ -237,7 +240,7 @@ export default function Home() {
                   >
                     <Stack direction="row" spacing={1} alignItems="center">
                       <CheckCircle sx={{ color: 'success.main', fontSize: 18 }} />
-                      <Typography variant="caption" sx={{ fontWeight: 600 }}>No hidden fees</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 600 }}>Every formula documented</Typography>
                     </Stack>
                   </Card>
 
@@ -265,24 +268,49 @@ export default function Home() {
           </Container>
         </Box>
 
-        {/* Stats Bar */}
+        {/* Trust Bar */}
         <Box sx={{ py: { xs: 4, md: 5 }, bgcolor: 'background.paper' }}>
           <Container maxWidth="lg">
-            <Grid container spacing={4} justifyContent="center">
+            <Grid container spacing={3} justifyContent="center">
               {[
-                { value: '20', label: 'Free Calculators', suffix: '' },
-                { value: '100', label: 'Free Forever', suffix: '%' },
-                { value: '0', label: 'Emails Required', suffix: '' },
-                { value: '0', label: 'Hidden Fees', suffix: '' },
-              ].map((stat, i) => (
-                <Grid size={{ xs: 6, sm: 3 }} key={i}>
-                  <Stack alignItems="center" spacing={0.5}>
-                    <Typography variant="h3" sx={{ fontWeight: 800, color: 'primary.main', fontSize: { xs: 32, md: 40 } }}>
-                      {stat.value}{stat.suffix}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                      {stat.label}
-                    </Typography>
+                {
+                  icon: <VerifiedUser sx={{ color: 'primary.main' }} />,
+                  title: 'Independent',
+                  description: 'Not a lender or broker — we don\u2019t sell leads.',
+                  href: '/about',
+                  linkLabel: 'Who we are',
+                },
+                {
+                  icon: <Functions sx={{ color: 'primary.main' }} />,
+                  title: 'Documented math',
+                  description: 'Every formula and data source is cited.',
+                  href: '/methodology',
+                  linkLabel: 'Read our methodology',
+                },
+                {
+                  icon: <EventAvailable sx={{ color: 'primary.main' }} />,
+                  title: 'Regularly reviewed',
+                  description: 'Each calculator shows when it was last updated.',
+                  href: '/calculators',
+                  linkLabel: 'Browse calculators',
+                },
+              ].map((item) => (
+                <Grid size={{ xs: 12, sm: 4 }} key={item.title}>
+                  <Stack direction="row" spacing={2} alignItems="flex-start">
+                    {item.icon}
+                    <Box>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.3 }}>
+                        {item.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        {item.description}
+                      </Typography>
+                      <Link href={item.href} style={{ textDecoration: 'none' }}>
+                        <Typography variant="body2" sx={{ color: 'primary.main', fontWeight: 600, mt: 0.5, '&:hover': { textDecoration: 'underline' } }}>
+                          {item.linkLabel}
+                        </Typography>
+                      </Link>
+                    </Box>
                   </Stack>
                 </Grid>
               ))}
@@ -358,8 +386,8 @@ export default function Home() {
                     icon: <CheckCircle />,
                     iconBg: 'secondary.light',
                     iconColor: 'secondary.main',
-                    title: 'Zero BS',
-                    description: '100% free. No email required. No lead forms. No sales calls. No tricks. Just tools that actually help you.',
+                    title: 'Independent',
+                    description: 'Dett.io isn\u2019t a lender or broker and doesn\u2019t sell leads. The math never bends toward a product that pays us.',
                   },
                   {
                     icon: <MenuBook />,
@@ -510,7 +538,7 @@ export default function Home() {
                     Our free mortgage calculators help you understand the true cost of homeownership before you talk to a lender. Calculate your monthly mortgage payment with taxes, insurance, PMI, and HOA fees included. Check how much house you can afford based on your income and debts. Compare refinancing scenarios to see if switching loans actually saves money after closing costs.
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8 }}>
-                    Unlike most mortgage sites, we don't collect your information or sell leads. There are no email gates, no phone number forms, and no sales calls. Every calculator is completely free, works instantly in your browser, and gives you honest results you can trust.
+                    Unlike most mortgage sites, we don't collect your information or sell leads. Dett.io is independently built, every formula is documented on our methodology page, and each calculator shows when it was last reviewed — so you can verify the math instead of taking our word for it.
                   </Typography>
                 </Stack>
               </Grid>
@@ -577,7 +605,7 @@ export default function Home() {
                 variant="h6" 
                 sx={{ color: 'primary.light', maxWidth: 500, fontWeight: 400 }}
               >
-                Start with any calculator. No signup, no spam, no strings attached.
+                Start with any calculator — and when you want to check our work, the formulas are documented on every page.
               </Typography>
               <Button
                 component={Link}

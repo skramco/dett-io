@@ -16,7 +16,9 @@ const footerLinks = {
     { label: 'Learn About Debt', href: '/learn' },
     { label: 'Embed Calculators', href: '/partners' },
   ],
-  legal: [
+  company: [
+    { label: 'About', href: '/about' },
+    { label: 'Methodology', href: '/methodology' },
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms of Use', href: '/terms' },
   ],
@@ -43,7 +45,8 @@ export function Footer() {
               sx={{ height: 32, display: 'block', mb: 2 }}
             />
             <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 280 }}>
-              Free mortgage calculators. No ads, no lead capture, no BS. Built to help, not to sell.
+              Free, independent mortgage calculators with documented formulas and cited data
+              sources. Built by Skramco Holdings LLC — not a lender, and we don&apos;t sell leads.
             </Typography>
           </Grid>
           
@@ -101,10 +104,10 @@ export function Footer() {
           
           <Grid size={{ xs: 6, sm: 4, md: 2 }}>
             <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-              Legal
+              Company
             </Typography>
             <Stack spacing={0}>
-              {footerLinks.legal.map((link) => (
+              {footerLinks.company.map((link) => (
                 <Link 
                   key={link.href} 
                   href={link.href}

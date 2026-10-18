@@ -12,7 +12,8 @@ import {
   Chip,
   Stack,
 } from '@mui/material';
-import { ArrowBack, Calculate, OpenInNew } from '@mui/icons-material';
+import { ArrowBack, Calculate, EventAvailable, OpenInNew } from '@mui/icons-material';
+import { formatLastUpdated, getCalculatorLastUpdated } from '@/lib/calculators/calculatorMeta';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { RelatedCalculators } from './calculator/RelatedCalculators';
@@ -53,6 +54,7 @@ const dottedBackground = {
 export default function CalculatorLayout({ children, title, description, relatedCalculators, actionBarData, calculatorSlug }: CalculatorLayoutProps) {
   const hasTracked = useRef(false);
   const isEmbed = useIsEmbed();
+  const lastUpdated = calculatorSlug ? getCalculatorLastUpdated(calculatorSlug) : null;
 
   useEffect(() => {
     if (actionBarData?.summary && calculatorSlug && !hasTracked.current) {
@@ -324,6 +326,35 @@ export default function CalculatorLayout({ children, title, description, related
                 >
                   {description}
                 </Typography>
+                {lastUpdated && (
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    flexWrap="wrap"
+                    sx={{ mt: 2 }}
+                  >
+                    <EventAvailable sx={{ fontSize: 16, color: 'text.secondary' }} />
+                    <Typography variant="body2" color="text.secondary">
+                      Last updated {formatLastUpdated(lastUpdated)}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" aria-hidden="true">
+                      ·
+                    </Typography>
+                    <Link href="/methodology" style={{ textDecoration: 'none' }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'primary.main',
+                          fontWeight: 600,
+                          '&:hover': { textDecoration: 'underline' },
+                        }}
+                      >
+                        How our math works
+                      </Typography>
+                    </Link>
+                  </Stack>
+                )}
               </Box>
             </Box>
           </Container>
