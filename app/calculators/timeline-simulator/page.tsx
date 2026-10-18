@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { Timeline, AccountBalance, TrendingUp, CheckCircle, Speed } from '@mui/icons-material';
@@ -18,6 +20,7 @@ export default function TimelineSimulatorCalculator() {
     armInitialRate: 5.75, armFixedPeriod: 5, pointsCost: 7200, pointsRate: 6.25,
   });
   useUrlInputs(inputs, setInputs);
+  const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate', offsetFields: ['armInitialRate', 'pointsRate'] });
   const deferredInputs = useDeferredInputs(inputs);
 
   const result = useMemo(() => deferredInputs.loanAmount <= 0 ? null : calculateTimelineSimulator(deferredInputs), [deferredInputs]);
@@ -34,6 +37,7 @@ export default function TimelineSimulatorCalculator() {
             <InputSection title="Loan Details" icon={<AccountBalance />}>
               <CurrencyInput label="Loan Amount" value={inputs.loanAmount} onChange={(v) => handleInputChange('loanAmount', v)} />
               <PercentageInput label="30-Year Fixed Rate" value={inputs.interestRate} onChange={(v) => handleInputChange('interestRate', v)} step={0.125} />
+              <MarketRateNote rates={marketRates} />
             </InputSection>
             <InputSection title="Your Timeline" icon={<Timeline />} color="secondary">
               <NumberInput label="Expected Years in Home" value={inputs.expectedMoveYear} onChange={(v) => handleInputChange('expectedMoveYear', v)} suffix="years" />

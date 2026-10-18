@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
@@ -58,6 +60,7 @@ export default function AmortizationCalculator() {
     extraMonthlyPayment: 0,
   });
   useUrlInputs(inputs, setInputs);
+  const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate' });
 
   const [viewMode, setViewMode] = useState<'yearly' | 'monthly'>('yearly');
 
@@ -103,6 +106,7 @@ export default function AmortizationCalculator() {
                 onChange={(v) => handleInputChange('interestRate', v)}
                 step={0.125}
               />
+              <MarketRateNote rates={marketRates} />
 
               <SelectInput
                 label="Loan Term"

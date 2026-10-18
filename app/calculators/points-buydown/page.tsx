@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { Percent, AttachMoney, Timeline, CheckCircle, AccountBalance } from '@mui/icons-material';
@@ -18,6 +20,7 @@ export default function PointsBuydownCalculator() {
     lenderCredit: 3600, lenderCreditRate: 7.0, buydownType: 'none', buydownCost: 0, yearsToHold: 7,
   });
   useUrlInputs(inputs, setInputs);
+  const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'parRate', offsetFields: ['pointsRate', 'lenderCreditRate'] });
   const deferredInputs = useDeferredInputs(inputs);
 
   const result = useMemo(() => deferredInputs.loanAmount <= 0 ? null : calculatePointsBuydown(deferredInputs), [deferredInputs]);
@@ -34,6 +37,7 @@ export default function PointsBuydownCalculator() {
             <InputSection title="Loan Details" icon={<AccountBalance />}>
               <CurrencyInput label="Loan Amount" value={inputs.loanAmount} onChange={(v) => handleInputChange('loanAmount', v)} />
               <PercentageInput label="Par Rate" value={inputs.parRate} onChange={(v) => handleInputChange('parRate', v)} step={0.125} />
+              <MarketRateNote rates={marketRates} />
               <SelectInput label="Loan Term" value={inputs.loanTerm} onChange={(v) => handleInputChange('loanTerm', v as number)} options={[{ value: 15, label: '15 years' }, { value: 30, label: '30 years' }]} />
             </InputSection>
             <InputSection title="Points Option" icon={<Percent />} color="secondary">

@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import { Box, Grid, Paper, Typography, Stack, Divider, Alert } from '@mui/material';
 import { AttachMoney, AccountBalance, TrendingUp, Warning, CompareArrows } from '@mui/icons-material';
@@ -18,6 +20,7 @@ export default function CashOutRefiCalculator() {
     cashOutAmount: 50000, newRate: 6.75, newTerm: 30, closingCosts: 8000, alternativeRate: 10,
   });
   useUrlInputs(inputs, setInputs);
+  const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'newRate' });
   const deferredInputs = useDeferredInputs(inputs);
 
   const result = useMemo(() => deferredInputs.currentBalance <= 0 ? null : calculateCashOutRefi(deferredInputs), [deferredInputs]);
@@ -39,6 +42,7 @@ export default function CashOutRefiCalculator() {
             <InputSection title="Cash-Out Details" icon={<AttachMoney />} color="secondary">
               <CurrencyInput label="Cash Out Amount" value={inputs.cashOutAmount} onChange={(v) => handleInputChange('cashOutAmount', v)} />
               <PercentageInput label="New Rate" value={inputs.newRate} onChange={(v) => handleInputChange('newRate', v)} step={0.125} />
+              <MarketRateNote rates={marketRates} />
               <SelectInput label="New Term" value={inputs.newTerm} onChange={(v) => handleInputChange('newTerm', v as number)} options={[{ value: 15, label: '15 years' }, { value: 30, label: '30 years' }]} />
               <CurrencyInput label="Closing Costs" value={inputs.closingCosts} onChange={(v) => handleInputChange('closingCosts', v)} />
             </InputSection>

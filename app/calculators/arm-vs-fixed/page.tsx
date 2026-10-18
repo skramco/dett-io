@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
@@ -55,6 +57,7 @@ export default function ArmVsFixedCalculator() {
     expectedIndexRate: 5,
   });
   useUrlInputs(inputs, setInputs);
+  const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'fixedRate', offsetFields: ['armInitialRate'] });
   const deferredInputs = useDeferredInputs(inputs);
 
   // Calculate results in real-time
@@ -122,6 +125,7 @@ export default function ArmVsFixedCalculator() {
                 onChange={(v) => handleInputChange('fixedRate', v)}
                 step={0.125}
               />
+              <MarketRateNote rates={marketRates} />
             </InputSection>
 
             <InputSection title="ARM Option" icon={<TrendingUp />}>

@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
+import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
@@ -48,6 +50,7 @@ export default function InterestSensitivityCalculator() {
     homeInsuranceAnnual: 1800,
   });
   useUrlInputs(inputs, setInputs);
+  const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'baseRate' });
   const deferredInputs = useDeferredInputs(inputs);
 
   // Calculate results in real-time
@@ -99,6 +102,7 @@ export default function InterestSensitivityCalculator() {
                 step={0.125}
                 helperText="Your current or expected rate"
               />
+              <MarketRateNote rates={marketRates} />
 
               <SelectInput
                 label="Loan Term"
