@@ -96,6 +96,43 @@ describe('mortgage-cost', () => {
   it('headline total interest matches the reference', () => {
     expect(num(result.details.totalInterest)).toBeCloseTo(totalInterestOverTerm(360000, 6.75, 360), 0);
   });
+
+  it('includes grid PMI when LTV is above 80% and no override is set', () => {
+    const withPmi = calculateMortgageCost({
+      ...inputs,
+      downPayment: 45000, // 10% down → 90% LTV
+      pmi: 0,
+      creditScore: 740,
+    });
+    const loan = 405000;
+    const refRate = conventionalPmiRatePercent(ltvPercent(loan, 450000), 740);
+    const refPMI = monthlyPmiAmount(loan, refRate);
+    expect(refRate).toBe(0.35);
+    expect(num(withPmi.details.monthlyPMI)).toBeCloseTo(refPMI, 1);
+    expect(num(withPmi.details.pmiEstimated)).toBe(1);
+    expect(num(withPmi.details.totalMonthlyPayment)).toBeCloseTo(
+      monthlyPayment(loan, 6.75, 360) + 5400 / 12 + 1800 / 12 + 100 + refPMI,
+      1
+    );
+  });
+
+  it('honors a manual annual PMI override and zeros PMI at 20% down', () => {
+    const override = calculateMortgageCost({
+      ...inputs,
+      downPayment: 45000,
+      pmi: 2400,
+      creditScore: 740,
+    });
+    expect(num(override.details.monthlyPMI)).toBeCloseTo(200, 1);
+    expect(num(override.details.pmiEstimated)).toBe(0);
+
+    const twentyPercent = calculateMortgageCost({
+      ...inputs,
+      downPayment: 90000,
+      pmi: 2400,
+    });
+    expect(num(twentyPercent.details.monthlyPMI)).toBe(0);
+  });
 });
 
 describe('biweekly', () => {
@@ -502,13 +539,19 @@ describe('affordability', () => {
       const payment = num(result.details[`${tier}Payment`]);
       const loan = price - 60000;
       // PMI is part of the affordability back-solve when LTV > 80% (ENG-320),
-      // at the calculator's assumed 0.5%/yr rate.
-      const pmi = loan / price > 0.8 ? (loan * 0.005) / 12 : 0;
+      // using the shared LTV × credit score grid (typical-borrower 740 fallback).
+      const pmi = monthlyPmiAmount(loan, conventionalPmiRatePercent(ltvPercent(loan, price), 740));
       const expected =
         monthlyPayment(loan, 6.5, 360) + pmi + (price * 1.2) / 100 / 12 + 1500 / 12;
       expect(payment).toBeCloseTo(expected, -1);
       expect(num(result.details[`${tier}PMI`])).toBeCloseTo(pmi, 0);
     }
+  });
+
+  it('lower credit raises PMI and lowers the max affordable price', () => {
+    const weakerCredit = calculateAffordability({ ...inputs, creditScore: 680 });
+    expect(num(weakerCredit.details.moderatePMI)).toBeGreaterThan(num(result.details.moderatePMI));
+    expect(num(weakerCredit.details.moderatePrice)).toBeLessThan(num(result.details.moderatePrice));
   });
 
   it('tier payments respect their DTI caps', () => {
@@ -699,6 +742,13 @@ describe('pmi', () => {
   it('headline P&I matches the reference', () => {
     expect(num(result.details.monthlyPI)).toBeCloseTo(monthlyPayment(360000, 6.5, 360), 0);
   });
+
+  it('reports 0 PMI at 20% down instead of the ≤85 LTV band rate', () => {
+    const twenty = calculatePMI({ ...inputs, downPaymentPercent: 20 });
+    expect(num(twenty.details.pmiRate)).toBe(0);
+    expect(num(twenty.details.monthlyPMI)).toBe(0);
+    expect(num(twenty.details.noPMI)).toBe(1);
+  });
 });
 
 describe('va', () => {
@@ -729,5 +779,13 @@ describe('va', () => {
     expect(num(result.details.monthlyPI)).toBeCloseTo(refPI, 0);
     const expectedTotal = refPI + 4800 / 12 + 1600 / 12;
     expect(num(result.details.totalMonthlyPayment)).toBeCloseTo(expectedTotal, 0);
+  });
+
+  it('conventional comparison PMI uses the shared grid, not a flat 0.5%', () => {
+    const convLoan = 400000 * 0.95; // 5% down
+    const refRate = conventionalPmiRatePercent(ltvPercent(convLoan, 400000));
+    const refPMI = monthlyPmiAmount(convLoan, refRate);
+    expect(refRate).not.toBe(0.5);
+    expect(num(result.details.convMonthlyPMI)).toBeCloseTo(refPMI, 0);
   });
 });

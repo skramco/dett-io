@@ -1,5 +1,12 @@
 import type { MortgageCostInputs, CalculatorResult } from './types';
-import { monthlyPayment } from './mortgageMath';
+import {
+  conventionalPmiRatePercent,
+  DEFAULT_PMI_CREDIT_SCORE,
+  ltvPercent,
+  monthlyPayment,
+  monthlyPmiAmount,
+  PMI_LTV_THRESHOLD_PERCENT,
+} from './mortgageMath';
 
 export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorResult {
   const {
@@ -10,6 +17,7 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
     propertyTax,
     homeInsurance,
     hoaFees,
+    creditScore = DEFAULT_PMI_CREDIT_SCORE,
     pmi = 0,
   } = inputs;
 
@@ -20,7 +28,24 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
 
   const monthlyPropertyTax = propertyTax / 12;
   const monthlyInsurance = homeInsurance / 12;
-  const monthlyPMI = pmi / 12;
+
+  // PMI applies only when LTV > 80% (down payment under 20%). A manual
+  // annual override takes precedence; otherwise estimate from the shared
+  // LTV × credit score rate grid.
+  const ltv = ltvPercent(loanAmount, homePrice);
+  let monthlyPMI = 0;
+  let pmiRate = 0;
+  let pmiEstimated = false;
+  if (ltv > PMI_LTV_THRESHOLD_PERCENT) {
+    if (pmi > 0) {
+      monthlyPMI = pmi / 12;
+      pmiRate = loanAmount > 0 ? (pmi / loanAmount) * 100 : 0;
+    } else {
+      pmiRate = conventionalPmiRatePercent(ltv, creditScore);
+      monthlyPMI = monthlyPmiAmount(loanAmount, pmiRate);
+      pmiEstimated = true;
+    }
+  }
 
   const totalMonthlyPayment =
     principalAndInterest +
@@ -37,7 +62,9 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
 
   if (monthlyPMI > 0) {
     insights.push(
-      `You're paying $${Math.round(monthlyPMI).toLocaleString()}/month in PMI because your down payment is less than 20%. This adds $${Math.round(monthlyPMI * 12).toLocaleString()}/year.`
+      pmiEstimated
+        ? `You're paying an estimated $${Math.round(monthlyPMI).toLocaleString()}/month in PMI (${pmiRate.toFixed(2)}% annually at ${ltv.toFixed(0)}% LTV and a ${creditScore} credit score) because your down payment is less than 20%. This adds $${Math.round(monthlyPMI * 12).toLocaleString()}/year until you reach 20% equity.`
+        : `You're paying $${Math.round(monthlyPMI).toLocaleString()}/month in PMI because your down payment is less than 20%. This adds $${Math.round(monthlyPMI * 12).toLocaleString()}/year.`
     );
   }
 
@@ -75,6 +102,11 @@ export function calculateMortgageCost(inputs: MortgageCostInputs): CalculatorRes
       monthlyInsurance: parseFloat(monthlyInsurance.toFixed(2)),
       monthlyHOA: parseFloat(hoaFees.toFixed(2)),
       monthlyPMI: parseFloat(monthlyPMI.toFixed(2)),
+      annualPMI: Math.round(monthlyPMI * 12),
+      pmiRate: parseFloat(pmiRate.toFixed(2)),
+      pmiEstimated: pmiEstimated ? 1 : 0,
+      ltv: parseFloat(ltv.toFixed(1)),
+      creditScore,
       loanAmount: parseFloat(loanAmount.toFixed(2)),
       downPaymentPercent: parseFloat(downPaymentPercent.toFixed(2)),
       totalPaid: parseFloat(totalPaid.toFixed(2)),

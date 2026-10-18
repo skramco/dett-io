@@ -39,7 +39,7 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'Monthly Rate', formula: 'Annual Rate ÷ 12 ÷ 100', description: 'Convert annual percentage to monthly decimal.' },
         { label: 'Number of Payments', formula: 'Loan Term × 12', description: 'Total months over the life of the loan.' },
-        { label: 'PMI (if LTV > 80%)', formula: 'Loan Amount × 0.5% ÷ 12', description: 'When your down payment is under 20%, monthly PMI is included in the payment before solving for price.', computedValue: `$${fmt((d.moderatePMI as number) || 0)}` },
+        { label: 'PMI (if LTV > 80%)', formula: 'Loan Amount × PMI Rate ÷ 12', description: 'When your down payment is under 20%, monthly PMI is included in the payment before solving for price. The rate (≈0.2%–1.5%) comes from a shared LTV × credit score grid.', computedValue: d.moderatePMIRate ? `$${fmt((d.moderatePMI as number) || 0)} (${fmtDec(d.moderatePMIRate as number, 2)}%/yr)` : `$${fmt((d.moderatePMI as number) || 0)}` },
         { label: 'Loan Amount', formula: '(Payment − Tax − Insurance − PMI − HOA) × [(1+r)ⁿ − 1] ÷ [r × (1+r)ⁿ]', description: 'Standard present value of annuity formula, solving for principal from the budget left after escrow items and PMI.' },
         { label: 'Max Home Price', formula: 'Loan Amount + Down Payment', description: 'Add your down payment to the loan amount.', computedValue: `$${fmt(d.maxHomePrice as number)}` },
       ],
@@ -60,7 +60,7 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'Property Tax', formula: 'Annual Tax ÷ 12', description: 'Monthly share of annual property taxes.', computedValue: `$${fmt(d.monthlyPropertyTax as number)}` },
         { label: 'Home Insurance', formula: 'Annual Premium ÷ 12', description: 'Monthly share of homeowners insurance.', computedValue: `$${fmt(d.monthlyInsurance as number)}` },
-        { label: 'PMI (if applicable)', formula: 'Loan × PMI Rate ÷ 12', description: 'Required when down payment < 20%. Rate varies by credit score.', computedValue: `$${fmt(d.monthlyPMI as number || 0)}` },
+        { label: 'PMI (if applicable)', formula: 'Loan × PMI Rate ÷ 12', description: 'Required when down payment < 20%. The rate comes from a shared LTV × credit score grid (≈0.2%–1.5%).', computedValue: d.pmiRate ? `$${fmt(d.monthlyPMI as number || 0)} (${fmtDec(d.pmiRate as number, 2)}%/yr)` : `$${fmt(d.monthlyPMI as number || 0)}` },
         { label: 'Total PITI', formula: 'P&I + Tax + Insurance + PMI + HOA', description: 'Your true monthly housing cost.', computedValue: `$${fmt(d.totalMonthlyPayment as number)}` },
       ],
     },

@@ -1,5 +1,6 @@
 import { DEFAULT_RATES } from '../rates/defaultRates';
 import { calculateMortgageCost } from './mortgageCost';
+import { DEFAULT_PMI_CREDIT_SCORE } from './mortgageMath';
 import type { MortgageCostInputs } from './types';
 
 /**
@@ -18,6 +19,7 @@ export const MORTGAGE_COST_DEFAULT_INPUTS: MortgageCostInputs = {
   propertyTax: 5400,
   homeInsurance: 1800,
   hoaFees: 0,
+  creditScore: DEFAULT_PMI_CREDIT_SCORE,
   pmi: 0,
 };
 
