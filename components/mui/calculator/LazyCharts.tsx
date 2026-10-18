@@ -10,6 +10,7 @@ import type {
   AmortizationChartProps,
   ComparisonBarChartProps,
   TimelineChartProps,
+  RangeTimelineChartProps,
   StackedBarChartProps,
   CategoryStackedBarChartProps,
 } from './ChartComponents';
@@ -124,6 +125,27 @@ function summarizeStacked({ data }: StackedBarChartProps): string | null {
   return `Year ${first.year}: ${describe(first)}; year ${last.year}: ${describe(last)}.`;
 }
 
+function summarizeRangeTimeline({
+  data,
+  xKey = 'year',
+  bandLow,
+  bandHigh,
+  bandLabel = 'P10–P90 range',
+  lines = [],
+}: RangeTimelineChartProps): string | null {
+  if (!data || data.length === 0) return null;
+  const last = data[data.length - 1];
+  const x = last[xKey];
+  const low = Number(last[bandLow] ?? 0);
+  const high = Number(last[bandHigh] ?? 0);
+  const lineBits = lines
+    .slice(0, 3)
+    .map((line) => `${line.name} ${fmtUSD(Number(last[line.dataKey] ?? 0))}`);
+  const range = `${bandLabel} ${fmtUSD(low)} to ${fmtUSD(high)}`;
+  const rest = lineBits.length > 0 ? `; ${lineBits.join(', ')}` : '';
+  return `At ${xKey} ${x}: ${range}${rest}.`;
+}
+
 function summarizeCategoryStacked({ data, series, nameKey = 'name' }: CategoryStackedBarChartProps): string | null {
   if (!data || data.length === 0 || !series || series.length === 0) return null;
   const rows = data.slice(0, 4).map((row) => {
@@ -157,6 +179,11 @@ const DynamicComparisonBarChart = dynamic(
 
 const DynamicTimelineChart = dynamic(
   () => import('./ChartComponents').then((mod) => ({ default: mod.TimelineChart })),
+  { loading: () => <ChartSkeleton height={300} />, ssr: false }
+);
+
+const DynamicRangeTimelineChart = dynamic(
+  () => import('./ChartComponents').then((mod) => ({ default: mod.RangeTimelineChart })),
   { loading: () => <ChartSkeleton height={300} />, ssr: false }
 );
 
@@ -204,6 +231,16 @@ export function LazyTimelineChart(props: TimelineChartProps) {
       value={{ summary: summarizeTimeline(props), height: props.height }}
     >
       <DynamicTimelineChart {...props} />
+    </ChartFallbackContext.Provider>
+  );
+}
+
+export function LazyRangeTimelineChart(props: RangeTimelineChartProps) {
+  return (
+    <ChartFallbackContext.Provider
+      value={{ summary: summarizeRangeTimeline(props), height: props.height }}
+    >
+      <DynamicRangeTimelineChart {...props} />
     </ChartFallbackContext.Provider>
   );
 }

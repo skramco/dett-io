@@ -58,8 +58,8 @@ const calculatorDetails = {
     value: 'Helps you decide whether to put down 5%, 10%, or 20%. Shows the real cost of PMI and how much you save in interest with a larger down payment.',
   },
   'rent-vs-buy': {
-    outputs: ['5-year cost comparison', 'Break-even timeline', 'Wealth accumulation projection', 'Tax benefit analysis', 'Opportunity cost of down payment'],
-    value: 'Answers the biggest question: should you rent or buy? Includes rent inflation, home appreciation, maintenance costs, and investment alternatives.',
+    outputs: ['5-year cost comparison', 'Break-even timeline', 'Wealth accumulation projection', 'P10–P90 scenario range', 'Share of paths where buying wins'],
+    value: 'Answers the biggest question: should you rent or buy? Includes rent inflation, home appreciation, maintenance costs, investment alternatives, and a Monte Carlo range instead of a single path.',
   },
   'mortgage-cost': {
     outputs: ['True monthly payment (PITI + HOA + PMI)', 'Principal and interest breakdown', 'Annual housing costs', 'Percentage of income going to housing'],
@@ -82,8 +82,8 @@ const calculatorDetails = {
     value: 'Answers whether you should pay points to lower your rate. Shows exactly when you\'ll break even and if it\'s worth the upfront cost.',
   },
   'arm-vs-fixed': {
-    outputs: ['Payment comparison over time', 'Worst-case scenario with rate caps', 'Break-even analysis', 'Total cost comparison at different timelines'],
-    value: 'Models how an ARM could adjust over time vs. a fixed rate. Shows if the lower initial rate is worth the risk based on how long you\'ll keep the loan.',
+    outputs: ['Payment comparison over time', 'Named falling / expected / rising rate paths', 'Monte Carlo P10–P90 payment band', 'Cap-driven worst-case scenario'],
+    value: 'Models how an ARM could adjust over many index paths vs. a fixed rate — not just one expected line and a worst case. Shows if the lower initial rate is worth the risk based on how long you\'ll keep the loan.',
   },
   'timeline-simulator': {
     outputs: ['Best loan structure for your timeline', 'Cost comparison: 15-year vs. 30-year vs. ARM', 'Total interest paid', 'Optimal strategy recommendation'],
@@ -160,7 +160,7 @@ const calculatorCategories = [
       {
         id: "rent-vs-buy",
         name: "Rent vs Buy Analysis",
-        description: "Full comparison including rent inflation and home appreciation.",
+        description: "Full comparison including a scenario range, not a single path.",
         icon: TrendingUp,
         href: "/calculators/rent-vs-buy",
       },
@@ -256,7 +256,7 @@ const calculatorCategories = [
       {
         id: "arm-vs-fixed",
         name: "ARM vs Fixed",
-        description: "Model rate caps and adjustment timelines.",
+        description: "Multiple rate paths and a Monte Carlo range vs a fixed loan.",
         icon: TrendingDown,
         href: "/calculators/arm-vs-fixed",
       },

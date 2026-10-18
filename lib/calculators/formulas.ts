@@ -93,7 +93,16 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
         { label: 'Invest the Difference', formula: 'max(0, Ownership Cost − Rent) invested monthly', description: 'Whichever side pays less each month invests the difference at your expected return. This applies symmetrically to both sides.' },
         { label: 'Rent Net Worth', formula: '(Down Payment + Closing Costs) × (1 + Return)ᵗ + Invested Savings', description: 'The renter keeps the cash to close invested — the opportunity cost of buying.', computedValue: `${formatCurrency(d.cashToClose as number)} cash to close` },
         { label: 'Buy Net Worth', formula: 'Home Value − Loan Balance − Selling Costs + Invested Savings', description: 'Equity net of selling costs (agent commissions + fees, typically 6–8% of the sale price).', computedValue: `${formatCurrency(d.sellingCostAtHorizon as number)} selling costs at horizon` },
-        { label: 'Break-Even Year', formula: 'Year where Buy Net Worth > Rent Net Worth', description: 'The year when buying becomes financially better than renting.', computedValue: d.breakEvenYear ? `Year ${d.breakEvenYear}` : 'Never within horizon' },
+        { label: 'Break-Even Year', formula: 'Year where Buy Net Worth > Rent Net Worth', description: 'The year when buying becomes financially better than renting on the base path.', computedValue: d.breakEvenYear ? `Year ${d.breakEvenYear}` : 'Never within horizon' },
+      ],
+    },
+    {
+      title: 'Scenario range (not a single path)',
+      steps: [
+        { label: 'Named paths', formula: 'Optimistic / base / pessimistic jointly shift appreciation, rent inflation, and investment return', description: 'Optimistic is buying-friendly (+2 / +1 / −1.5 pts). Pessimistic is renting-friendly (−2 / −1 / +1.5 pts). This replaces a best/base/worst that only moved appreciation.' },
+        { label: 'Monte Carlo draws', formula: 'Truncated normals around your inputs, 400 seeded samples', description: `Appreciation σ = ${d.mcApprVol} pts, rent inflation σ = ${d.mcRentVol} pts, investment return σ = ${d.mcInvestVol} pts.`, computedValue: `${fmt(d.mcSamples as number)} samples` },
+        { label: 'P10–P90 difference', formula: 'Percentiles of (Buy Net Worth − Rent Net Worth) at the horizon', description: 'Positive means buying is ahead. The band on the chart is this range year by year.', computedValue: `${formatCurrency(d.p10Difference as number)} to ${formatCurrency(d.p90Difference as number)}` },
+        { label: 'Share of paths where buying wins', formula: 'Count(difference > 0) ÷ samples', description: 'How often buying ends ahead when the three uncertain inputs are sampled together.', computedValue: `${fmtDec(d.pctBuyWins as number, 1)}% of paths` },
       ],
     },
   ],
@@ -173,6 +182,15 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
         { label: 'Later Adjustments', formula: 'Previous Rate + Periodic Cap (each adjustment)', description: 'Each subsequent adjustment adds the periodic cap until the lifetime cap is reached.' },
         { label: 'Worst-Case Rate', formula: 'Initial Rate + Lifetime Cap', description: 'The lifetime cap limits the total increase above the initial rate.', computedValue: `${fmtDec(d.worstCaseRate as number, 2)}%${d.worstCaseYear ? ` (reached by year ${d.worstCaseYear})` : ''}` },
         { label: 'Worst-Case Payment', formula: 'Remaining Balance re-amortized at the Worst-Case Rate', description: 'The highest payment along the cap-driven path, based on the balance remaining when the rate peaks.', computedValue: `${formatCurrency(d.worstCasePayment as number)}` },
+      ],
+    },
+    {
+      title: 'Rate-path scenarios & Monte Carlo',
+      steps: [
+        { label: 'Named index paths', formula: 'Falling = expected − 2%; expected = your index; rising = expected + 2%', description: 'Each path is a constant index after the fixed period, then run through the same cap machinery as the loan. Worst case is not a named index — it is every adjustment hitting its cap.', computedValue: `Falling ${(d.fallingIndex as number).toFixed(2)}% · rising ${(d.risingIndex as number).toFixed(2)}%` },
+        { label: 'Index process', formula: 'x ← x + κ(μ − x)Δt + σ√Δt · Z  (floored at 0)', description: 'Mean-reverting random walk around your expected index. Δt is the adjustment period in years. Z is a seeded standard normal.', computedValue: `σ = ${d.mcIndexVol}% / yr, κ = ${d.mcMeanReversion}, n = ${fmt(d.mcSamples as number)}` },
+        { label: 'P10–P90 total paid', formula: 'Percentiles of lifetime ARM payments across sampled index paths', description: 'The shaded payment band is the same percentiles of the monthly payment each year.', computedValue: `${formatCurrency(d.p10TotalPaid as number)} to ${formatCurrency(d.p90TotalPaid as number)}` },
+        { label: 'Share of paths ARM is cheaper', formula: 'Count(ARM total paid < fixed total paid) ÷ samples', description: 'How often the ARM costs less than the fixed loan when the index is sampled rather than assumed flat.', computedValue: `${fmtDec(d.pctArmCheaper as number, 1)}% of paths` },
       ],
     },
   ],

@@ -76,6 +76,44 @@ describe('calculateArmVsFixed', () => {
     expect(Number(result.details.worstCasePayment)).toBeGreaterThan(Number(result.details.armInitialPayment));
   });
 
+  it('exposes named rate paths and a Monte Carlo payment range', () => {
+    const result = calculateArmVsFixed(sofr56());
+    expect(Number(result.details.mcSamples)).toBe(400);
+    expect(Number(result.details.fallingIndex)).toBeCloseTo(3, 5);
+    expect(Number(result.details.risingIndex)).toBeCloseTo(7, 5);
+    expect(Number(result.details.fallingTotalPaid)).toBeLessThan(Number(result.details.armTotalPaid));
+    expect(Number(result.details.armTotalPaid)).toBeLessThan(Number(result.details.risingTotalPaid));
+    expect(Number(result.details.risingMaxPayment)).toBeLessThanOrEqual(Number(result.details.worstCasePayment));
+    expect(Number(result.details.p10TotalPaid)).toBeLessThanOrEqual(Number(result.details.p50TotalPaid));
+    expect(Number(result.details.p50TotalPaid)).toBeLessThanOrEqual(Number(result.details.p90TotalPaid));
+    expect(Number(result.details.p10MaxPayment)).toBeLessThanOrEqual(Number(result.details.p90MaxPayment));
+    expect(Number(result.details.pctArmCheaper)).toBeGreaterThanOrEqual(0);
+    expect(Number(result.details.pctArmCheaper)).toBeLessThanOrEqual(100);
+
+    const yearly = result.chartData as Array<{
+      p10Payment: number;
+      p50Payment: number;
+      p90Payment: number;
+      fallingPayment: number;
+      risingPayment: number;
+      worstPayment: number;
+    }>;
+    expect(yearly.length).toBe(30);
+    const mid = yearly[20];
+    expect(mid.p10Payment).toBeLessThanOrEqual(mid.p50Payment);
+    expect(mid.p50Payment).toBeLessThanOrEqual(mid.p90Payment);
+    expect(mid.fallingPayment).toBeLessThanOrEqual(mid.risingPayment);
+    expect(mid.risingPayment).toBeLessThanOrEqual(mid.worstPayment);
+  });
+
+  it('Monte Carlo percentiles are deterministic for the same inputs', () => {
+    const a = calculateArmVsFixed(sofr56());
+    const b = calculateArmVsFixed(sofr56());
+    expect(a.details.p10TotalPaid).toBe(b.details.p10TotalPaid);
+    expect(a.details.p90TotalPaid).toBe(b.details.p90TotalPaid);
+    expect(a.details.pctArmCheaper).toBe(b.details.pctArmCheaper);
+  });
+
   it('falling-rate expected path respects downward caps and the margin floor', () => {
     // Fully indexed = 0.5 + 2.75 = 3.25%. From 5.75%, first adj (month 61) is
     // capped at −2% → 3.75%; the next 6-month adj (month 67) reaches 3.25%.

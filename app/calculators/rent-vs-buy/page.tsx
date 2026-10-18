@@ -43,11 +43,15 @@ import {
   ResultsSection,
   EmptyResultsState,
 } from '@/components/mui/calculator/ResultsPanel';
+import Link from 'next/link';
 import {
   LazyTimelineChart as TimelineChart,
+  LazyRangeTimelineChart as RangeTimelineChart,
+  CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateRentVsBuy } from '@/lib/calculators';
 import { applyLocationToRentVsBuy, rescaleRentVsBuyOnPrice } from '@/lib/locations';
+import { RENT_VS_BUY_SCENARIO_ASSUMPTIONS } from '@/lib/calculators/rentVsBuy';
 import type { RentVsBuyInputs } from '@/lib/calculators/types';
 
 export default function RentVsBuyCalculator() {
@@ -103,14 +107,30 @@ export default function RentVsBuyCalculator() {
     }));
   }, [result]);
 
-  // Find crossover point
   const crossoverYear = result?.details.baseCrossover;
+
+  const rangeChartData = useMemo(() => {
+    if (!result?.chartData) return [];
+    return result.chartData as Array<{
+      year: number;
+      diffP10: number;
+      diffP50: number;
+      diffP90: number;
+      buyNetWorth: number;
+      rentNetWorth: number;
+    }>;
+  }, [result]);
+
+  const formatCrossover = (value: number | string | undefined) => {
+    if (value === undefined || value === 'Never' || value === 0 || value === '0') return 'Never';
+    return `Year ${value}`;
+  };
 
   return (
     <CalculatorLayout
       calculatorSlug="rent-vs-buy"
       title="Rent vs Buy Calculator"
-      description="Compare the long-term financial impact of renting vs buying. See net worth projections, break-even timelines, and scenario analysis."
+      description="Compare the long-term financial impact of renting vs buying. See net worth projections, a Monte Carlo scenario range (not a single path), and disclosed assumptions."
       relatedCalculators={[
         { slug: 'affordability', name: 'How Much House Can I Afford?' },
         { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
@@ -255,9 +275,9 @@ export default function RentVsBuyCalculator() {
             <Stack spacing={4}>
               {/* Hero Metric */}
               <HeroMetric
-                label={`After ${inputs.yearsToAnalyze} Years`}
+                label={`After ${inputs.yearsToAnalyze} Years (base path)`}
                 value={buyingWins ? 'Buying Wins' : 'Renting Wins'}
-                sublabel={`By ${formatCurrency(Math.abs(result.details.baseDifference as number))} in net worth`}
+                sublabel={`By ${formatCurrency(Math.abs(result.details.baseDifference as number))} in net worth · buying ahead in ${result.details.pctBuyWins}% of scenarios`}
               />
 
               {/* Key Metrics Grid */}
@@ -316,6 +336,64 @@ export default function RentVsBuyCalculator() {
                       and whichever side pays less each month invests the difference. If you don&apos;t invest the savings, the cheaper option loses its edge.
                     </Typography>
                   </Alert>
+                </Paper>
+              </ResultsSection>
+
+              <ResultsSection
+                title="Scenario range"
+                subtitle="Buy − rent net worth across sampled paths (positive means buying is ahead)"
+              >
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <RangeTimelineChart
+                    data={rangeChartData}
+                    xKey="year"
+                    xLabel="Years"
+                    bandLow="diffP10"
+                    bandHigh="diffP90"
+                    bandLabel="P10–P90 (buy − rent)"
+                    bandColor={CHART_COLORS.primary}
+                    referenceY={0}
+                    referenceLabel="Tie"
+                    includeZero={false}
+                    height={300}
+                    lines={[
+                      { dataKey: 'diffP50', name: 'Median (P50)', color: CHART_COLORS.primary, strokeWidth: 2.5 },
+                    ]}
+                  />
+
+                  <Divider sx={{ my: 3 }} />
+
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 6, sm: 3 }}>
+                      <MetricCard
+                        label="Buying wins in"
+                        value={`${result.details.pctBuyWins}%`}
+                        sublabel={`of ${result.details.mcSamples} scenarios`}
+                        color={(result.details.pctBuyWins as number) >= 50 ? 'success' : 'warning'}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 6, sm: 3 }}>
+                      <MetricCard
+                        label="P10 difference"
+                        value={`${formatCurrency(result.details.p10Difference as number)}`}
+                        sublabel="Buy − rent, 10th pct"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 6, sm: 3 }}>
+                      <MetricCard
+                        label="P50 difference"
+                        value={`${formatCurrency(result.details.p50Difference as number)}`}
+                        sublabel="Median scenario"
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 6, sm: 3 }}>
+                      <MetricCard
+                        label="P90 difference"
+                        value={`${formatCurrency(result.details.p90Difference as number)}`}
+                        sublabel="Buy − rent, 90th pct"
+                      />
+                    </Grid>
+                  </Grid>
                 </Paper>
               </ResultsSection>
 
@@ -383,61 +461,87 @@ export default function RentVsBuyCalculator() {
                 </Paper>
               </ResultsSection>
 
-              {/* Scenario Analysis */}
+              {/* Named joint paths */}
               <ResultsSection 
-                title="Scenario Analysis" 
-                subtitle="How different appreciation rates affect the outcome"
+                title="Named paths" 
+                subtitle="Appreciation, rent inflation, and investment return move together — not appreciation alone"
               >
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Stack spacing={2}>
-                    <Box sx={{ p: 3, bgcolor: '#D1FAE5', borderRadius: 2 }}>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Box>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#065F46' }}>
-                            Best Case ({inputs.homeAppreciation + 2}% appreciation)
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Break-even: Year {result.details.bestCrossover}
-                          </Typography>
-                        </Box>
-                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#065F46' }}>
-                          Buying Wins
-                        </Typography>
-                      </Stack>
-                    </Box>
-                    
-                    <Box sx={{ p: 3, bgcolor: '#EBF5FF', borderRadius: 2 }}>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Box>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#0F4F8F' }}>
-                            Base Case ({inputs.homeAppreciation}% appreciation)
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Break-even: Year {result.details.baseCrossover}
-                          </Typography>
-                        </Box>
-                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#0F4F8F' }}>
-                          {buyingWins ? 'Buying Wins' : 'Renting Wins'}
-                        </Typography>
-                      </Stack>
-                    </Box>
-                    
-                    <Box sx={{ p: 3, bgcolor: '#FEF3C7', borderRadius: 2 }}>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Box>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#92400E' }}>
-                            Worst Case ({Math.max(0, inputs.homeAppreciation - 3)}% appreciation)
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Break-even: Year {result.details.worstCrossover}
-                          </Typography>
-                        </Box>
-                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#92400E' }}>
-                          {result.details.worstCrossover === 'Never' ? 'Renting Wins' : 'Buying Wins'}
-                        </Typography>
-                      </Stack>
-                    </Box>
+                    {([
+                      {
+                        key: 'optimistic',
+                        title: 'Optimistic (buying-friendly)',
+                        bg: '#D1FAE5',
+                        color: '#065F46',
+                        appr: result.details.optimisticAppreciation,
+                        rent: result.details.optimisticRentInflation,
+                        invest: result.details.optimisticInvestmentReturn,
+                        crossover: result.details.optimisticCrossover,
+                        difference: result.details.optimisticDifference as number,
+                      },
+                      {
+                        key: 'base',
+                        title: 'Base (your inputs)',
+                        bg: '#EBF5FF',
+                        color: '#0F4F8F',
+                        appr: inputs.homeAppreciation,
+                        rent: inputs.rentInflation,
+                        invest: inputs.investmentReturn,
+                        crossover: result.details.baseCrossover,
+                        difference: result.details.baseDifference as number,
+                      },
+                      {
+                        key: 'pessimistic',
+                        title: 'Pessimistic (renting-friendly)',
+                        bg: '#FEF3C7',
+                        color: '#92400E',
+                        appr: result.details.pessimisticAppreciation,
+                        rent: result.details.pessimisticRentInflation,
+                        invest: result.details.pessimisticInvestmentReturn,
+                        crossover: result.details.pessimisticCrossover,
+                        difference: result.details.pessimisticDifference as number,
+                      },
+                    ] as const).map((row) => (
+                      <Box key={row.key} sx={{ p: 3, bgcolor: row.bg, borderRadius: 2 }}>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center" gap={2}>
+                          <Box>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600, color: row.color }}>
+                              {row.title}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {row.appr}% appreciation · {row.rent}% rent inflation · {row.invest}% return
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Break-even: {formatCrossover(row.crossover)}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ textAlign: 'right' }}>
+                            <Typography variant="h6" sx={{ fontWeight: 700, color: row.color }}>
+                              {row.difference > 0 ? 'Buying ahead' : row.difference < 0 ? 'Renting ahead' : 'Tie'}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: row.color }}>
+                              {formatCurrency(Math.abs(row.difference))}
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </Box>
+                    ))}
                   </Stack>
+
+                  <Alert severity="info" sx={{ borderRadius: 2, mt: 2 }}>
+                    <Typography variant="body2">
+                      <strong>Methodology:</strong> Monte Carlo draws {RENT_VS_BUY_SCENARIO_ASSUMPTIONS.samples} seeded scenarios
+                      from truncated normals around your inputs
+                      (appreciation σ = {RENT_VS_BUY_SCENARIO_ASSUMPTIONS.vol.appreciation} pts,
+                      rent inflation σ = {RENT_VS_BUY_SCENARIO_ASSUMPTIONS.vol.rentInflation} pts,
+                      investment return σ = {RENT_VS_BUY_SCENARIO_ASSUMPTIONS.vol.investmentReturn} pts).
+                      Named paths jointly shift all three variables; the old best/base/worst cards only moved appreciation.
+                      Break-even across draws: {formatCrossover(result.details.p10Crossover as number)}–{formatCrossover(result.details.p90Crossover as number)}
+                      (median {formatCrossover(result.details.p50Crossover as number)}).{' '}
+                      <Link href="/methodology" style={{ color: 'inherit', fontWeight: 700 }}>Full methodology</Link>
+                    </Typography>
+                  </Alert>
                 </Paper>
               </ResultsSection>
 
@@ -449,7 +553,7 @@ export default function RentVsBuyCalculator() {
                       <InsightCallout
                         key={index}
                         type={insight.includes('⚠️') ? 'warning' : insight.includes('no equity') ? 'warning' : 'info'}
-                        title={insight.includes('Base case') ? 'Base Case' : insight.includes('Crossover') ? 'Break-Even' : 'Insight'}
+                        title={insight.includes('Base path') || insight.includes('Base case') ? 'Base Path' : insight.includes('Crossover') ? 'Break-Even' : 'Insight'}
                       >
                         {insight.replace('⚠️ ', '')}
                       </InsightCallout>
@@ -479,9 +583,11 @@ export default function RentVsBuyCalculator() {
                     </Typography>
                     <Typography variant="body1" sx={{ color: buyingWins ? 'success.dark' : 'primary.dark' }}>
                       {buyingWins 
-                        ? `Over ${inputs.yearsToAnalyze} years, buying a ${formatCurrency(inputs.homePrice)} home builds ${formatCurrency(Math.abs(result.details.baseDifference as number))} more wealth than renting at ${formatCurrency(inputs.monthlyRent)}/month and investing the difference. You break even in year ${crossoverYear}.`
-                        : `Over ${inputs.yearsToAnalyze} years, renting at ${formatCurrency(inputs.monthlyRent)}/month and investing the difference builds ${formatCurrency(Math.abs(result.details.baseDifference as number))} more wealth than buying. Consider staying longer or finding a cheaper home.`
+                        ? `On the base path, over ${inputs.yearsToAnalyze} years buying a ${formatCurrency(inputs.homePrice)} home builds ${formatCurrency(Math.abs(result.details.baseDifference as number))} more wealth than renting at ${formatCurrency(inputs.monthlyRent)}/month and investing the difference (break-even ${formatCrossover(crossoverYear)}).`
+                        : `On the base path, over ${inputs.yearsToAnalyze} years renting at ${formatCurrency(inputs.monthlyRent)}/month and investing the difference builds ${formatCurrency(Math.abs(result.details.baseDifference as number))} more wealth than buying.`
                       }
+                      {' '}Buying ends ahead in <strong>{result.details.pctBuyWins}%</strong> of {result.details.mcSamples} sampled scenarios
+                      (P10–P90 difference {formatCurrency(result.details.p10Difference as number)} to {formatCurrency(result.details.p90Difference as number)}).
                     </Typography>
                   </Box>
                 </Stack>
