@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -181,7 +183,7 @@ export default function DownPaymentCalculator() {
               {/* Hero Metric */}
               <HeroMetric
                 label="PMI Savings with 20% Down"
-                value={`$${(result.details.pmiSavings as number).toLocaleString()}`}
+                value={`${formatCurrency((result.details.pmiSavings as number))}`}
                 sublabel="Total PMI cost avoided by putting 20% down instead of 3%"
               />
 
@@ -190,23 +192,23 @@ export default function DownPaymentCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="3% Down"
-                    value={`$${(result.details.option3Down as number).toLocaleString()}`}
-                    sublabel={`$${(result.details.option3Payment as number).toLocaleString()}/mo`}
+                    value={`${formatCurrency((result.details.option3Down as number))}`}
+                    sublabel={`${formatCurrency((result.details.option3Payment as number))}/mo`}
                     color="warning"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="20% Down"
-                    value={`$${(result.details.option20Down as number).toLocaleString()}`}
-                    sublabel={`$${(result.details.option20Payment as number).toLocaleString()}/mo`}
+                    value={`${formatCurrency((result.details.option20Down as number))}`}
+                    sublabel={`${formatCurrency((result.details.option20Payment as number))}/mo`}
                     color="success"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Monthly Diff"
-                    value={`$${((result.details.option3Payment as number) - (result.details.option20Payment as number)).toLocaleString()}`}
+                    value={`${formatCurrency(((result.details.option3Payment as number) - (result.details.option20Payment as number)))}`}
                     sublabel="3% vs 20%"
                     color="primary"
                   />
@@ -214,7 +216,7 @@ export default function DownPaymentCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="PMI Cost (3%)"
-                    value={`$${(result.details.option3PMI as number).toLocaleString()}`}
+                    value={`${formatCurrency((result.details.option3PMI as number))}`}
                     sublabel="Total PMI paid"
                     color="error"
                   />
@@ -274,19 +276,19 @@ export default function DownPaymentCalculator() {
                           <Grid size={{ xs: 4, sm: 3 }}>
                             <Typography variant="caption" color="text.secondary">Cash to Close</Typography>
                             <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                              ${option.cashToClose.toLocaleString()}
+                              {formatCurrency(option.cashToClose)}
                             </Typography>
                           </Grid>
                           <Grid size={{ xs: 4, sm: 3 }}>
                             <Typography variant="caption" color="text.secondary">Monthly Payment</Typography>
                             <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                              ${option.monthlyPayment.toLocaleString()}
+                              {formatCurrency(option.monthlyPayment)}
                             </Typography>
                           </Grid>
                           <Grid size={{ xs: 4, sm: 3 }}>
                             <Typography variant="caption" color="text.secondary">Total PMI Cost</Typography>
                             <Typography variant="body1" sx={{ fontWeight: 600, color: option.pmiCost > 0 ? '#DC2626' : '#22C55E' }}>
-                              {option.pmiCost > 0 ? `$${option.pmiCost.toLocaleString()}` : '$0'}
+                              {option.pmiCost > 0 ? `${formatCurrency(option.pmiCost)}` : '$0'}
                             </Typography>
                             {option.pmiCost > 0 && (
                               <Typography variant="caption" color="text.secondary">
@@ -403,10 +405,10 @@ export default function DownPaymentCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'primary.dark' }}>
-                      On a <strong>${inputs.homePrice.toLocaleString()}</strong> home, putting 20% down 
-                      (<strong>${(result.details.option20Down as number).toLocaleString()}</strong>) saves you 
-                      <strong> ${(result.details.pmiSavings as number).toLocaleString()}</strong> in PMI and 
-                      <strong> ${((result.details.option3Payment as number) - (result.details.option20Payment as number)).toLocaleString()}/month</strong> on your payment. 
+                      On a <strong>{formatCurrency(inputs.homePrice)}</strong> home, putting 20% down 
+                      (<strong>{formatCurrency((result.details.option20Down as number))}</strong>) saves you 
+                      <strong> {formatCurrency((result.details.pmiSavings as number))}</strong> in PMI and 
+                      <strong> {formatCurrency(((result.details.option3Payment as number) - (result.details.option20Payment as number)))}/month</strong> on your payment. 
                       However, if you need to preserve cash for emergencies or other investments, 
                       a lower down payment may make sense despite the PMI cost.
                     </Typography>

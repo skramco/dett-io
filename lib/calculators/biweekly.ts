@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { BiweeklyInputs, CalculatorResult } from './types';
 import { monthlyPayment as calcMonthlyPayment, simulateBiweeklyPayoff, toMonthlyRate } from './mortgageMath';
 
@@ -57,15 +58,15 @@ export function calculateBiweekly(inputs: BiweeklyInputs): CalculatorResult {
   const insights: string[] = [];
   
   insights.push(
-    `Monthly payments: $${Math.round(monthlyPayment).toLocaleString()}/month, $${Math.round(monthlyTotalInterest).toLocaleString()} interest over ${loanTerm} years`
+    `Monthly payments: ${formatCurrency(monthlyPayment)}/month, ${formatCurrency(monthlyTotalInterest)} interest over ${loanTerm} years`
   );
   
   insights.push(
-    `True biweekly: $${Math.round(biweeklyPayment).toLocaleString()} every 2 weeks (26 payments/year), saves $${Math.round(monthlyTotalInterest - biweeklyTotalInterest).toLocaleString()} and pays off ${biweeklyYearsSaved.toFixed(1)} years early`
+    `True biweekly: ${formatCurrency(biweeklyPayment)} every 2 weeks (26 payments/year), saves ${formatCurrency(monthlyTotalInterest - biweeklyTotalInterest)} and pays off ${biweeklyYearsSaved.toFixed(1)} years early`
   );
 
   insights.push(
-    `⚠️ "Fake" biweekly: Some services charge $${biweeklyFee}/year but only make 24 payments (same as monthly) - no benefit!`
+    `⚠️ "Fake" biweekly: Some services charge ${formatCurrency(biweeklyFee)}/year but only make 24 payments (same as monthly) - no benefit!`
   );
 
   insights.push(
@@ -73,7 +74,7 @@ export function calculateBiweekly(inputs: BiweeklyInputs): CalculatorResult {
   );
 
   insights.push(
-    `💡 DIY alternative: Add $${Math.round(extraMonthlyPayment).toLocaleString()}/month to your payment - same result as true biweekly, no fees`
+    `💡 DIY alternative: Add ${formatCurrency(extraMonthlyPayment)}/month to your payment - same result as true biweekly, no fees`
   );
 
   const trueBiweeklyAnnualCost = biweeklyPayment * 26;
@@ -81,10 +82,10 @@ export function calculateBiweekly(inputs: BiweeklyInputs): CalculatorResult {
   const extraAnnualCost = trueBiweeklyAnnualCost - monthlyAnnualCost;
   
   insights.push(
-    `The "magic" of biweekly: You make 13 monthly payments per year instead of 12 (extra $${Math.round(extraAnnualCost).toLocaleString()}/year)`
+    `The "magic" of biweekly: You make 13 monthly payments per year instead of 12 (extra ${formatCurrency(extraAnnualCost)}/year)`
   );
 
-  const summary = `True biweekly saves $${Math.round(monthlyTotalInterest - biweeklyTotalInterest).toLocaleString()} and pays off ${biweeklyYearsSaved.toFixed(1)} years early. DIY by adding $${Math.round(extraMonthlyPayment).toLocaleString()}/month.`;
+  const summary = `True biweekly saves ${formatCurrency(monthlyTotalInterest - biweeklyTotalInterest)} and pays off ${biweeklyYearsSaved.toFixed(1)} years early. DIY by adding ${formatCurrency(extraMonthlyPayment)}/month.`;
 
   return {
     summary,

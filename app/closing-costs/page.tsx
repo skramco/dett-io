@@ -17,6 +17,7 @@ import {
   LOCATION_REGIONS,
   locationLabel,
 } from '@/lib/locations/locationData';
+import { formatCurrency } from '@/lib/format';
 
 export const metadata: Metadata = {
   title: 'Closing Costs by State (2026) | Dett.io',
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
   },
 };
 
-const usd = (v: number) => `$${Math.round(v).toLocaleString()}`;
+const usd = formatCurrency;
 
 function StateCard({
   slug,

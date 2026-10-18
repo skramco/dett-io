@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { CalculatorResult } from './types';
 import { monthlyPayment as calcMonthlyPayment, toMonthlyRate } from './mortgageMath';
 
@@ -148,12 +149,12 @@ export function calculateAmortization(inputs: AmortizationInputs): CalculatorRes
   const insights: string[] = [];
   const interestToLoanRatio = (totalInterestPaid / loanAmount) * 100;
   insights.push(
-    `Over the life of your loan, you'll pay $${Math.round(totalInterestPaid).toLocaleString()} in interest — that's ${interestToLoanRatio.toFixed(0)}% of your original loan amount.`
+    `Over the life of your loan, you'll pay ${formatCurrency(totalInterestPaid)} in interest — that's ${interestToLoanRatio.toFixed(0)}% of your original loan amount.`
   );
 
   if (extraMonthlyPayment > 0) {
     insights.push(
-      `By paying an extra $${extraMonthlyPayment.toLocaleString()}/month, you'll pay off your mortgage ${yearsSaved.toFixed(1)} years early and save $${Math.round(interestSaved).toLocaleString()} in interest.`
+      `By paying an extra ${formatCurrency(extraMonthlyPayment)}/month, you'll pay off your mortgage ${yearsSaved.toFixed(1)} years early and save ${formatCurrency(interestSaved)} in interest.`
     );
   }
 
@@ -174,7 +175,7 @@ export function calculateAmortization(inputs: AmortizationInputs): CalculatorRes
   }
 
   return {
-    summary: `Monthly payment of $${Math.round(monthlyPayment).toLocaleString()} on a $${loanAmount.toLocaleString()} loan at ${interestRate}% for ${loanTerm} years.`,
+    summary: `Monthly payment of ${formatCurrency(monthlyPayment)} on a ${formatCurrency(loanAmount)} loan at ${interestRate}% for ${loanTerm} years.`,
     details: {
       monthlyPayment: Math.round(monthlyPayment * 100) / 100,
       totalInterest: Math.round(totalInterestPaid),

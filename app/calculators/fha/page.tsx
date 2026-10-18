@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -48,8 +50,6 @@ import {
 import { calculateFHA } from '@/lib/calculators';
 import type { FHAInputs } from '@/lib/calculators/fha';
 
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-
 export default function FHACalculator() {
   const [inputs, setInputs] = useState<FHAInputs>({
     homePrice: 350000,
@@ -92,7 +92,7 @@ export default function FHACalculator() {
     const colors = [CHART_COLORS.primary, '#F59E0B', CHART_COLORS.tertiary, CHART_COLORS.quaternary];
     return result.chartData.map((item, i) => ({
       name: item.name as string,
-      value: `$${fmt(item.value as number)}`,
+      value: `${formatCurrency(item.value as number)}`,
       color: colors[i % colors.length],
       percentage: total > 0 ? ((item.value as number) / total) * 100 : 0,
     }));
@@ -189,8 +189,8 @@ export default function FHACalculator() {
               {/* Hero Metric */}
               <HeroMetric
                 label="Total Monthly FHA Payment"
-                value={`$${fmt(result.details.totalMonthlyPayment as number)}`}
-                sublabel={`P&I: $${fmt(result.details.monthlyPI as number)} + MIP: $${fmt(result.details.monthlyMIP as number)} + Tax/Ins: $${fmt((result.details.monthlyPropertyTax as number) + (result.details.monthlyInsurance as number))}`}
+                value={`${formatCurrency(result.details.totalMonthlyPayment as number)}`}
+                sublabel={`P&I: ${formatCurrency(result.details.monthlyPI as number)} + MIP: ${formatCurrency(result.details.monthlyMIP as number)} + Tax/Ins: ${formatCurrency((result.details.monthlyPropertyTax as number) + (result.details.monthlyInsurance as number))}`}
               />
 
               {/* Key Metrics */}
@@ -198,7 +198,7 @@ export default function FHACalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Down Payment"
-                    value={`$${fmt(result.details.downPayment as number)}`}
+                    value={`${formatCurrency(result.details.downPayment as number)}`}
                     sublabel={`${inputs.downPaymentPercent}% down`}
                     color="primary"
                   />
@@ -206,7 +206,7 @@ export default function FHACalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Upfront MIP"
-                    value={`$${fmt(result.details.upfrontMIP as number)}`}
+                    value={`${formatCurrency(result.details.upfrontMIP as number)}`}
                     sublabel="1.75% (financed)"
                     color="warning"
                   />
@@ -214,7 +214,7 @@ export default function FHACalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Monthly MIP"
-                    value={`$${fmt(result.details.monthlyMIP as number)}`}
+                    value={`${formatCurrency(result.details.monthlyMIP as number)}`}
                     sublabel={`${result.details.annualMIPRate}%/yr for ${result.details.mipDurationYears} yrs`}
                     color="warning"
                   />
@@ -222,7 +222,7 @@ export default function FHACalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total MIP Cost"
-                    value={`$${fmt(result.details.totalMIPCost as number)}`}
+                    value={`${formatCurrency(result.details.totalMIPCost as number)}`}
                     sublabel="upfront + monthly"
                     color="error"
                   />
@@ -256,7 +256,7 @@ export default function FHACalculator() {
                       },
                       {
                         label: `Loan Amount vs ${result.details.loanLimitYear} FHA Limits`,
-                        detail: `$${fmt(result.details.baseLoanAmount as number)} (most counties: $${fmt(result.details.fhaLoanLimitFloor as number)}; high-cost up to $${fmt(result.details.fhaLoanLimitCeiling as number)})`,
+                        detail: `${formatCurrency(result.details.baseLoanAmount as number)} (most counties: ${formatCurrency(result.details.fhaLoanLimitFloor as number)}; high-cost up to ${formatCurrency(result.details.fhaLoanLimitCeiling as number)})`,
                         meets: (result.details.withinFhaFloor as number) === 1,
                       },
                     ].map((check, i) => (
@@ -288,7 +288,7 @@ export default function FHACalculator() {
                       <DonutChart
                         data={chartData}
                         centerLabel="monthly"
-                        centerValue={`$${fmt(result.details.totalMonthlyPayment as number)}`}
+                        centerValue={`${formatCurrency(result.details.totalMonthlyPayment as number)}`}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
@@ -305,7 +305,7 @@ export default function FHACalculator() {
                     <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
                       <Typography variant="body2">
                         <strong>Jumbo territory:</strong> this loan amount is above the {result.details.loanLimitYear} conforming limit
-                        (${fmt(result.details.conformingLoanLimit as number)} in most counties), so the conventional option shown would be
+                        ({formatCurrency(result.details.conformingLoanLimit as number)} in most counties), so the conventional option shown would be
                         a jumbo loan with stricter credit and down payment requirements.
                       </Typography>
                     </Alert>
@@ -317,14 +317,14 @@ export default function FHACalculator() {
                           FHA Loan
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, my: 1 }}>
-                          ${fmt(result.details.totalMonthlyPayment as number)}
+                          {formatCurrency(result.details.totalMonthlyPayment as number)}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">/month</Typography>
                         <Divider sx={{ my: 1.5 }} />
                         <Stack spacing={0.5}>
-                          <Typography variant="caption">P&I: ${fmt(result.details.monthlyPI as number)}</Typography>
-                          <Typography variant="caption">MIP: ${fmt(result.details.monthlyMIP as number)}</Typography>
-                          <Typography variant="caption">Down: ${fmt(result.details.downPayment as number)} ({inputs.downPaymentPercent}%)</Typography>
+                          <Typography variant="caption">P&I: {formatCurrency(result.details.monthlyPI as number)}</Typography>
+                          <Typography variant="caption">MIP: {formatCurrency(result.details.monthlyMIP as number)}</Typography>
+                          <Typography variant="caption">Down: {formatCurrency(result.details.downPayment as number)} ({inputs.downPaymentPercent}%)</Typography>
                         </Stack>
                       </Paper>
                     </Grid>
@@ -334,14 +334,14 @@ export default function FHACalculator() {
                           Conventional (5% Down)
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, my: 1 }}>
-                          ${fmt(result.details.convTotalMonthly as number)}
+                          {formatCurrency(result.details.convTotalMonthly as number)}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">/month</Typography>
                         <Divider sx={{ my: 1.5 }} />
                         <Stack spacing={0.5}>
-                          <Typography variant="caption">P&I: ${fmt(result.details.convMonthlyPI as number)}</Typography>
-                          <Typography variant="caption">PMI: ${fmt(result.details.convMonthlyPMI as number)}</Typography>
-                          <Typography variant="caption">Down: ${fmt(Math.round(inputs.homePrice * 0.05))} (5%)</Typography>
+                          <Typography variant="caption">P&I: {formatCurrency(result.details.convMonthlyPI as number)}</Typography>
+                          <Typography variant="caption">PMI: {formatCurrency(result.details.convMonthlyPMI as number)}</Typography>
+                          <Typography variant="caption">Down: {formatCurrency(Math.round(inputs.homePrice * 0.05))} (5%)</Typography>
                         </Stack>
                       </Paper>
                     </Grid>
@@ -349,14 +349,14 @@ export default function FHACalculator() {
                   {(result.details.convTotalMonthly as number) < (result.details.totalMonthlyPayment as number) ? (
                     <Alert severity="info" sx={{ mt: 2, borderRadius: 2 }}>
                       <Typography variant="body2">
-                        Conventional saves <strong>${fmt((result.details.totalMonthlyPayment as number) - (result.details.convTotalMonthly as number))}/month</strong>,
+                        Conventional saves <strong>{formatCurrency((result.details.totalMonthlyPayment as number) - (result.details.convTotalMonthly as number))}/month</strong>,
                         but requires a higher credit score (typically 680+) and PMI drops off at 80% LTV.
                       </Typography>
                     </Alert>
                   ) : (
                     <Alert severity="success" sx={{ mt: 2, borderRadius: 2 }}>
                       <Typography variant="body2">
-                        FHA is <strong>${fmt((result.details.convTotalMonthly as number) - (result.details.totalMonthlyPayment as number))}/month cheaper</strong> in this scenario,
+                        FHA is <strong>{formatCurrency((result.details.convTotalMonthly as number) - (result.details.totalMonthlyPayment as number))}/month cheaper</strong> in this scenario,
                         likely due to your credit score or down payment amount.
                       </Typography>
                     </Alert>
@@ -399,12 +399,12 @@ export default function FHACalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: '#78350F' }}>
-                      Your FHA loan on a <strong>${fmt(inputs.homePrice)}</strong> home with <strong>{inputs.downPaymentPercent}% down</strong> costs{' '}
-                      <strong>${fmt(result.details.totalMonthlyPayment as number)}/month</strong>.
-                      The upfront MIP of <strong>${fmt(result.details.upfrontMIP as number)}</strong> is financed into the loan,
-                      and monthly MIP of <strong>${fmt(result.details.monthlyMIP as number)}</strong> lasts{' '}
+                      Your FHA loan on a <strong>{formatCurrency(inputs.homePrice)}</strong> home with <strong>{inputs.downPaymentPercent}% down</strong> costs{' '}
+                      <strong>{formatCurrency(result.details.totalMonthlyPayment as number)}/month</strong>.
+                      The upfront MIP of <strong>{formatCurrency(result.details.upfrontMIP as number)}</strong> is financed into the loan,
+                      and monthly MIP of <strong>{formatCurrency(result.details.monthlyMIP as number)}</strong> lasts{' '}
                       <strong>{result.details.mipDurationYears} years</strong>.
-                      Total MIP cost over the life of the loan: <strong>${fmt(result.details.totalMIPCost as number)}</strong>.
+                      Total MIP cost over the life of the loan: <strong>{formatCurrency(result.details.totalMIPCost as number)}</strong>.
                     </Typography>
                   </Box>
                 </Stack>

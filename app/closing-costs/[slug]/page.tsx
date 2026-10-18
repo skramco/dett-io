@@ -6,6 +6,7 @@ import {
   getRelatedLocations,
   locationLabel,
 } from '@/lib/locations/locationData';
+import { formatCurrency } from '@/lib/format';
 import { buildLocationPageData } from '@/lib/locations/locationMath';
 import { LocationPageContent } from '@/components/mui/LocationPageContent';
 
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const data = buildLocationPageData(location);
   const label = data.label;
   const title = `Closing Costs in ${label} (${data.year}): What Buyers Pay | Dett.io`;
-  const description = `Closing costs in ${label} run 2-5% of the purchase price — about $${data.closingCostsLow.toLocaleString()} to $${data.closingCostsHigh.toLocaleString()} on a median-priced $${data.medianHomePrice.toLocaleString()} home. See the itemized breakdown, ${location.propertyTaxRate}% property tax, and the 2026 conforming loan limit of $${location.conformingLoanLimit.toLocaleString()}.`;
+  const description = `Closing costs in ${label} run 2-5% of the purchase price — about ${formatCurrency(data.closingCostsLow)} to ${formatCurrency(data.closingCostsHigh)} on a median-priced ${formatCurrency(data.medianHomePrice)} home. See the itemized breakdown, ${location.propertyTaxRate}% property tax, and the 2026 conforming loan limit of ${formatCurrency(location.conformingLoanLimit)}.`;
 
   return {
     title,

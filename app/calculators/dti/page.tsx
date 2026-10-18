@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
@@ -44,8 +46,6 @@ import {
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateDTI } from '@/lib/calculators';
 import type { DTIInputs } from '@/lib/calculators/dti';
-
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
 const DTI_COLORS = {
   excellent: '#22C55E',
@@ -119,7 +119,7 @@ export default function DTICalculator() {
     ];
     return result.chartData.map((item, index) => ({
       name: item.name as string,
-      value: `$${fmt(item.value as number)}`,
+      value: `${formatCurrency(item.value as number)}`,
       color: colors[index % colors.length],
       percentage: total > 0 ? ((item.value as number) / total) * 100 : 0,
     }));
@@ -292,18 +292,18 @@ export default function DTICalculator() {
               {/* Key Metrics */}
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6, sm: 3 }}>
-                  <MetricCard label="Housing Costs" value={`$${fmt(result.details.housingCosts as number)}`} sublabel="/month" color="primary" />
+                  <MetricCard label="Housing Costs" value={`${formatCurrency(result.details.housingCosts as number)}`} sublabel="/month" color="primary" />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
-                  <MetricCard label="Other Debts" value={`$${fmt(result.details.nonHousingDebts as number)}`} sublabel="/month" color="warning" />
+                  <MetricCard label="Other Debts" value={`${formatCurrency(result.details.nonHousingDebts as number)}`} sublabel="/month" color="warning" />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
-                  <MetricCard label="Total Debts" value={`$${fmt(result.details.totalMonthlyDebts as number)}`} sublabel="/month" color="error" />
+                  <MetricCard label="Total Debts" value={`${formatCurrency(result.details.totalMonthlyDebts as number)}`} sublabel="/month" color="error" />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Remaining"
-                    value={`$${fmt(result.details.remainingIncome as number)}`}
+                    value={`${formatCurrency(result.details.remainingIncome as number)}`}
                     sublabel={`${result.details.remainingPercent}% of income`}
                     color={(result.details.remainingPercent as number) > 30 ? 'success' : 'warning'}
                   />
@@ -318,7 +318,7 @@ export default function DTICalculator() {
                       <DonutChart
                         data={chartData}
                         centerLabel="total debts"
-                        centerValue={`$${fmt(result.details.totalMonthlyDebts as number)}`}
+                        centerValue={`${formatCurrency(result.details.totalMonthlyDebts as number)}`}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
@@ -403,7 +403,7 @@ export default function DTICalculator() {
                     </Typography>
                     <Typography variant="body1" sx={{ color: (result.details.backEndDTI as number) <= 50 ? 'success.dark' : 'error.dark' }}>
                       Your front-end DTI is <strong>{result.details.frontEndDTI}%</strong> and back-end DTI is <strong>{result.details.backEndDTI}%</strong>.
-                      {' '}After all debts, you have <strong>${fmt(result.details.remainingIncome as number)}</strong> remaining each month
+                      {' '}After all debts, you have <strong>{formatCurrency(result.details.remainingIncome as number)}</strong> remaining each month
                       ({result.details.remainingPercent}% of gross income).
                       {(result.details.backEndDTI as number) <= 50
                         ? ' Your DTI is within the range typical loan program guidelines allow, though final approval depends on automated underwriting and your full financial profile.'

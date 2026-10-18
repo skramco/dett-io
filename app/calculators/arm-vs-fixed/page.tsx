@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -225,8 +227,8 @@ export default function ArmVsFixedCalculator() {
               {/* Hero Metric */}
               <HeroMetric
                 label="Initial Monthly Savings with ARM"
-                value={`$${initialSavings.toLocaleString()}/mo`}
-                sublabel={`Save $${(result.details.savingsInFixedPeriod as number).toLocaleString()} in first ${inputs.armFixedPeriod} years`}
+                value={`${formatCurrency(initialSavings)}/mo`}
+                sublabel={`Save ${formatCurrency((result.details.savingsInFixedPeriod as number))} in first ${inputs.armFixedPeriod} years`}
               />
 
               {/* Key Metrics Grid */}
@@ -234,7 +236,7 @@ export default function ArmVsFixedCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Fixed Payment"
-                    value={`$${(result.details.fixedPayment as number).toLocaleString()}`}
+                    value={`${formatCurrency((result.details.fixedPayment as number))}`}
                     sublabel={`${inputs.fixedRate}% for ${inputs.loanTerm} years`}
                     color="primary"
                   />
@@ -242,7 +244,7 @@ export default function ArmVsFixedCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="ARM Initial"
-                    value={`$${(result.details.armInitialPayment as number).toLocaleString()}`}
+                    value={`${formatCurrency((result.details.armInitialPayment as number))}`}
                     sublabel={`${inputs.armInitialRate}% for ${inputs.armFixedPeriod} years`}
                     color="success"
                   />
@@ -250,7 +252,7 @@ export default function ArmVsFixedCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="ARM Worst Case"
-                    value={`$${(result.details.worstCasePayment as number).toLocaleString()}`}
+                    value={`${formatCurrency((result.details.worstCasePayment as number))}`}
                     sublabel={`At ${result.details.worstCaseRate}% (from ${capStructure} caps)`}
                     color="error"
                   />
@@ -259,7 +261,7 @@ export default function ArmVsFixedCalculator() {
                   <MetricCard
                     label="Expected Winner"
                     value={armWins ? 'ARM' : 'Fixed'}
-                    sublabel={`Saves $${Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)).toLocaleString()}`}
+                    sublabel={`Saves ${formatCurrency(Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)))}`}
                     color={armWins ? 'success' : 'primary'}
                   />
                 </Grid>
@@ -279,7 +281,7 @@ export default function ArmVsFixedCalculator() {
                           FIXED RATE
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F4F8F', my: 1 }}>
-                          ${(result.details.fixedPayment as number).toLocaleString()}
+                          {formatCurrency((result.details.fixedPayment as number))}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {inputs.fixedRate}% for entire {inputs.loanTerm} years
@@ -299,7 +301,7 @@ export default function ArmVsFixedCalculator() {
                           {productName} (INITIAL)
                         </Typography>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#065F46', my: 1 }}>
-                          ${(result.details.armInitialPayment as number).toLocaleString()}
+                          {formatCurrency((result.details.armInitialPayment as number))}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {inputs.armInitialRate}% for first {inputs.armFixedPeriod} years
@@ -318,10 +320,10 @@ export default function ArmVsFixedCalculator() {
 
                   <Box sx={{ p: 3, bgcolor: '#F0FDF4', borderRadius: 2, textAlign: 'center' }}>
                     <Typography variant="h5" sx={{ fontWeight: 700, color: '#065F46' }}>
-                      ARM saves ${initialSavings.toLocaleString()}/month initially
+                      ARM saves {formatCurrency(initialSavings)}/month initially
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      That's ${(result.details.savingsInFixedPeriod as number).toLocaleString()} over the {inputs.armFixedPeriod}-year fixed period
+                      That's {formatCurrency((result.details.savingsInFixedPeriod as number))} over the {inputs.armFixedPeriod}-year fixed period
                     </Typography>
                   </Box>
                 </Paper>
@@ -381,9 +383,9 @@ export default function ArmVsFixedCalculator() {
                   <Alert severity="warning" icon={<Warning />} sx={{ borderRadius: 2 }}>
                     <Typography variant="body2">
                       <strong>Worst case scenario:</strong> If rates spike, your {productName} payment could reach 
-                      <strong> ${(result.details.worstCasePayment as number).toLocaleString()}/month</strong> at a 
+                      <strong> {formatCurrency((result.details.worstCasePayment as number))}/month</strong> at a 
                       <strong> {result.details.worstCaseRate}%</strong> rate (reached by year {result.details.worstCaseYear as number}). That's 
-                      <strong> ${((result.details.worstCasePayment as number) - (result.details.fixedPayment as number)).toLocaleString()}/month more</strong> than the fixed option. 
+                      <strong> {formatCurrency(((result.details.worstCasePayment as number) - (result.details.fixedPayment as number)))}/month more</strong> than the fixed option. 
                       This rate is derived from your {capStructure} caps, not an arbitrary assumption.
                     </Typography>
                   </Alert>
@@ -426,7 +428,7 @@ export default function ArmVsFixedCalculator() {
 
                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
                     At the peak rate, the payment is re-amortized on the balance remaining at that point — 
-                    ${(result.details.worstCasePayment as number).toLocaleString()}/month. Assumes a {capStructure} cap structure 
+                    {formatCurrency((result.details.worstCasePayment as number))}/month. Assumes a {capStructure} cap structure 
                     (initial / periodic / lifetime) and that the rate never falls below the margin ({inputs.armMargin}%).
                   </Typography>
                 </Paper>
@@ -506,11 +508,11 @@ export default function ArmVsFixedCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: armWins ? 'success.dark' : 'primary.dark' }}>
-                      The {productName} saves <strong>${initialSavings.toLocaleString()}/month</strong> initially 
-                      (<strong>${(result.details.savingsInFixedPeriod as number).toLocaleString()}</strong> over {inputs.armFixedPeriod} years). 
+                      The {productName} saves <strong>{formatCurrency(initialSavings)}/month</strong> initially 
+                      (<strong>{formatCurrency((result.details.savingsInFixedPeriod as number))}</strong> over {inputs.armFixedPeriod} years). 
                       {armWins 
-                        ? ` Based on expected rates, the ARM saves $${Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)).toLocaleString()} total. Good choice if you'll move or refinance within ${inputs.armFixedPeriod} years.`
-                        : ` However, if rates rise as expected, the fixed rate saves $${Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)).toLocaleString()} over the life of the loan.`
+                        ? ` Based on expected rates, the ARM saves ${formatCurrency(Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)))} total. Good choice if you'll move or refinance within ${inputs.armFixedPeriod} years.`
+                        : ` However, if rates rise as expected, the fixed rate saves ${formatCurrency(Math.abs((result.details.fixedTotalPaid as number) - (result.details.armTotalPaid as number)))} over the life of the loan.`
                       }
                     </Typography>
                   </Box>

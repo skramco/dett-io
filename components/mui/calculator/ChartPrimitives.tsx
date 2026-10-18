@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, Typography, Stack, LinearProgress } from '@mui/material';
+import { formatCurrency } from '@/lib/format';
 import { RESULT_TOKENS } from '@/lib/theme/resultTokens';
 
 // Brand accent plus restrained supporting hues — color is for series identity, not decoration.
@@ -83,7 +84,7 @@ export function HorizontalBar({
   value,
   maxValue,
   color = CHART_COLORS.primary,
-  formatValue = (v) => `$${v.toLocaleString()}`,
+  formatValue = (v) => formatCurrency(v),
 }: HorizontalBarProps) {
   const percentage = maxValue > 0 ? (value / maxValue) * 100 : 0;
 

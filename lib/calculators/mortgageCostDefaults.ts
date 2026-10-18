@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import { DEFAULT_RATES } from '../rates/defaultRates';
 import { calculateMortgageCost } from './mortgageCost';
 import { DEFAULT_PMI_CREDIT_SCORE } from './mortgageMath';
@@ -25,10 +26,8 @@ export const MORTGAGE_COST_DEFAULT_INPUTS: MortgageCostInputs = {
   zip: '',
 };
 
-/** Whole dollars with thousands separators — same formatting the calculator uses. */
-export function formatWholeDollars(value: number): string {
-  return `$${value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-}
+/** Whole dollars with thousands separators — shared site-wide formatter. */
+export const formatWholeDollars = formatCurrency;
 
 export interface MortgageCostHeroLine {
   label: string;

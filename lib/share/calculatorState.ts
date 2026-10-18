@@ -5,6 +5,8 @@
  * so older or manually-built links still restore.
  */
 
+import { formatCurrency, formatNumber } from '@/lib/format';
+
 export type CalculatorInputValue = string | number | boolean;
 export type CalculatorInputs = Record<string, unknown>;
 
@@ -97,9 +99,9 @@ export function formatInputValue(key: string, value: CalculatorInputValue): stri
         'hoa',
       ])
     ) {
-      return `$${value.toLocaleString()}`;
+      return formatCurrency(value);
     }
-    return value.toLocaleString();
+    return formatNumber(value);
   }
 
   return value;

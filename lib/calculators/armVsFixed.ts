@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { ArmVsFixedInputs, CalculatorResult } from './types';
 import { armAdjustedRate, monthlyPayment, toMonthlyRate } from './mortgageMath';
 
@@ -195,25 +196,25 @@ export function calculateArmVsFixed(inputs: ArmVsFixedInputs): CalculatorResult 
   const insights: string[] = [];
 
   insights.push(
-    `Fixed rate: $${Math.round(fixedPayment).toLocaleString()}/month for ${loanTerm} years - predictable and stable`
+    `Fixed rate: ${formatCurrency(fixedPayment)}/month for ${loanTerm} years - predictable and stable`
   );
 
   insights.push(
-    `${productName}: Starts at $${Math.round(expected.initialPayment).toLocaleString()}/month, saves $${Math.round(savingsOverFixedPeriod).toLocaleString()} in first ${armFixedPeriod} years, then adjusts every ${armAdjustmentFrequency} months`
+    `${productName}: Starts at ${formatCurrency(expected.initialPayment)}/month, saves ${formatCurrency(savingsOverFixedPeriod)} in first ${armFixedPeriod} years, then adjusts every ${armAdjustmentFrequency} months`
   );
 
   if (expected.totalPaid < fixedTotalPaid) {
     insights.push(
-      `Expected case: ARM saves $${Math.round(fixedTotalPaid - expected.totalPaid).toLocaleString()} total (assumes ${expectedIndexRate}% index + ${armMargin}% margin = ${fullyIndexedRate.toFixed(2)}% fully indexed rate)`
+      `Expected case: ARM saves ${formatCurrency(fixedTotalPaid - expected.totalPaid)} total (assumes ${expectedIndexRate}% index + ${armMargin}% margin = ${fullyIndexedRate.toFixed(2)}% fully indexed rate)`
     );
   } else {
     insights.push(
-      `Expected case: Fixed saves $${Math.round(expected.totalPaid - fixedTotalPaid).toLocaleString()} total (assumes ${expectedIndexRate}% index + ${armMargin}% margin = ${fullyIndexedRate.toFixed(2)}% fully indexed rate)`
+      `Expected case: Fixed saves ${formatCurrency(expected.totalPaid - fixedTotalPaid)} total (assumes ${expectedIndexRate}% index + ${armMargin}% margin = ${fullyIndexedRate.toFixed(2)}% fully indexed rate)`
     );
   }
 
   insights.push(
-    `⚠️ Worst case from your ${capStructure} caps: rate reaches ${worstCaseRate.toFixed(2)}% by year ${worstCaseYear}, pushing the payment to $${Math.round(worstCasePayment).toLocaleString()}/month`
+    `⚠️ Worst case from your ${capStructure} caps: rate reaches ${worstCaseRate.toFixed(2)}% by year ${worstCaseYear}, pushing the payment to ${formatCurrency(worstCasePayment)}/month`
   );
 
   if (armFixedPeriod >= 7) {

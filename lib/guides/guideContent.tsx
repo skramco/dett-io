@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { Box, Alert, Typography } from '@mui/material';
 
 function SalaryTable({ salary, monthly, maxHome28, maxHome36, downPayment5, downPayment10, downPayment20 }: {
@@ -14,7 +16,7 @@ function SalaryTable({ salary, monthly, maxHome28, maxHome36, downPayment5, down
       <tbody>
         <tr><td>Gross Annual Income</td><td>{salary}</td></tr>
         <tr><td>Gross Monthly Income</td><td>{monthly}</td></tr>
-        <tr><td>Max Housing Payment (28% DTI)</td><td>${(parseFloat(monthly.replace(/[$,]/g, '')) * 0.28).toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo</td></tr>
+        <tr><td>Max Housing Payment (28% DTI)</td><td>{formatCurrency((parseFloat(monthly.replace(/[$,]/g, '')) * 0.28))}/mo</td></tr>
         <tr><td>Max Home Price (28% front-end DTI)</td><td>{maxHome28}</td></tr>
         <tr><td>Max Home Price (36% back-end DTI)</td><td>{maxHome36}</td></tr>
         <tr><td>Down Payment at 5%</td><td>{downPayment5}</td></tr>

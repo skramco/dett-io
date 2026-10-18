@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { ExtraPaymentInputs, CalculatorResult } from './types';
 import { monthlyPayment, toMonthlyRate } from './mortgageMath';
 
@@ -132,7 +133,7 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
 
   if (interestSaved > 0) {
     insights.push(
-      `Making extra payments saves you $${interestSaved.toFixed(0)} in interest and pays off your loan ${yearsSaved.toFixed(1)} years earlier.`
+      `Making extra payments saves you ${formatCurrency(interestSaved)} in interest and pays off your loan ${yearsSaved.toFixed(1)} years earlier.`
     );
     insights.push(
       `Every extra dollar you put toward principal earns a guaranteed return equal to your mortgage rate: ${interestRate}%.`
@@ -142,11 +143,11 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
   if (extraMonthlyPayment > 0 || extraAnnualPayment > 0) {
     if (netWorthDifference > 0) {
       insights.push(
-        `Fair comparison at year ${loanTerm}: investing the extra at ${investmentReturn}% grows to $${investPortfolio.toFixed(0)}, while prepaying (then investing the freed-up payment of $${(regularMonthlyPayment + extraMonthlyPayment).toFixed(0)}/month after payoff) reaches $${prepayPortfolio.toFixed(0)} - investing comes out $${netWorthDifference.toFixed(0)} ahead, but that edge depends on actually earning ${investmentReturn}% every year.`
+        `Fair comparison at year ${loanTerm}: investing the extra at ${investmentReturn}% grows to ${formatCurrency(investPortfolio)}, while prepaying (then investing the freed-up payment of ${formatCurrency((regularMonthlyPayment + extraMonthlyPayment))}/month after payoff) reaches ${formatCurrency(prepayPortfolio)} - investing comes out ${formatCurrency(netWorthDifference)} ahead, but that edge depends on actually earning ${investmentReturn}% every year.`
       );
     } else {
       insights.push(
-        `Fair comparison at year ${loanTerm}: prepaying (then investing the freed-up payment of $${(regularMonthlyPayment + extraMonthlyPayment).toFixed(0)}/month after payoff) reaches $${prepayPortfolio.toFixed(0)}, versus $${investPortfolio.toFixed(0)} from investing the extra at ${investmentReturn}% - prepaying comes out $${Math.abs(netWorthDifference).toFixed(0)} ahead.`
+        `Fair comparison at year ${loanTerm}: prepaying (then investing the freed-up payment of ${formatCurrency((regularMonthlyPayment + extraMonthlyPayment))}/month after payoff) reaches ${formatCurrency(prepayPortfolio)}, versus ${formatCurrency(investPortfolio)} from investing the extra at ${investmentReturn}% - prepaying comes out ${formatCurrency(Math.abs(netWorthDifference))} ahead.`
       );
     }
   }
@@ -193,7 +194,7 @@ export function calculateExtraPayment(inputs: ExtraPaymentInputs): CalculatorRes
   }
 
   return {
-    summary: `Extra payments of $${(extraMonthlyPayment + extraAnnualPayment / 12).toFixed(2)}/month save you $${interestSaved.toFixed(0)} in interest and ${yearsSaved.toFixed(1)} years of payments.`,
+    summary: `Extra payments of ${formatCurrency((extraMonthlyPayment + extraAnnualPayment / 12))}/month save you ${formatCurrency(interestSaved)} in interest and ${yearsSaved.toFixed(1)} years of payments.`,
     details: {
       regularMonthlyPayment: parseFloat(regularMonthlyPayment.toFixed(2)),
       extraMonthlyPayment: parseFloat(extraMonthlyPayment.toFixed(2)),

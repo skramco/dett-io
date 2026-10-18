@@ -1,3 +1,4 @@
+import { formatCurrency } from '@/lib/format';
 import type { ScenarioProfile } from './types';
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
@@ -267,10 +268,10 @@ export function formatScenarioChip(field: keyof ScenarioProfile, value: number):
     case 'homePrice':
     case 'downPayment':
     case 'homeInsuranceAnnual':
-      return `$${Math.round(value).toLocaleString()}`;
+      return formatCurrency(value);
     case 'monthlyDebts':
     case 'hoaFees':
-      return `$${Math.round(value).toLocaleString()}/mo`;
+      return `${formatCurrency(value)}/mo`;
     case 'interestRate':
     case 'propertyTaxRate':
       return `${round2(value)}%`;

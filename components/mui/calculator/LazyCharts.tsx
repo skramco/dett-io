@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { createContext, useContext } from 'react';
 import dynamic from 'next/dynamic';
 import { Box, LinearProgress, Typography } from '@mui/material';
@@ -63,9 +65,7 @@ function ChartSkeleton({ height: defaultHeight = 280 }: { height?: number }) {
   );
 }
 
-function fmtUSD(value: number): string {
-  return `$${Math.round(value).toLocaleString('en-US')}`;
-}
+const fmtUSD = formatCurrency;
 
 function summarizeDonut({ data, centerLabel, centerValue }: DonutChartProps): string | null {
   if (!data || data.length === 0) return null;

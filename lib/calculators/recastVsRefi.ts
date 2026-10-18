@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { RecastVsRefinanceInputs, CalculatorResult } from './types';
 import { monthlyInterest, monthlyPayment, toMonthlyRate } from './mortgageMath';
 
@@ -146,7 +147,6 @@ export function calculateRecastVsRefi(inputs: RecastVsRefinanceInputs): Calculat
     prepay: 0,
   };
 
-  const fmt = (n: number) => Math.round(n).toLocaleString();
   const insights: string[] = [];
 
   insights.push(
@@ -154,35 +154,35 @@ export function calculateRecastVsRefi(inputs: RecastVsRefinanceInputs): Calculat
   );
 
   insights.push(
-    `Recast: pay a $${recastFee.toLocaleString()} fee to lower your payment to $${fmt(recast.payment)}/month, freeing $${fmt(monthlySavings.recast)}/month. Invested, that cash flow grows to $${fmt(recast.cashFlowValue)} by year ${horizonYears}.`
+    `Recast: pay a ${formatCurrency(recastFee)} fee to lower your payment to ${formatCurrency(recast.payment)}/month, freeing ${formatCurrency(monthlySavings.recast)}/month. Invested, that cash flow grows to ${formatCurrency(recast.cashFlowValue)} by year ${horizonYears}.`
   );
 
   if (refi.remainingBalance > 0) {
     insights.push(
-      `Refinance: $${closingCosts.toLocaleString()} in closing costs for a $${fmt(refi.payment)}/month payment at ${newRate}%. Because the new ${newTerm}-year term extends past the ${horizonYears}-year horizon, you'd still owe $${fmt(refi.remainingBalance)} at year ${horizonYears} — that balance is counted in its net cost.`
+      `Refinance: ${formatCurrency(closingCosts)} in closing costs for a ${formatCurrency(refi.payment)}/month payment at ${newRate}%. Because the new ${newTerm}-year term extends past the ${horizonYears}-year horizon, you'd still owe ${formatCurrency(refi.remainingBalance)} at year ${horizonYears} — that balance is counted in its net cost.`
     );
   } else {
     insights.push(
-      `Refinance: $${closingCosts.toLocaleString()} in closing costs for a $${fmt(refi.payment)}/month payment at ${newRate}%, fully paid off within the ${horizonYears}-year horizon.`
+      `Refinance: ${formatCurrency(closingCosts)} in closing costs for a ${formatCurrency(refi.payment)}/month payment at ${newRate}%, fully paid off within the ${horizonYears}-year horizon.`
     );
   }
 
   const prepayYearsSaved = prepay.payoffMonths !== null ? (horizonMonths - prepay.payoffMonths) / 12 : 0;
   insights.push(
-    `Prepay only: keep paying $${fmt(currentPayment)}/month and pay the loan off about ${Math.round(prepayYearsSaved)} years early, then invest the full payment afterward.`
+    `Prepay only: keep paying ${formatCurrency(currentPayment)}/month and pay the loan off about ${Math.round(prepayYearsSaved)} years early, then invest the full payment afterward.`
   );
 
   insights.push(
-    `Best overall: ${best.name}, with the lowest ${horizonYears}-year net cost of $${fmt(best.outcome.netCost)} — $${fmt(runnerUp.outcome.netCost - best.outcome.netCost)} less than ${runnerUp.name} ($${fmt(runnerUp.outcome.netCost)}).`
+    `Best overall: ${best.name}, with the lowest ${horizonYears}-year net cost of ${formatCurrency(best.outcome.netCost)} — ${formatCurrency(runnerUp.outcome.netCost - best.outcome.netCost)} less than ${runnerUp.name} (${formatCurrency(runnerUp.outcome.netCost)}).`
   );
 
   if (best.name === 'Refinance') {
     insights.push(
-      `💡 Refinance has the lowest net cost because dropping the rate from ${currentRate}% to ${newRate}% outweighs the $${closingCosts.toLocaleString()} closing costs and the remaining balance at year ${horizonYears}.`
+      `💡 Refinance has the lowest net cost because dropping the rate from ${currentRate}% to ${newRate}% outweighs the ${formatCurrency(closingCosts)} closing costs and the remaining balance at year ${horizonYears}.`
     );
   } else if (best.name === 'Recast') {
     insights.push(
-      `💡 Recast has the lowest net cost: for a $${recastFee.toLocaleString()} fee you keep your rate, and investing the freed-up $${fmt(monthlySavings.recast)}/month at ${savingsRate}% beats the alternatives over ${horizonYears} years.`
+      `💡 Recast has the lowest net cost: for a ${formatCurrency(recastFee)} fee you keep your rate, and investing the freed-up ${formatCurrency(monthlySavings.recast)}/month at ${savingsRate}% beats the alternatives over ${horizonYears} years.`
     );
   } else {
     insights.push(
@@ -190,7 +190,7 @@ export function calculateRecastVsRefi(inputs: RecastVsRefinanceInputs): Calculat
     );
   }
 
-  const summary = `${best.name} has the lowest net cost over the next ${horizonYears} years: $${fmt(best.outcome.netCost)} vs $${fmt(runnerUp.outcome.netCost)} for ${runnerUp.name}. All options are compared over the same horizon, counting fees, remaining balance, and investment earnings on freed-up cash flow at ${savingsRate}%.`;
+  const summary = `${best.name} has the lowest net cost over the next ${horizonYears} years: ${formatCurrency(best.outcome.netCost)} vs ${formatCurrency(runnerUp.outcome.netCost)} for ${runnerUp.name}. All options are compared over the same horizon, counting fees, remaining balance, and investment earnings on freed-up cash flow at ${savingsRate}%.`;
 
   return {
     summary,

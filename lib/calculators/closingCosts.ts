@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { CalculatorResult } from './types';
 
 export interface StateClosingCustoms {
@@ -253,22 +254,22 @@ export function calculateClosingCosts(inputs: ClosingCostInputs): CalculatorResu
   const insights: string[] = [];
 
   insights.push(
-    `Your estimated closing costs are $${totalClosingCosts.toLocaleString()} (${closingCostPercent.toFixed(1)}% of the home price). The national average is 2-5%.`
+    `Your estimated closing costs are ${formatCurrency(totalClosingCosts)} (${closingCostPercent.toFixed(1)}% of the home price). The national average is 2-5%.`
   );
 
   if (sellerCredit > 0) {
     insights.push(
-      `With a ${sellerCreditPercent}% seller credit ($${sellerCredit.toLocaleString()}), your net closing costs drop to $${netClosingCosts.toLocaleString()}.`
+      `With a ${sellerCreditPercent}% seller credit (${formatCurrency(sellerCredit)}), your net closing costs drop to ${formatCurrency(netClosingCosts)}.`
     );
   }
 
   insights.push(
-    `You'll need $${totalCashNeeded.toLocaleString()} total cash at closing: $${downPayment.toLocaleString()} down payment + $${netClosingCosts.toLocaleString()} closing costs.`
+    `You'll need ${formatCurrency(totalCashNeeded)} total cash at closing: ${formatCurrency(downPayment)} down payment + ${formatCurrency(netClosingCosts)} closing costs.`
   );
 
   if (stateCustoms.attorneyCustomary) {
     insights.push(
-      `${stateCustoms.name} is an attorney-closing state, so we included an estimated $${calcAttorneyFee.toLocaleString()} attorney fee. Rates vary — get quotes from local real estate attorneys.`
+      `${stateCustoms.name} is an attorney-closing state, so we included an estimated ${formatCurrency(calcAttorneyFee)} attorney fee. Rates vary — get quotes from local real estate attorneys.`
     );
   } else if (calcAttorneyFee === 0) {
     insights.push(
@@ -293,18 +294,18 @@ export function calculateClosingCosts(inputs: ClosingCostInputs): CalculatorResu
 
   if (outsideClosingTotal > 0) {
     insights.push(
-      `About $${outsideClosingTotal.toLocaleString()} (home inspection) is paid outside closing — budget for it, but it isn't part of your cash to close.`
+      `About ${formatCurrency(outsideClosingTotal)} (home inspection) is paid outside closing — budget for it, but it isn't part of your cash to close.`
     );
   }
 
   if (originationFee === undefined && calcOriginationFee > 0) {
     insights.push(
-      `The origination fee ($${calcOriginationFee.toLocaleString()}) assumes ${originationFeePercent}% of the loan — adjust it to match your lender. It's often negotiable, and some lenders waive it for a slightly higher rate.`
+      `The origination fee (${formatCurrency(calcOriginationFee)}) assumes ${originationFeePercent}% of the loan — adjust it to match your lender. It's often negotiable, and some lenders waive it for a slightly higher rate.`
     );
   }
 
   return {
-    summary: `Estimated closing costs of $${totalClosingCosts.toLocaleString()} (${closingCostPercent.toFixed(1)}% of home price). Total cash needed: $${totalCashNeeded.toLocaleString()}.`,
+    summary: `Estimated closing costs of ${formatCurrency(totalClosingCosts)} (${closingCostPercent.toFixed(1)}% of home price). Total cash needed: ${formatCurrency(totalCashNeeded)}.`,
     details: {
       homePrice,
       loanAmount: Math.round(loanAmount),

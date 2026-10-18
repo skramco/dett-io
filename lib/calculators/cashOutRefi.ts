@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { CashOutRefinanceInputs, CalculatorResult } from './types';
 import { ltvPercent, monthlyPayment, totalInterestOverTerm } from './mortgageMath';
 
@@ -111,20 +112,20 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
   const insights: string[] = [];
   
   insights.push(
-    `Current: $${Math.round(currentPayment).toLocaleString()}/month, $${Math.round(currentTotalInterest).toLocaleString()} interest remaining`
+    `Current: ${formatCurrency(currentPayment)}/month, ${formatCurrency(currentTotalInterest)} interest remaining`
   );
   
   insights.push(
-    `Cash-out refi: $${Math.round(newPayment).toLocaleString()}/month, get $${cashOutAmount.toLocaleString()} cash, pay $${Math.round(newTotalInterest).toLocaleString()} total interest`
+    `Cash-out refi: ${formatCurrency(newPayment)}/month, get ${formatCurrency(cashOutAmount)} cash, pay ${formatCurrency(newTotalInterest)} total interest`
   );
 
   if (monthlyIrr !== null) {
     insights.push(
-      `Implied annual cost of the $${cashOutAmount.toLocaleString()} cash via refi is about ${impliedCashCostIrr.toFixed(2)}% (IRR on the extra payments vs keeping your current mortgage). This is an educational estimate, not an APR.`
+      `Implied annual cost of the ${formatCurrency(cashOutAmount)} cash via refi is about ${impliedCashCostIrr.toFixed(2)}% (IRR on the extra payments vs keeping your current mortgage). This is an educational estimate, not an APR.`
     );
   } else if (cashOutAmount > 0 && flowsAllOutflows) {
     insights.push(
-      `Over the full term, the refi's extra payments add up to less than the $${cashOutAmount.toLocaleString()} cash received, so the implied cost of the cash is at or below 0%.`
+      `Over the full term, the refi's extra payments add up to less than the ${formatCurrency(cashOutAmount)} cash received, so the implied cost of the cash is at or below 0%.`
     );
   } else if (cashOutAmount > 0) {
     insights.push(
@@ -133,7 +134,7 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
   }
 
   insights.push(
-    `Blended-rate comparison: keeping your ${currentRate}% mortgage and borrowing $${cashOutAmount.toLocaleString()} at ${alternativeRate}% works out to a ${blendedKeepRate.toFixed(2)}% weighted-average note rate, vs ${newRate}% on the entire $${Math.round(newLoanAmount).toLocaleString()} refi balance.`
+    `Blended-rate comparison: keeping your ${currentRate}% mortgage and borrowing ${formatCurrency(cashOutAmount)} at ${alternativeRate}% works out to a ${blendedKeepRate.toFixed(2)}% weighted-average note rate, vs ${newRate}% on the entire ${formatCurrency(newLoanAmount)} refi balance.`
   );
 
   if (newLTV > maxLTV) {
@@ -144,7 +145,7 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
 
   if (altTotalPaid < newTotalPaid) {
     insights.push(
-      `💡 Alternative: Keep current mortgage + separate ${alternativeRate}% loan (e.g. HELOC or home equity loan) saves $${Math.round(newTotalPaid - altTotalPaid).toLocaleString()} total`
+      `💡 Alternative: Keep current mortgage + separate ${alternativeRate}% loan (e.g. HELOC or home equity loan) saves ${formatCurrency(newTotalPaid - altTotalPaid)} total`
     );
   } else {
     insights.push(
@@ -162,7 +163,7 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
     `These figures are educational estimates for comparison only — they are not an APR, a Truth in Lending disclosure, or an offer of credit. Your lender's Loan Estimate shows the official APR.`
   );
 
-  const summary = `Cash-out refi gives you $${cashOutAmount.toLocaleString()} but adds $${Math.round(totalInterestIncrease).toLocaleString()} in interest over the new ${newTerm}-year term vs keeping your current mortgage.`;
+  const summary = `Cash-out refi gives you ${formatCurrency(cashOutAmount)} but adds ${formatCurrency(totalInterestIncrease)} in interest over the new ${newTerm}-year term vs keeping your current mortgage.`;
 
   return {
     summary,

@@ -8,6 +8,8 @@
  *   the ceiling is 150%; actual limits vary by county between the two.
  */
 
+import { formatCurrency } from '../format';
+
 export const LOAN_LIMIT_YEAR = 2026;
 
 /** FHFA baseline conforming loan limit — applies in most U.S. counties. */
@@ -22,12 +24,10 @@ export const FHA_LOAN_LIMIT_FLOOR = 541287;
 /** FHA "ceiling" loan limit — the max in high-cost counties. */
 export const FHA_LOAN_LIMIT_CEILING = 1249125;
 
-const fmtUSD = (v: number) => `$${v.toLocaleString()}`;
-
-export const CONFORMING_LOAN_LIMIT_DISPLAY = fmtUSD(CONFORMING_LOAN_LIMIT);
-export const CONFORMING_HIGH_COST_LIMIT_DISPLAY = fmtUSD(CONFORMING_HIGH_COST_LIMIT);
-export const FHA_LOAN_LIMIT_FLOOR_DISPLAY = fmtUSD(FHA_LOAN_LIMIT_FLOOR);
-export const FHA_LOAN_LIMIT_CEILING_DISPLAY = fmtUSD(FHA_LOAN_LIMIT_CEILING);
+export const CONFORMING_LOAN_LIMIT_DISPLAY = formatCurrency(CONFORMING_LOAN_LIMIT);
+export const CONFORMING_HIGH_COST_LIMIT_DISPLAY = formatCurrency(CONFORMING_HIGH_COST_LIMIT);
+export const FHA_LOAN_LIMIT_FLOOR_DISPLAY = formatCurrency(FHA_LOAN_LIMIT_FLOOR);
+export const FHA_LOAN_LIMIT_CEILING_DISPLAY = formatCurrency(FHA_LOAN_LIMIT_CEILING);
 
 /**
  * A loan above the local conforming limit is a jumbo (non-conforming) loan.

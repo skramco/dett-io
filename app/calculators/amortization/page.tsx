@@ -1,5 +1,7 @@
 'use client';
 
+import { formatCurrency } from '@/lib/format';
+
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
 import { useState, useMemo } from 'react';
@@ -59,8 +61,6 @@ import {
 } from '@/lib/calculators/amortizationCsv';
 import type { AmortizationInputs } from '@/lib/calculators/amortization';
 import { trackEvent } from '@/lib/analytics';
-
-const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
 export default function AmortizationCalculator() {
   const [inputs, setInputs] = useState<AmortizationInputs>({
@@ -163,10 +163,10 @@ export default function AmortizationCalculator() {
               {/* Hero Metric */}
               <HeroMetric
                 label="Monthly Payment"
-                value={`$${fmt(result.details.monthlyPayment as number)}`}
+                value={`${formatCurrency(result.details.monthlyPayment as number)}`}
                 sublabel={
                   (result.details.extraMonthlyPayment as number) > 0
-                    ? `+ $${fmt(result.details.extraMonthlyPayment as number)} extra = $${fmt((result.details.monthlyPayment as number) + (result.details.extraMonthlyPayment as number))}/mo total`
+                    ? `+ ${formatCurrency(result.details.extraMonthlyPayment as number)} extra = ${formatCurrency((result.details.monthlyPayment as number) + (result.details.extraMonthlyPayment as number))}/mo total`
                     : `${inputs.loanTerm}-year fixed at ${inputs.interestRate}%`
                 }
               />
@@ -176,14 +176,14 @@ export default function AmortizationCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Loan Amount"
-                    value={`$${fmt(result.details.loanAmount as number)}`}
+                    value={`${formatCurrency(result.details.loanAmount as number)}`}
                     color="primary"
                   />
                 </Grid>
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total Interest"
-                    value={`$${((result.details.totalInterest as number) / 1000).toFixed(0)}k`}
+                    value={`${formatCurrency(result.details.totalInterest as number)}`}
                     sublabel={`${(((result.details.totalInterest as number) / (result.details.loanAmount as number)) * 100).toFixed(0)}% of loan`}
                     color="warning"
                   />
@@ -191,7 +191,7 @@ export default function AmortizationCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total Paid"
-                    value={`$${((result.details.totalPaid as number) / 1000).toFixed(0)}k`}
+                    value={`${formatCurrency(result.details.totalPaid as number)}`}
                     color="error"
                   />
                 </Grid>
@@ -213,7 +213,7 @@ export default function AmortizationCalculator() {
               {(result.details.interestSaved as number) > 0 && (
                 <Alert severity="success" sx={{ borderRadius: 2 }}>
                   <Typography variant="body2">
-                    <strong>Extra payments save you ${fmt(result.details.interestSaved as number)} in interest</strong> and
+                    <strong>Extra payments save you {formatCurrency(result.details.interestSaved as number)} in interest</strong> and
                     pay off your mortgage {result.details.yearsSaved} years early!
                   </Typography>
                 </Alert>
@@ -235,7 +235,7 @@ export default function AmortizationCalculator() {
                             Year {year.year}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            ${fmt(year.endingBalance)} remaining
+                            {formatCurrency(year.endingBalance)} remaining
                           </Typography>
                         </Stack>
                         <Box sx={{ display: 'flex', height: 20, borderRadius: 1, overflow: 'hidden' }}>
@@ -256,10 +256,10 @@ export default function AmortizationCalculator() {
                         </Box>
                         <Stack direction="row" justifyContent="space-between" sx={{ mt: 0.25 }}>
                           <Typography variant="caption" color="text.secondary">
-                            Principal: ${fmt(year.totalPrincipal)} ({principalPct.toFixed(0)}%)
+                            Principal: {formatCurrency(year.totalPrincipal)} ({principalPct.toFixed(0)}%)
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            Interest: ${fmt(year.totalInterest)}
+                            Interest: {formatCurrency(year.totalInterest)}
                           </Typography>
                         </Stack>
                       </Box>
@@ -338,10 +338,10 @@ export default function AmortizationCalculator() {
                           {schedule?.yearlySummary.map((year) => (
                             <TableRow key={year.year} hover>
                               <TableCell sx={{ fontWeight: 600 }}>{year.year}</TableCell>
-                              <TableCell align="right">${fmt(year.totalPayment)}</TableCell>
-                              <TableCell align="right" sx={{ color: CHART_COLORS.primary }}>${fmt(year.totalPrincipal)}</TableCell>
-                              <TableCell align="right" sx={{ color: CHART_COLORS.quaternary }}>${fmt(year.totalInterest)}</TableCell>
-                              <TableCell align="right" sx={{ fontWeight: 600 }}>${fmt(year.endingBalance)}</TableCell>
+                              <TableCell align="right">{formatCurrency(year.totalPayment)}</TableCell>
+                              <TableCell align="right" sx={{ color: CHART_COLORS.primary }}>{formatCurrency(year.totalPrincipal)}</TableCell>
+                              <TableCell align="right" sx={{ color: CHART_COLORS.quaternary }}>{formatCurrency(year.totalInterest)}</TableCell>
+                              <TableCell align="right" sx={{ fontWeight: 600 }}>{formatCurrency(year.endingBalance)}</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -364,16 +364,16 @@ export default function AmortizationCalculator() {
                               <TableCell>{row.month}</TableCell>
                               <TableCell>{row.date}</TableCell>
                               <TableCell align="right">
-                                ${fmt(row.totalPayment)}
+                                {formatCurrency(row.totalPayment)}
                                 {row.extraPayment > 0 && (
                                   <Typography variant="caption" color="success.main" sx={{ display: 'block' }}>
-                                    +${fmt(row.extraPayment)} extra
+                                    +{formatCurrency(row.extraPayment)} extra
                                   </Typography>
                                 )}
                               </TableCell>
-                              <TableCell align="right" sx={{ color: CHART_COLORS.primary }}>${fmt(row.principal)}</TableCell>
-                              <TableCell align="right" sx={{ color: CHART_COLORS.quaternary }}>${fmt(row.interest)}</TableCell>
-                              <TableCell align="right" sx={{ fontWeight: 600 }}>${fmt(row.balance)}</TableCell>
+                              <TableCell align="right" sx={{ color: CHART_COLORS.primary }}>{formatCurrency(row.principal)}</TableCell>
+                              <TableCell align="right" sx={{ color: CHART_COLORS.quaternary }}>{formatCurrency(row.interest)}</TableCell>
+                              <TableCell align="right" sx={{ fontWeight: 600 }}>{formatCurrency(row.balance)}</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -409,10 +409,10 @@ export default function AmortizationCalculator() {
                       TOTAL COST OF YOUR MORTGAGE
                     </Typography>
                     <Typography variant="h3" sx={{ fontWeight: 700, color: '#DC2626', my: 1 }}>
-                      ${fmt(result.details.totalPaid as number)}
+                      {formatCurrency(result.details.totalPaid as number)}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      ${fmt(result.details.loanAmount as number)} principal + ${fmt(result.details.totalInterest as number)} interest
+                      {formatCurrency(result.details.loanAmount as number)} principal + {formatCurrency(result.details.totalInterest as number)} interest
                     </Typography>
                   </Box>
                 </Paper>
@@ -453,12 +453,12 @@ export default function AmortizationCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'primary.dark' }}>
-                      Your <strong>${fmt(result.details.loanAmount as number)}</strong> mortgage at <strong>{inputs.interestRate}%</strong> will
-                      cost you <strong>${fmt(result.details.monthlyPayment as number)}/month</strong> over <strong>{result.details.payoffYears} years</strong>.
-                      You&apos;ll pay a total of <strong>${fmt(result.details.totalInterest as number)}</strong> in interest — that&apos;s{' '}
+                      Your <strong>{formatCurrency(result.details.loanAmount as number)}</strong> mortgage at <strong>{inputs.interestRate}%</strong> will
+                      cost you <strong>{formatCurrency(result.details.monthlyPayment as number)}/month</strong> over <strong>{result.details.payoffYears} years</strong>.
+                      You&apos;ll pay a total of <strong>{formatCurrency(result.details.totalInterest as number)}</strong> in interest — that&apos;s{' '}
                       {(((result.details.totalInterest as number) / (result.details.loanAmount as number)) * 100).toFixed(0)}% of what you borrowed.
                       {(result.details.interestSaved as number) > 0 && (
-                        <> With your extra payments, you&apos;ll save <strong>${fmt(result.details.interestSaved as number)}</strong> and be mortgage-free <strong>{result.details.yearsSaved} years sooner</strong>.</>
+                        <> With your extra payments, you&apos;ll save <strong>{formatCurrency(result.details.interestSaved as number)}</strong> and be mortgage-free <strong>{result.details.yearsSaved} years sooner</strong>.</>
                       )}
                     </Typography>
                   </Box>

@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { RentVsBuyInputs, CalculatorResult } from './types';
 import {
   monthlyInterest,
@@ -143,15 +144,15 @@ export function calculateRentVsBuy(inputs: RentVsBuyInputs): CalculatorResult {
 
   if (baseCase.crossoverYear) {
     insights.push(
-      `Base case: Buying breaks even in year ${baseCase.crossoverYear}. After ${yearsToAnalyze} years, you're ahead by $${Math.abs(baseCase.netWorthDifference).toLocaleString()}`
+      `Base case: Buying breaks even in year ${baseCase.crossoverYear}. After ${yearsToAnalyze} years, you're ahead by ${formatCurrency(Math.abs(baseCase.netWorthDifference))}`
     );
   } else if (baseCase.netWorthDifference > 0) {
     insights.push(
-      `Base case: Buying wins from day one. After ${yearsToAnalyze} years, you're ahead by $${baseCase.netWorthDifference.toLocaleString()}`
+      `Base case: Buying wins from day one. After ${yearsToAnalyze} years, you're ahead by ${formatCurrency(baseCase.netWorthDifference)}`
     );
   } else {
     insights.push(
-      `Base case: Renting wins. After ${yearsToAnalyze} years, you're ahead by $${Math.abs(baseCase.netWorthDifference).toLocaleString()} by renting`
+      `Base case: Renting wins. After ${yearsToAnalyze} years, you're ahead by ${formatCurrency(Math.abs(baseCase.netWorthDifference))} by renting`
     );
   }
 
@@ -166,25 +167,25 @@ export function calculateRentVsBuy(inputs: RentVsBuyInputs): CalculatorResult {
   }
 
   insights.push(
-    `Buy-side net worth is net of ${sellingCosts}% selling costs (≈$${Math.round(baseCase.finalSellingCost).toLocaleString()} at year ${yearsToAnalyze}), and the rent scenario invests your $${cashToClose.toLocaleString()} cash to close at ${investmentReturn}%`
+    `Buy-side net worth is net of ${sellingCosts}% selling costs (≈${formatCurrency(baseCase.finalSellingCost)} at year ${yearsToAnalyze}), and the rent scenario invests your ${formatCurrency(cashToClose)} cash to close at ${investmentReturn}%`
   );
 
   if (pmiApplies) {
     insights.push(
-      `With ${((downPayment / homePrice) * 100).toFixed(1)}% down, PMI adds $${Math.round(monthlyPMI).toLocaleString()}/mo until your balance hits 78% of the purchase price${pmiEndMonth ? ` (≈year ${Math.ceil(pmiEndMonth / 12)})` : ''}`
+      `With ${((downPayment / homePrice) * 100).toFixed(1)}% down, PMI adds ${formatCurrency(monthlyPMI)}/mo until your balance hits 78% of the purchase price${pmiEndMonth ? ` (≈year ${Math.ceil(pmiEndMonth / 12)})` : ''}`
     );
   }
 
   const totalRentPaid = baseCase.yearlyData.reduce((sum, d) => sum + d.rentPaid, 0);
   insights.push(
-    `Over ${yearsToAnalyze} years, you'll pay $${totalRentPaid.toLocaleString()} in rent with no equity to show for it`
+    `Over ${yearsToAnalyze} years, you'll pay ${formatCurrency(totalRentPaid)} in rent with no equity to show for it`
   );
 
   insights.push(
     `The math assumes whichever side pays less each month invests the difference. If you don't invest the savings, the cheaper option loses its edge.`
   );
 
-  const summary = `After ${yearsToAnalyze} years, ${baseCase.netWorthDifference > 0 ? 'buying' : 'renting'} wins by $${Math.abs(baseCase.netWorthDifference).toLocaleString()} (base case).`;
+  const summary = `After ${yearsToAnalyze} years, ${baseCase.netWorthDifference > 0 ? 'buying' : 'renting'} wins by ${formatCurrency(Math.abs(baseCase.netWorthDifference))} (base case).`;
 
   return {
     summary,

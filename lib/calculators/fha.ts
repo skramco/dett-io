@@ -1,3 +1,4 @@
+import { formatCurrency } from '../format';
 import type { CalculatorResult } from './types';
 import {
   backEndDtiPercent,
@@ -125,38 +126,38 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   }
 
   insights.push(
-    `FHA charges two types of mortgage insurance: an upfront premium of $${Math.round(upfrontMIP).toLocaleString()} (1.75% of loan, financed into the loan) and a monthly premium of $${Math.round(monthlyMIP)}/mo (${annualMIPRate}% annually).`
+    `FHA charges two types of mortgage insurance: an upfront premium of ${formatCurrency(upfrontMIP)} (1.75% of loan, financed into the loan) and a monthly premium of ${formatCurrency(monthlyMIP)}/mo (${annualMIPRate}% annually).`
   );
 
   if (mipDurationYears < loanTerm) {
     insights.push(
-      `With ${downPaymentPercent}% down (10% or more), your monthly MIP drops off after ${mipDurationYears} years instead of lasting the full loan term. Total MIP cost: $${Math.round(totalMIPCost).toLocaleString()}.`
+      `With ${downPaymentPercent}% down (10% or more), your monthly MIP drops off after ${mipDurationYears} years instead of lasting the full loan term. Total MIP cost: ${formatCurrency(totalMIPCost)}.`
     );
   } else {
     insights.push(
-      `With less than 10% down, FHA MIP lasts the entire life of the loan. Total MIP cost: $${Math.round(totalMIPCost).toLocaleString()}. Consider refinancing to conventional once you reach 20% equity, or putting 10%+ down to limit MIP to 11 years.`
+      `With less than 10% down, FHA MIP lasts the entire life of the loan. Total MIP cost: ${formatCurrency(totalMIPCost)}. Consider refinancing to conventional once you reach 20% equity, or putting 10%+ down to limit MIP to 11 years.`
     );
   }
 
   if (!withinFhaCeiling) {
     insights.push(
-      `Your base loan of $${Math.round(baseLoanAmount).toLocaleString()} is above the ${LOAN_LIMIT_YEAR} FHA ceiling of $${FHA_LOAN_LIMIT_CEILING.toLocaleString()} — the maximum even in the highest-cost counties — so this scenario wouldn't fit an FHA loan. A jumbo loan is the more likely route at this amount.`
+      `Your base loan of ${formatCurrency(baseLoanAmount)} is above the ${LOAN_LIMIT_YEAR} FHA ceiling of ${formatCurrency(FHA_LOAN_LIMIT_CEILING)} — the maximum even in the highest-cost counties — so this scenario wouldn't fit an FHA loan. A jumbo loan is the more likely route at this amount.`
     );
   } else if (!withinFhaFloor) {
     insights.push(
-      `Your base loan of $${Math.round(baseLoanAmount).toLocaleString()} is above the ${LOAN_LIMIT_YEAR} FHA limit of $${FHA_LOAN_LIMIT_FLOOR.toLocaleString()} that applies in most counties. High-cost counties allow up to $${FHA_LOAN_LIMIT_CEILING.toLocaleString()}, so check your county's limit on HUD's lookup tool before counting on FHA.`
+      `Your base loan of ${formatCurrency(baseLoanAmount)} is above the ${LOAN_LIMIT_YEAR} FHA limit of ${formatCurrency(FHA_LOAN_LIMIT_FLOOR)} that applies in most counties. High-cost counties allow up to ${formatCurrency(FHA_LOAN_LIMIT_CEILING)}, so check your county's limit on HUD's lookup tool before counting on FHA.`
     );
   }
 
   if (isJumbo) {
     insights.push(
-      `At $${Math.round(baseLoanAmount).toLocaleString()}, the loan is above the ${LOAN_LIMIT_YEAR} conforming limit of $${CONFORMING_LOAN_LIMIT.toLocaleString()} (most counties), so the conventional alternative would be a jumbo loan — typically requiring higher credit scores, larger down payments, and sometimes different pricing.`
+      `At ${formatCurrency(baseLoanAmount)}, the loan is above the ${LOAN_LIMIT_YEAR} conforming limit of ${formatCurrency(CONFORMING_LOAN_LIMIT)} (most counties), so the conventional alternative would be a jumbo loan — typically requiring higher credit scores, larger down payments, and sometimes different pricing.`
     );
   }
 
   if (convTotalMonthly < totalMonthlyPayment && creditScore >= 680) {
     insights.push(
-      `A conventional loan with 5% down would cost $${Math.round(convTotalMonthly).toLocaleString()}/mo vs FHA at $${Math.round(totalMonthlyPayment).toLocaleString()}/mo. With your credit score, conventional may be the better option.`
+      `A conventional loan with 5% down would cost ${formatCurrency(convTotalMonthly)}/mo vs FHA at ${formatCurrency(totalMonthlyPayment)}/mo. With your credit score, conventional may be the better option.`
     );
   } else if (creditScore < 680) {
     insights.push(
@@ -171,7 +172,7 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
   }
 
   return {
-    summary: `FHA monthly payment: $${Math.round(totalMonthlyPayment).toLocaleString()} (P&I: $${Math.round(monthlyPI).toLocaleString()} + MIP: $${Math.round(monthlyMIP)} + Tax/Ins: $${Math.round(monthlyPropertyTax + monthlyInsurance)})`,
+    summary: `FHA monthly payment: ${formatCurrency(totalMonthlyPayment)} (P&I: ${formatCurrency(monthlyPI)} + MIP: ${formatCurrency(monthlyMIP)} + Tax/Ins: ${formatCurrency(monthlyPropertyTax + monthlyInsurance)})`,
     details: {
       homePrice,
       downPayment: Math.round(downPayment),
