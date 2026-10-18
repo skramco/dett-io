@@ -50,13 +50,50 @@ export default function CashOutRefiCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric label="Effective Cost of Cash" value={`${result.details.effectiveRate}%`} sublabel={`Getting $${inputs.cashOutAmount.toLocaleString()} costs you this rate over ${inputs.newTerm} years`} />
+              <HeroMetric label="Extra Interest to Access Cash" value={`$${(result.details.totalInterestIncrease as number).toLocaleString()}`} sublabel={`Total additional interest you'd pay to get $${inputs.cashOutAmount.toLocaleString()} this way — a dollar cost, not a rate or APR`} />
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Current Payment" value={`$${(result.details.currentPayment as number).toLocaleString()}`} color="primary" /></Grid>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New Payment" value={`$${(result.details.newPayment as number).toLocaleString()}`} color="warning" /></Grid>
                 <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="New LTV" value={`${result.details.newLTV}%`} color={(result.details.newLTV as number) > 80 ? 'error' : 'success'} /></Grid>
-                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Extra Interest" value={`$${(result.details.totalInterestIncrease as number).toLocaleString()}`} color="error" /></Grid>
+                <Grid size={{ xs: 6, sm: 3 }}><MetricCard label="Payment Increase" value={`+$${((result.details.newPayment as number) - (result.details.currentPayment as number)).toLocaleString()}/mo`} color="error" /></Grid>
               </Grid>
+              <ResultsSection title="Cost of Cash Comparison" subtitle="Educational estimates — not APRs, quotes, or loan offers">
+                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  <Stack spacing={2}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="baseline">
+                      <Box>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>Cash-out refi note rate</Typography>
+                        <Typography variant="caption" color="text.secondary">The rate you entered on the full ${(result.details.newLoanAmount as number).toLocaleString()} balance</Typography>
+                      </Box>
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>{inputs.newRate}%</Typography>
+                    </Stack>
+                    <Divider />
+                    <Stack direction="row" justifyContent="space-between" alignItems="baseline">
+                      <Box>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>Keep mortgage + borrow separately (blended)</Typography>
+                        <Typography variant="caption" color="text.secondary">Balance-weighted average of your {inputs.currentRate}% mortgage and a {inputs.alternativeRate}% loan for the cash</Typography>
+                      </Box>
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>{result.details.blendedAltRate}%</Typography>
+                    </Stack>
+                    <Divider />
+                    <Stack direction="row" justifyContent="space-between" alignItems="baseline">
+                      <Box>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>Marginal cost of cash (IRR)</Typography>
+                        <Typography variant="caption" color="text.secondary">What borrowing the ${inputs.cashOutAmount.toLocaleString()} effectively costs, based on the IRR of your incremental payments</Typography>
+                      </Box>
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>{typeof result.details.marginalCashCostIrr === 'number' ? `${result.details.marginalCashCostIrr}%` : 'None'}</Typography>
+                    </Stack>
+                    {typeof result.details.marginalCashCostIrr !== 'number' && (
+                      <Typography variant="caption" color="text.secondary">At these inputs the refi doesn&apos;t cost more than the cash you receive, so there is no positive marginal cost.</Typography>
+                    )}
+                  </Stack>
+                  <Alert severity="info" sx={{ borderRadius: 2, mt: 3 }}>
+                    <Typography variant="body2">
+                      These figures are educational estimates based on your inputs. They are <strong>not APRs</strong> — APR is a standardized disclosure that lenders must provide under the Truth in Lending Act, based on a loan&apos;s actual fees and terms. Always compare official Loan Estimates from lenders.
+                    </Typography>
+                  </Alert>
+                </Paper>
+              </ResultsSection>
               <ResultsSection title="Payment Comparison" subtitle="Current vs cash-out refi">
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Grid container spacing={3}>
@@ -114,9 +151,10 @@ export default function CashOutRefiCalculator() {
                   <Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, color: '#92400E', mb: 1 }}>The Bottom Line</Typography>
                     <Typography variant="body1" sx={{ color: '#92400E' }}>
-                      Getting <strong>${inputs.cashOutAmount.toLocaleString()}</strong> via cash-out refi costs you an effective <strong>{result.details.effectiveRate}%</strong> rate 
-                      and <strong>${(result.details.totalInterestIncrease as number).toLocaleString()}</strong> in extra interest. Your payment increases by 
-                      <strong> ${((result.details.newPayment as number) - (result.details.currentPayment as number)).toLocaleString()}/month</strong>.
+                      Getting <strong>${inputs.cashOutAmount.toLocaleString()}</strong> via cash-out refi adds 
+                      <strong> ${(result.details.totalInterestIncrease as number).toLocaleString()}</strong> in extra interest and raises your payment by 
+                      <strong> ${((result.details.newPayment as number) - (result.details.currentPayment as number)).toLocaleString()}/month</strong>. 
+                      Compare that with keeping your {inputs.currentRate}% mortgage and borrowing the cash separately at {inputs.alternativeRate}% — a blended <strong>{result.details.blendedAltRate}%</strong> across both balances.
                     </Typography>
                   </Box>
                 </Stack>

@@ -1,5 +1,61 @@
 import type { CashOutRefinanceInputs, CalculatorResult } from './types';
 
+function monthlyPayment(principal: number, annualRatePct: number, months: number): number {
+  const r = annualRatePct / 100 / 12;
+  if (r === 0) return principal / months;
+  return (principal * (r * Math.pow(1 + r, months))) / (Math.pow(1 + r, months) - 1);
+}
+
+/**
+ * IRR of the incremental cash flows of taking the cash-out refi instead of
+ * keeping the current mortgage: receive the cash today, then pay the
+ * difference between the new payment and the old payment each month (the old
+ * payment ends when the current loan would have been paid off).
+ *
+ * Returns a nominal annual percentage (monthly IRR x 12, the same convention
+ * used to quote mortgage rates), or null when the incremental payments never
+ * exceed the cash received so no positive cost exists.
+ *
+ * This is an educational estimate of the marginal cost of accessing cash this
+ * way. It is NOT an APR: APR is a regulated disclosure (Truth in Lending Act)
+ * computed by lenders on a single loan's actual fees and terms.
+ */
+function incrementalCashFlowIrr(
+  cashReceived: number,
+  currentPayment: number,
+  currentPayments: number,
+  newPayment: number,
+  newPayments: number
+): number | null {
+  const totalMonths = Math.max(currentPayments, newPayments);
+  const npv = (monthlyRate: number): number => {
+    let value = cashReceived;
+    let discount = 1;
+    for (let m = 1; m <= totalMonths; m++) {
+      discount /= 1 + monthlyRate;
+      const oldFlow = m <= currentPayments ? currentPayment : 0;
+      const newFlow = m <= newPayments ? newPayment : 0;
+      value += (oldFlow - newFlow) * discount;
+    }
+    return value;
+  };
+
+  // NPV at rate 0 is cash received minus total extra payments. If it is not
+  // negative, the refi never costs more than the cash in nominal terms and a
+  // positive IRR does not exist.
+  if (npv(0) >= 0) return null;
+
+  let lo = 0;
+  let hi = 1; // 100% monthly — far above any realistic cost
+  if (npv(hi) < 0) return null;
+  for (let i = 0; i < 100; i++) {
+    const mid = (lo + hi) / 2;
+    if (npv(mid) < 0) lo = mid;
+    else hi = mid;
+  }
+  return ((lo + hi) / 2) * 12 * 100;
+}
+
 export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): CalculatorResult {
   const {
     currentBalance,
@@ -13,55 +69,69 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
     alternativeRate,
   } = inputs;
 
-  const currentMonthlyRate = currentRate / 100 / 12;
   const currentPayments = yearsRemaining * 12;
-  
-  // Current mortgage payment
-  const currentPayment = currentBalance * (currentMonthlyRate * Math.pow(1 + currentMonthlyRate, currentPayments)) / 
-                        (Math.pow(1 + currentMonthlyRate, currentPayments) - 1);
+  const currentPayment = monthlyPayment(currentBalance, currentRate, currentPayments);
 
-  // Cash-out refi scenario
+  // Cash-out refi scenario (closing costs financed into the new loan)
   const newLoanAmount = currentBalance + cashOutAmount + closingCosts;
-  const newMonthlyRate = newRate / 100 / 12;
   const newPayments = newTerm * 12;
-  
-  const newPayment = newLoanAmount * (newMonthlyRate * Math.pow(1 + newMonthlyRate, newPayments)) / 
-                    (Math.pow(1 + newMonthlyRate, newPayments) - 1);
+  const newPayment = monthlyPayment(newLoanAmount, newRate, newPayments);
 
-  // Calculate total interest for both scenarios
+  // Total interest for both scenarios
   const currentTotalPaid = currentPayment * currentPayments;
   const currentTotalInterest = currentTotalPaid - currentBalance;
-  
+
   const newTotalPaid = newPayment * newPayments;
   const newTotalInterest = newTotalPaid - newLoanAmount;
 
-  // Alternative: Keep mortgage, take separate loan for cash
-  const altLoanPayment = cashOutAmount * (alternativeRate / 100 / 12 * Math.pow(1 + alternativeRate / 100 / 12, 120)) / 
-                        (Math.pow(1 + alternativeRate / 100 / 12, 120) - 1); // 10-year loan
+  const totalInterestIncrease = newTotalInterest - currentTotalInterest;
+
+  // Alternative: keep current mortgage, borrow the cash separately (10-year loan)
+  const altLoanPayments = 120;
+  const altLoanPayment = monthlyPayment(cashOutAmount, alternativeRate, altLoanPayments);
   const altTotalPayment = currentPayment + altLoanPayment;
-  const altTotalPaid = (currentPayment * currentPayments) + (altLoanPayment * 120);
+  const altTotalPaid = currentPayment * currentPayments + altLoanPayment * altLoanPayments;
   const altTotalInterest = altTotalPaid - currentBalance - cashOutAmount;
 
-  // Calculate effective cost of cash
-  const cashCostViaRefi = newTotalInterest - currentTotalInterest;
-  const effectiveRate = (cashCostViaRefi / cashOutAmount / newTerm) * 100;
+  // Blended rate of the keep-mortgage + separate-loan alternative: the
+  // balance-weighted average rate across both loans, comparable to the single
+  // rate you'd pay on the full refinanced balance.
+  const blendedAltRate =
+    (currentBalance * currentRate + cashOutAmount * alternativeRate) /
+    (currentBalance + cashOutAmount);
+
+  // Marginal cost of cash: IRR of the incremental cash flows (educational
+  // estimate, not an APR).
+  const marginalCashCostIrr = incrementalCashFlowIrr(
+    cashOutAmount,
+    currentPayment,
+    currentPayments,
+    newPayment,
+    newPayments
+  );
 
   // LTV check
   const newLTV = (newLoanAmount / homeValue) * 100;
   const maxLTV = 80;
 
   const insights: string[] = [];
-  
+
   insights.push(
     `Current: $${Math.round(currentPayment).toLocaleString()}/month, $${Math.round(currentTotalInterest).toLocaleString()} interest remaining`
   );
-  
+
   insights.push(
     `Cash-out refi: $${Math.round(newPayment).toLocaleString()}/month, get $${cashOutAmount.toLocaleString()} cash, pay $${Math.round(newTotalInterest).toLocaleString()} total interest`
   );
 
+  if (marginalCashCostIrr !== null) {
+    insights.push(
+      `Marginal cost of cash: accessing $${cashOutAmount.toLocaleString()} this way is comparable to borrowing it at roughly ${marginalCashCostIrr.toFixed(2)}% (IRR of the incremental payments — an educational estimate, not an APR or loan offer)`
+    );
+  }
+
   insights.push(
-    `Effective cost of cash: ${effectiveRate.toFixed(2)}% over ${newTerm} years`
+    `Blended-rate comparison: keeping your ${currentRate}% mortgage and borrowing $${cashOutAmount.toLocaleString()} at ${alternativeRate}% works out to a blended ${blendedAltRate.toFixed(2)}% across both balances, vs ${newRate}% on the full refinanced balance`
   );
 
   if (newLTV > maxLTV) {
@@ -86,7 +156,7 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
     );
   }
 
-  const summary = `Cash-out refi gives you $${cashOutAmount.toLocaleString()} but costs ${effectiveRate.toFixed(2)}% effective rate and resets your loan to ${newTerm} years.`;
+  const summary = `Cash-out refi gives you $${cashOutAmount.toLocaleString()} but adds $${Math.round(totalInterestIncrease).toLocaleString()} in total interest and resets your loan to ${newTerm} years.`;
 
   return {
     summary,
@@ -99,8 +169,11 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
       newPayment: Math.round(newPayment),
       newRate,
       newLTV: Math.round(newLTV),
-      effectiveRate: parseFloat(effectiveRate.toFixed(2)),
-      totalInterestIncrease: Math.round(newTotalInterest - currentTotalInterest),
+      marginalCashCostIrr:
+        marginalCashCostIrr !== null ? parseFloat(marginalCashCostIrr.toFixed(2)) : 'N/A',
+      blendedAltRate: parseFloat(blendedAltRate.toFixed(2)),
+      altMonthlyPayment: Math.round(altTotalPayment),
+      totalInterestIncrease: Math.round(totalInterestIncrease),
     },
     chartData: [
       { scenario: 'Current Mortgage', payment: Math.round(currentPayment), totalInterest: Math.round(currentTotalInterest) },

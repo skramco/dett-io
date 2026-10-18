@@ -109,7 +109,9 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'New Loan Amount', formula: 'Current Balance + Cash Out + Closing Costs', description: 'Total amount of the new mortgage.', computedValue: `$${fmt(d.newLoanAmount as number)}` },
         { label: 'New Monthly Payment', formula: 'New Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Monthly P&I on the larger loan.', computedValue: `$${fmt(d.newPayment as number)}` },
-        { label: 'Effective Cash-Out Rate', formula: 'Additional Interest ÷ Cash Received × 100', description: 'The true cost of borrowing against your equity.' },
+        { label: 'Extra Interest to Access Cash', formula: 'New Total Interest − Current Total Interest', description: 'Total additional interest paid to access your cash — a dollar cost, not a rate or APR.', computedValue: `$${fmt(d.totalInterestIncrease as number)}` },
+        { label: 'Blended Alternative Rate', formula: '(Balance × Current Rate + Cash × Alt Rate) ÷ (Balance + Cash)', description: 'Balance-weighted average rate if you keep your current mortgage and borrow the cash separately (e.g., HELOC or personal loan).', computedValue: `${d.blendedAltRate}%` },
+        { label: 'Marginal Cost of Cash (IRR)', formula: 'IRR of incremental cash flows', description: 'The internal rate of return that equates the cash you receive today with the extra payments you make over time. An educational estimate — not an APR or loan offer.', computedValue: typeof d.marginalCashCostIrr === 'number' ? `${d.marginalCashCostIrr}%` : 'N/A' },
       ],
     },
   ],

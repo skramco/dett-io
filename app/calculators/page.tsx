@@ -66,7 +66,7 @@ const calculatorDetails = {
     value: 'Tells you if refinancing is worth it. Shows exactly when you\'ll break even on closing costs and how much you\'ll save long-term.',
   },
   'cash-out-refi': {
-    outputs: ['New monthly payment', 'Cash received', 'True cost of cash (APR)', 'Comparison to HELOC or personal loan', 'Long-term cost analysis'],
+    outputs: ['New monthly payment', 'Cash received', 'Extra interest cost of your cash', 'Blended-rate and HELOC/personal loan comparison', 'Long-term cost analysis'],
     value: 'Shows the real cost of pulling equity from your home. Helps you decide if cash-out refinancing beats other borrowing options.',
   },
   'recast-vs-refi': {
