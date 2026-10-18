@@ -1,7 +1,5 @@
 'use client';
 
-import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
-
 import { useState, useMemo, useEffect } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
@@ -50,20 +48,11 @@ import {
   HorizontalBar,
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
-import { calculateMortgageCost, calculateAmortization } from '@/lib/calculators';
+import { calculateMortgageCost, calculateAmortization, MORTGAGE_COST_DEFAULT_INPUTS } from '@/lib/calculators';
 import type { MortgageCostInputs } from '@/lib/calculators/types';
 
 export default function MortgageCostCalculator() {
-  const [inputs, setInputs] = useState<MortgageCostInputs>({
-    homePrice: 450000,
-    downPayment: 90000,
-    interestRate: DEFAULT_RATES.thirtyYearFixed,
-    loanTerm: 30,
-    propertyTax: 5400,
-    homeInsurance: 1800,
-    hoaFees: 0,
-    pmi: 0,
-  });
+  const [inputs, setInputs] = useState<MortgageCostInputs>({ ...MORTGAGE_COST_DEFAULT_INPUTS });
   useUrlInputs(inputs, setInputs);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate' });
   const deferredInputs = useDeferredInputs(inputs);
