@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, Typography, Stack, LinearProgress } from '@mui/material';
+import { Box, Typography, LinearProgress } from '@mui/material';
 import {
   PieChart,
   Pie,
@@ -20,16 +20,7 @@ import {
   AreaChart,
   ReferenceLine,
 } from 'recharts';
-
-// Premium color palette
-const CHART_COLORS = {
-  primary: '#196bc0',
-  secondary: '#10B981',
-  tertiary: '#8B5CF6',
-  quaternary: '#F59E0B',
-  quinary: '#EF4444',
-  gradient: ['#196bc0', '#0891B2', '#10B981', '#84CC16', '#F59E0B'],
-};
+import { CHART_COLORS } from './ChartPrimitives';
 
 // Loading placeholder
 function ChartLoading({ height }: { height: number }) {
@@ -57,7 +48,7 @@ function ChartLoading({ height }: { height: number }) {
 // ============================================
 // DONUT CHART - Payment breakdown
 // ============================================
-interface DonutChartProps {
+export interface DonutChartProps {
   data: Array<{ name: string; value: number; color?: string }>;
   centerLabel?: string;
   centerValue?: string;
@@ -146,61 +137,9 @@ export function DonutChart({ data, centerLabel, centerValue, height = 280 }: Don
 }
 
 // ============================================
-// CHART LEGEND - Custom legend component
-// ============================================
-interface ChartLegendProps {
-  items: Array<{ name: string; value: string; color: string; percentage?: number }>;
-}
-
-export function ChartLegend({ items }: ChartLegendProps) {
-  return (
-    <Stack spacing={2}>
-      {items.map((item, index) => (
-        <Box key={index}>
-          <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 0.5 }}>
-            <Box
-              sx={{
-                width: 14,
-                height: 14,
-                borderRadius: 0.5,
-                bgcolor: item.color,
-                flexShrink: 0,
-              }}
-            />
-            <Typography variant="body2" sx={{ flex: 1, fontWeight: 500 }}>
-              {item.name}
-            </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 700 }}>
-              {item.value}
-            </Typography>
-          </Stack>
-          {item.percentage !== undefined && (
-            <Box sx={{ ml: 4 }}>
-              <LinearProgress
-                variant="determinate"
-                value={item.percentage}
-                sx={{
-                  height: 6,
-                  borderRadius: 3,
-                  bgcolor: '#E5E7EB',
-                  '& .MuiLinearProgress-bar': {
-                    bgcolor: item.color,
-                    borderRadius: 3,
-                  },
-                }}
-              />
-            </Box>
-          )}
-        </Box>
-      ))}
-    </Stack>
-  );
-}
-
-// ============================================
 // AMORTIZATION CHART - Loan balance over time
 // ============================================
-interface AmortizationChartProps {
+export interface AmortizationChartProps {
   data: Array<{ year: number; balance: number; principal?: number; interest?: number }>;
   height?: number;
 }
@@ -275,7 +214,7 @@ export function AmortizationChart({ data, height = 300 }: AmortizationChartProps
 // ============================================
 // COMPARISON BAR CHART - Side by side comparison
 // ============================================
-interface ComparisonBarChartProps {
+export interface ComparisonBarChartProps {
   data: Array<{ name: string; current: number; new: number }>;
   height?: number;
   labels?: { current: string; new: string };
@@ -342,7 +281,7 @@ export function ComparisonBarChart({
 // ============================================
 // TIMELINE CHART - Break-even / crossover analysis
 // ============================================
-interface TimelineChartProps {
+export interface TimelineChartProps {
   data: Array<{ month: number; optionA: number; optionB: number }>;
   breakEvenMonth?: number;
   height?: number;
@@ -438,7 +377,7 @@ export function TimelineChart({
 // ============================================
 // STACKED BAR CHART - Payment composition over time
 // ============================================
-interface StackedBarChartProps {
+export interface StackedBarChartProps {
   data: Array<{ year: number; principal: number; interest: number; taxes?: number; insurance?: number }>;
   height?: number;
 }
@@ -503,53 +442,5 @@ export function StackedBarChart({ data, height = 300 }: StackedBarChartProps) {
   );
 }
 
-// ============================================
-// HORIZONTAL BAR - Simple visual comparison
-// ============================================
-interface HorizontalBarProps {
-  label: string;
-  value: number;
-  maxValue: number;
-  color?: string;
-  formatValue?: (value: number) => string;
-}
-
-export function HorizontalBar({ 
-  label, 
-  value, 
-  maxValue, 
-  color = CHART_COLORS.primary,
-  formatValue = (v) => `$${v.toLocaleString()}`
-}: HorizontalBarProps) {
-  const percentage = maxValue > 0 ? (value / maxValue) * 100 : 0;
-  
-  return (
-    <Box sx={{ mb: 2 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
-        <Typography variant="body2" sx={{ fontWeight: 500, color: '#374151' }}>
-          {label}
-        </Typography>
-        <Typography variant="body2" sx={{ fontWeight: 700, color: '#1F2937' }}>
-          {formatValue(value)}
-        </Typography>
-      </Stack>
-      <Box sx={{ position: 'relative', height: 12, bgcolor: '#E5E7EB', borderRadius: 1 }}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            height: '100%',
-            width: `${Math.min(percentage, 100)}%`,
-            bgcolor: color,
-            borderRadius: 1,
-            transition: 'width 0.3s ease',
-          }}
-        />
-      </Box>
-    </Box>
-  );
-}
-
-// Export colors for use elsewhere
-export { CHART_COLORS };
+// Re-export lightweight primitives for backwards compatibility
+export { CHART_COLORS, ChartLegend, HorizontalBar } from './ChartPrimitives';
