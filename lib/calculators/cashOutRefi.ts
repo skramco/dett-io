@@ -1,5 +1,45 @@
 import type { CashOutRefinanceInputs, CalculatorResult } from './types';
-import { monthlyPayment } from './mortgageMath';
+import { ltvPercent, monthlyPayment, totalInterestOverTerm } from './mortgageMath';
+
+/**
+ * Solves the internal rate of return (IRR) of borrowing cash via a refi:
+ * you receive `cashReceived` at month 0 and pay `incrementalFlows[m]` extra
+ * each month compared to keeping your current mortgage. Returns the monthly
+ * rate, or null when the incremental payments never exceed the cash received
+ * (i.e. the cash is effectively free or better).
+ *
+ * The flows are outflows after month 0, so NPV is monotonic in the rate and
+ * bisection converges reliably.
+ */
+function solveMonthlyIrr(cashReceived: number, incrementalFlows: number[]): number | null {
+  if (cashReceived <= 0) return null;
+
+  const npvAt = (monthlyRate: number): number => {
+    let npv = cashReceived;
+    let discount = 1;
+    for (let m = 0; m < incrementalFlows.length; m++) {
+      discount /= 1 + monthlyRate;
+      npv -= incrementalFlows[m] * discount;
+    }
+    return npv;
+  };
+
+  // At 0%, NPV = cash received minus total extra paid. If that's already
+  // non-negative, the incremental borrowing has zero or negative cost.
+  if (npvAt(0) >= 0) return null;
+
+  let lo = 0;
+  let hi = 1; // 100% per month — far beyond any realistic cost
+  for (let i = 0; i < 200; i++) {
+    const mid = (lo + hi) / 2;
+    if (npvAt(mid) < 0) {
+      lo = mid;
+    } else {
+      hi = mid;
+    }
+  }
+  return (lo + hi) / 2;
+}
 
 export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): CalculatorResult {
   const {
@@ -25,25 +65,47 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
   
   const newPayment = monthlyPayment(newLoanAmount, newRate, newPayments);
 
-  // Calculate total interest for both scenarios
-  const currentTotalPaid = currentPayment * currentPayments;
-  const currentTotalInterest = currentTotalPaid - currentBalance;
-  
+  const currentTotalInterest = totalInterestOverTerm(currentBalance, currentRate, currentPayments);
   const newTotalPaid = newPayment * newPayments;
-  const newTotalInterest = newTotalPaid - newLoanAmount;
+  const newTotalInterest = totalInterestOverTerm(newLoanAmount, newRate, newPayments);
 
-  // Alternative: Keep mortgage, take separate loan for cash (10-year loan)
+  // Alternative: Keep mortgage, take a separate 10-year HELOC / home equity loan for cash
   const altLoanPayment = monthlyPayment(cashOutAmount, alternativeRate, 120);
   const altTotalPayment = currentPayment + altLoanPayment;
   const altTotalPaid = (currentPayment * currentPayments) + (altLoanPayment * 120);
   const altTotalInterest = altTotalPaid - currentBalance - cashOutAmount;
 
-  // Calculate effective cost of cash
-  const cashCostViaRefi = newTotalInterest - currentTotalInterest;
-  const effectiveRate = (cashCostViaRefi / cashOutAmount / newTerm) * 100;
+  const totalInterestIncrease = newTotalInterest - currentTotalInterest;
+
+  // Implied annual cost of the cash (IRR on incremental cash flows):
+  // you receive the cash-out amount at closing (closing costs are financed),
+  // then each month you pay the difference between the new payment and what
+  // you would have paid by keeping the current mortgage.
+  const horizonMonths = Math.max(currentPayments, newPayments);
+  const incrementalFlows: number[] = [];
+  for (let m = 1; m <= horizonMonths; m++) {
+    const refiOutflow = m <= newPayments ? newPayment : 0;
+    const keepOutflow = m <= currentPayments ? currentPayment : 0;
+    incrementalFlows.push(refiOutflow - keepOutflow);
+  }
+  // A single IRR is only meaningful when the incremental flows don't change
+  // sign (cash in at closing, extra payments out every month afterwards).
+  // When the refi lowers the payment or ends before the current loan, the
+  // flows are mixed and multiple IRRs can exist, so we skip the figure.
+  const flowsAllOutflows = incrementalFlows.every((f) => f >= -1e-9);
+  const monthlyIrr = flowsAllOutflows ? solveMonthlyIrr(cashOutAmount, incrementalFlows) : null;
+  // Annualized with monthly compounding, the same convention as quoted note rates
+  const impliedCashCostIrr = monthlyIrr === null ? 0 : monthlyIrr * 12 * 100;
+
+  // Blended-rate comparison: keeping the current mortgage and borrowing the
+  // cash separately gives a weighted-average note rate across both balances,
+  // versus the refi which moves the entire balance to the new rate.
+  const blendedKeepRate = cashOutAmount > 0
+    ? (currentBalance * currentRate + cashOutAmount * alternativeRate) / (currentBalance + cashOutAmount)
+    : currentRate;
 
   // LTV check
-  const newLTV = (newLoanAmount / homeValue) * 100;
+  const newLTV = ltvPercent(newLoanAmount, homeValue);
   const maxLTV = 80;
 
   const insights: string[] = [];
@@ -56,8 +118,22 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
     `Cash-out refi: $${Math.round(newPayment).toLocaleString()}/month, get $${cashOutAmount.toLocaleString()} cash, pay $${Math.round(newTotalInterest).toLocaleString()} total interest`
   );
 
+  if (monthlyIrr !== null) {
+    insights.push(
+      `Implied annual cost of the $${cashOutAmount.toLocaleString()} cash via refi is about ${impliedCashCostIrr.toFixed(2)}% (IRR on the extra payments vs keeping your current mortgage). This is an educational estimate, not an APR.`
+    );
+  } else if (cashOutAmount > 0 && flowsAllOutflows) {
+    insights.push(
+      `Over the full term, the refi's extra payments add up to less than the $${cashOutAmount.toLocaleString()} cash received, so the implied cost of the cash is at or below 0%.`
+    );
+  } else if (cashOutAmount > 0) {
+    insights.push(
+      `A single implied-cost figure isn't meaningful for this scenario (the refi lowers your payment or pays off before your current loan would), so compare the monthly payments and total interest below instead.`
+    );
+  }
+
   insights.push(
-    `Effective cost of cash: ${effectiveRate.toFixed(2)}% over ${newTerm} years`
+    `Blended-rate comparison: keeping your ${currentRate}% mortgage and borrowing $${cashOutAmount.toLocaleString()} at ${alternativeRate}% works out to a ${blendedKeepRate.toFixed(2)}% weighted-average note rate, vs ${newRate}% on the entire $${Math.round(newLoanAmount).toLocaleString()} refi balance.`
   );
 
   if (newLTV > maxLTV) {
@@ -68,7 +144,7 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
 
   if (altTotalPaid < newTotalPaid) {
     insights.push(
-      `💡 Alternative: Keep current mortgage + separate ${alternativeRate}% loan saves $${Math.round(newTotalPaid - altTotalPaid).toLocaleString()} total`
+      `💡 Alternative: Keep current mortgage + separate ${alternativeRate}% loan (e.g. HELOC or home equity loan) saves $${Math.round(newTotalPaid - altTotalPaid).toLocaleString()} total`
     );
   } else {
     insights.push(
@@ -82,7 +158,11 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
     );
   }
 
-  const summary = `Cash-out refi gives you $${cashOutAmount.toLocaleString()} but costs ${effectiveRate.toFixed(2)}% effective rate and resets your loan to ${newTerm} years.`;
+  insights.push(
+    `These figures are educational estimates for comparison only — they are not an APR, a Truth in Lending disclosure, or an offer of credit. Your lender's Loan Estimate shows the official APR.`
+  );
+
+  const summary = `Cash-out refi gives you $${cashOutAmount.toLocaleString()} but adds $${Math.round(totalInterestIncrease).toLocaleString()} in interest over the new ${newTerm}-year term vs keeping your current mortgage.`;
 
   return {
     summary,
@@ -95,8 +175,9 @@ export function calculateCashOutRefi(inputs: CashOutRefinanceInputs): Calculator
       newPayment: Math.round(newPayment),
       newRate,
       newLTV: Math.round(newLTV),
-      effectiveRate: parseFloat(effectiveRate.toFixed(2)),
-      totalInterestIncrease: Math.round(newTotalInterest - currentTotalInterest),
+      impliedCashCostIrr: parseFloat(impliedCashCostIrr.toFixed(2)),
+      blendedKeepRate: parseFloat(blendedKeepRate.toFixed(2)),
+      totalInterestIncrease: Math.round(totalInterestIncrease),
     },
     chartData: [
       { scenario: 'Current Mortgage', payment: Math.round(currentPayment), totalInterest: Math.round(currentTotalInterest) },

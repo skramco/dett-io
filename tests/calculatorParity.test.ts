@@ -309,6 +309,63 @@ describe('cash-out-refi', () => {
   it('headline LTV matches the reference', () => {
     expect(num(result.details.newLTV)).toBeCloseTo(ltvPercent(347000, 500000), 0);
   });
+
+  it('does not report a fabricated effectiveRate', () => {
+    expect(result.details.effectiveRate).toBeUndefined();
+  });
+
+  it('reports a blended keep + HELOC note rate vs the refi rate', () => {
+    const expected = (280000 * 5.5 + 60000 * 9) / (280000 + 60000);
+    expect(num(result.details.blendedKeepRate)).toBeCloseTo(expected, 2);
+  });
+});
+
+describe('cash-out-refi Dett.io review scenario (ENG-326)', () => {
+  const result = calculateCashOutRefi({
+    currentBalance: 280000,
+    currentRate: 4.5,
+    yearsRemaining: 25,
+    homeValue: 500000,
+    cashOutAmount: 50000,
+    newRate: 6.75,
+    newTerm: 30,
+    closingCosts: 8000,
+    alternativeRate: 10,
+  });
+
+  it('matches the reviewed payments and extra interest (dollar cost, not a rate)', () => {
+    expect(num(result.details.currentPayment)).toBe(1556);
+    expect(num(result.details.newPayment)).toBe(2192);
+    expect(num(result.details.totalInterestIncrease)).toBe(264315);
+    expect(result.details.effectiveRate).toBeUndefined();
+  });
+
+  it('reports a true IRR on incremental cash flows, labeled as educational', () => {
+    expect(num(result.details.impliedCashCostIrr)).toBeCloseTo(15.54, 1);
+    expect(result.insights.join(' ')).toMatch(/educational estimate, not an APR/i);
+  });
+
+  it('compares the keep + HELOC blended note rate against the full-refi rate', () => {
+    expect(num(result.details.blendedKeepRate)).toBeCloseTo(5.33, 2);
+    expect(result.insights.join(' ')).toMatch(/5\.33%/);
+    expect(result.insights.join(' ')).toMatch(/6\.75%/);
+  });
+
+  it('suppresses IRR when incremental flows change sign (shorter new term)', () => {
+    const shorter = calculateCashOutRefi({
+      currentBalance: 280000,
+      currentRate: 4.5,
+      yearsRemaining: 25,
+      homeValue: 500000,
+      cashOutAmount: 50000,
+      newRate: 6.75,
+      newTerm: 15,
+      closingCosts: 8000,
+      alternativeRate: 10,
+    });
+    expect(num(shorter.details.impliedCashCostIrr)).toBe(0);
+    expect(shorter.insights.join(' ')).toMatch(/isn't meaningful/i);
+  });
 });
 
 describe('recast-vs-refi', () => {
