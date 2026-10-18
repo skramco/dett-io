@@ -33,6 +33,7 @@ export { calculateClosingCosts } from './closingCosts';
 export type { ClosingCostInputs } from './closingCosts';
 export { calculatePMI } from './pmi';
 export type { PMIInputs } from './pmi';
+export { getPMIRate } from './pmiRates';
 export { calculateFHA } from './fha';
 export type { FHAInputs } from './fha';
 export { calculateVA } from './va';
