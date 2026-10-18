@@ -32,14 +32,18 @@ export function calculateDTI(inputs: DTIInputs): CalculatorResult {
   const monthlyPropertyTax = propertyTax / 12;
   const monthlyInsurance = homeInsurance / 12;
 
+  // Round to 1 decimal before classifying so displayed values and
+  // ratings/insights always agree (avoids float artifacts like 28.000000000000004)
+  const round1 = (v: number) => Math.round(v * 10) / 10;
+
   // Front-end DTI: housing costs only
   const housingCosts = mortgagePayment + monthlyPropertyTax + monthlyInsurance + hoaFees;
-  const frontEndDTI = monthlyGrossIncome > 0 ? (housingCosts / monthlyGrossIncome) * 100 : 0;
+  const frontEndDTI = monthlyGrossIncome > 0 ? round1((housingCosts / monthlyGrossIncome) * 100) : 0;
 
   // Back-end DTI: all debts
   const nonHousingDebts = carPayments + studentLoans + creditCardMinimums + personalLoans + childSupport + otherDebts;
   const totalMonthlyDebts = housingCosts + nonHousingDebts;
-  const backEndDTI = monthlyGrossIncome > 0 ? (totalMonthlyDebts / monthlyGrossIncome) * 100 : 0;
+  const backEndDTI = monthlyGrossIncome > 0 ? round1((totalMonthlyDebts / monthlyGrossIncome) * 100) : 0;
 
   // Remaining income
   const remainingIncome = monthlyGrossIncome - totalMonthlyDebts;
@@ -80,21 +84,21 @@ export function calculateDTI(inputs: DTIInputs): CalculatorResult {
   const insights: string[] = [];
 
   if (frontEndDTI <= 28) {
-    insights.push(`Your front-end DTI of ${frontEndDTI.toFixed(1)}% is excellent. Most lenders prefer housing costs under 28% of gross income.`);
+    insights.push(`Your front-end DTI of ${frontEndDTI.toFixed(1)}% is excellent. Most lenders prefer housing costs at or below 28% of gross income.`);
   } else if (frontEndDTI <= 36) {
-    insights.push(`Your front-end DTI of ${frontEndDTI.toFixed(1)}% is acceptable but above the ideal 28%. Consider a less expensive home or larger down payment.`);
+    insights.push(`Your front-end DTI of ${frontEndDTI.toFixed(1)}% is above the ideal 28% target but within the range many lenders accept. A less expensive home or larger down payment would bring it down.`);
   } else {
-    insights.push(`Your front-end DTI of ${frontEndDTI.toFixed(1)}% is high. Most conventional loans require under 28-31%. You may need to reduce housing costs or increase income.`);
+    insights.push(`Your front-end DTI of ${frontEndDTI.toFixed(1)}% is high. Lenders typically prefer housing costs under 28-31% of gross income. You may need to reduce housing costs or increase income.`);
   }
 
   if (backEndDTI <= 36) {
     insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% is strong. You have good financial flexibility with ${remainingPercent.toFixed(0)}% of income remaining.`);
-  } else if (backEndDTI <= 43) {
-    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% is at the upper limit for most conventional loans (43% max). FHA loans may allow up to 50%.`);
+  } else if (backEndDTI <= 45) {
+    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% is within typical guidelines for conventional and FHA loans. Modern automated underwriting (Fannie Mae/Freddie Mac) may approve conventional loans up to roughly 50% with strong compensating factors.`);
   } else if (backEndDTI <= 50) {
-    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% exceeds conventional loan limits (43%). FHA loans may still qualify you at up to 50% with compensating factors.`);
+    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% is above the traditional 43-45% benchmark, but automated underwriting may still approve conventional loans up to roughly 50%, and FHA allows up to about 50% with compensating factors. Approval varies by lender and full application profile.`);
   } else {
-    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% exceeds most loan program limits. Consider paying down debts before applying for a mortgage.`);
+    insights.push(`Your total DTI of ${backEndDTI.toFixed(1)}% is above typical guidelines for most loan programs. Consider paying down debts before applying for a mortgage.`);
   }
 
   if (nonHousingDebts > 0) {
@@ -116,8 +120,8 @@ export function calculateDTI(inputs: DTIInputs): CalculatorResult {
   return {
     summary: `Front-end DTI: ${frontEndDTI.toFixed(1)}% (${frontEndRating}) | Back-end DTI: ${backEndDTI.toFixed(1)}% (${backEndRating})`,
     details: {
-      frontEndDTI: Math.round(frontEndDTI * 10) / 10,
-      backEndDTI: Math.round(backEndDTI * 10) / 10,
+      frontEndDTI,
+      backEndDTI,
       frontEndRating,
       backEndRating,
       housingCosts: Math.round(housingCosts),
