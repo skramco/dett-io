@@ -1,5 +1,11 @@
 import type { AffordabilityInputs, CalculatorResult } from './types';
 import { monthlyPayment } from './mortgageMath';
+import {
+  LOAN_LIMIT_YEAR,
+  CONFORMING_LOAN_LIMIT,
+  CONFORMING_HIGH_COST_LIMIT,
+  isJumboLoan,
+} from './loanLimits';
 
 // Assumed annual PMI rate (as a fraction of the loan amount) when LTV > 80%.
 const PMI_ANNUAL_RATE = 0.005;
@@ -81,9 +87,12 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
       ? housingPaymentAt(maxHomePrice)
       : { total: 0, monthlyPI: 0, monthlyPMI: 0 };
 
+    const loanAmount = Math.max(0, Math.round(maxHomePrice) - downPayment);
     results[`${level}Price`] = Math.round(maxHomePrice);
     results[`${level}Payment`] = Math.round(payment.total);
     results[`${level}PMI`] = Math.round(payment.monthlyPMI);
+    results[`${level}LoanAmount`] = loanAmount;
+    results[`${level}IsJumbo`] = isJumboLoan(loanAmount) ? 1 : 0;
     // Front-end DTI: housing payment as % of income.
     results[`${level}DTI`] = Math.round((payment.total / monthlyIncome) * 100);
     // Back-end DTI: housing payment + other debts as % of income.
@@ -123,6 +132,16 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
     );
   }
 
+  if (results.moderateIsJumbo === 1) {
+    insights.push(
+      `At the recommended price, your loan of $${results.moderateLoanAmount.toLocaleString()} would exceed the ${LOAN_LIMIT_YEAR} conforming limit of $${CONFORMING_LOAN_LIMIT.toLocaleString()} that applies in most counties — jumbo territory, which typically means higher credit score and down payment requirements. High-cost counties have conforming limits up to $${CONFORMING_HIGH_COST_LIMIT.toLocaleString()}.`
+    );
+  } else if (results.aggressiveIsJumbo === 1) {
+    insights.push(
+      `At the aggressive price, your loan of $${results.aggressiveLoanAmount.toLocaleString()} would exceed the ${LOAN_LIMIT_YEAR} conforming limit of $${CONFORMING_LOAN_LIMIT.toLocaleString()} (most counties), so you'd likely need a jumbo loan at the top of your range. Staying at or below the moderate price keeps you in conforming territory.`
+    );
+  }
+
   if (results.moderatePMI > 0) {
     insights.push(
       `💡 Your down payment is below 20% at the recommended price, so $${results.moderatePMI.toLocaleString()}/month PMI is already included in these payments. PMI drops off once you reach 20% equity.`
@@ -142,18 +161,26 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
       conservativeBackEndDTI: results.conservativeBackEndDTI,
       conservativePMI: results.conservativePMI,
       conservativeBinding: binding.conservative,
+      conservativeLoanAmount: results.conservativeLoanAmount,
+      conservativeIsJumbo: results.conservativeIsJumbo,
       moderatePrice: results.moderatePrice,
       moderatePayment: results.moderatePayment,
       moderateDTI: results.moderateDTI,
       moderateBackEndDTI: results.moderateBackEndDTI,
       moderatePMI: results.moderatePMI,
       moderateBinding: binding.moderate,
+      moderateLoanAmount: results.moderateLoanAmount,
+      moderateIsJumbo: results.moderateIsJumbo,
       aggressivePrice: results.aggressivePrice,
       aggressivePayment: results.aggressivePayment,
       aggressiveDTI: results.aggressiveDTI,
       aggressiveBackEndDTI: results.aggressiveBackEndDTI,
       aggressivePMI: results.aggressivePMI,
       aggressiveBinding: binding.aggressive,
+      aggressiveLoanAmount: results.aggressiveLoanAmount,
+      aggressiveIsJumbo: results.aggressiveIsJumbo,
+      conformingLoanLimit: CONFORMING_LOAN_LIMIT,
+      loanLimitYear: LOAN_LIMIT_YEAR,
       backEndDTI,
       maxHomePrice: results.moderatePrice,
     },

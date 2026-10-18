@@ -416,14 +416,14 @@ function AffordHouse120K() {
       <p>A good rule of thumb: if your total housing cost (PITI + HOA + PMI) is under 25% of gross income, you'll barely feel it. At 28-32%, it's manageable. Above 35%, you'll feel the squeeze.</p>
 
       <h2>Jumbo Loan Territory</h2>
-      <p>Depending on your location, homes above $472,030 (the 2024 conforming loan limit in most areas) may require a jumbo loan. Jumbo loans typically need:</p>
+      <p>Depending on your location, loans above $832,750 (the 2026 conforming loan limit in most areas) require a jumbo loan. Jumbo loans typically need:</p>
       <ul>
         <li><strong>Higher credit score:</strong> 700+ (often 720+)</li>
         <li><strong>Larger down payment:</strong> 10-20% minimum</li>
         <li><strong>More reserves:</strong> 6-12 months of payments in savings</li>
         <li><strong>Lower DTI:</strong> Usually under 43%</li>
       </ul>
-      <p>In high-cost areas (parts of CA, NY, HI, etc.), conforming limits are higher — up to $1,089,300 — so you may not need a jumbo loan at all.</p>
+      <p>In high-cost areas (parts of CA, NY, HI, etc.), conforming limits are higher — up to $1,249,125 for 2026 — so you may not need a jumbo loan at all.</p>
 
       <Callout>At $120K, you're likely choosing between a comfortable home at $400K and a stretch home at $500K+. The comfortable choice almost always wins long-term.</Callout>
 
@@ -525,14 +525,14 @@ function AffordHouse175K() {
       <SalaryTable salary="$175,000" monthly="$14,583" maxHome28="$625,000" maxHome36="$750,000" downPayment5="$31,250" downPayment10="$62,500" downPayment20="$125,000" />
 
       <h2>Conforming vs. Jumbo Territory</h2>
-      <p>In most U.S. counties, the conforming loan limit is $766,550 (2024). At $175K income, you're right at the edge. Homes priced above this threshold may require a jumbo loan, which typically means:</p>
+      <p>In most U.S. counties, the conforming loan limit is $832,750 (2026). At $175K income, you're right at the edge. Loans above this threshold require a jumbo loan, which typically means:</p>
       <ul>
         <li><strong>Higher credit score requirements</strong> (usually 700+)</li>
         <li><strong>Larger down payment</strong> (10-20% minimum)</li>
         <li><strong>More reserves required</strong> (6-12 months of payments in savings)</li>
         <li><strong>Slightly higher rates</strong> (though the gap has narrowed)</li>
       </ul>
-      <p>If you can stay under the conforming limit, you'll get better terms. In high-cost areas (parts of CA, NY, MA, etc.), the limit is higher — up to $1,149,825.</p>
+      <p>If you can stay under the conforming limit, you'll get better terms. In high-cost areas (parts of CA, NY, MA, etc.), the limit is higher — up to $1,249,125 for 2026.</p>
 
       <h2>Payment Scenarios</h2>
       <Box component="table">
@@ -580,11 +580,11 @@ function AffordHouse200K() {
       <SalaryTable salary="$200,000" monthly="$16,667" maxHome28="$725,000" maxHome36="$875,000" downPayment5="$36,250" downPayment10="$72,500" downPayment20="$145,000" />
 
       <h2>Jumbo Loan Territory</h2>
-      <p>At $200K income, you're likely shopping in jumbo loan territory (above $766,550 in most counties). Here's what that means:</p>
+      <p>At $200K income, you're likely shopping in jumbo loan territory (loans above $832,750 in most counties for 2026). Here's what that means:</p>
       <Box component="table">
         <thead><tr><th>Factor</th><th>Conforming Loan</th><th>Jumbo Loan</th></tr></thead>
         <tbody>
-          <tr><td>Max Loan Amount</td><td>$766,550</td><td>$1M-$3M+</td></tr>
+          <tr><td>Max Loan Amount</td><td>$832,750</td><td>$1M-$3M+</td></tr>
           <tr><td>Min Credit Score</td><td>620</td><td>700-720</td></tr>
           <tr><td>Min Down Payment</td><td>3-5%</td><td>10-20%</td></tr>
           <tr><td>Reserve Requirements</td><td>0-2 months</td><td>6-12 months</td></tr>
@@ -592,7 +592,7 @@ function AffordHouse200K() {
         </tbody>
       </Box>
 
-      <Callout>In high-cost areas (San Francisco, NYC, LA, etc.), conforming limits are higher — up to $1,149,825. Check your county's limit before assuming you need a jumbo loan.</Callout>
+      <Callout>In high-cost areas (San Francisco, NYC, LA, etc.), conforming limits are higher — up to $1,249,125 for 2026. Check your county's limit before assuming you need a jumbo loan.</Callout>
 
       <h2>The $200K Paradox</h2>
       <p>Here's what most $200K earners don't realize: the more you earn, the more important it is to buy <em>below</em> your maximum. Why?</p>
@@ -733,9 +733,9 @@ function FHAvsConventional() {
           <tr><td>Min. Down Payment</td><td>3.5%</td><td>3% (first-time) / 5%</td></tr>
           <tr><td>Min. Credit Score</td><td>580 (3.5% down) / 500 (10% down)</td><td>620+</td></tr>
           <tr><td>Mortgage Insurance</td><td>Upfront MIP (1.75%) + Annual MIP</td><td>PMI (if &lt;20% down)</td></tr>
-          <tr><td>MI Removal</td><td>Stays for life of loan (if &lt;10% down)</td><td>Drops at 78-80% LTV</td></tr>
+          <tr><td>MI Removal</td><td>Stays for life of loan (if &lt;10% down); 11 years (10%+ down)</td><td>Drops at 78-80% LTV</td></tr>
           <tr><td>Max DTI</td><td>Up to 57% (with compensating factors)</td><td>Up to 50%</td></tr>
-          <tr><td>Loan Limits (2024)</td><td>$472,030 (most areas)</td><td>$472,030 (conforming)</td></tr>
+          <tr><td>Loan Limits (2026)</td><td>$541,287 (most areas)</td><td>$832,750 (conforming)</td></tr>
           <tr><td>Property Requirements</td><td>Stricter (must meet HUD standards)</td><td>More flexible</td></tr>
         </tbody>
       </Box>

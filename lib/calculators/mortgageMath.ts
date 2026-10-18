@@ -192,6 +192,12 @@ export function fhaUpfrontMip(baseLoanAmount: number): number {
   return baseLoanAmount * (FHA_UPFRONT_MIP_PERCENT / 100);
 }
 
+/**
+ * HUD Handbook 4000.1 MIP table splits annual MIP rates at this base loan
+ * amount (set by Mortgagee Letter 2023-05; unchanged by annual loan-limit updates).
+ */
+export const FHA_MIP_RATE_LOAN_THRESHOLD = 726200;
+
 /** FHA annual MIP rate (%) based on term, LTV, and base loan amount. */
 export function fhaAnnualMipRatePercent(
   baseLoanAmount: number,
@@ -201,10 +207,18 @@ export function fhaAnnualMipRatePercent(
   if (loanTermYears <= 15) {
     return ltv <= 90 ? 0.15 : 0.4;
   }
-  if (baseLoanAmount <= 726200) {
+  if (baseLoanAmount <= FHA_MIP_RATE_LOAN_THRESHOLD) {
     return ltv <= 95 ? 0.5 : 0.55;
   }
   return ltv <= 95 ? 0.7 : 0.75;
+}
+
+/**
+ * Years of annual MIP. HUD ends MIP after 11 years when the down payment is
+ * 10% or more (LTV ≤ 90% at origination); otherwise MIP lasts the full term.
+ */
+export function fhaMipDurationYears(downPaymentPercent: number, loanTermYears: number): number {
+  return downPaymentPercent >= 10 ? 11 : loanTermYears;
 }
 
 /** FHA monthly MIP in dollars. */

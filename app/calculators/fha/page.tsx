@@ -21,7 +21,7 @@ import {
   Home,
   Shield,
   CheckCircle,
-  Cancel,
+  ErrorOutline,
   CreditCard,
 } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
@@ -123,7 +123,7 @@ export default function FHACalculator() {
                 value={inputs.downPaymentPercent}
                 onChange={(v) => handleInputChange('downPaymentPercent', v)}
                 step={0.5}
-                helperText="FHA minimum: 3.5% (580+ credit) or 10% (500-579)"
+                helperText="FHA minimum: 3.5% (580+ credit) or 10% (500-579). With 10%+ down, monthly MIP ends after 11 years"
               />
               <PercentageInput
                 label="Interest Rate"
@@ -227,46 +227,54 @@ export default function FHACalculator() {
                 </Grid>
               </Grid>
 
-              {/* FHA Eligibility Check */}
-              <ResultsSection title="FHA Eligibility" subtitle="Do you qualify?">
+              {/* FHA Guideline Check */}
+              <ResultsSection title="FHA Guideline Check" subtitle="How your numbers line up with typical FHA guidelines">
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Stack spacing={2}>
                     {[
                       {
                         label: 'Credit Score',
-                        detail: `${inputs.creditScore} (minimum: 500)`,
-                        passes: (result.details.meetsCreditScore as number) === 1,
+                        detail: `${inputs.creditScore} (FHA minimum: 500)`,
+                        meets: (result.details.meetsCreditScore as number) === 1,
                       },
                       {
                         label: 'Down Payment',
                         detail: `${inputs.downPaymentPercent}% (minimum: ${result.details.minDownPayment}%)`,
-                        passes: (result.details.meetsDownPayment as number) === 1,
+                        meets: (result.details.meetsDownPayment as number) === 1,
                       },
                       {
                         label: 'DTI Ratio (Standard)',
                         detail: `${result.details.totalDTI}% (guideline: ≤43%)`,
-                        passes: (result.details.meetsStandardDTI as number) === 1,
+                        meets: (result.details.meetsStandardDTI as number) === 1,
                       },
                       {
                         label: 'DTI Ratio (Extended)',
                         detail: `${result.details.totalDTI}% (FHA max: ≤57%)`,
-                        passes: (result.details.meetsDTI as number) === 1,
+                        meets: (result.details.meetsDTI as number) === 1,
+                      },
+                      {
+                        label: `Loan Amount vs ${result.details.loanLimitYear} FHA Limits`,
+                        detail: `$${fmt(result.details.baseLoanAmount as number)} (most counties: $${fmt(result.details.fhaLoanLimitFloor as number)}; high-cost up to $${fmt(result.details.fhaLoanLimitCeiling as number)})`,
+                        meets: (result.details.withinFhaFloor as number) === 1,
                       },
                     ].map((check, i) => (
-                      <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, borderRadius: 2, bgcolor: check.passes ? '#F0FDF4' : '#FEF2F2' }}>
+                      <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, borderRadius: 2, bgcolor: check.meets ? '#F0FDF4' : '#FFFBEB' }}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          {check.passes ? <CheckCircle sx={{ fontSize: 20, color: '#22C55E' }} /> : <Cancel sx={{ fontSize: 20, color: '#EF4444' }} />}
+                          {check.meets ? <CheckCircle sx={{ fontSize: 20, color: '#22C55E' }} /> : <ErrorOutline sx={{ fontSize: 20, color: '#F59E0B' }} />}
                           <Box>
                             <Typography variant="body2" sx={{ fontWeight: 600 }}>{check.label}</Typography>
                             <Typography variant="caption" color="text.secondary">{check.detail}</Typography>
                           </Box>
                         </Stack>
-                        <Typography variant="body2" sx={{ fontWeight: 700, color: check.passes ? '#22C55E' : '#EF4444' }}>
-                          {check.passes ? 'Pass' : 'Fail'}
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: check.meets ? '#22C55E' : '#B45309' }}>
+                          {check.meets ? 'Meets guideline' : 'Worth reviewing'}
                         </Typography>
                       </Box>
                     ))}
                   </Stack>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
+                    These are general FHA guidelines, not an approval decision — lenders weigh your full picture, and limits vary by county.
+                  </Typography>
                 </Paper>
               </ResultsSection>
 
@@ -291,6 +299,15 @@ export default function FHACalculator() {
               {/* FHA vs Conventional */}
               <ResultsSection title="FHA vs Conventional" subtitle="Which loan type costs less?">
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  {(result.details.isJumbo as number) === 1 && (
+                    <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
+                      <Typography variant="body2">
+                        <strong>Jumbo territory:</strong> this loan amount is above the {result.details.loanLimitYear} conforming limit
+                        (${fmt(result.details.conformingLoanLimit as number)} in most counties), so the conventional option shown would be
+                        a jumbo loan with stricter credit and down payment requirements.
+                      </Typography>
+                    </Alert>
+                  )}
                   <Grid container spacing={3}>
                     <Grid size={{ xs: 6 }}>
                       <Paper elevation={0} sx={{ p: 2.5, borderRadius: 2, bgcolor: '#FEF3C7', border: '1px solid #FDE68A', textAlign: 'center' }}>

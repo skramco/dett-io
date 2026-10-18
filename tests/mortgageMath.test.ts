@@ -4,8 +4,10 @@ import {
   backEndDtiPercent,
   breakEvenMonths,
   conventionalPmiRatePercent,
+  FHA_MIP_RATE_LOAN_THRESHOLD,
   FHA_UPFRONT_MIP_PERCENT,
   fhaAnnualMipRatePercent,
+  fhaMipDurationYears,
   fhaMonthlyMip,
   fhaUpfrontMip,
   frontEndDtiPercent,
@@ -160,6 +162,19 @@ describe('FHA helpers', () => {
 
   it('computes monthly MIP from the annual rate', () => {
     expect(fhaMonthlyMip(300000, 0.55)).toBeCloseTo(137.5, 6);
+  });
+
+  it('ends annual MIP after 11 years when down payment is 10% or more', () => {
+    expect(fhaMipDurationYears(10, 30)).toBe(11);
+    expect(fhaMipDurationYears(20, 15)).toBe(11);
+    expect(fhaMipDurationYears(9.99, 30)).toBe(30);
+    expect(fhaMipDurationYears(3.5, 15)).toBe(15);
+  });
+
+  it('keeps the HUD MIP rate-table threshold independent of annual loan limits', () => {
+    expect(FHA_MIP_RATE_LOAN_THRESHOLD).toBe(726200);
+    expect(fhaAnnualMipRatePercent(FHA_MIP_RATE_LOAN_THRESHOLD, 96.5, 30)).toBe(0.55);
+    expect(fhaAnnualMipRatePercent(FHA_MIP_RATE_LOAN_THRESHOLD + 1, 96.5, 30)).toBe(0.75);
   });
 });
 

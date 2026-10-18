@@ -2,6 +2,8 @@ export * from './types';
 
 // Shared mortgage math — single source of truth for all calculator formulas
 export * from './mortgageMath';
+// 2026 FHA / conforming / jumbo loan limits
+export * from './loanLimits';
 export { calculateMortgageCost } from './mortgageCost';
 export {
   MORTGAGE_COST_DEFAULT_INPUTS,
