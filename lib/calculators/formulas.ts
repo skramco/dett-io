@@ -171,9 +171,10 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     {
       title: 'Timeline Decision Math',
       steps: [
-        { label: 'Total Cost at Year X', formula: 'Σ Monthly Payments + Closing Costs − Equity Built', description: 'Net cost of each option over your expected time in the home.' },
-        { label: 'Remaining Balance', formula: 'Standard amortization balance at month M', description: 'How much you still owe when you sell or move.' },
-        { label: 'Best Option', formula: 'Lowest Total Cost at your timeline', description: 'The option that costs the least over your expected holding period.' },
+        { label: 'Net Cost at Year X', formula: 'Σ Monthly Payments + Closing Costs − Equity Built', description: 'Net cost of each option over your expected time in the home.', computedValue: `$${fmt(d.bestNetCost as number)} (best option)` },
+        { label: 'ARM Rate After Reset', formula: 'Fully-indexed rate (Index + Margin), limited by the adjustment cap and lifetime cap', description: 'After the fixed period, the ARM adjusts annually using the same cap model as ARM vs Fixed, and the payment is recast on the remaining balance.', computedValue: d.armAdjusts ? `${fmtDec(d.armAdjustedRate as number)}% → $${fmt(d.armAdjustedPayment as number)}/mo` : 'No reset before you move' },
+        { label: 'Remaining Balance', formula: 'Standard amortization balance at month M', description: 'How much you still owe when you sell or move.', computedValue: `$${fmt(d.bestBalance as number)} (best option)` },
+        { label: 'Best Option', formula: 'Lowest Net Cost at your timeline', description: 'The option that costs the least over your expected holding period.', computedValue: `${d.bestOption}` },
       ],
     },
   ],
