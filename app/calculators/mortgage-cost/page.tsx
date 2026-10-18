@@ -46,7 +46,7 @@ import {
   HorizontalBar,
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
-import { calculateMortgageCost } from '@/lib/calculators';
+import { calculateMortgageCost, calculateAmortization } from '@/lib/calculators';
 import type { MortgageCostInputs } from '@/lib/calculators/types';
 
 export default function MortgageCostCalculator() {
@@ -160,25 +160,31 @@ export default function MortgageCostCalculator() {
   // Annual cost breakdown
   const annualCostData = useMemo(() => {
     if (!result) return { principal: 0, interest: 0, taxes: 0, insurance: 0, other: 0, total: 0 };
-    const monthlyPI = result.details.principalAndInterest as number;
     const monthlyTax = result.details.monthlyPropertyTax as number;
     const monthlyIns = result.details.monthlyInsurance as number;
     const monthlyHOA = result.details.monthlyHOA as number;
     const monthlyPMI = result.details.monthlyPMI as number;
-    
-    // Estimate first year principal (rough - interest heavy early)
-    const firstYearInterest = loanAmount * (inputs.interestRate / 100);
-    const firstYearPrincipal = (monthlyPI * 12) - firstYearInterest;
-    
+
+    // Year 1 interest/principal from the actual amortization schedule
+    // (same calculation as the Amortization calculator)
+    const { amortizationSchedule } = calculateAmortization({
+      loanAmount,
+      interestRate: inputs.interestRate,
+      loanTerm: inputs.loanTerm,
+    });
+    const firstYear = amortizationSchedule.yearlySummary[0];
+    const firstYearInterest = firstYear?.totalInterest ?? 0;
+    const firstYearPrincipal = firstYear?.totalPrincipal ?? 0;
+
     return {
-      principal: Math.max(0, firstYearPrincipal),
-      interest: firstYearInterest,
-      taxes: monthlyTax * 12,
-      insurance: monthlyIns * 12,
-      other: (monthlyHOA + monthlyPMI) * 12,
-      total: (result.details.totalMonthlyPayment as number) * 12,
+      principal: Math.round(Math.max(0, firstYearPrincipal)),
+      interest: Math.round(firstYearInterest),
+      taxes: Math.round(monthlyTax * 12),
+      insurance: Math.round(monthlyIns * 12),
+      other: Math.round((monthlyHOA + monthlyPMI) * 12),
+      total: Math.round((result.details.totalMonthlyPayment as number) * 12),
     };
-  }, [result, loanAmount, inputs.interestRate]);
+  }, [result, loanAmount, inputs.interestRate, inputs.loanTerm]);
 
   return (
     <CalculatorLayout
@@ -211,7 +217,7 @@ export default function MortgageCostCalculator() {
                   min={0}
                   max={inputs.homePrice * 0.5}
                   step={5000}
-                  valueLabelFormat={(v) => `$${(v / 1000).toFixed(0)}k (${((v / inputs.homePrice) * 100).toFixed(0)}%)`}
+                  valueLabelFormat={(v) => `$${v.toLocaleString()} (${((v / inputs.homePrice) * 100).toFixed(0)}%)`}
                 />
                 {needsPMI && (
                   <Alert severity="warning" sx={{ mt: 1 }}>
@@ -335,7 +341,7 @@ export default function MortgageCostCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total Interest"
-                    value={`$${((result.details.totalInterest as number) / 1000).toFixed(0)}k`}
+                    value={`$${(result.details.totalInterest as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
                     sublabel={`Over ${inputs.loanTerm} years`}
                     color="warning"
                   />
@@ -343,7 +349,7 @@ export default function MortgageCostCalculator() {
                 <Grid size={{ xs: 6, sm: 3 }}>
                   <MetricCard
                     label="Total Cost"
-                    value={`$${((result.details.totalPaid as number) / 1000).toFixed(0)}k`}
+                    value={`$${(result.details.totalPaid as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
                     sublabel="All payments combined"
                     color="error"
                   />
@@ -512,7 +518,7 @@ export default function MortgageCostCalculator() {
               {/* Lifetime Cost Analysis */}
               <ResultsSection 
                 title="Lifetime Cost Analysis" 
-                subtitle="The true cost of your mortgage over {inputs.loanTerm} years"
+                subtitle={`The true cost of your mortgage over ${inputs.loanTerm} years`}
               >
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Grid container spacing={3}>
