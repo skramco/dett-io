@@ -158,6 +158,10 @@ export function calculateVA(inputs: VAInputs): CalculatorResult {
     insights.push(
       `VA saves you $${Math.round(vaVsConv)}/month vs conventional with 5% down ($${Math.round(vaVsConv * 12).toLocaleString()}/year).`
     );
+  } else if (vaVsConv < 0) {
+    insights.push(
+      `In this scenario, a conventional loan with 5% down would cost $${Math.round(-vaVsConv)}/month less than VA, because the financed funding fee outweighs the PMI difference. VA may still win if minimizing upfront cash matters most to you.`
+    );
   }
 
   if (totalDTI > 41 && totalDTI <= 50) {
