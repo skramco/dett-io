@@ -401,7 +401,14 @@ export default function CalculatorLayout({ children, title, description, related
           {calculatorSlug && (
             <RelatedGuides calculatorSlug={calculatorSlug} />
           )}
-          <LoanKnowCTA />
+          <LoanKnowCTA
+            calculatorSlug={calculatorSlug}
+            calculatorName={title}
+            inputs={actionBarData?.inputs}
+            summary={actionBarData?.summary}
+            details={actionBarData?.details}
+            insights={actionBarData?.insights}
+          />
         </Container>
 
         {/* Calculator Disclaimer */}

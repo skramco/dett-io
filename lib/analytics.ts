@@ -15,7 +15,8 @@ export type AnalyticsEvent =
   | 'guide_read'
   | 'show_me_the_math_opened'
   | 'cta_click'
-  | 'outbound_click';
+  | 'outbound_click'
+  | 'loanknow_lead_submitted';
 
 interface EventParams {
   calculator_slug?: string;
