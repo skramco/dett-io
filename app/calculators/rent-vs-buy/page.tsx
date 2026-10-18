@@ -28,7 +28,6 @@ import {
   InputSection,
   CurrencyInput,
   PercentageInput,
-  NumberInput,
   SelectInput,
 } from '@/components/mui/calculator/InputPanel';
 import {
@@ -40,8 +39,6 @@ import {
 } from '@/components/mui/calculator/ResultsPanel';
 import {
   LazyTimelineChart as TimelineChart,
-  HorizontalBar,
-  CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateRentVsBuy } from '@/lib/calculators';
 import type { RentVsBuyInputs } from '@/lib/calculators/types';

@@ -79,6 +79,7 @@ const detailsBySlug: Record<string, Record<string, number | string>> = {
     propertyTaxRate: 1.2,
     homeInsuranceAnnual: 1500,
     maintenanceRate: 1,
+    pmiRate: 0.5,
     closingCosts: 8000,
     sellingCosts: 6,
     investmentReturn: 6,
@@ -312,7 +313,7 @@ describe('Show Me the Math values', () => {
     expect(steps.some((s) => s.label === 'Monthly PMI')).toBe(false);
   });
 
-  it('rent-vs-buy shows N/A only when buying genuinely never breaks even', () => {
+  it('rent-vs-buy shows Never within horizon when buying does not break even', () => {
     // Renting stays far cheaper, home barely appreciates → no crossover
     const details = calculateRentVsBuy({
       homePrice: 800000,
@@ -325,6 +326,7 @@ describe('Show Me the Math values', () => {
       propertyTaxRate: 2,
       homeInsuranceAnnual: 3000,
       maintenanceRate: 2,
+      pmiRate: 0.5,
       closingCosts: 15000,
       sellingCosts: 8,
       investmentReturn: 8,
@@ -333,6 +335,6 @@ describe('Show Me the Math values', () => {
 
     const sets = calculatorFormulas['rent-vs-buy'](details);
     const breakEvenStep = sets[0].steps.find((s) => s.label === 'Break-Even Year')!;
-    expect(breakEvenStep.computedValue).toBe('N/A');
+    expect(breakEvenStep.computedValue).toBe('Never within horizon');
   });
 });
