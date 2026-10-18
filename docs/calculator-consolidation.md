@@ -41,7 +41,9 @@ Rationale:
   initial cap on the first reset, periodic cap later, lifetime cap, and a floor
   at the margin. Modern 5/6 SOFR naming and adjustment frequency are first-class
   inputs. The payment is re-amortized over the remaining term at each adjustment,
-  plus a worst-case path where every adjustment hits its cap.
+  plus a worst-case path where every adjustment hits its cap. Named falling /
+  expected / rising index paths and a 400-path Monte Carlo P10–P90 band
+  (ENG-349) sit alongside that cap-driven upper bound.
 - **Points & temporary buydowns (ENG-325):** net cost includes remaining
   balance, and 1-0 / 2-1 / 3-2-1 buydowns are modeled (note rate stays at par;
   unused subsidy is credited if you leave mid-buydown).

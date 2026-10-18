@@ -312,9 +312,9 @@ describe('Show Me the Math values', () => {
     expect(sets[1].steps.find((s) => s.label === 'Share of paths where buying wins')?.computedValue).toMatch(/of paths$/);
   });
 
-  it('arm-vs-fixed math card discloses rate-path Monte Carlo percentiles', () => {
-    const details = detailsBySlug['arm-vs-fixed'];
-    const sets = calculatorFormulas['arm-vs-fixed'](details);
+  it('loan-timeline math card discloses ARM rate-path Monte Carlo percentiles', () => {
+    const details = detailsBySlug['loan-timeline'];
+    const sets = calculatorFormulas['loan-timeline'](details);
     expect(sets.map((s) => s.title).join(' ')).toMatch(/Rate-path scenarios/);
     const mc = sets.find((s) => s.title.includes('Monte Carlo'))!;
     expect(mc.steps.find((s) => s.label === 'Share of paths ARM is cheaper')?.computedValue).toMatch(/of paths$/);

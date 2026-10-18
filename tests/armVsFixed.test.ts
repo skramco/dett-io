@@ -80,7 +80,7 @@ describe('loan-timeline ARM path (ENG-330)', () => {
   });
 
   it('exposes named rate paths and a Monte Carlo payment range', () => {
-    const result = calculateArmVsFixed(sofr56());
+    const result = calculateLoanTimeline(sofr56());
     expect(Number(result.details.mcSamples)).toBe(400);
     expect(Number(result.details.fallingIndex)).toBeCloseTo(3, 5);
     expect(Number(result.details.risingIndex)).toBeCloseTo(7, 5);
@@ -93,14 +93,7 @@ describe('loan-timeline ARM path (ENG-330)', () => {
     expect(Number(result.details.pctArmCheaper)).toBeGreaterThanOrEqual(0);
     expect(Number(result.details.pctArmCheaper)).toBeLessThanOrEqual(100);
 
-    const yearly = result.chartData as Array<{
-      p10Payment: number;
-      p50Payment: number;
-      p90Payment: number;
-      fallingPayment: number;
-      risingPayment: number;
-      worstPayment: number;
-    }>;
+    const yearly = result.armSchedule;
     expect(yearly.length).toBe(30);
     const mid = yearly[20];
     expect(mid.p10Payment).toBeLessThanOrEqual(mid.p50Payment);
@@ -110,8 +103,8 @@ describe('loan-timeline ARM path (ENG-330)', () => {
   });
 
   it('Monte Carlo percentiles are deterministic for the same inputs', () => {
-    const a = calculateArmVsFixed(sofr56());
-    const b = calculateArmVsFixed(sofr56());
+    const a = calculateLoanTimeline(sofr56());
+    const b = calculateLoanTimeline(sofr56());
     expect(a.details.p10TotalPaid).toBe(b.details.p10TotalPaid);
     expect(a.details.p90TotalPaid).toBe(b.details.p90TotalPaid);
     expect(a.details.pctArmCheaper).toBe(b.details.pctArmCheaper);
