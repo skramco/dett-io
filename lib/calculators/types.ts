@@ -79,6 +79,8 @@ export interface RentVsBuyInputs {
   sellingCosts: number;
   investmentReturn: number;
   yearsToAnalyze: number;
+  /** Annual PMI rate (% of loan). Applied when down payment < 20%, until 78% LTV. */
+  pmiRate?: number;
 }
 
 // Category 2: Rate & Structure

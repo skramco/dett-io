@@ -78,12 +78,22 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
 
   'rent-vs-buy': (d) => [
     {
+      title: 'Monthly Cost of Owning (Year 1)',
+      steps: [
+        { label: 'Monthly P&I', formula: 'Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Standard amortization formula on the loan amount.', computedValue: `$${fmt(d.monthlyPI as number)}` },
+        { label: 'Property Tax', formula: 'Home Value × Tax Rate ÷ 12', description: 'Grows with home value over time.', computedValue: `$${fmt(d.monthlyTax as number)}` },
+        { label: 'Home Insurance', formula: 'Annual Premium ÷ 12', description: 'Monthly share of homeowners insurance.', computedValue: `$${fmt(d.monthlyInsurance as number)}` },
+        { label: 'PMI (if < 20% down)', formula: 'Loan × PMI Rate ÷ 12', description: 'Required when down payment < 20%. Drops off once the balance reaches 78% of the purchase price.', computedValue: `$${fmt(d.monthlyPMI as number || 0)}` },
+        { label: 'Maintenance', formula: 'Home Value × Maintenance Rate ÷ 12', description: 'Typically ~1% of home value per year; grows with home value.', computedValue: `$${fmt(d.monthlyMaintenance as number)}` },
+        { label: 'Total Monthly Ownership Cost', formula: 'P&I + Tax + Insurance + PMI + Maintenance', description: 'The full monthly cost of owning — what rent is compared against.', computedValue: `$${fmt(d.totalMonthlyCost as number)}` },
+      ],
+    },
+    {
       title: 'Buy vs Rent Comparison',
       steps: [
-        { label: 'Monthly Mortgage Cost', formula: 'P&I + Tax + Insurance + PMI + HOA', description: 'Total monthly cost of owning.' },
         { label: 'Monthly Rent', formula: 'Current Rent × (1 + Annual Increase)ʸ', description: 'Rent grows each year by the annual increase rate.' },
-        { label: 'Home Equity Built', formula: 'Principal Paid + Appreciation', description: 'Equity = cumulative principal payments + home value growth.' },
-        { label: 'Investment Alternative', formula: 'Down Payment × (1 + Return Rate)ʸ', description: 'What your down payment could earn if invested instead.' },
+        { label: 'Renter Net Worth', formula: '(Down Payment + Closing Costs) × (1 + Return)ʸ + Invested Difference', description: 'The renter invests the cash to close — the opportunity cost of buying — plus any monthly savings vs owning.', computedValue: `Cash to close: $${fmt(d.cashToClose as number)}` },
+        { label: 'Buy Net Worth', formula: 'Home Value − Loan Balance − Selling Costs + Invested Difference', description: 'Equity if you sold at that point, net of selling costs (agent commissions + transfer costs, typically 6–8%). When rent exceeds owning costs, the owner invests the difference.', computedValue: `Selling costs at horizon: $${fmt(d.finalSellingCost as number)}` },
         { label: 'Break-Even Year', formula: 'Year where Buy Net Worth > Rent Net Worth', description: 'The year when buying becomes financially better than renting.', computedValue: d.breakEvenYear ? `Year ${d.breakEvenYear}` : 'N/A' },
       ],
     },
