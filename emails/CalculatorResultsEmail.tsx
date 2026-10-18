@@ -13,12 +13,14 @@ import {
   Row,
   Column,
 } from '@react-email/components';
+import { formatInputLabel, formatInputValue, type CalculatorInputValue } from '@/lib/share/calculatorState';
 
 interface CalculatorResultsEmailProps {
   calculatorName: string;
   summary: string;
   details: Record<string, number | string>;
   insights: string[];
+  inputs?: Record<string, string | number | boolean>;
   calculatorUrl?: string;
 }
 
@@ -27,6 +29,7 @@ export default function CalculatorResultsEmail({
   summary,
   details,
   insights,
+  inputs,
   calculatorUrl,
 }: CalculatorResultsEmailProps) {
   return (
@@ -61,9 +64,26 @@ export default function CalculatorResultsEmail({
             <Text style={summaryText}>{summary}</Text>
           </Section>
 
+          {/* Inputs */}
+          {inputs && Object.keys(inputs).length > 0 && (
+            <Section style={detailsSection}>
+              <Text style={sectionTitle}>Your Inputs</Text>
+              {Object.entries(inputs).map(([key, value]) => (
+                <Row key={key} style={detailRow}>
+                  <Column style={detailLabelCol}>
+                    <Text style={detailLabel}>{formatLabel(key)}</Text>
+                  </Column>
+                  <Column style={detailValueCol}>
+                    <Text style={detailValue}>{formatValue(key, value)}</Text>
+                  </Column>
+                </Row>
+              ))}
+            </Section>
+          )}
+
           {/* Details Table */}
           <Section style={detailsSection}>
-            <Text style={sectionTitle}>Detailed Breakdown</Text>
+            <Text style={sectionTitle}>Headline Results</Text>
             {Object.entries(details).map(([key, value]) => (
               <Row key={key} style={detailRow}>
                 <Column style={detailLabelCol}>
@@ -150,23 +170,11 @@ export default function CalculatorResultsEmail({
 }
 
 function formatLabel(key: string): string {
-  return key
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (str) => str.toUpperCase())
-    .trim();
+  return formatInputLabel(key);
 }
 
-function formatValue(key: string, value: number | string): string {
-  if (typeof value === 'number') {
-    if (key.toLowerCase().includes('percent') || key.toLowerCase().includes('rate') || key.toLowerCase().includes('dti')) {
-      return `${value}%`;
-    }
-    if (key.toLowerCase().includes('months') || key.toLowerCase().includes('years') || key.toLowerCase().includes('month')) {
-      return value.toString();
-    }
-    return `$${value.toLocaleString()}`;
-  }
-  return value.toString();
+function formatValue(key: string, value: number | string | boolean): string {
+  return formatInputValue(key, value as CalculatorInputValue);
 }
 
 // --- Styles ---
