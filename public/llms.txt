@@ -16,14 +16,10 @@ Dett.io is a free mortgage education platform built by Knowe LLC. It provides 20
 - [PMI Calculator](https://dett.io/calculators/pmi): PMI costs and when it drops off
 - [DTI Calculator](https://dett.io/calculators/dti): Debt-to-income ratio analysis for mortgage qualification
 - [Closing Cost Estimator](https://dett.io/calculators/closing-costs): Estimate closing costs by loan type and location
-- [ARM vs Fixed Rate](https://dett.io/calculators/arm-vs-fixed): Compare adjustable and fixed-rate mortgages with rate cap modeling
-- [Extra Payment Calculator](https://dett.io/calculators/extra-payment): See years saved and interest avoided with extra payments
-- [Biweekly Payment Calculator](https://dett.io/calculators/biweekly): Biweekly vs monthly payment comparison
-- [Acceleration Planner](https://dett.io/calculators/acceleration): Compare prepaying vs investing the difference
+- [Best Loan for My Timeline](https://dett.io/calculators/loan-timeline): Compare fixed, points, ARM (with rate cap modeling), and 15-year options for your timeline
+- [Pay Off Faster](https://dett.io/calculators/payoff): Extra payments, lump sums, and biweekly strategies — years saved and interest avoided
 - [Amortization Schedule](https://dett.io/calculators/amortization): Month-by-month payment breakdown
 - [Rate Sensitivity Calculator](https://dett.io/calculators/interest-sensitivity): See how rate changes affect your payment
-- [Points & Buydown](https://dett.io/calculators/points-buydown): Compare buying points, lender credits, and temporary buydowns
-- [Decision Timeline](https://dett.io/calculators/timeline-simulator): Find the best loan option based on how long you'll stay
 - [Cash-Out Refinance](https://dett.io/calculators/cash-out-refi): Cost analysis for pulling cash from home equity
 - [Recast vs Refinance](https://dett.io/calculators/recast-vs-refi): Compare recasting ($250 fee) vs refinancing (closing costs)
 

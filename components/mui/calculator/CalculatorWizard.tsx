@@ -66,7 +66,7 @@ const wizardSteps: Record<string, WizardStep> = {
       {
         label: "I want to pay off faster",
         icon: <Savings />,
-        description: "Extra payments, biweekly, acceleration",
+        description: "Extra payments, lump sums, biweekly",
         next: 'payoff',
       },
     ],
@@ -170,7 +170,7 @@ const wizardSteps: Record<string, WizardStep> = {
       {
         label: "Pay off my mortgage faster",
         icon: <Savings />,
-        description: "Extra payments and acceleration",
+        description: "Extra payments, lump sums, biweekly",
         next: 'payoff',
       },
       {
@@ -202,8 +202,8 @@ const wizardSteps: Record<string, WizardStep> = {
           title: "ARM vs Fixed Analysis",
           description: "Compare the risk and reward of adjustable-rate vs fixed-rate mortgages.",
           calculators: [
-            { name: "ARM vs Fixed Rate", href: "/calculators/arm-vs-fixed", why: "Model rate adjustments and compare total costs" },
-            { name: "Decision Timeline", href: "/calculators/timeline-simulator", why: "Find the best option based on how long you'll stay" },
+            { name: "Best Loan for My Timeline", href: "/calculators/loan-timeline", why: "Model real ARM rate adjustments and compare total costs" },
+            { name: "Rate Sensitivity", href: "/calculators/interest-sensitivity", why: "See how rate changes affect your payment" },
           ],
         },
       },
@@ -216,7 +216,7 @@ const wizardSteps: Record<string, WizardStep> = {
           title: "Points & Rate Analysis",
           description: "Decide whether buying points, taking lender credits, or paying par rate is best.",
           calculators: [
-            { name: "Points & Buydown", href: "/calculators/points-buydown", why: "Compare points, lender credits, and temporary buydowns" },
+            { name: "Best Loan for My Timeline", href: "/calculators/loan-timeline", why: "See if points break even before you move" },
             { name: "Rate Sensitivity", href: "/calculators/interest-sensitivity", why: "See how each rate change affects your payment" },
           ],
         },
@@ -230,8 +230,7 @@ const wizardSteps: Record<string, WizardStep> = {
           title: "Timeline-Based Decision",
           description: "Your optimal loan structure depends on how long you plan to keep the home.",
           calculators: [
-            { name: "Decision Timeline", href: "/calculators/timeline-simulator", why: "Compare strategies based on your expected timeline" },
-            { name: "ARM vs Fixed Rate", href: "/calculators/arm-vs-fixed", why: "ARMs can save money if you're moving in 5-7 years" },
+            { name: "Best Loan for My Timeline", href: "/calculators/loan-timeline", why: "Compare fixed, points, ARM, and 15-year options for your timeline" },
             { name: "Should I Refinance?", href: "/calculators/refinance", why: "See if refinancing makes sense at your timeline" },
           ],
         },
@@ -250,8 +249,8 @@ const wizardSteps: Record<string, WizardStep> = {
           title: "Extra Payment Strategy",
           description: "See how extra payments can dramatically shorten your loan and save interest.",
           calculators: [
-            { name: "Extra Payment Impact", href: "/calculators/extra-payment", why: "See years saved and interest avoided with extra payments" },
-            { name: "Acceleration Planner", href: "/calculators/acceleration", why: "Compare prepaying vs investing the difference" },
+            { name: "Pay Off Faster", href: "/calculators/payoff", why: "See years saved and interest avoided — and compare prepaying vs investing" },
+            { name: "Amortization Schedule", href: "/calculators/amortization", why: "See your payoff timeline month by month" },
           ],
         },
       },
@@ -264,8 +263,7 @@ const wizardSteps: Record<string, WizardStep> = {
           title: "Biweekly Payment Strategy",
           description: "Biweekly payments make one extra payment per year — for free.",
           calculators: [
-            { name: "Biweekly Payments", href: "/calculators/biweekly", why: "See the truth about biweekly programs and the free DIY alternative" },
-            { name: "Extra Payment Impact", href: "/calculators/extra-payment", why: "Compare biweekly to monthly extra payments" },
+            { name: "Pay Off Faster", href: "/calculators/payoff", why: "See the truth about biweekly programs and the free DIY alternative" },
           ],
         },
       },
@@ -279,8 +277,7 @@ const wizardSteps: Record<string, WizardStep> = {
           description: "Compare the best ways to use a lump sum: recast, refinance, or prepay.",
           calculators: [
             { name: "Recast vs Refinance", href: "/calculators/recast-vs-refi", why: "Compare recasting ($250 fee) vs refinancing (closing costs)" },
-            { name: "Acceleration Planner", href: "/calculators/acceleration", why: "See the impact of a lump sum on your payoff timeline" },
-            { name: "Extra Payment Impact", href: "/calculators/extra-payment", why: "Model ongoing extra payments after your lump sum" },
+            { name: "Pay Off Faster", href: "/calculators/payoff", why: "See the impact of a lump sum plus ongoing extra payments" },
           ],
         },
       },

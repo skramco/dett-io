@@ -184,7 +184,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     ],
     relatedCalculators: [
       { slug: 'refinance', name: 'Should I Refinance?' },
-      { slug: 'extra-payment', name: 'Extra Payment Impact' },
+      { slug: 'payoff', name: 'Pay Off Faster' },
       { slug: 'cash-out-refi', name: 'Cash-Out Refinance' },
     ],
     jsonLd: {
@@ -194,151 +194,64 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
       applicationCategory: 'FinanceApplication',
     },
   },
-  'points-buydown': {
-    slug: 'points-buydown',
-    title: 'Mortgage Points Calculator - Should I Buy Points? | Dett',
+  'loan-timeline': {
+    slug: 'loan-timeline',
+    title: 'Best Mortgage for Your Timeline - ARM vs Fixed vs Points Calculator | Dett',
     description:
-      'Calculate if buying mortgage points is worth it. Compare par rate, discount points, and lender credits. See break-even timeline and total interest savings.',
+      'Find the best loan for how long you plan to stay. Compare 30-year fixed, discount points, ARM (named rate paths and Monte Carlo range), and 15-year options by true net cost.',
     keywords: [
+      'best mortgage for my timeline',
+      'ARM vs fixed rate calculator',
       'mortgage points calculator',
       'should I buy points on my mortgage',
       'discount points calculator',
       'mortgage buydown calculator',
       'points vs no points mortgage',
       'is it worth buying points',
-    ],
-    relatedCalculators: [
-      { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
-      { slug: 'arm-vs-fixed', name: 'ARM vs Fixed Rate' },
-      { slug: 'interest-sensitivity', name: 'Rate Sensitivity' },
-    ],
-    jsonLd: {
-      name: 'Mortgage Points Calculator',
-      description:
-        'Calculate if buying mortgage discount points is worth it with break-even analysis.',
-      applicationCategory: 'FinanceApplication',
-    },
-  },
-  'arm-vs-fixed': {
-    slug: 'arm-vs-fixed',
-    title: 'ARM vs Fixed Rate Mortgage Calculator - Compare Loan Types | Dett',
-    description:
-      'Compare adjustable-rate (ARM) vs fixed-rate mortgages. Model multiple index rate paths, a Monte Carlo payment range, rate caps, and the cap-driven worst case.',
-    keywords: [
-      'ARM vs fixed rate calculator',
-      'adjustable rate mortgage calculator',
-      'ARM vs fixed rate comparison',
-      'should I get an ARM or fixed rate',
       '5/6 SOFR ARM calculator',
       '5/1 ARM calculator',
       'ARM rate caps calculator',
-      '7/6 ARM vs 30 year fixed',
-    ],
-    relatedCalculators: [
-      { slug: 'points-buydown', name: 'Points & Buydown' },
-      { slug: 'timeline-simulator', name: 'Decision Timeline' },
-      { slug: 'interest-sensitivity', name: 'Rate Sensitivity' },
-    ],
-    jsonLd: {
-      name: 'ARM vs Fixed Rate Calculator',
-      description:
-        'Compare adjustable-rate and fixed-rate mortgages with named rate paths, Monte Carlo ranges, and cap-driven worst-case scenarios.',
-      applicationCategory: 'FinanceApplication',
-    },
-  },
-  'timeline-simulator': {
-    slug: 'timeline-simulator',
-    title: 'Mortgage Decision Timeline Simulator | Dett',
-    description:
-      'Find the best mortgage structure for your timeline. Compare 15-year vs 30-year vs ARM based on how long you plan to stay in your home.',
-    keywords: [
       '15 year vs 30 year mortgage calculator',
-      'mortgage timeline calculator',
-      'best mortgage for my timeline',
-      'how long should my mortgage be',
-      'mortgage term comparison',
+      'adjustable rate mortgage calculator',
+      'discount points break even',
     ],
     relatedCalculators: [
-      { slug: 'arm-vs-fixed', name: 'ARM vs Fixed Rate' },
+      { slug: 'interest-sensitivity', name: 'Rate Sensitivity' },
       { slug: 'refinance', name: 'Should I Refinance?' },
       { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
     ],
     jsonLd: {
-      name: 'Mortgage Decision Timeline Simulator',
+      name: 'Best Loan for My Timeline Calculator',
       description:
-        'Find the best mortgage structure based on how long you plan to stay in your home.',
+        'Compare fixed-rate, discount points, ARM, and 15-year mortgage options by net cost over your expected stay, with named ARM rate paths, Monte Carlo ranges, and cap-driven worst-case modeling.',
       applicationCategory: 'FinanceApplication',
     },
   },
-  'extra-payment': {
-    slug: 'extra-payment',
-    title: 'Extra Mortgage Payment Calculator - See How Much You Save | Dett',
+  payoff: {
+    slug: 'payoff',
+    title: 'Mortgage Payoff Calculator - Pay Off Your Mortgage Faster | Dett',
     description:
-      'See how extra mortgage payments save interest and shorten your loan. Calculate the impact of paying $100, $200, or $500 extra per month. Free calculator.',
+      'See how extra payments, lump sums, and biweekly payments shorten your mortgage and cut interest. Compare every payoff strategy — including the free DIY biweekly alternative — and whether investing beats prepaying.',
     keywords: [
-      'extra mortgage payment calculator',
-      'additional mortgage payment calculator',
-      'how much do I save paying extra on mortgage',
-      'mortgage payoff calculator with extra payments',
-      'should I pay extra on my mortgage',
-    ],
-    relatedCalculators: [
-      { slug: 'biweekly', name: 'Biweekly Payments' },
-      { slug: 'acceleration', name: 'Acceleration Planner' },
-      { slug: 'refinance', name: 'Should I Refinance?' },
-    ],
-    jsonLd: {
-      name: 'Extra Mortgage Payment Calculator',
-      description:
-        'Calculate how extra mortgage payments save interest and shorten your loan term.',
-      applicationCategory: 'FinanceApplication',
-    },
-  },
-  acceleration: {
-    slug: 'acceleration',
-    title: 'Mortgage Acceleration Planner - Pay Off Your Mortgage Faster | Dett',
-    description:
-      'Compare strategies to pay off your mortgage faster: extra monthly payments, annual lump sums, biweekly payments, or refinancing to a shorter term.',
-    keywords: [
-      'mortgage acceleration calculator',
+      'mortgage payoff calculator',
       'pay off mortgage faster calculator',
-      'mortgage payoff strategies',
+      'extra mortgage payment calculator',
+      'biweekly mortgage calculator',
+      'mortgage payoff calculator with extra payments',
       'early mortgage payoff calculator',
+      'how much do biweekly payments save',
+      'should I pay extra on my mortgage',
       'mortgage prepayment calculator',
     ],
     relatedCalculators: [
-      { slug: 'extra-payment', name: 'Extra Payment Impact' },
-      { slug: 'biweekly', name: 'Biweekly Payments' },
       { slug: 'recast-vs-refi', name: 'Recast vs Refinance' },
+      { slug: 'amortization', name: 'Amortization Schedule' },
+      { slug: 'refinance', name: 'Should I Refinance?' },
     ],
     jsonLd: {
-      name: 'Mortgage Acceleration Planner',
+      name: 'Mortgage Payoff Calculator',
       description:
-        'Compare prepayment strategies to find the fastest way to pay off your mortgage.',
-      applicationCategory: 'FinanceApplication',
-    },
-  },
-  biweekly: {
-    slug: 'biweekly',
-    title: 'Biweekly Mortgage Payment Calculator - True Savings | Dett',
-    description:
-      'Calculate the real savings from biweekly mortgage payments. Compare to monthly extra payments. See if biweekly programs are worth the fees or if DIY is better.',
-    keywords: [
-      'biweekly mortgage calculator',
-      'biweekly mortgage payment calculator',
-      'biweekly vs monthly mortgage payments',
-      'how much do biweekly payments save',
-      'biweekly mortgage payment savings',
-    ],
-    relatedCalculators: [
-      { slug: 'extra-payment', name: 'Extra Payment Impact' },
-      { slug: 'acceleration', name: 'Acceleration Planner' },
-      { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
-    ],
-    jsonLd: {
-      name: 'Biweekly Mortgage Payment Calculator',
-      description:
-        'Calculate the true savings from biweekly mortgage payments vs monthly payments.',
+        'Compare extra payments, lump sums, and biweekly strategies to pay off your mortgage faster and save interest.',
       applicationCategory: 'FinanceApplication',
     },
   },
@@ -488,7 +401,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     ],
     relatedCalculators: [
       { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
-      { slug: 'extra-payment', name: 'Extra Payment Impact' },
+      { slug: 'payoff', name: 'Pay Off Faster' },
       { slug: 'refinance', name: 'Should I Refinance?' },
     ],
     jsonLd: {
@@ -512,8 +425,8 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     ],
     relatedCalculators: [
       { slug: 'refinance', name: 'Should I Refinance?' },
-      { slug: 'arm-vs-fixed', name: 'ARM vs Fixed Rate' },
-      { slug: 'points-buydown', name: 'Points & Buydown' },
+      { slug: 'loan-timeline', name: 'Best Loan for My Timeline' },
+      { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
     ],
     jsonLd: {
       name: 'Rate Sensitivity Calculator',

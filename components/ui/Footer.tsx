@@ -17,7 +17,7 @@ export default function Footer() {
             <h4 className="font-medium text-foreground mb-3 text-sm">Calculators</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/calculators/refinance" className="text-muted hover:text-accent">Refinance</Link></li>
-              <li><Link href="/calculators/extra-payment" className="text-muted hover:text-accent">Extra Payments</Link></li>
+              <li><Link href="/calculators/payoff" className="text-muted hover:text-accent">Pay Off Faster</Link></li>
               <li><Link href="/calculators/rent-vs-buy" className="text-muted hover:text-accent">Rent vs Buy</Link></li>
               <li><Link href="/calculators" className="text-muted hover:text-accent">View All →</Link></li>
             </ul>
