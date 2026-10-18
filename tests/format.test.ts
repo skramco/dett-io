@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatCurrency,
+  formatCurrencyInput,
+  formatCurrencyInputValue,
   formatNumber,
   formatPercent,
   formatSignedCurrency,
   formatYears,
+  mapFormattedCaret,
+  parseCurrencyInput,
 } from '../lib/format';
 
 describe('formatCurrency', () => {
@@ -51,5 +55,59 @@ describe('formatYears', () => {
   it('pluralizes durations', () => {
     expect(formatYears(1.5)).toBe('1.5 years');
     expect(formatYears(1, 0)).toBe('1 year');
+  });
+});
+
+describe('formatCurrency cents opt-in', () => {
+  it('keeps cents only when decimals is set', () => {
+    expect(formatCurrency(12.5, 2)).toBe('$12.50');
+    expect(formatCurrency(2019.55)).toBe('$2,020');
+  });
+});
+
+describe('parseCurrencyInput / formatCurrencyInput', () => {
+  it('formats digits with thousands separators while typing', () => {
+    expect(formatCurrencyInput('320000')).toBe('320,000');
+    expect(formatCurrencyInput('3')).toBe('3');
+    expect(formatCurrencyInput('32')).toBe('32');
+    expect(formatCurrencyInput('320')).toBe('320');
+    expect(formatCurrencyInput('3200')).toBe('3,200');
+  });
+
+  it('parses pasted currency with $ and commas', () => {
+    expect(parseCurrencyInput('$320,000')).toBe(320000);
+    expect(parseCurrencyInput(' $320,000.00 ')).toBe(320000);
+    expect(parseCurrencyInput('320000')).toBe(320000);
+  });
+
+  it('preserves a trailing decimal while typing', () => {
+    expect(formatCurrencyInput('320000.')).toBe('320,000.');
+    expect(formatCurrencyInput('320000.5')).toBe('320,000.5');
+    expect(formatCurrencyInput('320000.50')).toBe('320,000.50');
+    expect(parseCurrencyInput('320,000.50')).toBe(320000.5);
+  });
+
+  it('returns null for empty / decoration-only input', () => {
+    expect(parseCurrencyInput('')).toBeNull();
+    expect(parseCurrencyInput('$')).toBeNull();
+    expect(parseCurrencyInput(',')).toBeNull();
+    expect(parseCurrencyInput('-')).toBeNull();
+  });
+
+  it('formats numeric state back into the input', () => {
+    expect(formatCurrencyInputValue(320000)).toBe('320,000');
+    expect(formatCurrencyInputValue(0)).toBe('0');
+    expect(formatCurrencyInputValue(1999.5)).toBe('1,999.5');
+  });
+});
+
+describe('mapFormattedCaret', () => {
+  it('keeps the caret after the same digit when commas are inserted', () => {
+    expect(mapFormattedCaret('3200', '3,200', 4)).toBe(5);
+    expect(mapFormattedCaret('320000', '320,000', 6)).toBe(7);
+  });
+
+  it('stays in the middle when editing before a comma', () => {
+    expect(mapFormattedCaret('320,000', '320,000', 3)).toBe(3);
   });
 });

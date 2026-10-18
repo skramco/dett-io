@@ -5,4 +5,8 @@ export {
   formatPercent,
   formatYears,
   formatAxisCurrency,
+  parseCurrencyInput,
+  formatCurrencyInput,
+  formatCurrencyInputValue,
+  mapFormattedCaret,
 } from './currency';
