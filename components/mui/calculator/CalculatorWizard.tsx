@@ -346,7 +346,7 @@ export function CalculatorWizard() {
             size="small"
             startIcon={<RestartAlt />}
             onClick={handleReset}
-            sx={{ color: 'rgba(255,255,255,0.7)', textTransform: 'none', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}
+            sx={{ color: 'white', textTransform: 'none', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}
           >
             Start Over
           </Button>
@@ -360,7 +360,7 @@ export function CalculatorWizard() {
             <Typography variant="h4" sx={{ color: 'white', fontWeight: 700, mb: 1 }}>
               {result.title}
             </Typography>
-            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.8)', mb: 4 }}>
+            <Typography variant="body1" sx={{ color: '#EBF5FF', mb: 4 }}>
               {result.description}
             </Typography>
 
@@ -372,11 +372,10 @@ export function CalculatorWizard() {
                     sx={{
                       p: 3,
                       borderRadius: 3,
-                      bgcolor: 'rgba(255,255,255,0.95)',
+                      bgcolor: 'background.paper',
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       '&:hover': {
-                        bgcolor: 'white',
                         transform: 'translateY(-2px)',
                         boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
                       },
@@ -396,8 +395,8 @@ export function CalculatorWizard() {
                                 height: 20,
                                 fontSize: '0.65rem',
                                 fontWeight: 700,
-                                bgcolor: 'primary.light',
-                                color: 'primary.main',
+                                bgcolor: '#EBF5FF',
+                                color: 'primary.dark',
                               }}
                             />
                           )}
@@ -431,21 +430,23 @@ export function CalculatorWizard() {
                   sx={{
                     p: 2.5,
                     borderRadius: 3,
-                    bgcolor: 'rgba(255,255,255,0.1)',
-                    border: '1px solid rgba(255,255,255,0.2)',
+                    bgcolor: 'background.paper',
+                    border: '1px solid',
+                    borderColor: 'divider',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     '&:hover': {
-                      bgcolor: 'rgba(255,255,255,0.2)',
-                      border: '1px solid rgba(255,255,255,0.4)',
+                      borderColor: 'primary.main',
                       transform: 'translateY(-1px)',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
                     },
                   }}
                 >
                   <Stack direction="row" spacing={2} alignItems="center">
                     <Avatar
                       sx={{
-                        bgcolor: 'rgba(255,255,255,0.15)',
+                        bgcolor: '#EBF5FF',
+                        color: 'primary.main',
                         width: 44,
                         height: 44,
                       }}
@@ -453,14 +454,14 @@ export function CalculatorWizard() {
                       {option.icon}
                     </Avatar>
                     <Box sx={{ flex: 1 }}>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'white' }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary' }}>
                         {option.label}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         {option.description}
                       </Typography>
                     </Box>
-                    <ArrowForward sx={{ color: 'rgba(255,255,255,0.5)' }} />
+                    <ArrowForward sx={{ color: 'primary.main' }} />
                   </Stack>
                 </Paper>
               ))}

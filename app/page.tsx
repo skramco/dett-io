@@ -185,7 +185,7 @@ export default function Home() {
                         <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.4)' }} />
                         <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.4)' }} />
                         <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.4)' }} />
-                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', ml: 1 }}>
+                        <Typography variant="caption" sx={{ color: '#EBF5FF', ml: 1 }}>
                           dett.io/calculators/mortgage-cost
                         </Typography>
                       </Stack>
@@ -313,7 +313,7 @@ export default function Home() {
               <Chip
                 label="Interactive Guide"
                 size="small"
-                sx={{ bgcolor: 'rgba(255,255,255,0.15)', color: 'white', fontWeight: 600 }}
+                sx={{ bgcolor: 'primary.dark', color: 'white', fontWeight: 600 }}
               />
               <Typography
                 variant="h2"
@@ -323,7 +323,7 @@ export default function Home() {
               </Typography>
               <Typography
                 variant="h6"
-                sx={{ color: 'rgba(255,255,255,0.7)', maxWidth: 500, fontWeight: 400 }}
+                sx={{ color: '#EBF5FF', maxWidth: 500, fontWeight: 400 }}
               >
                 Answer a couple questions and we'll point you to the right calculator.
               </Typography>
@@ -575,7 +575,7 @@ export default function Home() {
               </Typography>
               <Typography 
                 variant="h6" 
-                sx={{ color: 'primary.light', maxWidth: 500, fontWeight: 400 }}
+                sx={{ color: '#EBF5FF', maxWidth: 500, fontWeight: 400 }}
               >
                 Start with any calculator. No signup, no spam, no strings attached.
               </Typography>

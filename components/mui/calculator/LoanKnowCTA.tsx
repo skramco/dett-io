@@ -40,7 +40,7 @@ export function LoanKnowCTA() {
             label="Coming Soon"
             size="small"
             sx={{
-              bgcolor: '#6366F1',
+              bgcolor: '#4F46E5',
               color: 'white',
               fontWeight: 600,
               fontSize: '0.7rem',

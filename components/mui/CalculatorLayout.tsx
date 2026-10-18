@@ -298,7 +298,7 @@ export default function CalculatorLayout({ children, title, description, related
                   sx={{ 
                     mb: 2,
                     bgcolor: 'secondary.light',
-                    color: 'secondary.dark',
+                    color: '#065F46',
                     fontWeight: 600,
                   }}
                 />
@@ -407,7 +407,7 @@ export default function CalculatorLayout({ children, title, description, related
         {/* Calculator Disclaimer */}
         <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 } }}>
           <Box sx={{ px: 2, py: 2, bgcolor: 'grey.50', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="caption" color="text.disabled" sx={{ display: 'block', lineHeight: 1.7 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.8125rem', lineHeight: 1.7 }}>
               <strong>Important:</strong> This calculator provides estimates for educational purposes only. Results are not a loan offer, pre-qualification, pre-approval, or commitment to lend. Actual rates, terms, payments, and eligibility are determined by mortgage lenders based on your complete financial profile, credit history, property appraisal, and current market conditions. Dett.io is not a lender, broker, or financial advisor. Consult qualified professionals before making financial decisions. See our <a href="/terms" style={{ color: 'inherit' }}>Terms of Use</a> for full details.
             </Typography>
           </Box>

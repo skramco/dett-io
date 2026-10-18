@@ -286,11 +286,11 @@ export default function RefinanceCalculator() {
 
                   <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
                     {isBeneficial ? (
-                      <TrendingDown sx={{ color: '#22C55E', fontSize: 32 }} />
+                      <TrendingDown sx={{ color: '#15803D', fontSize: 32 }} />
                     ) : (
-                      <TrendingUp sx={{ color: '#EF4444', fontSize: 32 }} />
+                      <TrendingUp sx={{ color: '#B91C1C', fontSize: 32 }} />
                     )}
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: isBeneficial ? '#22C55E' : '#EF4444' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: isBeneficial ? '#15803D' : '#B91C1C' }}>
                       {isBeneficial ? 'Save' : 'Pay'} ${Math.abs(monthlySavings).toLocaleString()}/month
                     </Typography>
                   </Stack>
