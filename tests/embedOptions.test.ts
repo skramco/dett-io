@@ -9,8 +9,8 @@ import {
 } from '../lib/embed/options';
 
 describe('embed catalog (ENG-361)', () => {
-  it('covers all 20 calculators', () => {
-    expect(EMBED_CALCULATORS).toHaveLength(20);
+  it('covers the live calculator suite after ENG-345 merges', () => {
+    expect(EMBED_CALCULATORS).toHaveLength(16);
     expect(EMBED_CALCULATOR_SLUGS).toEqual(
       expect.arrayContaining([
         'affordability',
@@ -20,6 +20,16 @@ describe('embed catalog (ENG-361)', () => {
         'dti',
         'fha',
         'va',
+        'loan-timeline',
+        'payoff',
+      ])
+    );
+    expect(EMBED_CALCULATOR_SLUGS).not.toEqual(
+      expect.arrayContaining([
+        'extra-payment',
+        'arm-vs-fixed',
+        'points-buydown',
+        'biweekly',
       ])
     );
   });

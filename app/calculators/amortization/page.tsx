@@ -110,7 +110,7 @@ export default function AmortizationCalculator() {
       description="See a complete month-by-month breakdown of every mortgage payment. Understand exactly how much goes to principal vs interest over the life of your loan."
       relatedCalculators={[
         { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
-        { slug: 'extra-payment', name: 'Extra Payment Impact' },
+        { slug: 'payoff', name: 'Pay Off Faster' },
         { slug: 'refinance', name: 'Should I Refinance?' },
       ]}
       actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}

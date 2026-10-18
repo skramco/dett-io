@@ -89,7 +89,7 @@ export const guides: Guide[] = [
     readTime: '6 min',
     calculators: [
       { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'Points & Buydown', href: '/calculators/points-buydown' },
+      { name: 'Best Loan for My Timeline', href: '/calculators/loan-timeline' },
       { name: 'PMI Calculator', href: '/calculators/pmi' },
     ],
   },
@@ -102,7 +102,7 @@ export const guides: Guide[] = [
     calculators: [
       { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
       { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
-      { name: 'Points & Buydown', href: '/calculators/points-buydown' },
+      { name: 'Best Loan for My Timeline', href: '/calculators/loan-timeline' },
     ],
   },
   {
@@ -138,7 +138,7 @@ export const guides: Guide[] = [
     calculators: [
       { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
       { name: 'Closing Cost Estimator', href: '/calculators/closing-costs' },
-      { name: 'ARM vs Fixed Rate', href: '/calculators/arm-vs-fixed' },
+      { name: 'Best Loan for My Timeline', href: '/calculators/loan-timeline' },
     ],
   },
   {
@@ -149,8 +149,7 @@ export const guides: Guide[] = [
     readTime: '6 min',
     calculators: [
       { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'ARM vs Fixed Rate', href: '/calculators/arm-vs-fixed' },
-      { name: 'Points & Buydown', href: '/calculators/points-buydown' },
+      { name: 'Best Loan for My Timeline', href: '/calculators/loan-timeline' },
     ],
   },
   {
@@ -223,7 +222,7 @@ export const guides: Guide[] = [
     calculators: [
       { name: 'PMI Calculator', href: '/calculators/pmi' },
       { name: 'Down Payment Strategy', href: '/calculators/down-payment' },
-      { name: 'Extra Payment Impact', href: '/calculators/extra-payment' },
+      { name: 'Pay Off Faster', href: '/calculators/payoff' },
     ],
   },
   {

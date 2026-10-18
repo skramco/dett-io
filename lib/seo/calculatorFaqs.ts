@@ -136,24 +136,12 @@ export const calculatorFaqs: Record<string, CalculatorFaq[]> = {
         'No. A recast keeps your original rate and payoff date — it only lowers the monthly payment by spreading a smaller balance over the same remaining term. If your rate is above market, refinancing may save more despite higher upfront costs.',
     },
   ],
-  'points-buydown': [
+  'loan-timeline': [
     {
-      question: 'What are mortgage discount points?',
+      question: 'How does my moving timeline affect which mortgage is best?',
       answer:
-        'One discount point costs 1% of your loan amount and typically lowers your rate by about 0.25 percentage points, though the exact trade varies by lender and market. Points are prepaid interest: cash today for a lower payment for the life of the loan.',
+        'The shorter your stay, the more upfront costs and initial rates dominate; the longer your stay, the more lifetime interest matters. Short horizons favor ARMs and fewer points; long horizons favor fixed rates and sometimes 15-year terms. This calculator ranks options by net cost over your expected hold.',
     },
-    {
-      question: 'When is buying points worth it?',
-      answer:
-        'Points pay off when you keep the loan past the break-even point — the point cost divided by the monthly savings. If you might sell or refinance before then, points lose money. The longer you hold, the more points save.',
-    },
-    {
-      question: 'What is a lender credit?',
-      answer:
-        'A lender credit is the reverse of points: you accept a higher rate in exchange for cash toward closing costs. It helps when you are short on cash at closing or plan to sell or refinance soon, before the higher rate costs more than the credit was worth.',
-    },
-  ],
-  'arm-vs-fixed': [
     {
       question: 'What is the difference between an ARM and a fixed-rate mortgage?',
       answer:
@@ -169,68 +157,42 @@ export const calculatorFaqs: Record<string, CalculatorFaq[]> = {
       answer:
         'ARM caps are usually quoted like 2/1/5: a maximum 2-point increase at the first adjustment, 1 point per later adjustment, and 5 points above the initial rate over the life of the loan. A 5.75% ARM with a 5-point lifetime cap could reach 10.75%. This calculator derives that worst-case rate from the caps you enter, and separately samples 400 mean-reverting index paths so typical outcomes sit in a P10–P90 band rather than a single expected line.',
     },
-  ],
-  'timeline-simulator': [
     {
-      question: 'How does my moving timeline affect which mortgage is best?',
+      question: 'When is buying points worth it?',
       answer:
-        'The shorter your stay, the more upfront costs and initial rates dominate; the longer your stay, the more lifetime interest matters. Short horizons favor ARMs and fewer points; long horizons favor fixed rates and sometimes 15-year terms. This simulator compares options over your expected hold.',
+        'Points pay off when you keep the loan past the break-even point — the point cost divided by the monthly savings. If you might sell or refinance before then, points lose money. The longer you hold, the more points save. Remaining balance is included in net cost, so a lower rate also gets credit for faster principal paydown.',
     },
     {
-      question: 'Should I get a 15-year or 30-year mortgage?',
+      question: 'What is a temporary buydown?',
       answer:
-        'A 15-year loan typically prices about 0.5 points below a 30-year and saves enormous interest, but the required payment is much higher. A popular middle path is a 30-year loan paid on a 15-year schedule — flexibility with most of the savings.',
-    },
-    {
-      question: 'What if I am not sure when I will move?',
-      answer:
-        'Model your most likely scenario plus a conservative one. If outcomes diverge sharply, favor the flexible option (30-year fixed) — the cost of being wrong with an ARM past its fixed period is usually larger than the cost of a slightly higher fixed rate.',
+        'A 1-0, 2-1, or 3-2-1 buydown lowers the borrower payment for the first years while the note rate stays at par. The difference is prepaid into escrow (often by a seller or builder). If you pay it yourself, the subsidy roughly cancels out the payment relief.',
     },
   ],
-  'extra-payment': [
+  payoff: [
     {
       question: 'How much do extra mortgage payments actually save?',
       answer:
         'Every extra dollar goes straight to principal, eliminating all future interest on it. For example, $200/month extra on a $360,000 loan at 6.75% saves roughly $90,000+ in interest and pays the loan off years early. Exact figures depend on your balance, rate, and when you start.',
     },
     {
-      question: 'Is it better to pay extra monthly or make one annual lump sum?',
-      answer:
-        'Dollar for dollar, earlier is better — monthly extras start reducing principal immediately, so they slightly beat an equivalent year-end lump sum. The difference is small; consistency matters far more than timing.',
-    },
-    {
       question: 'Should I pay extra on my mortgage or invest instead?',
       answer:
-        'Prepaying earns a guaranteed return equal to your mortgage rate. If your rate is high relative to expected investment returns — or you value certainty — prepay. If your rate is low, investing may earn more. Max out any employer 401(k) match and pay off high-interest debt first either way.',
-    },
-  ],
-  acceleration: [
-    {
-      question: 'What is the fastest way to pay off a mortgage?',
-      answer:
-        'The biggest levers, in order of typical impact: refinancing to a shorter term (lower rate plus forced discipline), fixed extra monthly payments, annual lump sums, and biweekly payments (equivalent to one extra monthly payment per year). This planner compares them side by side on your numbers.',
+        'This calculator compares both paths with identical monthly cash outflow and measures net worth at the original term. After early payoff, the prepay path invests the freed-up payment. The guaranteed return on prepaying is your mortgage rate — not interest saved divided by extra paid.',
     },
     {
-      question: 'Do mortgage acceleration programs charge fees?',
+      question: 'How do biweekly mortgage payments save money?',
       answer:
-        'Many third-party biweekly or "equity accelerator" programs charge setup and per-payment fees for something you can do free: just send extra principal yourself. Always check that extra payments are applied to principal, not held for the next payment.',
+        'Paying half your monthly payment every two weeks produces 26 half-payments — 13 full payments — per year. That extra annual payment goes to principal, typically cutting 4-6 years and tens of thousands in interest from a 30-year loan. You can replicate it free by adding 1/12 of your payment as extra principal each month.',
+    },
+    {
+      question: 'Is a biweekly payment plan worth the fees?',
+      answer:
+        'Usually not. Lender or third-party biweekly programs often charge enrollment and transaction fees for a result you can replicate free. Many "fake" programs only forward 24 half-payments — identical to monthly — so you pay a fee for no benefit.',
     },
     {
       question: 'Are there prepayment penalties?',
       answer:
         'Most conforming U.S. mortgages originated after 2014 have no prepayment penalty, but a small share of loans do within the first 3 years. Check your loan estimate or note, or ask your servicer before starting an aggressive payoff plan.',
-    },
-  ],
-  biweekly: [
-    {
-      question: 'How do biweekly mortgage payments save money?',
-      answer:
-        'Paying half your monthly payment every two weeks produces 26 half-payments — 13 full payments — per year. That extra annual payment goes to principal, typically cutting 4-6 years and tens of thousands in interest from a 30-year loan.',
-    },
-    {
-      question: 'Is a biweekly payment plan worth the fees?',
-      answer:
-        'Usually not. Lender or third-party biweekly programs often charge enrollment and transaction fees for a result you can replicate free by adding 1/12 of your payment as extra principal each month. This calculator compares the biweekly program against the DIY approach.',
     },
     {
       question: 'Does my servicer apply biweekly payments immediately?',

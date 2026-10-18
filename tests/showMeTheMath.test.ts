@@ -12,25 +12,21 @@
 import { describe, expect, it } from 'vitest';
 import { calculatorFormulas } from '../lib/calculators/formulas';
 import {
-  calculateAcceleration,
   calculateAffordability,
   calculateAmortization,
-  calculateArmVsFixed,
-  calculateBiweekly,
   calculateCashOutRefi,
   calculateClosingCosts,
   calculateDownPayment,
   calculateDTI,
-  calculateExtraPayment,
   calculateFHA,
   calculateInterestSensitivity,
+  calculateLoanTimeline,
   calculateMortgageCost,
+  calculatePayoff,
   calculatePMI,
-  calculatePointsBuydown,
   calculateRecastVsRefi,
   calculateRefinance,
   calculateRentVsBuy,
-  calculateTimelineSimulator,
   calculateVA,
 } from '../lib/calculators';
 
@@ -116,20 +112,16 @@ const detailsBySlug: Record<string, Record<string, number | string>> = {
     closingCosts: 6500,
     savingsRate: 4,
   }).details,
-  'points-buydown': calculatePointsBuydown({
+  'loan-timeline': calculateLoanTimeline({
     loanAmount: 400000,
-    parRate: 7,
     loanTerm: 30,
-    pointsCost: 8000,
+    expectedYearsInHome: 7,
+    parRate: 7,
     pointsRate: 6.5,
+    pointsCost: 8000,
     lenderCredit: 4000,
     lenderCreditRate: 7.375,
     buydownType: '2-1',
-    yearsToHold: 7,
-  }).details,
-  'arm-vs-fixed': calculateArmVsFixed({
-    loanAmount: 400000,
-    fixedRate: 6.75,
     armInitialRate: 5.875,
     armFixedPeriod: 5,
     armAdjustmentFrequency: 6,
@@ -137,47 +129,19 @@ const detailsBySlug: Record<string, Record<string, number | string>> = {
     armAdjustmentCap: 1,
     armLifetimeCap: 5,
     armMargin: 2.75,
-    loanTerm: 30,
     expectedIndexRate: 4,
+    fifteenYearRate: 6.5,
   }).details,
-  'timeline-simulator': calculateTimelineSimulator({
-    loanAmount: 400000,
-    interestRate: 6.75,
-    expectedMoveYear: 7,
-    armInitialRate: 5.875,
-    armFixedPeriod: 5,
-    armMargin: 2.75,
-    expectedIndexRate: 5,
-    armAdjustmentCap: 2,
-    armLifetimeCap: 5,
-    pointsCost: 8000,
-    pointsRate: 6.25,
-  }).details,
-  'extra-payment': calculateExtraPayment({
+  payoff: calculatePayoff({
     loanAmount: 300000,
     interestRate: 6.5,
     loanTerm: 30,
     extraMonthlyPayment: 200,
     extraAnnualPayment: 0,
-    investmentReturn: 7,
-  }).details,
-  acceleration: calculateAcceleration({
-    loanAmount: 300000,
-    interestRate: 6.5,
-    loanTerm: 30,
-    extraMonthly: 300,
-    extraAnnual: 0,
     lumpSumAmount: 0,
     lumpSumYear: 0,
-    investmentReturn: 7,
-    recastOption: false,
-    recastFee: 250,
-  }).details,
-  biweekly: calculateBiweekly({
-    loanAmount: 300000,
-    interestRate: 6.5,
-    loanTerm: 30,
     biweeklyFee: 300,
+    investmentReturn: 7,
   }).details,
   'interest-sensitivity': calculateInterestSensitivity({
     loanAmount: 350000,
@@ -348,9 +312,9 @@ describe('Show Me the Math values', () => {
     expect(sets[1].steps.find((s) => s.label === 'Share of paths where buying wins')?.computedValue).toMatch(/of paths$/);
   });
 
-  it('arm-vs-fixed math card discloses rate-path Monte Carlo percentiles', () => {
-    const details = detailsBySlug['arm-vs-fixed'];
-    const sets = calculatorFormulas['arm-vs-fixed'](details);
+  it('loan-timeline math card discloses ARM rate-path Monte Carlo percentiles', () => {
+    const details = detailsBySlug['loan-timeline'];
+    const sets = calculatorFormulas['loan-timeline'](details);
     expect(sets.map((s) => s.title).join(' ')).toMatch(/Rate-path scenarios/);
     const mc = sets.find((s) => s.title.includes('Monte Carlo'))!;
     expect(mc.steps.find((s) => s.label === 'Share of paths ARM is cheaper')?.computedValue).toMatch(/of paths$/);

@@ -74,7 +74,7 @@ export default async function Image() {
             color: '#94a3b8',
           }}
         >
-          <span>20 Calculators</span>
+          <span>16 Calculators</span>
           <span>•</span>
           <span>19 Guides</span>
           <span>•</span>

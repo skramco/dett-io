@@ -80,8 +80,7 @@ export const definitions: Definition[] = [
     relatedTerms: ['principal', 'interest', 'mortgage-term'],
     relatedCalculators: [
       { name: 'Amortization Schedule', slug: 'amortization' },
-      { name: 'Extra Payment Calculator', slug: 'extra-payment' },
-      { name: 'Biweekly Payment Calculator', slug: 'biweekly' },
+      { name: 'Pay Off Faster', slug: 'payoff' },
     ],
     faq: [
       { question: 'Why does so much of my payment go to interest?', answer: 'Interest is calculated as a percentage of your remaining balance. Early in the loan, your balance is highest, so interest charges are highest. As you pay down the balance, less interest accrues and more of your payment goes to principal.' },
@@ -130,7 +129,7 @@ export const definitions: Definition[] = [
     relatedTerms: ['interest-rate', 'origination-fee', 'discount-points'],
     relatedCalculators: [
       { name: 'True Monthly Mortgage Cost', slug: 'mortgage-cost' },
-      { name: 'Points & Buydown', slug: 'points-buydown' },
+      { name: 'Best Loan for My Timeline', slug: 'loan-timeline' },
       { name: 'Refinance Calculator', slug: 'refinance' },
     ],
     faq: [
@@ -228,7 +227,7 @@ export const definitions: Definition[] = [
     example: 'Loan: $360,000. Rate without points: 6.75%. One point ($3,600) lowers rate to 6.5%. Monthly savings: $58. Break-even: $3,600 ÷ $58 = 62 months (5.2 years). If you keep the loan 30 years, you save $17,280 after the cost of the point.',
     relatedTerms: ['apr', 'interest-rate', 'closing-costs'],
     relatedCalculators: [
-      { name: 'Points & Buydown', slug: 'points-buydown' },
+      { name: 'Best Loan for My Timeline', slug: 'loan-timeline' },
       { name: 'Rate Sensitivity Calculator', slug: 'interest-sensitivity' },
       { name: 'Refinance Calculator', slug: 'refinance' },
     ],
@@ -307,7 +306,7 @@ export const definitions: Definition[] = [
     relatedTerms: ['refinance', 'amortization', 'principal'],
     relatedCalculators: [
       { name: 'Recast vs Refinance', slug: 'recast-vs-refi' },
-      { name: 'Extra Payment Calculator', slug: 'extra-payment' },
+      { name: 'Pay Off Faster', slug: 'payoff' },
       { name: 'Amortization Schedule', slug: 'amortization' },
     ],
     faq: [
@@ -358,7 +357,7 @@ export const definitions: Definition[] = [
     relatedTerms: ['ltv', 'cash-out-refinance', 'heloc'],
     relatedCalculators: [
       { name: 'Cash-Out Refinance', slug: 'cash-out-refi' },
-      { name: 'Extra Payment Calculator', slug: 'extra-payment' },
+      { name: 'Pay Off Faster', slug: 'payoff' },
       { name: 'Rent vs Buy Analysis', slug: 'rent-vs-buy' },
     ],
     faq: [

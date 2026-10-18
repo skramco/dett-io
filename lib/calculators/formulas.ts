@@ -151,28 +151,24 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
     },
   ],
 
-  'points-buydown': (d) => [
+  'loan-timeline': (d) => [
     {
-      title: 'Points & Buydown Math',
+      title: 'Net Cost Over Your Timeline',
       steps: [
-        { label: 'Cost of 1 Point', formula: 'Loan Amount × 1%', description: 'Each point costs 1% of the loan and typically reduces the rate by 0.25%.' },
-        { label: 'Monthly Savings from Points', formula: 'Payment at Par Rate − Payment at Bought-Down Rate', description: 'The monthly payment reduction from buying points.', computedValue: d.pointsMonthlySavings !== undefined ? `${formatCurrency(d.pointsMonthlySavings as number)}` : undefined },
+        { label: 'Monthly Payment per Option', formula: 'Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Standard amortization at each option\'s rate and term.', computedValue: `${formatCurrency(d.fixedPayment as number)} (30-yr fixed)` },
         { label: 'Remaining Balance at Payoff', formula: 'Standard amortization balance at the end of your hold', description: 'A lower rate pays down principal faster, so the bought-down loan leaves a smaller balance when you sell or refinance.', computedValue: d.parEndingBalance !== undefined ? `${formatCurrency(d.parEndingBalance as number)} (par) vs ${formatCurrency(d.pointsEndingBalance as number)} (points)` : undefined },
-        { label: 'Net Cost Over Hold', formula: 'Upfront Cost + Σ Payments + Remaining Balance − Loan Amount', description: 'The true cost of each option: everything paid out plus the payoff still owed, net of the amount borrowed. Equivalent to upfront cost plus interest accrued.' },
+        { label: 'Net Cost at Move Time', formula: 'Σ Payments + Upfront Costs − Principal Paid Down', description: 'What each option actually costs you in interest and fees over your expected stay. Equivalent to upfront + interest accrued.', computedValue: `${formatCurrency(d.bestNetCost as number)} (best option)` },
         { label: 'Temporary Buydown Subsidy', formula: 'Σ (Par Payment − Reduced Payment) over buydown months', description: '3-2-1, 2-1, and 1-0 buydowns lower the payment for the first years; the difference is prepaid into escrow. The note rate and amortization stay at par.', computedValue: (d.buydownCost as number) > 0 ? `${formatCurrency(d.buydownCost as number)}` : undefined },
+        { label: 'Best Option', formula: 'Lowest Net Cost at your timeline', description: 'The option that costs the least over your expected time in the home.', computedValue: `${d.bestOption}` },
       ],
     },
-  ],
-
-  'arm-vs-fixed': (d) => [
     {
-      title: 'ARM vs Fixed Comparison',
+      title: 'ARM Adjustment Math',
       steps: [
-        { label: 'Fixed Monthly Payment', formula: 'Loan × r_fixed × (1+r_fixed)ⁿ ÷ [(1+r_fixed)ⁿ − 1]', description: 'Payment stays the same for the entire loan term.', computedValue: `${formatCurrency(d.fixedPayment as number)}` },
-        { label: 'ARM Initial Payment', formula: 'Loan × r_arm × (1+r_arm)ⁿ ÷ [(1+r_arm)ⁿ − 1]', description: `Lower initial rate during the fixed period of the ${d.productName ?? 'ARM'}.`, computedValue: `${formatCurrency(d.armInitialPayment as number)}` },
-        { label: 'Fully Indexed Rate', formula: 'Expected Index Rate + Margin', description: 'After the fixed period, the ARM rate moves toward index + margin at each adjustment, limited by the caps below.', computedValue: `${fmtDec(d.fullyIndexedRate as number, 2)}%` },
-        { label: 'ARM Adjusted Payment', formula: 'Remaining Balance × r_adj × (1+r_adj)ᵐ ÷ [(1+r_adj)ᵐ − 1]', description: 'Re-amortized over the remaining months (m) at each adjustment.' },
-        { label: 'Initial Monthly Savings', formula: 'Fixed Payment − ARM Initial Payment', description: 'How much you save during the ARM fixed period.', computedValue: `${formatCurrency((d.fixedPayment as number) - (d.armInitialPayment as number))}` },
+        { label: 'ARM Initial Payment', formula: 'Loan × r_arm × (1+r_arm)ⁿ ÷ [(1+r_arm)ⁿ − 1]', description: `Payment during the fixed period of the ${d.productName ?? 'ARM'}.`, computedValue: `${formatCurrency(d.armInitialPayment as number)}` },
+        { label: 'Fully Indexed Rate', formula: 'Expected Index Rate + Margin', description: 'After the fixed period, the ARM rate moves toward index + margin at each adjustment, limited by the caps.', computedValue: `${fmtDec(d.fullyIndexedRate as number, 2)}%` },
+        { label: 'Adjusted Rate', formula: 'Index + Margin, limited by initial/periodic caps, the lifetime cap, and a floor at the margin', description: 'After the fixed period the rate moves toward the fully-indexed rate using the shared ARM cap model.' },
+        { label: 'Re-amortized Payment', formula: 'Balance × r_adj × (1+r_adj)ᵐ ÷ [(1+r_adj)ᵐ − 1]', description: 'At each adjustment the payment is recalculated over the remaining months (m).', computedValue: `${formatCurrency((d.armMaxPaymentDuringHold as number) || (d.armAdjustedPayment as number))} (max expected)` },
       ],
     },
     {
@@ -189,59 +185,44 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'Named index paths', formula: 'Falling = expected − 2%; expected = your index; rising = expected + 2%', description: 'Each path is a constant index after the fixed period, then run through the same cap machinery as the loan. Worst case is not a named index — it is every adjustment hitting its cap.', computedValue: `Falling ${(d.fallingIndex as number).toFixed(2)}% · rising ${(d.risingIndex as number).toFixed(2)}%` },
         { label: 'Index process', formula: 'x ← x + κ(μ − x)Δt + σ√Δt · Z  (floored at 0)', description: 'Mean-reverting random walk around your expected index. Δt is the adjustment period in years. Z is a seeded standard normal.', computedValue: `σ = ${d.mcIndexVol}% / yr, κ = ${d.mcMeanReversion}, n = ${fmt(d.mcSamples as number)}` },
-        { label: 'P10–P90 total paid', formula: 'Percentiles of lifetime ARM payments across sampled index paths', description: 'The shaded payment band is the same percentiles of the monthly payment each year.', computedValue: `${formatCurrency(d.p10TotalPaid as number)} to ${formatCurrency(d.p90TotalPaid as number)}` },
-        { label: 'Share of paths ARM is cheaper', formula: 'Count(ARM total paid < fixed total paid) ÷ samples', description: 'How often the ARM costs less than the fixed loan when the index is sampled rather than assumed flat.', computedValue: `${fmtDec(d.pctArmCheaper as number, 1)}% of paths` },
+        { label: 'P10–P90 total paid', formula: 'Percentiles of ARM payments over your stay across sampled index paths', description: 'The shaded payment band is the same percentiles of the monthly payment each year.', computedValue: `${formatCurrency(d.p10TotalPaid as number)} to ${formatCurrency(d.p90TotalPaid as number)}` },
+        { label: 'Share of paths ARM is cheaper', formula: 'Count(ARM paid over stay < 30-year fixed paid over stay) ÷ samples', description: 'How often the ARM costs less than the 30-year fixed loan when the index is sampled rather than assumed flat.', computedValue: `${fmtDec(d.pctArmCheaper as number, 1)}% of paths` },
       ],
     },
-  ],
-
-  'timeline-simulator': (d) => [
     {
-      title: 'Timeline Decision Math',
+      title: 'Points Break-Even',
       steps: [
-        { label: 'Net Cost at Year X', formula: 'Σ Monthly Payments + Closing Costs − Equity Built', description: 'Net cost of each option over your expected time in the home.', computedValue: `${formatCurrency(d.bestNetCost as number)} (best option)` },
-        { label: 'ARM Rate After Reset', formula: 'Fully-indexed rate (Index + Margin), limited by the adjustment cap and lifetime cap', description: 'After the fixed period, the ARM adjusts annually using the same cap model as ARM vs Fixed, and the payment is recast on the remaining balance.', computedValue: d.armAdjusts ? `${fmtDec(d.armAdjustedRate as number)}% → ${formatCurrency(d.armAdjustedPayment as number)}/mo` : 'No reset before you move' },
-        { label: 'Remaining Balance', formula: 'Standard amortization balance at month M', description: 'How much you still owe when you sell or move.', computedValue: `${formatCurrency(d.bestBalance as number)} (best option)` },
-        { label: 'Best Option', formula: 'Lowest Net Cost at your timeline', description: 'The option that costs the least over your expected holding period.', computedValue: `${d.bestOption}` },
+        { label: 'Monthly Savings from Points', formula: 'Payment at Par Rate − Payment at Bought-Down Rate', description: 'The monthly payment reduction from buying points.', computedValue: `${formatCurrency((d.fixedPayment as number) - (d.pointsPayment as number))}` },
+        { label: 'Break-Even', formula: 'Points Cost ÷ Monthly Savings', description: 'Months to recoup the upfront cost of buying points (faster principal paydown is an extra benefit).', computedValue: (d.pointsBreakEvenMonths as number) > 0 ? `${fmt(d.pointsBreakEvenMonths as number)} months` : 'N/A — no monthly savings' },
       ],
     },
   ],
 
-  'extra-payment': (d) => [
+  payoff: (d) => [
     {
       title: 'Extra Payment Impact',
       steps: [
-        { label: 'Standard Payoff', formula: 'Loan Term × 12 months', description: 'Original payoff timeline without extra payments.' },
-        { label: 'With Extra Payments', formula: 'Iterative amortization with additional principal', description: 'Each extra dollar goes directly to principal, reducing the balance faster.' },
-        { label: 'Interest Saved', formula: 'Standard Total Interest − Accelerated Total Interest', description: 'Less principal = less interest accrued each month.', computedValue: `${formatCurrency(d.interestSaved as number)}` },
-        { label: 'Time Saved', formula: 'Standard Term − Accelerated Term', description: 'Months or years shaved off your mortgage.', computedValue: `${fmt(d.monthsSaved as number)} months` },
+        { label: 'Base Monthly Payment', formula: 'Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Standard monthly mortgage payment.', computedValue: `${formatCurrency((d.basePayment as number) || (d.regularMonthlyPayment as number))}` },
+        { label: 'With Extra Payments', formula: 'Iterative amortization with additional principal', description: 'Each extra dollar (monthly, annual, or lump sum) goes directly to principal.' },
+        { label: 'Interest Saved', formula: 'Regular Total Interest − Accelerated Total Interest', description: 'Less principal = less interest accrued each month.', computedValue: `${formatCurrency(d.interestSaved as number)}` },
+        { label: 'Time Saved', formula: 'Regular Term − Accelerated Term', description: 'Months or years shaved off your mortgage.', computedValue: `${fmt(d.monthsSaved as number)} months` },
         { label: 'Effective Return', formula: 'Mortgage interest rate', description: 'Every extra dollar prepaid earns a guaranteed return equal to the loan rate — not interest saved ÷ extra paid.', computedValue: `${fmtDec(d.effectiveReturnRate as number, 2)}%` },
-        { label: 'Prepay vs Invest', formula: 'Net worth of both paths at the original term', description: 'Identical monthly cash outflow. After early payoff, the prepay path invests the freed-up payment until the original term ends.', computedValue: `${formatCurrency(d.prepayPortfolio as number)} vs ${formatCurrency(d.investmentValue as number)}` },
       ],
     },
-  ],
-
-  acceleration: (d) => [
-    {
-      title: 'Acceleration Math',
-      steps: [
-        { label: 'Extra Monthly Payment', formula: 'Your chosen additional amount', description: 'Applied directly to principal each month.' },
-        { label: 'New Payoff Date', formula: 'Iterative: reduce balance by (scheduled principal + extra) each month', description: 'The loan pays off when balance reaches $0.' },
-        { label: 'Interest Saved', formula: 'Original Total Interest − Accelerated Total Interest', description: 'Every dollar of extra principal saves you interest on the remaining balance.', computedValue: `${formatCurrency(d.interestSaved as number)}` },
-        { label: 'Effective Return', formula: 'Mortgage interest rate', description: 'The guaranteed return on prepaid principal is the loan rate, not interest saved ÷ extra paid.', computedValue: `${fmtDec(d.effectiveReturnRate as number, 2)}%` },
-        { label: 'Prepay vs Invest', formula: 'Net worth of both paths at the original term', description: 'Identical monthly cash outflow. After early payoff, the prepay path invests the freed-up payment until the original term ends.', computedValue: `${formatCurrency(d.prepayPortfolio as number)} vs ${formatCurrency(d.investPortfolio as number)}` },
-      ],
-    },
-  ],
-
-  biweekly: (d) => [
     {
       title: 'Biweekly Payment Math',
       steps: [
-        { label: 'Monthly Payment', formula: 'Loan × r × (1+r)ⁿ ÷ [(1+r)ⁿ − 1]', description: 'Standard monthly mortgage payment.', computedValue: `${formatCurrency(d.monthlyPayment as number)}` },
         { label: 'Biweekly Payment', formula: 'Monthly Payment ÷ 2', description: 'Half the monthly payment, paid every two weeks.', computedValue: `${formatCurrency(d.biweeklyPayment as number)}` },
         { label: 'Extra Payment Per Year', formula: '26 biweekly payments = 13 monthly equivalents', description: 'You make one extra full payment per year (26 half-payments vs 24).' },
-        { label: 'Interest Saved', formula: 'Monthly Total Interest − Biweekly Total Interest', description: 'The extra annual payment accelerates payoff and reduces total interest.', computedValue: `${formatCurrency(d.interestSaved as number)}` },
+        { label: 'DIY Equivalent', formula: 'Monthly Payment ÷ 12 added to principal each month', description: 'Replicates true biweekly for free — no program fees.', computedValue: `${formatCurrency(d.diyExtraMonthly as number)}/month` },
+        { label: 'Biweekly Interest Saved', formula: 'Regular Total Interest − Biweekly Total Interest', description: 'The extra annual payment accelerates payoff and reduces total interest.', computedValue: `${formatCurrency(d.biweeklyInterestSaved as number)}` },
+      ],
+    },
+    {
+      title: 'Prepay vs Invest',
+      steps: [
+        { label: 'Guaranteed Return', formula: 'Mortgage interest rate', description: 'Prepaying earns your mortgage rate, risk-free. The comparison uses identical monthly cash outflow.', computedValue: `${fmtDec(d.effectiveReturnRate as number, 2)}%` },
+        { label: 'Net worth at original term', formula: 'Both paths spend the same cash; after early payoff the prepay path invests the freed-up payment', description: 'Fair comparison at the original term, not interest-saved vs a 30-year investment future value.', computedValue: `${formatCurrency(d.prepayPortfolio as number)} vs ${formatCurrency(d.investmentValue as number)}` },
       ],
     },
   ],

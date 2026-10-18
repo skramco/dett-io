@@ -134,10 +134,9 @@ export const comparisons: ComparisonData[] = [
     ],
     whenToChooseA: 'Choose an ARM if you plan to sell or refinance within 5-7 years, you\'re confident rates will stay flat or decline, or the initial savings are significant enough to offset the risk. Military families, corporate relocators, and people buying starter homes are common ARM candidates.',
     whenToChooseB: 'Choose a fixed rate if you plan to stay in the home for 10+ years, you want predictable payments, or you\'re buying your forever home. Fixed rates are also better when rates are historically low — you lock in the low rate permanently.',
-    bottomLine: 'In most rate environments, a fixed-rate mortgage is the safer choice for long-term homeowners. ARMs make sense when you have a clear exit timeline (selling or refinancing) within the initial fixed period. Use our ARM vs Fixed calculator to model your specific scenario with actual rate caps.',
+    bottomLine: 'In most rate environments, a fixed-rate mortgage is the safer choice for long-term homeowners. ARMs make sense when you have a clear exit timeline (selling or refinancing) within the initial fixed period. Use Best Loan for My Timeline to model your specific scenario with actual rate caps.',
     relatedCalculators: [
-      { name: 'ARM vs Fixed Rate Calculator', slug: 'arm-vs-fixed', why: 'Model rate adjustments and compare total costs' },
-      { name: 'Decision Timeline Simulator', slug: 'timeline-simulator', why: 'Find the best option based on how long you\'ll stay' },
+      { name: 'Best Loan for My Timeline', slug: 'loan-timeline', why: 'Model rate adjustments and find the best option for how long you\'ll stay' },
       { name: 'Rate Sensitivity Calculator', slug: 'interest-sensitivity', why: 'See how rate changes affect your payment' },
     ],
     faq: [
@@ -195,9 +194,9 @@ export const comparisons: ComparisonData[] = [
     whenToChooseB: 'Choose a 30-year mortgage if you want lower required payments, plan to invest the difference, or need the flexibility. Many financial advisors suggest taking a 30-year and making extra payments when possible — you get the safety of low required payments with the option to accelerate.',
     bottomLine: 'The 30-year mortgage with disciplined extra payments offers the best of both worlds: low required payments for safety, with the ability to pay it off faster when cash flow allows. However, if you have the discipline and income, a 15-year mortgage guarantees the interest savings. Use our extra payment calculator to see how a 30-year with extra payments compares to a straight 15-year.',
     relatedCalculators: [
-      { name: 'Extra Payment Calculator', slug: 'extra-payment', why: 'See how extra payments on a 30-year compare to a 15-year' },
+      { name: 'Pay Off Faster', slug: 'payoff', why: 'See how extra payments on a 30-year compare to a 15-year' },
       { name: 'Amortization Schedule', slug: 'amortization', why: 'Compare month-by-month breakdowns for both terms' },
-      { name: 'Decision Timeline Simulator', slug: 'timeline-simulator', why: 'Find the best term based on your plans' },
+      { name: 'Best Loan for My Timeline', slug: 'loan-timeline', why: 'Find the best term based on your plans' },
     ],
     faq: [
       { question: 'How much do you save with a 15-year mortgage?', answer: 'On a $360,000 loan, a 15-year mortgage saves approximately $268,000 in total interest compared to a 30-year. The exact savings depend on your interest rate and loan amount.' },
@@ -320,7 +319,7 @@ export const comparisons: ComparisonData[] = [
     relatedCalculators: [
       { name: 'Recast vs Refinance Calculator', slug: 'recast-vs-refi', why: 'Compare both options with your actual numbers' },
       { name: 'Refinance Calculator', slug: 'refinance', why: 'See if refinancing is worth the closing costs' },
-      { name: 'Extra Payment Calculator', slug: 'extra-payment', why: 'Compare recasting vs just making extra payments' },
+      { name: 'Pay Off Faster', slug: 'payoff', why: 'Compare recasting vs just making extra payments' },
     ],
     faq: [
       { question: 'What is a mortgage recast?', answer: 'A mortgage recast is when you make a large lump-sum payment toward your principal, and your lender re-amortizes the remaining balance over the remaining term at your existing interest rate. This lowers your monthly payment without changing your rate or term.' },
@@ -433,16 +432,15 @@ export const comparisons: ComparisonData[] = [
     ],
     whenToChooseA: 'Choose biweekly only if your lender offers a free biweekly program (no third-party fees) and you get paid biweekly. Never pay a third-party company for biweekly payment processing — it\'s a waste of money.',
     whenToChooseB: 'Monthly extra payments are almost always the better choice. You get the same interest savings with zero fees and complete flexibility. The DIY approach is to divide your monthly payment by 12 and add that amount as extra principal each month — this exactly replicates a biweekly schedule.',
-    bottomLine: 'Skip the biweekly payment programs and their fees. Instead, divide your monthly mortgage payment by 12 and add that amount as extra principal each month. You\'ll get identical results for free. For example, if your payment is $2,335, add $195/month extra to principal. Use our biweekly calculator to see the exact savings.',
+    bottomLine: 'Skip the biweekly payment programs and their fees. Instead, divide your monthly mortgage payment by 12 and add that amount as extra principal each month. You\'ll get identical results for free. For example, if your payment is $2,335, add $195/month extra to principal. Use Pay Off Faster to see the exact savings.',
     relatedCalculators: [
-      { name: 'Biweekly Payment Calculator', slug: 'biweekly', why: 'See biweekly savings and the free DIY alternative' },
-      { name: 'Extra Payment Calculator', slug: 'extra-payment', why: 'Model any extra payment amount' },
-      { name: 'Acceleration Planner', slug: 'acceleration', why: 'Compare all payoff acceleration strategies' },
+      { name: 'Pay Off Faster', slug: 'payoff', why: 'See biweekly savings, the free DIY alternative, and any extra payment amount' },
+      { name: 'Amortization Schedule', slug: 'amortization', why: 'See your accelerated payoff month by month' },
     ],
     faq: [
       { question: 'Are biweekly mortgage payments worth it?', answer: 'The concept is worth it — making the equivalent of one extra payment per year saves significant interest. But paying a third-party company to do it is not worth it. You can achieve the same result for free by adding 1/12 of your payment as extra principal each month.' },
       { question: 'How much does one extra payment per year save?', answer: 'On a $360,000 loan at 6.75% for 30 years, one extra payment per year saves approximately $67,000 in interest and pays off the loan about 5 years early.' },
-      { question: 'Should I pay extra on my mortgage or invest?', answer: 'If your mortgage rate is above 5-6%, paying extra is a guaranteed return at that rate. If your rate is below 4%, investing in index funds (historically 7-10% returns) may build more wealth. Use our extra payment calculator to compare both scenarios.' },
+      { question: 'Should I pay extra on my mortgage or invest?', answer: 'If your mortgage rate is above 5-6%, paying extra is a guaranteed return at that rate. If your rate is below 4%, investing in index funds (historically 7-10% returns) may build more wealth. Use Pay Off Faster to compare both scenarios.' },
     ],
   },
 ];

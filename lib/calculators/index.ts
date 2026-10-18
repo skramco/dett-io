@@ -12,28 +12,32 @@ export {
 } from './mortgageCostDefaults';
 export type { MortgageCostHeroData, MortgageCostHeroLine } from './mortgageCostDefaults';
 export { calculateRefinance } from './refinance';
-export { calculateExtraPayment } from './extraPayment';
 
 // Category 1: Buying a Home
 export { calculateAffordability } from './affordability';
 export { calculateDownPayment } from './downPayment';
 export { calculateRentVsBuy, RENT_VS_BUY_SCENARIO_ASSUMPTIONS } from './rentVsBuy';
 
-// Category 2: Rate & Structure
-export { calculatePointsBuydown } from './pointsBuydown';
-export { calculateArmVsFixed, ARM_RATE_PATH_ASSUMPTIONS } from './armVsFixed';
+// Category 2: Rate & Structure — merged "Best Loan for My Timeline"
+export {
+  calculateLoanTimeline,
+  getArmProductName,
+  getArmCapStructure,
+  getWorstCaseRatePath,
+  ARM_RATE_PATH_ASSUMPTIONS,
+} from './loanTimeline';
+export type { LoanTimelineResult, TimelineScenario, WorstCaseStep } from './loanTimeline';
 
 // Category 3: Refinancing & Equity
 export { calculateCashOutRefi } from './cashOutRefi';
 export { calculateRecastVsRefi } from './recastVsRefi';
 
-// Category 4: Payoff & Wealth
-export { calculateAcceleration } from './acceleration';
-export { calculateBiweekly } from './biweekly';
+// Category 4: Payoff & Wealth — merged "Pay Off Faster"
+export { calculatePayoff } from './payoff';
+export type { PayoffResult, PayoffStrategyRow } from './payoff';
 
 // Category 5: Advanced
 export { calculateInterestSensitivity } from './interestSensitivity';
-export { calculateTimelineSimulator } from './timelineSimulator';
 
 // Category 6: New High-Volume Calculators
 export { calculateAmortization } from './amortization';

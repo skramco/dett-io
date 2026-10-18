@@ -17,7 +17,7 @@ export function Footer() {
             <h4 className="mb-3 text-sm font-medium text-slate-900">Calculators</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/calculators/refinance" className="text-slate-600 hover:text-blue-600">Refinance</Link></li>
-              <li><Link href="/calculators/extra-payment" className="text-slate-600 hover:text-blue-600">Extra Payments</Link></li>
+              <li><Link href="/calculators/payoff" className="text-slate-600 hover:text-blue-600">Pay Off Faster</Link></li>
               <li><Link href="/calculators/rent-vs-buy" className="text-slate-600 hover:text-blue-600">Rent vs Buy</Link></li>
               <li><Link href="/calculators" className="text-slate-600 hover:text-blue-600">View All →</Link></li>
             </ul>

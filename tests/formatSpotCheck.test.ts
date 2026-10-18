@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   calculateAffordability,
   calculateAmortization,
+  calculateLoanTimeline,
   calculateMortgageCost,
+  calculatePayoff,
   calculateRefinance,
 } from '../lib/calculators';
 
@@ -78,5 +80,42 @@ describe('calculator result-surface formatting (ENG-333)', () => {
     result.insights.forEach((insight, i) => assertCleanCurrency(insight, `amortization insight ${i}`));
     expect(result.summary).toContain('$360,000');
     expect(result.insights.join(' ')).toMatch(/\$\d{1,3},\d{3}/);
+  });
+
+  it('Pay Off Faster summary and insights use whole dollars with commas', () => {
+    const result = calculatePayoff({
+      loanAmount: 360000,
+      interestRate: 6.75,
+      loanTerm: 30,
+      extraMonthlyPayment: 300,
+      extraAnnualPayment: 0,
+      investmentReturn: 7,
+    });
+    assertCleanCurrency(result.summary, 'payoff summary');
+    result.insights.forEach((insight, i) => assertCleanCurrency(insight, `payoff insight ${i}`));
+    expect(result.summary).toMatch(/\$\d{1,3}(?:,\d{3})+/);
+  });
+
+  it('Best Loan for My Timeline summary formats net cost as whole dollars', () => {
+    const result = calculateLoanTimeline({
+      loanAmount: 360000,
+      loanTerm: 30,
+      expectedYearsInHome: 7,
+      parRate: 6.75,
+      pointsRate: 6.25,
+      pointsCost: 7200,
+      lenderCredit: 3600,
+      lenderCreditRate: 7.0,
+      armInitialRate: 5.75,
+      armFixedPeriod: 5,
+      armMargin: 2.75,
+      armAdjustmentCap: 1,
+      armLifetimeCap: 5,
+      expectedIndexRate: 4,
+      fifteenYearRate: 6.0,
+    });
+    assertCleanCurrency(result.summary, 'loan-timeline summary');
+    result.insights.forEach((insight, i) => assertCleanCurrency(insight, `loan-timeline insight ${i}`));
+    expect(result.summary).toMatch(/\$\d{1,3}(?:,\d{3})+/);
   });
 });

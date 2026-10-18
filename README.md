@@ -120,7 +120,7 @@ dett/
 │   │   ├── page.tsx            # Calculators hub
 │   │   ├── mortgage-cost/      # True monthly cost calculator
 │   │   ├── refinance/          # Refinance calculator
-│   │   └── extra-payment/      # Extra payment calculator
+│   │   └── payoff/             # Pay off faster calculator
 ├── components/                   # Reusable React components
 │   └── CalculatorLayout.tsx    # Shared calculator page layout
 ├── lib/                         # Core business logic

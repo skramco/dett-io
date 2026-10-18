@@ -22,7 +22,7 @@ import {
   FHA_LOAN_LIMIT_FLOOR_DISPLAY,
   LOAN_LIMIT_YEAR,
 } from '@/lib/calculators/loanLimits';
-import { ARM_RATE_PATH_ASSUMPTIONS } from '@/lib/calculators/armVsFixed';
+import { ARM_RATE_PATH_ASSUMPTIONS } from '@/lib/calculators/loanTimeline';
 import { RENT_VS_BUY_SCENARIO_ASSUMPTIONS } from '@/lib/calculators/rentVsBuy';
 
 const dataSources = [
@@ -226,12 +226,12 @@ export default function MethodologyPage() {
 
             <h2>Rate-path and Monte Carlo scenarios</h2>
             <p>
-              Two calculators — <Link href="/calculators/arm-vs-fixed">ARM vs Fixed</Link> and{' '}
-              <Link href="/calculators/rent-vs-buy">Rent vs Buy</Link> — no longer rest on a single
+              Two calculators — <Link href="/calculators/loan-timeline">Best Loan for My Timeline</Link> (ARM
+              option) and <Link href="/calculators/rent-vs-buy">Rent vs Buy</Link> — no longer rest on a single
               expected line plus a best/base/worst trio. They show a <strong>range of paths</strong>,
               with every assumption on the page and here.
             </p>
-            <h3 style={{ fontSize: 18, fontWeight: 700, marginTop: 16, marginBottom: 8 }}>ARM vs Fixed</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginTop: 16, marginBottom: 8 }}>ARM (Best Loan for My Timeline)</h3>
             <ul>
               <li>
                 <strong>Named index paths.</strong> After the fixed period, we hold the index at your

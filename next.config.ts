@@ -9,12 +9,36 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['@mui/icons-material', '@mui/material', 'recharts', 'lucide-react'],
   },
   async redirects() {
+    // Consolidated calculators (ENG-345): the three payoff tools merged into
+    // /calculators/payoff and the three rate/structure tools merged into
+    // /calculators/loan-timeline. Permanent redirects (308) preserve ranking
+    // equity from the old URLs. /partners redirects to the ENG-361 embed builder.
+    const calculatorMerges: Array<[string, string]> = [
+      ['extra-payment', 'payoff'],
+      ['acceleration', 'payoff'],
+      ['biweekly', 'payoff'],
+      ['points-buydown', 'loan-timeline'],
+      ['timeline-simulator', 'loan-timeline'],
+      ['arm-vs-fixed', 'loan-timeline'],
+    ];
     return [
       {
         source: '/partners',
         destination: '/embed',
         permanent: true,
       },
+      ...calculatorMerges.flatMap(([oldSlug, newSlug]) => [
+        {
+          source: `/calculators/${oldSlug}`,
+          destination: `/calculators/${newSlug}`,
+          permanent: true,
+        },
+        {
+          source: `/embed/${oldSlug}`,
+          destination: `/embed/${newSlug}`,
+          permanent: true,
+        },
+      ]),
     ];
   },
   async headers() {

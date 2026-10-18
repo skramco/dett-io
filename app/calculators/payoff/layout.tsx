@@ -1,12 +1,12 @@
 import { getCalculatorMetadata } from '@/lib/seo/calculatorSeo';
 import { CalculatorStructuredData } from '@/components/seo/CalculatorStructuredData';
 
-export const metadata = getCalculatorMetadata('biweekly');
+export const metadata = getCalculatorMetadata('payoff');
 
-export default function BiweeklyLayout({ children }: { children: React.ReactNode }) {
+export default function PayoffLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <CalculatorStructuredData slug="biweekly" />
+      <CalculatorStructuredData slug="payoff" />
       {children}
     </>
   );
