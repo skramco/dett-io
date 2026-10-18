@@ -4,7 +4,9 @@ import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { useLocationHousingSync } from '@/lib/hooks/useLocationHousingSync';
 import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
+import { LocationInput } from '@/components/mui/calculator/LocationInput';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
@@ -23,6 +25,7 @@ import {
   Savings,
   Warning,
   Info,
+  Place,
 } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
 import {
@@ -50,12 +53,14 @@ import {
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateMortgageCost, calculateAmortization, MORTGAGE_COST_DEFAULT_INPUTS } from '@/lib/calculators';
+import { applyLocationToMortgageCost, rescaleMortgageCostOnPrice } from '@/lib/locations';
 import type { MortgageCostInputs } from '@/lib/calculators/types';
 
 export default function MortgageCostCalculator() {
   const [inputs, setInputs] = useState<MortgageCostInputs>({ ...MORTGAGE_COST_DEFAULT_INPUTS });
   useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
+  useLocationHousingSync(inputs, setInputs, applyLocationToMortgageCost);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate' });
   const deferredInputs = useDeferredInputs(inputs);
 
@@ -71,6 +76,10 @@ export default function MortgageCostCalculator() {
   const needsPMI = downPaymentPercent < 20;
 
   const handleInputChange = (field: keyof MortgageCostInputs, value: number) => {
+    if (field === 'homePrice') {
+      setInputs((prev) => rescaleMortgageCostOnPrice(prev, value));
+      return;
+    }
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
@@ -187,6 +196,14 @@ export default function MortgageCostCalculator() {
         {/* LEFT SIDE - INPUTS */}
         <Grid size={{ xs: 12, lg: 5 }}>
           <Box className="calculator-inputs">
+            <InputSection title="Location" icon={<Place />}>
+              <LocationInput
+                value={{ state: inputs.state ?? '', zip: inputs.zip ?? '' }}
+                onChange={({ state, zip }) => setInputs((prev) => ({ ...prev, state, zip }))}
+                homePrice={inputs.homePrice}
+              />
+            </InputSection>
+
             <InputSection title="Home & Loan" icon={<Home />}>
               <CurrencyInput
                 label="Home Price"
@@ -247,13 +264,14 @@ export default function MortgageCostCalculator() {
                 label="Annual Property Tax"
                 value={inputs.propertyTax}
                 onChange={(v) => handleInputChange('propertyTax', v)}
-                helperText="Typically 1-2% of home value per year"
+                helperText={inputs.state ? 'Estimated from your location — override if you have a bill' : 'Typically 1-2% of home value per year'}
               />
 
               <CurrencyInput
                 label="Annual Home Insurance"
                 value={inputs.homeInsurance}
                 onChange={(v) => handleInputChange('homeInsurance', v)}
+                helperText={inputs.state ? 'Estimated from your location — override with your quote' : undefined}
               />
 
               <CurrencyInput

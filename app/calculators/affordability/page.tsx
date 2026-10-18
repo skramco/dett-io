@@ -6,7 +6,9 @@ import { useState, useMemo } from 'react';
 import { useUrlInputs } from '@/lib/hooks/useUrlInputs';
 import { useScenarioPrefill } from '@/lib/hooks/useScenarioPrefill';
 import { useLiveRateDefaults } from '@/lib/hooks/useLiveRateDefaults';
+import { useLocationHousingSync } from '@/lib/hooks/useLocationHousingSync';
 import { MarketRateNote } from '@/components/mui/calculator/MarketRateNote';
+import { LocationInput } from '@/components/mui/calculator/LocationInput';
 import { useDeferredInputs } from '@/lib/hooks/useDeferredInputs';
 import {
   Box,
@@ -22,6 +24,7 @@ import {
   Home,
   Warning,
   CheckCircle,
+  Place,
 } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
 import {
@@ -44,6 +47,7 @@ import {
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
 import { calculateAffordability } from '@/lib/calculators';
+import { applyLocationToAffordability } from '@/lib/locations';
 import type { AffordabilityInputs } from '@/lib/calculators/types';
 
 export default function AffordabilityCalculator() {
@@ -57,9 +61,12 @@ export default function AffordabilityCalculator() {
     homeInsuranceAnnual: 1800,
     hoaFees: 0,
     creditScore: 740,
+    state: '',
+    zip: '',
   });
   useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
+  useLocationHousingSync(inputs, setInputs, applyLocationToAffordability);
   const marketRates = useLiveRateDefaults(inputs, setInputs, { anchorField: 'interestRate' });
   const deferredInputs = useDeferredInputs(inputs);
 
@@ -120,6 +127,14 @@ export default function AffordabilityCalculator() {
         {/* LEFT SIDE - INPUTS */}
         <Grid size={{ xs: 12, lg: 5 }}>
           <Box className="calculator-inputs">
+            <InputSection title="Location" icon={<Place />}>
+              <LocationInput
+                value={{ state: inputs.state ?? '', zip: inputs.zip ?? '' }}
+                onChange={({ state, zip }) => setInputs((prev) => ({ ...prev, state, zip }))}
+                homePrice={450000}
+              />
+            </InputSection>
+
             <InputSection title="Income & Debts" icon={<AccountBalance />}>
               <CurrencyInput
                 label="Annual Gross Income"
@@ -180,13 +195,14 @@ export default function AffordabilityCalculator() {
                 value={inputs.propertyTaxRate}
                 onChange={(v) => handleInputChange('propertyTaxRate', v)}
                 step={0.1}
-                helperText="Annual rate as % of home value"
+                helperText={inputs.state ? 'Estimated from your location — override if you know the local rate' : 'Annual rate as % of home value'}
               />
 
               <CurrencyInput
                 label="Home Insurance (Annual)"
                 value={inputs.homeInsuranceAnnual}
                 onChange={(v) => handleInputChange('homeInsuranceAnnual', v)}
+                helperText={inputs.state ? 'Typical premium for a ~$450k home in this location' : undefined}
               />
 
               <CurrencyInput

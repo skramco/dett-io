@@ -298,6 +298,37 @@ export function NumberInput({ label, value, onChange, helperText, suffix, step =
 }
 
 // ============================================
+// ZIP INPUT - 5-digit US ZIP code
+// ============================================
+interface ZipInputProps {
+  label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  helperText?: string;
+  error?: boolean;
+}
+
+export function ZipInput({ label = 'ZIP', value, onChange, helperText, error }: ZipInputProps) {
+  return (
+    <TextField
+      fullWidth
+      label={label}
+      value={value}
+      onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, 5))}
+      inputProps={{
+        inputMode: 'numeric',
+        pattern: '[0-9]*',
+        maxLength: 5,
+        autoComplete: 'postal-code',
+      }}
+      helperText={helperText}
+      error={error}
+      sx={inputStyles}
+    />
+  );
+}
+
+// ============================================
 // SELECT INPUT - Dropdown selection
 // ============================================
 interface SelectInputProps {
@@ -318,6 +349,7 @@ export function SelectInput({ label, value, onChange, options, helperText }: Sel
         labelId={labelId}
         value={value}
         label={label}
+        displayEmpty
         onChange={(e) => onChange(e.target.value)}
         aria-describedby={helperText ? helperId : undefined}
         sx={{

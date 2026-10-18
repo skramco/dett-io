@@ -68,10 +68,24 @@ const dataSources = [
   },
   {
     area: 'Closing costs',
-    how: 'Itemized estimates that total the commonly cited 2%–5% of the home price, broken into lender, third-party, and prepaid items.',
-    source: 'CFPB closing cost guidance and industry averages.',
+    how: 'Itemized estimates that total the commonly cited 2%–5% of the home price, broken into lender, third-party, and prepaid items. State selection switches attorney-closing vs title/escrow custom and the statewide transfer-tax rate.',
+    source: 'CFPB closing cost guidance and industry averages; state transfer-tax and attorney-closing customs from published state tables.',
     link: 'https://www.consumerfinance.gov/owning-a-home/closing-disclosure/',
     linkLabel: 'consumerfinance.gov',
+  },
+  {
+    area: 'Property tax (by state / ZIP)',
+    how: 'A State/ZIP input prefills an effective annual tax rate as a percent of home value. ZIP prefixes refine a few large metros where local rates diverge from the statewide average. You can always override the number.',
+    source: 'Tax Foundation effective property tax rates on owner-occupied housing, latest published figures.',
+    link: 'https://taxfoundation.org/data/all/state/property-taxes-by-state/',
+    linkLabel: 'taxfoundation.org',
+  },
+  {
+    area: 'Homeowners insurance (by state / ZIP)',
+    how: 'Typical annual HO-3 premiums as a percent of dwelling value. Hurricane, hail, and wildfire states are higher than the inland band. Scaled to the home price you enter.',
+    source: 'NAIC / Insurance Information Institute average homeowners premium by state, expressed as a percent of value.',
+    link: 'https://www.iii.org/fact-statistic/facts-statistics-homeowners-and-renters-insurance',
+    linkLabel: 'iii.org',
   },
 ];
 

@@ -71,6 +71,14 @@ export const STATE_CLOSING_CUSTOMS: Record<string, StateClosingCustoms> = {
   WY: { name: 'Wyoming', attorneyCustomary: false, attorneyFee: 0, transferTaxRate: 0 },
 };
 
+export const NATIONAL_CLOSING_CUSTOMS: StateClosingCustoms = {
+  name: 'U.S. average',
+  attorneyCustomary: false,
+  attorneyFee: 0,
+  transferTaxRate: 0.2,
+  note: 'Select a state for attorney and transfer-tax customs.',
+};
+
 export const STATE_OPTIONS = Object.entries(STATE_CLOSING_CUSTOMS).map(([code, data]) => ({
   value: code,
   label: data.name,
@@ -82,6 +90,7 @@ export interface ClosingCostInputs {
   interestRate: number;
   loanTerm: number;
   state: string;
+  zip?: string;
   isNewConstruction: boolean;
   /** Origination fee as % of loan amount. Default 1% — an assumption, editable. */
   originationFeePercent?: number;
@@ -145,7 +154,7 @@ export function calculateClosingCosts(inputs: ClosingCostInputs): CalculatorResu
     sellerCreditPercent = 0,
   } = inputs;
 
-  const stateCustoms = STATE_CLOSING_CUSTOMS[state] ?? STATE_CLOSING_CUSTOMS.CA;
+  const stateCustoms = STATE_CLOSING_CUSTOMS[state] ?? NATIONAL_CLOSING_CUSTOMS;
 
   const loanAmount = homePrice * (1 - downPaymentPercent / 100);
   const downPayment = homePrice * (downPaymentPercent / 100);
