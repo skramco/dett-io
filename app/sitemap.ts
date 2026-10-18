@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { guides } from '@/lib/guides/guideData';
 import { comparisons } from '@/lib/comparisons/comparisonData';
 import { definitions } from '@/lib/definitions/definitionData';
+import { locations } from '@/lib/locations/locationData';
 
 const BASE_URL = 'https://dett.io';
 
@@ -104,5 +105,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...calculatorPages, ...guidePages, ...comparePages, ...definitionPages];
+  const mostRecentLocationUpdate = locations.reduce(
+    (latest, loc) => (loc.lastUpdated > latest ? loc.lastUpdated : latest),
+    locations[0].lastUpdated
+  );
+
+  const locationPages: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/closing-costs`,
+      lastModified: new Date(mostRecentLocationUpdate),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    },
+    ...locations.map((loc) => ({
+      url: `${BASE_URL}/closing-costs/${loc.slug}`,
+      lastModified: new Date(loc.lastUpdated),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
+  ];
+
+  return [
+    ...staticPages,
+    ...calculatorPages,
+    ...guidePages,
+    ...comparePages,
+    ...definitionPages,
+    ...locationPages,
+  ];
 }

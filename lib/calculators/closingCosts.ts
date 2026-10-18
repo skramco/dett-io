@@ -23,6 +23,8 @@ export interface ClosingCostInputs {
   prepaidTaxMonths?: number;
   prepaidInterestDays?: number;
   sellerCreditPercent?: number;
+  /** Effective annual property tax rate as % of home value (defaults to 1.2% national estimate) */
+  propertyTaxRate?: number;
 }
 
 interface CostLineItem {
@@ -54,6 +56,7 @@ export function calculateClosingCosts(inputs: ClosingCostInputs): CalculatorResu
     prepaidTaxMonths = 6,
     prepaidInterestDays = 15,
     sellerCreditPercent = 0,
+    propertyTaxRate = 1.2,
   } = inputs;
 
   const loanAmount = homePrice * (1 - downPaymentPercent / 100);
@@ -67,7 +70,7 @@ export function calculateClosingCosts(inputs: ClosingCostInputs): CalculatorResu
   // Prepaid items
   const dailyInterest = (loanAmount * (interestRate / 100)) / 365;
   const prepaidInterest = Math.round(dailyInterest * prepaidInterestDays);
-  const monthlyTax = Math.round((homePrice * 0.012) / 12); // Estimate 1.2% property tax
+  const monthlyTax = Math.round((homePrice * (propertyTaxRate / 100)) / 12);
   const prepaidTaxes = monthlyTax * prepaidTaxMonths;
   const escrowInsurance = Math.round(prepaidInsurance / 12) * 3; // 3 months escrow
   const escrowTaxes = monthlyTax * 3; // 3 months escrow

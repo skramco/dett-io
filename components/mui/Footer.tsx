@@ -12,6 +12,7 @@ const footerLinks = {
   ],
   resources: [
     { label: 'Mortgage Guides', href: '/guides' },
+    { label: 'Closing Costs by Location', href: '/closing-costs' },
     { label: 'Loan Comparisons', href: '/compare' },
     { label: 'Learn About Debt', href: '/learn' },
     { label: 'Embed Calculators', href: '/partners' },
