@@ -138,7 +138,7 @@ export function calculateFHA(inputs: FHAInputs): CalculatorResult {
 
   if (mipDurationYears < loanTerm) {
     insights.push(
-      `With ${downPaymentPercent}% down (10% or more), your monthly MIP drops off after ${mipDurationYears} years instead of lasting the life of the loan. Total MIP cost: $${Math.round(totalMIPCost).toLocaleString()}.`
+      `With ${downPaymentPercent}% down, your monthly MIP drops off after ${mipDurationYears} years instead of lasting the life of the loan — FHA's rule for down payments of 10% or more. Total MIP cost: $${Math.round(totalMIPCost).toLocaleString()}.`
     );
   } else {
     insights.push(
