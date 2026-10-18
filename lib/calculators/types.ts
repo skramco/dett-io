@@ -174,9 +174,12 @@ export interface TimelineSimulatorInputs {
   loanAmount: number;
   interestRate: number;
   expectedMoveYear: number;
-  refiLikelihood: number;
   armInitialRate: number;
   armFixedPeriod: number;
+  armMargin: number;
+  expectedIndexRate: number;
+  armAdjustmentCap: number;
+  armLifetimeCap: number;
   pointsCost: number;
   pointsRate: number;
 }

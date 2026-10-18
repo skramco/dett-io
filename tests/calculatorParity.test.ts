@@ -425,9 +425,12 @@ describe('timeline-simulator', () => {
     loanAmount: 400000,
     interestRate: 6.75,
     expectedMoveYear: 6,
-    refiLikelihood: 30,
     armInitialRate: 5.875,
     armFixedPeriod: 7,
+    armMargin: 2.75,
+    expectedIndexRate: 5,
+    armAdjustmentCap: 2,
+    armLifetimeCap: 5,
     pointsCost: 8000,
     pointsRate: 6.25,
   };
@@ -441,6 +444,20 @@ describe('timeline-simulator', () => {
   it('remaining balances match the reference schedule', () => {
     const fixedRow = result.chartData!.find((r) => r.option === '30-Year Fixed (Par)')!;
     expect(num(fixedRow.remainingBalance)).toBeCloseTo(remainingBalance(400000, 6.75, 360, 72), 0);
+  });
+
+  it('ranks options by net cost (payments + closing − equity), not payments only', () => {
+    for (const row of result.chartData!) {
+      const totalPaid = num(row.totalPaid);
+      const balance = num(row.remainingBalance);
+      const closing = row.option === '30-Year Fixed (Points)' ? 8000 : 0;
+      const equity = 400000 - balance;
+      expect(num(row.netCost)).toBeCloseTo(totalPaid + closing - equity, 0);
+    }
+    expect(result.details.bestOption).toBeTruthy();
+    expect(num(result.details.bestNetCost)).toBe(
+      Math.min(...result.chartData!.map((row) => num(row.netCost)))
+    );
   });
 });
 
