@@ -1,9 +1,32 @@
 'use client';
 
-import { Box, Typography, Stack, Paper, Chip } from '@mui/material';
-import { Rocket, ArrowForward } from '@mui/icons-material';
+import { Box, Typography, Stack, Paper, Chip, Button } from '@mui/material';
+import { Rocket, OpenInNew } from '@mui/icons-material';
+import { trackEvent } from '@/lib/analytics';
+import {
+  LOANKNOW_CTA_ENABLED,
+  getLoanKnowCtaCopy,
+  getLoanKnowWaitlistUrl,
+} from '@/lib/loanknow';
 
-export function LoanKnowCTA() {
+interface LoanKnowCTAProps {
+  calculatorSlug?: string;
+}
+
+export function LoanKnowCTA({ calculatorSlug }: LoanKnowCTAProps) {
+  if (!LOANKNOW_CTA_ENABLED) return null;
+
+  const { headline, body } = getLoanKnowCtaCopy(calculatorSlug);
+  const waitlistUrl = getLoanKnowWaitlistUrl(calculatorSlug);
+
+  const handleClick = () => {
+    trackEvent('cta_click', {
+      cta_label: 'loanknow_waitlist',
+      calculator_slug: calculatorSlug,
+      link_url: waitlistUrl,
+    });
+  };
+
   return (
     <Paper
       elevation={0}
@@ -31,13 +54,13 @@ export function LoanKnowCTA() {
         }}
       />
       <Stack spacing={2}>
-        <Stack direction="row" spacing={1.5} alignItems="center">
+        <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap" useFlexGap>
           <Rocket sx={{ color: '#6366F1', fontSize: 28 }} />
           <Typography variant="h6" sx={{ fontWeight: 600, color: '#312E81' }}>
-            Ready for the Next Step?
+            {headline}
           </Typography>
           <Chip
-            label="Coming Soon"
+            label="Launching Soon"
             size="small"
             sx={{
               bgcolor: '#6366F1',
@@ -48,24 +71,31 @@ export function LoanKnowCTA() {
           />
         </Stack>
         <Typography variant="body1" sx={{ color: '#4338CA', maxWidth: 600 }}>
-          <strong>LoanKnow</strong> takes your numbers and helps lenders compete for your business — 
-          anonymously and for free. Your calculated data transfers seamlessly so you never re-enter information.
+          {body}
         </Typography>
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 0.5,
-            color: '#6366F1',
-            fontWeight: 600,
-            fontSize: '0.875rem',
-            cursor: 'default',
-            opacity: 0.7,
-          }}
-        >
-          loanknow.com — Launching Soon
-          <ArrowForward sx={{ fontSize: 16 }} />
+        <Box>
+          <Button
+            variant="contained"
+            component="a"
+            href={waitlistUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleClick}
+            endIcon={<OpenInNew sx={{ fontSize: 16 }} />}
+            sx={{
+              bgcolor: '#6366F1',
+              fontWeight: 600,
+              textTransform: 'none',
+              px: 3,
+              '&:hover': { bgcolor: '#4F46E5' },
+            }}
+          >
+            Join the LoanKnow waitlist
+          </Button>
         </Box>
+        <Typography variant="caption" sx={{ color: '#6366F1', opacity: 0.8 }}>
+          Opens loanknow.com. Free and anonymous — your calculator results stay on this page.
+        </Typography>
       </Stack>
     </Paper>
   );

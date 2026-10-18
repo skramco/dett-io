@@ -432,7 +432,7 @@ export default function CalculatorLayout({ children, title, description, related
           {calculatorSlug && (
             <RelatedGuides calculatorSlug={calculatorSlug} />
           )}
-          <LoanKnowCTA />
+          <LoanKnowCTA calculatorSlug={calculatorSlug} />
         </Container>
 
         {/* Calculator Disclaimer */}
