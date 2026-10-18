@@ -556,11 +556,21 @@ export default function MortgageCostCalculator() {
                     </Grid>
                   </Grid>
                   
-                  <Box sx={{ mt: 3, p: 3, bgcolor: '#FEE2E2', borderRadius: 2, textAlign: 'center' }}>
+                  <Box
+                    sx={{
+                      mt: 3,
+                      p: 3,
+                      bgcolor: 'result.surface',
+                      borderRadius: 2,
+                      textAlign: 'center',
+                      border: '1px solid',
+                      borderColor: 'result.border',
+                    }}
+                  >
                     <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                       TOTAL COST OF HOMEOWNERSHIP
                     </Typography>
-                    <Typography variant="h3" sx={{ fontWeight: 700, color: '#DC2626', my: 1 }}>
+                    <Typography variant="h3" sx={{ fontWeight: 700, color: 'result.costText', my: 1 }}>
                       ${(result.details.totalPaid as number).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">

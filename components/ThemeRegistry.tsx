@@ -2,6 +2,16 @@
 
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import { ReactNode } from 'react';
+import { RESULT_TOKENS } from '@/lib/theme/resultTokens';
+
+declare module '@mui/material/styles' {
+  interface Palette {
+    result: typeof RESULT_TOKENS;
+  }
+  interface PaletteOptions {
+    result?: typeof RESULT_TOKENS;
+  }
+}
 
 // SaaSable-inspired theme for Dett
 const theme = createTheme({
@@ -18,8 +28,8 @@ const theme = createTheme({
     mode: 'light',
     primary: {
       light: '#6BA3DB',
-      main: '#196bc0',
-      dark: '#0F4F8F',
+      main: RESULT_TOKENS.accent,
+      dark: RESULT_TOKENS.accentText,
       contrastText: '#ffffff',
     },
     secondary: {
@@ -44,11 +54,12 @@ const theme = createTheme({
       primary: '#1A1C1E',
       secondary: '#42474E',
     },
-    divider: '#E5E7EB',
+    divider: RESULT_TOKENS.border,
     background: {
       default: '#ffffff',
       paper: '#ffffff',
     },
+    result: RESULT_TOKENS,
   },
   typography: {
     fontFamily: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',

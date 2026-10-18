@@ -9,6 +9,7 @@ import type {
   ComparisonBarChartProps,
   TimelineChartProps,
   StackedBarChartProps,
+  CategoryStackedBarChartProps,
 } from './ChartComponents';
 
 // next/dynamic with `ssr: false` renders the `loading` component into the
@@ -123,6 +124,21 @@ function summarizeStacked({ data }: StackedBarChartProps): string | null {
   return `Year ${first.year}: ${describe(first)}; year ${last.year}: ${describe(last)}.`;
 }
 
+function summarizeCategoryStacked({ data, series, nameKey = 'name' }: CategoryStackedBarChartProps): string | null {
+  if (!data || data.length === 0 || !series || series.length === 0) return null;
+  const rows = data.slice(0, 4).map((row) => {
+    const label = String(row[nameKey] ?? '');
+    const parts = series
+      .map((s) => {
+        const value = Number(row[s.dataKey] ?? 0);
+        return value > 0 ? `${s.name} ${fmtUSD(value)}` : null;
+      })
+      .filter((part): part is string => Boolean(part));
+    return parts.length > 0 ? `${label}: ${parts.join(', ')}` : label;
+  });
+  return `${rows.join('; ')}.`;
+}
+
 // Dynamically import each chart component so recharts stays code-split.
 const DynamicDonutChart = dynamic(
   () => import('./ChartComponents').then((mod) => ({ default: mod.DonutChart })),
@@ -147,6 +163,11 @@ const DynamicTimelineChart = dynamic(
 const DynamicStackedBarChart = dynamic(
   () => import('./ChartComponents').then((mod) => ({ default: mod.StackedBarChart })),
   { loading: () => <ChartSkeleton height={300} />, ssr: false }
+);
+
+const DynamicCategoryStackedBarChart = dynamic(
+  () => import('./ChartComponents').then((mod) => ({ default: mod.CategoryStackedBarChart })),
+  { loading: () => <ChartSkeleton height={220} />, ssr: false }
 );
 
 export function LazyDonutChart(props: DonutChartProps) {
@@ -193,6 +214,16 @@ export function LazyStackedBarChart(props: StackedBarChartProps) {
       value={{ summary: summarizeStacked(props), height: props.height }}
     >
       <DynamicStackedBarChart {...props} />
+    </ChartFallbackContext.Provider>
+  );
+}
+
+export function LazyCategoryStackedBarChart(props: CategoryStackedBarChartProps) {
+  return (
+    <ChartFallbackContext.Provider
+      value={{ summary: summarizeCategoryStacked(props), height: props.height }}
+    >
+      <DynamicCategoryStackedBarChart {...props} />
     </ChartFallbackContext.Provider>
   );
 }
