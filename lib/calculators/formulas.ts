@@ -29,8 +29,9 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       title: 'Maximum Monthly Payment',
       steps: [
         { label: 'Monthly Gross Income', formula: 'Annual Income ÷ 12', description: 'Convert annual salary to monthly.', computedValue: `$${fmt(d.monthlyIncome as number)}` },
-        { label: 'Max Housing Payment (28% rule)', formula: 'Monthly Income × 0.28', description: 'Lenders typically cap housing costs at 28% of gross income.', computedValue: `$${fmt((d.monthlyIncome as number) * 0.28)}` },
-        { label: 'Max Total Debt Payment (36% rule)', formula: 'Monthly Income × 0.36 − Other Debts', description: 'Total debt payments (housing + other) should stay under 36%.', computedValue: `$${fmt((d.monthlyIncome as number) * 0.36 - (d.monthlyDebts as number || 0))}` },
+        { label: 'Front-End Cap (28% rule)', formula: 'Monthly Income × 0.28', description: 'Lenders typically cap housing costs at 28% of gross income.', computedValue: `$${fmt((d.monthlyIncome as number) * 0.28)}` },
+        { label: 'Back-End Cap (36% rule)', formula: 'Monthly Income × 0.36 − Other Debts', description: 'Total debt payments (housing + other) should stay under 36%.', computedValue: `$${fmt((d.monthlyIncome as number) * 0.36 - (d.monthlyDebts as number || 0))}` },
+        { label: 'Binding Constraint', formula: 'min(Front-End Cap, Back-End Cap)', description: 'The lower cap is the one that actually limits your housing budget. The recommended price uses the 36% back-end cap, which includes your other debts.', computedValue: d.moderateBinding ? `${d.moderateBinding} DTI` : undefined },
       ],
     },
     {
@@ -38,7 +39,8 @@ export const calculatorFormulas: Record<string, FormulaGenerator> = {
       steps: [
         { label: 'Monthly Rate', formula: 'Annual Rate ÷ 12 ÷ 100', description: 'Convert annual percentage to monthly decimal.' },
         { label: 'Number of Payments', formula: 'Loan Term × 12', description: 'Total months over the life of the loan.' },
-        { label: 'Loan Amount', formula: 'Payment × [(1+r)ⁿ − 1] ÷ [r × (1+r)ⁿ]', description: 'Standard present value of annuity formula, solving for principal.' },
+        { label: 'PMI (if LTV > 80%)', formula: 'Loan Amount × 0.5% ÷ 12', description: 'When your down payment is under 20%, monthly PMI is included in the payment before solving for price.', computedValue: `$${fmt((d.moderatePMI as number) || 0)}` },
+        { label: 'Loan Amount', formula: '(Payment − Tax − Insurance − PMI − HOA) × [(1+r)ⁿ − 1] ÷ [r × (1+r)ⁿ]', description: 'Standard present value of annuity formula, solving for principal from the budget left after escrow items and PMI.' },
         { label: 'Max Home Price', formula: 'Loan Amount + Down Payment', description: 'Add your down payment to the loan amount.', computedValue: `$${fmt(d.maxHomePrice as number)}` },
       ],
     },

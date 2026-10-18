@@ -1,5 +1,26 @@
 import type { AffordabilityInputs, CalculatorResult } from './types';
 
+// Assumed annual PMI rate (as a fraction of the loan amount) when LTV > 80%.
+const PMI_ANNUAL_RATE = 0.005;
+const PMI_LTV_THRESHOLD = 0.8;
+
+type BindingConstraint = 'front-end' | 'back-end';
+
+interface TierLimits {
+  /** Max housing payment as a share of gross monthly income (front-end DTI). */
+  frontEnd: number;
+  /** Max housing payment + other debts as a share of gross monthly income (back-end DTI). */
+  backEnd: number;
+}
+
+// Conservative follows the classic 28/36 rule; moderate and aggressive are
+// back-end (total debt) limits of 36% and 43% respectively.
+const TIERS: Record<string, TierLimits> = {
+  conservative: { frontEnd: 0.28, backEnd: 0.36 },
+  moderate: { frontEnd: 0.36, backEnd: 0.36 },
+  aggressive: { frontEnd: 0.43, backEnd: 0.43 },
+};
+
 export function calculateAffordability(inputs: AffordabilityInputs): CalculatorResult {
   const {
     annualIncome,
@@ -16,86 +37,100 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
   const monthlyRate = interestRate / 100 / 12;
   const numPayments = loanTerm * 12;
 
-  // Calculate max home prices at different DTI ratios
-  const dtiRatios = {
-    conservative: 0.28, // 28% front-end DTI
-    moderate: 0.36,     // 36% front-end DTI
-    aggressive: 0.43,   // 43% front-end DTI (max for most loans)
+  // Full monthly housing cost (P&I + tax + insurance + PMI + HOA) at a given price.
+  const housingPaymentAt = (homePrice: number) => {
+    const loanAmount = Math.max(0, homePrice - downPayment);
+    const monthlyPI = loanAmount <= 0
+      ? 0
+      : monthlyRate === 0
+        ? loanAmount / numPayments
+        : loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+          (Math.pow(1 + monthlyRate, numPayments) - 1);
+    const ltv = homePrice > 0 ? loanAmount / homePrice : 0;
+    const monthlyPMI = ltv > PMI_LTV_THRESHOLD ? (loanAmount * PMI_ANNUAL_RATE) / 12 : 0;
+    const monthlyTaxIns = (homePrice * propertyTaxRate / 100 / 12) + (homeInsuranceAnnual / 12);
+    return {
+      total: monthlyPI + monthlyPMI + monthlyTaxIns + hoaFees,
+      monthlyPI,
+      monthlyPMI,
+    };
   };
 
-  const results: Record<string, any> = {};
-  
-  Object.entries(dtiRatios).forEach(([level, dtiRatio]) => {
-    const maxMonthlyPayment = monthlyIncome * dtiRatio;
-    const availableForPITI = maxMonthlyPayment - hoaFees;
-    
-    // Estimate property tax and insurance per month per $100k of home value
-    const taxInsPerMonth = (propertyTaxRate / 100 / 12) + (homeInsuranceAnnual / 12);
-    
-    // Binary search for max home price
-    let low = 50000;
-    let high = 5000000;
+  const results: Record<string, number> = {};
+  const binding: Record<string, BindingConstraint> = {};
+
+  Object.entries(TIERS).forEach(([level, limits]) => {
+    // Front-end cap: housing payment alone vs income.
+    const frontEndCap = monthlyIncome * limits.frontEnd;
+    // Back-end cap: housing payment must leave room for other monthly debts.
+    const backEndCap = monthlyIncome * limits.backEnd - monthlyDebts;
+    const maxHousingPayment = Math.max(0, Math.min(frontEndCap, backEndCap));
+    binding[level] = backEndCap < frontEndCap ? 'back-end' : 'front-end';
+
+    // Binary search for the max home price whose full payment (incl. PMI) fits the cap.
+    let low = 0;
+    let high = 10000000;
     let maxHomePrice = 0;
-    
+
     while (high - low > 100) {
       const mid = (low + high) / 2;
-      const loanAmount = mid - downPayment;
-      
-      if (loanAmount <= 0) {
-        low = mid;
-        continue;
-      }
-      
-      const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                       (Math.pow(1 + monthlyRate, numPayments) - 1);
-      const monthlyTaxIns = (mid * propertyTaxRate / 100 / 12) + (homeInsuranceAnnual / 12);
-      const totalPITI = monthlyPI + monthlyTaxIns;
-      
-      if (totalPITI <= availableForPITI) {
+      if (housingPaymentAt(mid).total <= maxHousingPayment) {
         maxHomePrice = mid;
         low = mid;
       } else {
         high = mid;
       }
     }
-    
-    const loanAmount = maxHomePrice - downPayment;
-    const monthlyPI = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                     (Math.pow(1 + monthlyRate, numPayments) - 1);
-    const monthlyTaxIns = (maxHomePrice * propertyTaxRate / 100 / 12) + (homeInsuranceAnnual / 12);
-    const totalPITI = monthlyPI + monthlyTaxIns + hoaFees;
-    
+
+    const payment = maxHomePrice > 0
+      ? housingPaymentAt(maxHomePrice)
+      : { total: 0, monthlyPI: 0, monthlyPMI: 0 };
+
     results[`${level}Price`] = Math.round(maxHomePrice);
-    results[`${level}Payment`] = Math.round(totalPITI);
-    results[`${level}DTI`] = Math.round((totalPITI / monthlyIncome) * 100);
+    results[`${level}Payment`] = Math.round(payment.total);
+    results[`${level}PMI`] = Math.round(payment.monthlyPMI);
+    // Front-end DTI: housing payment as % of income.
+    results[`${level}DTI`] = Math.round((payment.total / monthlyIncome) * 100);
+    // Back-end DTI: housing payment + other debts as % of income.
+    results[`${level}BackEndDTI`] = Math.round(((payment.total + monthlyDebts) / monthlyIncome) * 100);
   });
 
-  // Calculate back-end DTI (includes all debts)
-  const backEndDTI = ((results.moderatePayment + monthlyDebts) / monthlyIncome) * 100;
+  // Back-end DTI at the recommended (moderate) price, including all debts.
+  const backEndDTI = results.moderateBackEndDTI;
 
   const insights: string[] = [];
-  
+
   insights.push(
     `Conservative ($${results.conservativePrice.toLocaleString()}): Safest option with breathing room for unexpected expenses`
   );
-  
+
   insights.push(
     `Moderate ($${results.moderatePrice.toLocaleString()}): Balanced approach - most common choice for stable income`
   );
-  
+
   insights.push(
     `Aggressive ($${results.aggressivePrice.toLocaleString()}): Maximum qualification - leaves little room for error`
   );
 
-  if (backEndDTI > 43) {
+  if (monthlyDebts > 0 && binding.moderate === 'back-end') {
+    insights.push(
+      `Your $${monthlyDebts.toLocaleString()}/month in other debts is the binding constraint: the 36% back-end rule caps your housing payment at $${Math.round(Math.max(0, monthlyIncome * 0.36 - monthlyDebts)).toLocaleString()}/month instead of $${Math.round(monthlyIncome * 0.36).toLocaleString()}. Paying down debts raises your budget dollar-for-dollar.`
+    );
+  }
+
+  if (monthlyDebts > monthlyIncome * 0.36) {
+    insights.push(
+      `⚠️ Your other debt payments alone exceed 36% of income, leaving no room for a housing payment at the recommended DTI. Consider paying down debts first.`
+    );
+  } else if (backEndDTI > 43) {
     insights.push(
       `⚠️ Your total debt payments (${Math.round(backEndDTI)}% DTI) may limit qualification. Consider paying down debts first.`
     );
   }
 
-  if (downPayment < results.conservativePrice * 0.2) {
+  if (results.moderatePMI > 0) {
     insights.push(
-      `💡 With less than 20% down, you'll likely pay PMI. Budget an extra $${Math.round((results.moderatePrice - downPayment) * 0.005 / 12)}/month.`
+      `💡 Your down payment is below 20% at the recommended price, so $${results.moderatePMI.toLocaleString()}/month PMI is already included in these payments. PMI drops off once you reach 20% equity.`
     );
   }
 
@@ -109,18 +144,28 @@ export function calculateAffordability(inputs: AffordabilityInputs): CalculatorR
       conservativePrice: results.conservativePrice,
       conservativePayment: results.conservativePayment,
       conservativeDTI: results.conservativeDTI,
+      conservativeBackEndDTI: results.conservativeBackEndDTI,
+      conservativePMI: results.conservativePMI,
+      conservativeBinding: binding.conservative,
       moderatePrice: results.moderatePrice,
       moderatePayment: results.moderatePayment,
       moderateDTI: results.moderateDTI,
+      moderateBackEndDTI: results.moderateBackEndDTI,
+      moderatePMI: results.moderatePMI,
+      moderateBinding: binding.moderate,
       aggressivePrice: results.aggressivePrice,
       aggressivePayment: results.aggressivePayment,
       aggressiveDTI: results.aggressiveDTI,
-      backEndDTI: Math.round(backEndDTI),
+      aggressiveBackEndDTI: results.aggressiveBackEndDTI,
+      aggressivePMI: results.aggressivePMI,
+      aggressiveBinding: binding.aggressive,
+      backEndDTI,
+      maxHomePrice: results.moderatePrice,
     },
     chartData: [
-      { level: 'Conservative\n(28% DTI)', price: results.conservativePrice, payment: results.conservativePayment },
-      { level: 'Moderate\n(36% DTI)', price: results.moderatePrice, payment: results.moderatePayment },
-      { level: 'Aggressive\n(43% DTI)', price: results.aggressivePrice, payment: results.aggressivePayment },
+      { level: 'Conservative\n(28/36 rule)', price: results.conservativePrice, payment: results.conservativePayment },
+      { level: 'Moderate\n(36% back-end)', price: results.moderatePrice, payment: results.moderatePayment },
+      { level: 'Aggressive\n(43% back-end)', price: results.aggressivePrice, payment: results.aggressivePayment },
     ],
     insights,
   };
