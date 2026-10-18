@@ -24,18 +24,15 @@ import {
 } from '@mui/material';
 import {
   Calculate,
-  TrendingDown,
   AttachMoney,
   Home,
   Autorenew,
   Savings,
   TrendingUp,
-  Bolt,
   AccountBalance,
   TrackChanges,
   Schedule,
   BarChart,
-  CalendarMonth,
   CheckCircle,
   ArrowForward,
   Shield,
@@ -78,29 +75,13 @@ const calculatorDetails = {
     outputs: ['Monthly payment reduction for each option', 'Total costs comparison', 'Interest savings analysis', 'Best option recommendation based on your timeline'],
     value: 'Compares three ways to use a lump sum: (1) Recast - make a large principal payment and have your lender recalculate a lower monthly payment for a small fee (~$250), (2) Refinance - get a new loan with better terms but pay closing costs (~2-5% of loan), or (3) Prepay Only - make principal-only payments to save interest without changing your monthly payment. Shows which strategy saves you the most money based on your situation.',
   },
-  'points-buydown': {
-    outputs: ['Break-even timeline for buying points', 'Total interest saved', 'Net cost after upfront points', 'Comparison: points vs. lender credits'],
-    value: 'Answers whether you should pay points to lower your rate. Shows exactly when you\'ll break even and if it\'s worth the upfront cost.',
+  'loan-timeline': {
+    outputs: ['Best loan structure for your timeline', 'Net cost comparison: 30-year vs. points vs. ARM vs. 15-year', 'Named falling / expected / rising ARM rate paths', 'Monte Carlo P10–P90 payment band', 'Cap-driven worst-case ARM payment'],
+    value: 'Matches your loan structure to your life plans. Compares fixed rates, discount points, ARMs (with named rate paths and a Monte Carlo range, not just a teaser vs worst case), and 15-year terms by what they actually cost over your expected stay.',
   },
-  'arm-vs-fixed': {
-    outputs: ['Payment comparison over time', 'Named falling / expected / rising rate paths', 'Monte Carlo P10–P90 payment band', 'Cap-driven worst-case scenario'],
-    value: 'Models how an ARM could adjust over many index paths vs. a fixed rate — not just one expected line and a worst case. Shows if the lower initial rate is worth the risk based on how long you\'ll keep the loan.',
-  },
-  'timeline-simulator': {
-    outputs: ['Best loan structure for your timeline', 'Cost comparison: 15-year vs. 30-year vs. ARM', 'Total interest paid', 'Optimal strategy recommendation'],
-    value: 'Matches your loan structure to your life plans. If you\'re moving in 5 years, you need different advice than someone staying 30 years.',
-  },
-  'extra-payment': {
-    outputs: ['Years saved on loan term', 'Total interest saved', 'New payoff date', 'Monthly vs. annual extra payment comparison'],
-    value: 'Shows the dramatic impact of extra payments. See how paying just $200 extra per month can save you years and tens of thousands in interest.',
-  },
-  acceleration: {
-    outputs: ['Comparison of prepayment strategies', 'Optimal acceleration plan', 'Interest savings for each strategy', 'Payoff timeline comparison'],
-    value: 'Compares different ways to pay off your mortgage faster: extra monthly payments, annual lump sums, biweekly payments, or refinancing to a shorter term.',
-  },
-  biweekly: {
-    outputs: ['True savings from biweekly payments', 'Comparison to monthly extra payments', 'Program fee analysis', 'DIY biweekly strategy'],
-    value: 'Exposes the truth about biweekly payment programs. Shows you can get the same benefit by making one extra payment per year without paying fees.',
+  payoff: {
+    outputs: ['Years saved and interest avoided for every strategy', 'Extra monthly, annual, and lump-sum payment impact', 'True biweekly savings and the free DIY alternative', 'Prepay vs invest comparison', 'New payoff date'],
+    value: 'One tool for every way to pay off faster: extra payments, lump sums, and biweekly schedules. Exposes fee-charging biweekly programs and shows whether investing the extra cash would beat prepaying.',
   },
   'interest-sensitivity': {
     outputs: ['Payment change per 0.25% rate change', 'Total cost at different rates', 'Rate lock decision analysis', 'Refinance trigger points'],
@@ -248,25 +229,11 @@ const calculatorCategories = [
     description: "Choosing the right loan structure",
     calculators: [
       {
-        id: "points-buydown",
-        name: "Points & Buydown",
-        description: "Compare par rate, buying points, and lender credits.",
-        icon: Bolt,
-        href: "/calculators/points-buydown",
-      },
-      {
-        id: "arm-vs-fixed",
-        name: "ARM vs Fixed",
-        description: "Multiple rate paths and a Monte Carlo range vs a fixed loan.",
-        icon: TrendingDown,
-        href: "/calculators/arm-vs-fixed",
-      },
-      {
-        id: "timeline-simulator",
-        name: "Decision Timeline",
-        description: "Find the best mortgage structure for your timeline.",
+        id: "loan-timeline",
+        name: "Best Loan for My Timeline",
+        description: "Compare fixed, points, ARM, and 15-year options — with ARM rate-path Monte Carlo — for how long you'll stay.",
         icon: Schedule,
-        href: "/calculators/timeline-simulator",
+        href: "/calculators/loan-timeline",
       },
       {
         id: "interest-sensitivity",
@@ -282,25 +249,11 @@ const calculatorCategories = [
     description: "Pay off faster or build wealth?",
     calculators: [
       {
-        id: "extra-payment",
-        name: "Extra Payment Impact",
-        description: "See how extra payments save interest and shorten your loan.",
+        id: "payoff",
+        name: "Pay Off Faster",
+        description: "Extra payments, lump sums, and biweekly strategies — all in one tool.",
         icon: Savings,
-        href: "/calculators/extra-payment",
-      },
-      {
-        id: "acceleration",
-        name: "Acceleration Planner",
-        description: "Compare prepayment, recast, and refinance strategies.",
-        icon: TrendingUp,
-        href: "/calculators/acceleration",
-      },
-      {
-        id: "biweekly",
-        name: "Biweekly Payments",
-        description: "See the truth about biweekly payment programs.",
-        icon: CalendarMonth,
-        href: "/calculators/biweekly",
+        href: "/calculators/payoff",
       },
     ],
   },

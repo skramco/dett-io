@@ -101,8 +101,8 @@ export default function InterestSensitivityCalculator() {
       description="See how interest rate changes affect your monthly payment and total cost. Understand the impact of rate timing, points, and market movements."
       relatedCalculators={[
         { slug: 'refinance', name: 'Should I Refinance?' },
-        { slug: 'arm-vs-fixed', name: 'ARM vs Fixed Rate' },
-        { slug: 'points-buydown', name: 'Points & Buydown' },
+        { slug: 'loan-timeline', name: 'Best Loan for My Timeline' },
+        { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
       ]}
       actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
     >
