@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Box, Typography, Stack, Paper, Avatar, Chip } from '@mui/material';
+import { Box, Typography, Grid, Stack, Paper, Avatar, Chip } from '@mui/material';
 import { Article, ArrowForward } from '@mui/icons-material';
 import { guides, type Guide } from '@/lib/guides/guideData';
 
@@ -43,86 +43,79 @@ export function RelatedGuides({ calculatorSlug }: RelatedGuidesProps) {
       <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
         Related Guides
       </Typography>
-      <Stack spacing={2}>
+      <Grid container spacing={2}>
         {relatedGuides.map((guide) => {
           const colors = categoryColors[guide.category] || categoryColors.salary;
           return (
-            <Link
-              key={guide.slug}
-              href={`/guides/${guide.slug}`}
-              style={{ textDecoration: 'none' }}
-            >
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2.5,
-                  borderRadius: 3,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  '&:hover': {
-                    borderColor: colors.fg,
-                    bgcolor: colors.bg,
-                    '& .arrow-icon': {
-                      transform: 'translateX(4px)',
-                      color: colors.fg,
-                    },
-                  },
-                }}
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={guide.slug}>
+              <Link
+                href={`/guides/${guide.slug}`}
+                style={{ textDecoration: 'none', display: 'block', height: '100%' }}
               >
-                <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1, minWidth: 0 }}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    height: '100%',
+                    borderRadius: 3,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    '&:hover': {
+                      borderColor: colors.fg,
+                      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                      transform: 'translateY(-2px)',
+                      '& .arrow-icon': {
+                        transform: 'translateX(4px)',
+                        color: colors.fg,
+                      },
+                    },
+                  }}
+                >
                   <Avatar
                     sx={{
-                      width: 40,
-                      height: 40,
+                      width: 44,
+                      height: 44,
                       bgcolor: colors.bg,
                       color: colors.fg,
-                      flexShrink: 0,
+                      mb: 2,
                     }}
                   >
-                    <Article sx={{ fontSize: 20 }} />
+                    <Article sx={{ fontSize: 22 }} />
                   </Avatar>
-                  <Box sx={{ minWidth: 0 }}>
-                    <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary' }} noWrap>
-                      {guide.title}
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
+                    {guide.title}
+                  </Typography>
+                  <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 'auto', pt: 1 }}>
+                    <Chip
+                      label={categoryLabels[guide.category]}
+                      size="small"
+                      sx={{
+                        height: 20,
+                        fontSize: '0.7rem',
+                        bgcolor: colors.bg,
+                        color: colors.fg,
+                        fontWeight: 600,
+                      }}
+                    />
+                    <Typography variant="caption" color="text.secondary">
+                      {guide.readTime} read
                     </Typography>
-                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5 }}>
-                      <Chip
-                        label={categoryLabels[guide.category]}
-                        size="small"
-                        sx={{
-                          height: 20,
-                          fontSize: '0.7rem',
-                          bgcolor: colors.bg,
-                          color: colors.fg,
-                          fontWeight: 600,
-                        }}
-                      />
-                      <Typography variant="caption" color="text.secondary">
-                        {guide.readTime} read
-                      </Typography>
-                    </Stack>
-                  </Box>
-                </Stack>
-                <ArrowForward
-                  className="arrow-icon"
-                  sx={{
-                    fontSize: 20,
-                    color: 'text.secondary',
-                    transition: 'all 0.2s',
-                    flexShrink: 0,
-                    ml: 1,
-                  }}
-                />
-              </Paper>
-            </Link>
+                    <Box sx={{ flex: 1 }} />
+                    <ArrowForward
+                      className="arrow-icon"
+                      sx={{ fontSize: 18, color: 'text.secondary', transition: 'all 0.2s' }}
+                    />
+                  </Stack>
+                </Paper>
+              </Link>
+            </Grid>
           );
         })}
-      </Stack>
+      </Grid>
     </Box>
   );
 }
