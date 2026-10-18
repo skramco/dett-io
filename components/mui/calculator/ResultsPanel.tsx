@@ -108,23 +108,34 @@ export function HeroMetric({ label, value, sublabel, trend, trendLabel }: HeroMe
 // ============================================
 // METRIC CARD - Secondary important numbers
 // ============================================
+export type MetricCardColor =
+  | 'accent'
+  | 'neutral'
+  | 'savings'
+  | 'cost'
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'error';
+
 interface MetricCardProps {
   label: string;
   value: string;
   sublabel?: string;
   icon?: ReactNode;
-  color?: 'primary' | 'secondary' | 'success' | 'warning' | 'error';
+  /** Visual role. Surfaces stay neutral; color is reserved for meaning. */
+  color?: MetricCardColor;
 }
 
-export function MetricCard({ label, value, sublabel, icon, color = 'primary' }: MetricCardProps) {
-  const colorMap = {
-    primary: { bg: '#EBF5FF', border: '#196bc0', text: '#0F4F8F' },
-    secondary: { bg: '#F0FDF4', border: '#10B981', text: '#047857' },
-    success: { bg: '#F0FDF4', border: '#22C55E', text: '#15803D' },
-    warning: { bg: '#FFFBEB', border: '#F59E0B', text: '#B45309' },
-    error: { bg: '#FEF2F2', border: '#EF4444', text: '#B91C1C' },
-  };
-  const colors = colorMap[color];
+function metricValueColor(color: MetricCardColor): string {
+  if (color === 'savings' || color === 'success') return 'result.savingsText';
+  if (color === 'accent') return 'result.accentText';
+  return 'text.primary';
+}
+
+export function MetricCard({ label, value, sublabel, icon, color = 'neutral' }: MetricCardProps) {
+  const valueColor = metricValueColor(color);
 
   return (
     <Paper
@@ -133,16 +144,14 @@ export function MetricCard({ label, value, sublabel, icon, color = 'primary' }: 
         p: 3,
         borderRadius: 3,
         border: '1px solid',
-        borderColor: 'divider',
-        borderLeft: '4px solid',
-        borderLeftColor: colors.border,
-        bgcolor: colors.bg,
+        borderColor: 'result.border',
+        bgcolor: 'result.surface',
         height: '100%',
       }}
     >
       <Stack direction="row" spacing={2} alignItems="flex-start">
         {icon && (
-          <Avatar sx={{ bgcolor: colors.border, width: 40, height: 40 }}>
+          <Avatar sx={{ bgcolor: 'grey.600', width: 40, height: 40 }}>
             {icon}
           </Avatar>
         )}
@@ -150,7 +159,7 @@ export function MetricCard({ label, value, sublabel, icon, color = 'primary' }: 
           <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
             {label}
           </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 700, color: colors.text }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: valueColor }}>
             {value}
           </Typography>
           {sublabel && (

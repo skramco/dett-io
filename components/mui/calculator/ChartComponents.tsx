@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { Box, Typography, Stack, LinearProgress } from '@mui/material';
 import {
   PieChart,
@@ -20,16 +20,29 @@ import {
   AreaChart,
   ReferenceLine,
 } from 'recharts';
+import { formatAxisCurrency } from '@/lib/format/currency';
+import { RESULT_TOKENS } from '@/lib/theme/resultTokens';
 
-// Premium color palette
+// Brand accent plus restrained supporting hues — color is for series identity, not decoration.
 const CHART_COLORS = {
-  primary: '#196bc0',
-  secondary: '#10B981',
-  tertiary: '#8B5CF6',
-  quaternary: '#F59E0B',
-  quinary: '#EF4444',
-  gradient: ['#196bc0', '#0891B2', '#10B981', '#84CC16', '#F59E0B'],
+  primary: RESULT_TOKENS.accent,
+  secondary: '#047857',
+  tertiary: '#4B5563',
+  quaternary: '#0F4F8F',
+  quinary: '#6B7280',
+  gradient: [RESULT_TOKENS.accent, '#0F4F8F', '#047857', '#4B5563', '#6B7280'],
 };
+
+const AXIS_TICK = { fontSize: 12, fill: RESULT_TOKENS.chartTick };
+const AXIS_LINE = { stroke: RESULT_TOKENS.border };
+
+function ChartLegendText(value: ReactNode) {
+  return (
+    <span style={{ color: RESULT_TOKENS.chartLabel, fontSize: 13, fontWeight: 500 }}>
+      {value}
+    </span>
+  );
+}
 
 // Loading placeholder
 function ChartLoading({ height }: { height: number }) {
@@ -135,7 +148,7 @@ export function DonutChart({ data, centerLabel, centerValue, height = 280 }: Don
             </Typography>
           )}
           {centerLabel && (
-            <Typography variant="caption" sx={{ color: '#6B7280' }}>
+            <Typography variant="caption" sx={{ color: RESULT_TOKENS.chartTick }}>
               {centerLabel}
             </Typography>
           )}
@@ -167,10 +180,10 @@ export function ChartLegend({ items }: ChartLegendProps) {
                 flexShrink: 0,
               }}
             />
-            <Typography variant="body2" sx={{ flex: 1, fontWeight: 500 }}>
+            <Typography variant="body2" sx={{ flex: 1, fontWeight: 500, color: RESULT_TOKENS.chartLabel }}>
               {item.name}
             </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 700 }}>
+            <Typography variant="body2" sx={{ fontWeight: 700, color: RESULT_TOKENS.chartLabel }}>
               {item.value}
             </Typography>
           </Stack>
@@ -237,17 +250,17 @@ export function AmortizationChart({ data, height = 300 }: AmortizationChartProps
           <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
           <XAxis 
             dataKey="year" 
-            tick={{ fontSize: 12, fill: '#6B7280' }}
+            tick={AXIS_TICK}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
-            label={{ value: 'Years', position: 'insideBottom', offset: -5, fill: '#6B7280', fontSize: 12 }}
+            axisLine={AXIS_LINE}
+            label={{ value: 'Years', position: 'insideBottom', offset: -5, fill: RESULT_TOKENS.chartTick, fontSize: 12 }}
           />
           <YAxis 
-            tick={{ fontSize: 12, fill: '#6B7280' }}
+            tick={AXIS_TICK}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-            width={60}
+            axisLine={AXIS_LINE}
+            tickFormatter={formatAxisCurrency}
+            width={68}
           />
           <Tooltip
             formatter={(value: any) => [`$${Number(value).toLocaleString()}`, 'Balance']}
@@ -311,16 +324,16 @@ export function ComparisonBarChart({
           <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
           <XAxis 
             dataKey="name" 
-            tick={{ fontSize: 12, fill: '#6B7280' }}
+            tick={AXIS_TICK}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={AXIS_LINE}
           />
           <YAxis 
-            tick={{ fontSize: 12, fill: '#6B7280' }}
+            tick={AXIS_TICK}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-            width={60}
+            axisLine={AXIS_LINE}
+            tickFormatter={formatAxisCurrency}
+            width={68}
           />
           <Tooltip
             formatter={(value: any) => `$${Number(value).toLocaleString()}`}
@@ -330,7 +343,7 @@ export function ComparisonBarChart({
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
             }}
           />
-          <Legend />
+          <Legend formatter={ChartLegendText} />
           <Bar dataKey="current" name={labels.current} fill={CHART_COLORS.primary} radius={[4, 4, 0, 0]} />
           <Bar dataKey="new" name={labels.new} fill={CHART_COLORS.secondary} radius={[4, 4, 0, 0]} />
         </BarChart>
@@ -380,17 +393,17 @@ export function TimelineChart({
           <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
           <XAxis 
             dataKey="month" 
-            tick={{ fontSize: 12, fill: '#6B7280' }}
+            tick={AXIS_TICK}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
-            label={{ value: 'Months', position: 'insideBottom', offset: -5, fill: '#6B7280', fontSize: 12 }}
+            axisLine={AXIS_LINE}
+            label={{ value: 'Months', position: 'insideBottom', offset: -5, fill: RESULT_TOKENS.chartTick, fontSize: 12 }}
           />
           <YAxis 
-            tick={{ fontSize: 12, fill: '#6B7280' }}
+            tick={AXIS_TICK}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-            width={60}
+            axisLine={AXIS_LINE}
+            tickFormatter={formatAxisCurrency}
+            width={68}
           />
           <Tooltip
             formatter={(value: any) => `$${Number(value).toLocaleString()}`}
@@ -401,7 +414,7 @@ export function TimelineChart({
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
             }}
           />
-          <Legend />
+          <Legend formatter={ChartLegendText} />
           {breakEvenMonth && (
             <ReferenceLine 
               x={breakEvenMonth} 
@@ -469,16 +482,16 @@ export function StackedBarChart({ data, height = 300 }: StackedBarChartProps) {
           <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
           <XAxis 
             dataKey="year" 
-            tick={{ fontSize: 12, fill: '#6B7280' }}
+            tick={AXIS_TICK}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
+            axisLine={AXIS_LINE}
           />
           <YAxis 
-            tick={{ fontSize: 12, fill: '#6B7280' }}
+            tick={AXIS_TICK}
             tickLine={false}
-            axisLine={{ stroke: '#E5E7EB' }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-            width={60}
+            axisLine={AXIS_LINE}
+            tickFormatter={formatAxisCurrency}
+            width={68}
           />
           <Tooltip
             formatter={(value: any) => `$${Number(value).toLocaleString()}`}
@@ -488,7 +501,7 @@ export function StackedBarChart({ data, height = 300 }: StackedBarChartProps) {
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
             }}
           />
-          <Legend />
+          <Legend formatter={ChartLegendText} />
           <Bar dataKey="principal" name="Principal" stackId="a" fill={CHART_COLORS.primary} />
           <Bar dataKey="interest" name="Interest" stackId="a" fill={CHART_COLORS.quaternary} />
           {data[0]?.taxes !== undefined && (
@@ -497,6 +510,108 @@ export function StackedBarChart({ data, height = 300 }: StackedBarChartProps) {
           {data[0]?.insurance !== undefined && (
             <Bar dataKey="insurance" name="Insurance" stackId="a" fill={CHART_COLORS.secondary} />
           )}
+        </BarChart>
+      </ResponsiveContainer>
+    </Box>
+  );
+}
+
+// ============================================
+// CATEGORY STACKED BAR - Closing-cost / composition breakdown
+// ============================================
+export interface CategoryStackedBarChartProps {
+  data: Array<Record<string, string | number>>;
+  series: Array<{ dataKey: string; name: string; color: string }>;
+  nameKey?: string;
+  height?: number;
+  layout?: 'horizontal' | 'vertical';
+  showLegend?: boolean;
+}
+
+export function CategoryStackedBarChart({
+  data,
+  series,
+  nameKey = 'name',
+  height = 220,
+  layout = 'vertical',
+  showLegend = true,
+}: CategoryStackedBarChartProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <ChartLoading height={height} />;
+  }
+
+  if (!data || data.length === 0 || series.length === 0) {
+    return (
+      <Box sx={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography color="text.secondary">No data available</Typography>
+      </Box>
+    );
+  }
+
+  const isVertical = layout === 'vertical';
+
+  return (
+    <Box sx={{ height, width: '100%' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={data}
+          layout={isVertical ? 'vertical' : 'horizontal'}
+          margin={{ top: 10, right: 24, left: 10, bottom: 10 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke={RESULT_TOKENS.border} />
+          {isVertical ? (
+            <>
+              <XAxis
+                type="number"
+                tick={AXIS_TICK}
+                tickLine={false}
+                axisLine={AXIS_LINE}
+                tickFormatter={formatAxisCurrency}
+              />
+              <YAxis
+                type="category"
+                dataKey={nameKey}
+                tick={AXIS_TICK}
+                tickLine={false}
+                axisLine={AXIS_LINE}
+                width={110}
+              />
+            </>
+          ) : (
+            <>
+              <XAxis
+                dataKey={nameKey}
+                tick={AXIS_TICK}
+                tickLine={false}
+                axisLine={AXIS_LINE}
+              />
+              <YAxis
+                tick={AXIS_TICK}
+                tickLine={false}
+                axisLine={AXIS_LINE}
+                tickFormatter={formatAxisCurrency}
+                width={68}
+              />
+            </>
+          )}
+          <Tooltip
+            formatter={(value: any) => `$${Number(value).toLocaleString()}`}
+            contentStyle={{
+              borderRadius: 8,
+              border: '1px solid #E5E7EB',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            }}
+          />
+          {showLegend && <Legend formatter={ChartLegendText} />}
+          {series.map((s) => (
+            <Bar key={s.dataKey} dataKey={s.dataKey} name={s.name} stackId="a" fill={s.color} />
+          ))}
         </BarChart>
       </ResponsiveContainer>
     </Box>
@@ -526,10 +641,10 @@ export function HorizontalBar({
   return (
     <Box sx={{ mb: 2 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
-        <Typography variant="body2" sx={{ fontWeight: 500, color: '#374151' }}>
+        <Typography variant="body2" sx={{ fontWeight: 500, color: RESULT_TOKENS.chartTick }}>
           {label}
         </Typography>
-        <Typography variant="body2" sx={{ fontWeight: 700, color: '#1F2937' }}>
+        <Typography variant="body2" sx={{ fontWeight: 700, color: RESULT_TOKENS.chartLabel }}>
           {formatValue(value)}
         </Typography>
       </Stack>

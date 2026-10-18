@@ -38,9 +38,10 @@ import {
 } from '@/components/mui/calculator/ResultsPanel';
 import {
   HorizontalBar,
-  LazyTimelineChart as TimelineChart,
+  LazyCategoryStackedBarChart as CategoryStackedBarChart,
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
+import { RESULT_TOKENS } from '@/lib/theme/resultTokens';
 import { calculateRefinance } from '@/lib/calculators';
 import type { RefinanceInputs } from '@/lib/calculators/types';
 
@@ -83,23 +84,40 @@ export default function RefinanceCalculator() {
   const isTradeOff = verdict === 'mixed' || verdict === 'higher-payment-lower-cost';
   const impliedCurrentPayment = result ? (result.details.impliedCurrentPayment as number) : 0;
 
-  // Timeline data for break-even visualization
-  const timelineData = useMemo(() => {
-    if (!result) return [];
-    const breakEvenMonths = result.details.breakEvenMonths as number;
-    const data = [];
-    const maxMonths = Math.min(Math.max(breakEvenMonths * 2, 60), 120);
-    
-    for (let month = 0; month <= maxMonths; month += 6) {
-      const savings = monthlySavings * month;
-      const netSavings = savings - (result.details.closingCosts as number);
-      data.push({
-        month,
-        optionA: result.details.closingCosts as number,
-        optionB: savings,
-      });
-    }
-    return data;
+  // Closing-cost recovery at key milestones (replaces the flat "Closing Costs" line)
+  const closingCostRecovery = useMemo(() => {
+    if (!result || monthlySavings <= 0) return { data: [], series: [], rows: [] };
+    const costs = result.details.closingCosts as number;
+    const breakEven = Math.max(1, Math.round(result.details.breakEvenMonths as number));
+    const milestones = [0, 12, 24, 36, breakEven]
+      .filter((month, index, all) => all.indexOf(month) === index)
+      .sort((a, b) => a - b);
+
+    const data = milestones.map((month) => {
+      const recovered = Math.min(costs, monthlySavings * month);
+      return {
+        name: month === 0 ? 'At close' : month === breakEven ? `Break-even (${month} mo)` : `${month} mo`,
+        recovered: Math.round(recovered),
+        remaining: Math.round(Math.max(0, costs - recovered)),
+      };
+    });
+
+    const rows = [
+      { label: 'Closing costs (financed)', value: `$${costs.toLocaleString()}` },
+      { label: 'Monthly savings', value: `$${Math.round(monthlySavings).toLocaleString()}` },
+      { label: 'Recovered after 12 months', value: `$${Math.round(Math.min(costs, monthlySavings * 12)).toLocaleString()}` },
+      { label: 'Remaining after 12 months', value: `$${Math.round(Math.max(0, costs - monthlySavings * 12)).toLocaleString()}` },
+      { label: 'Break-even', value: `${breakEven} months` },
+    ];
+
+    return {
+      data,
+      series: [
+        { dataKey: 'recovered', name: 'Savings recovered', color: RESULT_TOKENS.savings },
+        { dataKey: 'remaining', name: 'Closing costs remaining', color: RESULT_TOKENS.accent },
+      ],
+      rows,
+    };
   }, [result, monthlySavings]);
 
   return (
@@ -259,11 +277,11 @@ export default function RefinanceCalculator() {
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
                   <Grid container spacing={3}>
                     <Grid size={{ xs: 12, md: 6 }}>
-                      <Box sx={{ p: 3, bgcolor: '#FEF3C7', borderRadius: 2, textAlign: 'center' }}>
+                      <Box sx={{ p: 3, bgcolor: 'result.surface', border: '1px solid', borderColor: 'result.border', borderRadius: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                           CURRENT LOAN
                         </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#92400E', my: 1 }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: 'result.costText', my: 1 }}>
                           ${(result.details.currentMonthlyPayment as number).toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -272,11 +290,11 @@ export default function RefinanceCalculator() {
                       </Box>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
-                      <Box sx={{ p: 3, bgcolor: isBeneficial ? '#D1FAE5' : '#FEE2E2', borderRadius: 2, textAlign: 'center' }}>
+                      <Box sx={{ p: 3, bgcolor: 'result.surface', border: '1px solid', borderColor: 'result.border', borderRadius: 2, textAlign: 'center' }}>
                         <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                           NEW LOAN
                         </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: isBeneficial ? '#065F46' : '#991B1B', my: 1 }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: isBeneficial ? 'result.savingsText' : 'result.costText', my: 1 }}>
                           ${(result.details.newMonthlyPayment as number).toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -308,12 +326,36 @@ export default function RefinanceCalculator() {
                   subtitle="When your savings exceed closing costs"
                 >
                   <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-                    <TimelineChart 
-                      data={timelineData}
-                      breakEvenMonth={result.details.breakEvenMonths as number}
-                      labels={{ optionA: 'Closing Costs', optionB: 'Cumulative Savings' }}
+                    <CategoryStackedBarChart
+                      data={closingCostRecovery.data}
+                      series={closingCostRecovery.series}
                       height={280}
+                      layout="horizontal"
                     />
+
+                    <Box sx={{ mt: 3, border: '1px solid', borderColor: 'result.border', borderRadius: 2, overflow: 'hidden' }}>
+                      {closingCostRecovery.rows.map((row, index) => (
+                        <Stack
+                          key={row.label}
+                          direction="row"
+                          justifyContent="space-between"
+                          sx={{
+                            px: 2,
+                            py: 1.25,
+                            bgcolor: index % 2 === 0 ? 'result.surface' : 'background.paper',
+                            borderTop: index === 0 ? 'none' : '1px solid',
+                            borderColor: 'result.border',
+                          }}
+                        >
+                          <Typography variant="body2" sx={{ color: 'result.chartLabel', fontWeight: 500 }}>
+                            {row.label}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: 'result.chartLabel', fontWeight: 700 }}>
+                            {row.value}
+                          </Typography>
+                        </Stack>
+                      ))}
+                    </Box>
                     
                     <Divider sx={{ my: 3 }} />
                     

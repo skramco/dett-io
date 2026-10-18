@@ -39,7 +39,7 @@ import {
   EmptyResultsState,
 } from '@/components/mui/calculator/ResultsPanel';
 import {
-  LazyDonutChart as DonutChart,
+  LazyCategoryStackedBarChart as CategoryStackedBarChart,
   ChartLegend,
   CHART_COLORS,
 } from '@/components/mui/calculator/LazyCharts';
@@ -91,14 +91,20 @@ export default function ClosingCostCalculator() {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
-  const chartData = useMemo(() => {
-    if (!result?.chartData) return [];
+  const stackedBreakdown = useMemo(() => {
+    if (!result?.chartData) return { data: [], series: [] };
     const colors = [CHART_COLORS.primary, CHART_COLORS.secondary, CHART_COLORS.tertiary, CHART_COLORS.quaternary];
-    return result.chartData.map((item, i) => ({
-      name: item.name as string,
-      value: item.value as number,
-      color: colors[i % colors.length],
-    }));
+    const row: Record<string, string | number> = { name: 'Closing Costs' };
+    const series = result.chartData.map((item, i) => {
+      const key = `cat_${i}`;
+      row[key] = item.value as number;
+      return {
+        dataKey: key,
+        name: item.name as string,
+        color: colors[i % colors.length],
+      };
+    });
+    return { data: [row], series };
   }, [result]);
 
   const legendItems = useMemo(() => {
@@ -263,18 +269,16 @@ export default function ClosingCostCalculator() {
               {/* Cost Breakdown Chart */}
               <ResultsSection title="Cost Breakdown" subtitle="Where your closing costs go">
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-                  <Grid container spacing={4}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <DonutChart
-                        data={chartData}
-                        centerLabel="closing costs"
-                        centerValue={`$${fmt(result.details.totalClosingCosts as number)}`}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <ChartLegend items={legendItems} />
-                    </Grid>
-                  </Grid>
+                  <CategoryStackedBarChart
+                    data={stackedBreakdown.data}
+                    series={stackedBreakdown.series}
+                    height={160}
+                    layout="vertical"
+                    showLegend={false}
+                  />
+                  <Box sx={{ mt: 3 }}>
+                    <ChartLegend items={legendItems} />
+                  </Box>
                 </Paper>
               </ResultsSection>
 
