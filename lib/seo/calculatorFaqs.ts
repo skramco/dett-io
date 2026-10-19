@@ -140,7 +140,17 @@ export const calculatorFaqs: Record<string, CalculatorFaq[]> = {
     {
       question: 'How does my moving timeline affect which mortgage is best?',
       answer:
-        'The shorter your stay, the more upfront costs and initial rates dominate; the longer your stay, the more lifetime interest matters. Short horizons favor ARMs and fewer points; long horizons favor fixed rates and sometimes 15-year terms. This calculator ranks options by net cost over your expected hold.',
+        'The shorter your stay, the more upfront costs and initial rates dominate; the longer your stay, the more lifetime interest matters. Short horizons favor ARMs and fewer points; long horizons favor fixed rates and sometimes 15-year terms. Net cost over your hold is one input — we also check whether each payment may fit typical DTI guidelines before labeling anything recommended.',
+    },
+    {
+      question: 'Why isn’t the 15-year always recommended if it costs less overall?',
+      answer:
+        'A 15-year often has the lowest lifetime interest, but the payment can be hundreds of dollars higher than a 30-year. If that payment pushes back-end DTI above typical guideline ranges (around 43% comfortable, 43–50% stretch, above 50% outside common ranges), we will not label it recommended. Enter income so we can separate “lowest total cost” from “most affordable” and a balanced pick. This is educational, not a qualification result.',
+    },
+    {
+      question: 'What if I want the 15-year payoff without the 15-year payment?',
+      answer:
+        'When the 15-year is cheapest but may not fit typical guidelines, we show extra principal on the 30-year sized to approximate a 15-year payoff, plus the payoff timing and interest saved. You can skip extras in a tight month — a 15-year note would not allow that.',
     },
     {
       question: 'What is the difference between an ARM and a fixed-rate mortgage?',

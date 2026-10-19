@@ -76,8 +76,8 @@ const calculatorDetails = {
     value: 'Compares three ways to use a lump sum: (1) Recast - make a large principal payment and have your lender recalculate a lower monthly payment for a small fee (~$250), (2) Refinance - get a new loan with better terms but pay closing costs (~2-5% of loan), or (3) Prepay Only - make principal-only payments to save interest without changing your monthly payment. Shows which strategy saves you the most money based on your situation.',
   },
   'loan-timeline': {
-    outputs: ['Best loan structure for your timeline', 'Net cost comparison: 30-year vs. points vs. ARM vs. 15-year', 'Named falling / expected / rising ARM rate paths', 'Monte Carlo P10–P90 payment band', 'Cap-driven worst-case ARM payment'],
-    value: 'Matches your loan structure to your life plans. Compares fixed rates, discount points, ARMs (with named rate paths and a Monte Carlo range, not just a teaser vs worst case), and 15-year terms by what they actually cost over your expected stay.',
+    outputs: ['Most affordable vs lowest total cost vs balanced pick', 'Front-end and back-end DTI per term', 'Net cost comparison: 30-year vs. points vs. ARM vs. 15-year', 'Named falling / expected / rising ARM rate paths', 'Monte Carlo P10–P90 payment band', '30-year extra-principal alternative when a 15-year may not fit'],
+    value: 'Matches your loan structure to your life plans and budget. Compares fixed rates, discount points, ARMs, and 15-year terms by net cost — then filters out payments that may not fit typical DTI guidelines instead of crowning the cheapest term by default.',
   },
   payoff: {
     outputs: ['Years saved and interest avoided for every strategy', 'Extra monthly, annual, and lump-sum payment impact', 'True biweekly savings and the free DIY alternative', 'Prepay vs invest comparison', 'New payoff date'],

@@ -1,6 +1,6 @@
 'use client';
 
-import { formatCurrency } from '@/lib/format';
+import { formatCurrency, formatSignedCurrency } from '@/lib/format';
 
 import { DEFAULT_RATES } from '@/lib/rates/defaultRates';
 
@@ -18,6 +18,7 @@ import {
   Stack,
   Divider,
   Alert,
+  Chip,
 } from '@mui/material';
 import {
   AccountBalance,
@@ -25,6 +26,8 @@ import {
   CheckCircle,
   Speed,
   Bolt,
+  Payments,
+  Home,
 } from '@mui/icons-material';
 import CalculatorLayout from '@/components/mui/CalculatorLayout';
 import {
@@ -33,6 +36,7 @@ import {
   PercentageInput,
   NumberInput,
   SelectInput,
+  InputHint,
 } from '@/components/mui/calculator/InputPanel';
 import {
   HeroMetric,
@@ -49,6 +53,33 @@ import {
 } from '@/components/mui/calculator/LazyCharts';
 import { ARM_RATE_PATH_ASSUMPTIONS, calculateLoanTimeline } from '@/lib/calculators';
 import type { LoanTimelineInputs } from '@/lib/calculators/types';
+import type { RecommendationBadge, TimelineScenario } from '@/lib/calculators/loanTimeline';
+
+const BADGE_LABEL: Record<RecommendationBadge, string> = {
+  'most-affordable': 'Most affordable',
+  'lowest-total-cost': 'Lowest total cost',
+  balanced: 'Balanced pick',
+};
+
+const BADGE_SX: Record<RecommendationBadge, { bg: string; color: string; border: string }> = {
+  'most-affordable': { bg: '#D1FAE5', color: '#065F46', border: '#22C55E' },
+  'lowest-total-cost': { bg: '#E0E7FF', color: '#3730A3', border: '#6366F1' },
+  balanced: { bg: '#DBEAFE', color: '#1E40AF', border: '#3B82F6' },
+};
+
+function bandCopy(band: TimelineScenario['affordabilityBand']): { label: string; color: string } {
+  if (band === 'comfortable') return { label: 'May fit typical guidelines', color: '#065F46' };
+  if (band === 'stretch') return { label: 'Stretch (43–50% back-end DTI)', color: '#92400E' };
+  if (band === 'not-recommended') return { label: 'May not fit typical guidelines', color: '#991B1B' };
+  return { label: '', color: 'text.secondary' };
+}
+
+function extraPayoffLabel(payoffMonths: number): string {
+  const d = new Date();
+  d.setMonth(d.getMonth() + payoffMonths);
+  const when = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  return ` (around ${when} if you start this month)`;
+}
 
 export default function LoanTimelineCalculator() {
   const [inputs, setInputs] = useState<LoanTimelineInputs>({
@@ -70,6 +101,14 @@ export default function LoanTimelineCalculator() {
     armLifetimeCap: 5,
     expectedIndexRate: 4,
     fifteenYearRate: DEFAULT_RATES.fifteenYearFixed,
+    monthlyGrossIncome: 0,
+    otherMonthlyDebts: 0,
+    targetMonthlySavings: 0,
+    homePrice: 0,
+    propertyTaxAnnual: 0,
+    homeInsuranceAnnual: 0,
+    hoaFees: 0,
+    creditScore: 740,
   });
   useScenarioPrefill(inputs, setInputs);
   useUrlInputs(inputs, setInputs);
@@ -90,8 +129,13 @@ export default function LoanTimelineCalculator() {
 
   const stayYears = inputs.expectedYearsInHome ?? 7;
   const scenarios = result?.scenarios ?? [];
-  const bestOption = result?.details.bestOption as string | undefined;
+  const hasIncome = (result?.details.hasIncomeForRecommendation as number) === 1;
+  const recommendedOption = (result?.details.recommendedOption as string) || '';
+  const lowestCostOption = (result?.details.lowestCostOption as string) || '';
+  const mostAffordableOption = (result?.details.mostAffordableOption as string) || '';
+  const balancedOption = (result?.details.balancedOption as string) || '';
   const maxNetCost = Math.max(...scenarios.map(s => s.netCost), 1);
+  const extraAlt = result?.fifteenYearAlternative ?? null;
 
   const rangeChartData = useMemo(() => {
     if (!result?.armSchedule) return [];
@@ -109,12 +153,13 @@ export default function LoanTimelineCalculator() {
         `${inputs.loanTerm}-year loan of ${formatCurrency(inputs.loanAmount)}; 30-year par ${inputs.parRate}%, points ${inputs.pointsRate}%, ARM ${inputs.armInitialRate}% for the first ${inputs.armFixedPeriod} years`,
         `ARM adjustments are estimates from a ${inputs.expectedIndexRate}% index plus a ${inputs.armMargin}% margin, limited by your entered caps — actual adjustments will differ`,
         `Assumes you move in year ${stayYears} — actual plans and future rates will differ`,
+        `Affordability labels use typical educational DTI ranges (front-end ~28% comfortable; back-end ≤43% comfortable, 43–50% stretch, >50% outside common ranges) and are not a qualification result`,
       ]}
       title="Best Loan for My Timeline"
-      description="Compare fixed-rate, discount points, ARM, and 15-year options based on how long you plan to stay. Models ARM adjustments across named rate paths and a Monte Carlo range — not just the teaser vs worst case."
+      description="Compare fixed-rate, discount points, ARM, and 15-year options based on how long you plan to stay — then filter by whether the payment may fit typical income guidelines. Models ARM adjustments across named rate paths and a Monte Carlo range."
       relatedCalculators={[
         { slug: 'interest-sensitivity', name: 'Rate Sensitivity' },
-        { slug: 'refinance', name: 'Should I Refinance?' },
+        { slug: 'dti', name: 'Debt-to-Income Ratio' },
         { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
       ]}
       actionBarData={result ? { summary: result.summary, details: result.details, insights: result.insights, inputs: inputs as unknown as Record<string, unknown> } : undefined}
@@ -148,6 +193,57 @@ export default function LoanTimelineCalculator() {
                 onChange={(v) => handleInputChange('fifteenYearRate', v)}
                 step={0.125}
               />
+            </InputSection>
+
+            <InputSection title="Income & Budget" icon={<Payments />}>
+              <CurrencyInput
+                label="Gross Monthly Income"
+                value={inputs.monthlyGrossIncome ?? 0}
+                onChange={(v) => handleInputChange('monthlyGrossIncome', v)}
+                helperText="Required for a recommendation — we will not crown a winner without it"
+              />
+              <CurrencyInput
+                label="Other Monthly Debts"
+                value={inputs.otherMonthlyDebts ?? 0}
+                onChange={(v) => handleInputChange('otherMonthlyDebts', v)}
+                helperText="Car, student, credit cards, etc. — optional"
+              />
+              <CurrencyInput
+                label="Target Savings / Emergency Cushion"
+                value={inputs.targetMonthlySavings ?? 0}
+                onChange={(v) => handleInputChange('targetMonthlySavings', v)}
+                helperText="Optional amount you want left after housing and debts"
+              />
+              <InputHint>
+                DTI uses typical educational ranges, not an approval decision. Back-end ≤43% is labeled comfortable, 43–50% stretch, and above 50% as not recommended.
+              </InputHint>
+            </InputSection>
+
+            <InputSection title="Housing Costs (optional)" icon={<Home />}>
+              <CurrencyInput
+                label="Home Price"
+                value={inputs.homePrice ?? 0}
+                onChange={(v) => handleInputChange('homePrice', v)}
+                helperText="Used for PMI when down payment is under 20%"
+              />
+              <CurrencyInput
+                label="Annual Property Tax"
+                value={inputs.propertyTaxAnnual ?? 0}
+                onChange={(v) => handleInputChange('propertyTaxAnnual', v)}
+              />
+              <CurrencyInput
+                label="Annual Homeowners Insurance"
+                value={inputs.homeInsuranceAnnual ?? 0}
+                onChange={(v) => handleInputChange('homeInsuranceAnnual', v)}
+              />
+              <CurrencyInput
+                label="Monthly HOA"
+                value={inputs.hoaFees ?? 0}
+                onChange={(v) => handleInputChange('hoaFees', v)}
+              />
+              <InputHint>
+                Included in each term&apos;s housing payment and DTI when entered. Leave blank to compare principal &amp; interest only.
+              </InputHint>
             </InputSection>
 
             <InputSection title="Discount Points Option" icon={<Bolt />} color="secondary">
@@ -252,11 +348,25 @@ export default function LoanTimelineCalculator() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {result ? (
             <Stack spacing={4}>
-              <HeroMetric
-                label={`Best for a ${stayYears}-Year Stay`}
-                value={result.details.bestOption as string}
-                sublabel={`Net cost: ${formatCurrency((result.details.bestNetCost as number))} (payments + upfront − equity built)`}
-              />
+              {!hasIncome ? (
+                <HeroMetric
+                  label="Add income for a recommendation"
+                  value="Income needed"
+                  sublabel="Net cost is shown below, but we will not crown a winner until we can check typical DTI guidelines."
+                />
+              ) : recommendedOption ? (
+                <HeroMetric
+                  label={`Balanced pick for a ${stayYears}-year stay`}
+                  value={recommendedOption}
+                  sublabel={`May fit typical guidelines at ${formatCurrency(result.details.monthlyGrossIncome as number)}/month gross income. Lowest total cost and most affordable are labeled separately.`}
+                />
+              ) : (
+                <HeroMetric
+                  label="No term may fit typical guidelines"
+                  value="Review income or price"
+                  sublabel="Back-end DTI is above 50% on every option. That is not a denial — it means these payments sit outside common guideline ranges."
+                />
+              )}
 
               <Grid container spacing={2}>
                 <Grid size={{ xs: 6, sm: 3 }}>
@@ -287,60 +397,147 @@ export default function LoanTimelineCalculator() {
                   <MetricCard
                     label="15-Yr Fixed"
                     value={`${formatCurrency((result.details.fifteenYearPayment as number))}`}
-                    sublabel="per month"
+                    sublabel={`${formatSignedCurrency(result.details.fifteenYearPaymentVsBaseline as number)}/mo vs 30-year`}
                     color="warning"
                   />
                 </Grid>
               </Grid>
 
+              {hasIncome && (
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                  {mostAffordableOption && (
+                    <Chip size="small" label={`Most affordable: ${mostAffordableOption}`} sx={{ fontWeight: 600, bgcolor: BADGE_SX['most-affordable'].bg, color: BADGE_SX['most-affordable'].color }} />
+                  )}
+                  {lowestCostOption && (
+                    <Chip size="small" label={`Lowest total cost: ${lowestCostOption}`} sx={{ fontWeight: 600, bgcolor: BADGE_SX['lowest-total-cost'].bg, color: BADGE_SX['lowest-total-cost'].color }} />
+                  )}
+                  {balancedOption && (
+                    <Chip size="small" label={`Balanced pick: ${balancedOption}`} sx={{ fontWeight: 600, bgcolor: BADGE_SX.balanced.bg, color: BADGE_SX.balanced.color }} />
+                  )}
+                </Stack>
+              )}
+
               {/* All Options Compared */}
               <ResultsSection
                 title="All Options Compared"
-                subtitle={`Net cost over ${stayYears} years = payments + upfront costs − principal paid down`}
+                subtitle={`Housing payment vs net cost over ${stayYears} years. Unaffordable terms are never labeled recommended.`}
               >
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+                  {!hasIncome && (
+                    <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
+                      <Typography variant="body2">
+                        Enter gross monthly income to see DTI and a recommendation. Until then we compare cost and payment only — no winner.
+                      </Typography>
+                    </Alert>
+                  )}
                   <Stack spacing={2}>
-                    {scenarios.map((opt) => (
+                    {scenarios.map((opt) => {
+                      const isRecommended = hasIncome && opt.option === recommendedOption;
+                      const isUnaffordable = opt.affordabilityBand === 'not-recommended';
+                      const band = bandCopy(opt.affordabilityBand);
+                      const highlightBadge = opt.badges.includes('balanced')
+                        ? 'balanced'
+                        : opt.badges.includes('most-affordable')
+                          ? 'most-affordable'
+                          : null;
+                      const borderColor = highlightBadge
+                        ? BADGE_SX[highlightBadge].border
+                        : isUnaffordable
+                          ? '#FECACA'
+                          : '#E5E7EB';
+                      const bg = highlightBadge
+                        ? BADGE_SX[highlightBadge].bg
+                        : isUnaffordable
+                          ? '#FEF2F2'
+                          : '#F9FAFB';
+                      return (
                       <Box
                         key={opt.option}
                         sx={{
                           p: 3,
                           borderRadius: 2,
-                          bgcolor: opt.option === bestOption ? '#D1FAE5' : '#F9FAFB',
-                          border: opt.option === bestOption ? '2px solid #22C55E' : '1px solid #E5E7EB',
+                          bgcolor: bg,
+                          border: isRecommended ? '2px solid' : '1px solid',
+                          borderColor,
                         }}
                       >
                         <Grid container spacing={2} alignItems="center">
-                          <Grid size={{ xs: 12, sm: 3.5 }}>
+                          <Grid size={{ xs: 12, sm: 4 }}>
                             <Stack direction="row" alignItems="center" spacing={1}>
-                              {opt.option === bestOption && <CheckCircle sx={{ color: '#22C55E', fontSize: 20 }} />}
+                              {isRecommended && <CheckCircle sx={{ color: '#1E40AF', fontSize: 20 }} />}
                               <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{opt.option}</Typography>
                             </Stack>
                             <Typography variant="caption" color="text.secondary">{opt.rate}% rate</Typography>
-                            {opt.option === bestOption && (
-                              <Typography variant="caption" sx={{ color: '#065F46', fontWeight: 600, display: 'block' }}>LOWEST NET COST</Typography>
+                            {opt.badges.length > 0 && (
+                              <Stack direction="row" spacing={0.75} sx={{ mt: 1, flexWrap: 'wrap', gap: 0.75 }}>
+                                {opt.badges.map((badge) => {
+                                  const muted = badge === 'lowest-total-cost' && isUnaffordable;
+                                  return (
+                                    <Chip
+                                      key={badge}
+                                      size="small"
+                                      label={BADGE_LABEL[badge]}
+                                      sx={{
+                                        fontWeight: 700,
+                                        bgcolor: muted ? '#F3F4F6' : BADGE_SX[badge].bg,
+                                        color: muted ? '#6B7280' : BADGE_SX[badge].color,
+                                        border: '1px solid',
+                                        borderColor: muted ? '#D1D5DB' : BADGE_SX[badge].border,
+                                      }}
+                                    />
+                                  );
+                                })}
+                              </Stack>
+                            )}
+                            {band.label && (
+                              <Typography variant="caption" sx={{ color: band.color, fontWeight: 600, display: 'block', mt: 0.75 }}>
+                                {band.label}
+                              </Typography>
                             )}
                           </Grid>
-                          <Grid size={{ xs: 4, sm: 2.5 }}>
-                            <Typography variant="body2" color="text.secondary">Payment</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>{formatCurrency(opt.initialPayment)}</Typography>
+                          <Grid size={{ xs: 6, sm: 2.5 }}>
+                            <Typography variant="body2" color="text.secondary">Housing payment</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700 }}>{formatCurrency(opt.housingPayment)}</Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{ fontWeight: 700, color: opt.paymentVsBaseline > 0 ? '#B45309' : '#065F46', display: 'block' }}
+                            >
+                              {opt.paymentVsBaseline === 0
+                                ? 'Baseline 30-year'
+                                : `${formatSignedCurrency(opt.paymentVsBaseline)}/mo vs 30-year`}
+                            </Typography>
                             {opt.maxPaymentDuringHold > opt.initialPayment && (
-                              <Typography variant="caption" color="text.secondary">up to {formatCurrency(opt.maxPaymentDuringHold)}</Typography>
+                              <Typography variant="caption" color="text.secondary">P&amp;I up to {formatCurrency(opt.maxPaymentDuringHold)}</Typography>
                             )}
                           </Grid>
-                          <Grid size={{ xs: 4, sm: 3 }}>
-                            <Typography variant="body2" color="text.secondary">Equity Built</Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 600 }}>{formatCurrency(opt.principalPaid)}</Typography>
+                          <Grid size={{ xs: 6, sm: 2.5 }}>
+                            <Typography variant="body2" color="text.secondary">DTI</Typography>
+                            {hasIncome ? (
+                              <>
+                                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                  Front {opt.frontEndDti.toFixed(1)}%
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  Back {opt.backEndDti.toFixed(1)}% · P&amp;I {opt.paymentShareOfIncome.toFixed(1)}% of income
+                                </Typography>
+                              </>
+                            ) : (
+                              <Typography variant="body2" color="text.secondary">Enter income</Typography>
+                            )}
                           </Grid>
-                          <Grid size={{ xs: 4, sm: 3 }}>
-                            <Typography variant="body2" color="text.secondary">Net Cost</Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 600, color: opt.option === bestOption ? '#065F46' : 'inherit' }}>
+                          <Grid size={{ xs: 12, sm: 3 }}>
+                            <Typography variant="body2" color="text.secondary">Net cost</Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 600 }}>
                               {formatCurrency(opt.netCost)}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              Equity built {formatCurrency(opt.principalPaid)}
                             </Typography>
                           </Grid>
                         </Grid>
                       </Box>
-                    ))}
+                      );
+                    })}
                   </Stack>
 
                   <Divider sx={{ my: 3 }} />
@@ -351,11 +548,46 @@ export default function LoanTimelineCalculator() {
                       label={opt.option}
                       value={opt.netCost}
                       maxValue={maxNetCost}
-                      color={opt.option === bestOption ? CHART_COLORS.primary : '#9CA3AF'}
+                      color={opt.option === (hasIncome ? recommendedOption || lowestCostOption : '') ? CHART_COLORS.primary : '#9CA3AF'}
                     />
                   ))}
                 </Paper>
               </ResultsSection>
+
+              {extraAlt && (
+                <ResultsSection
+                  title="15-year is cheaper — but may not fit"
+                  subtitle="A 30-year with extra principal can approximate a 15-year payoff while keeping payment flexibility"
+                >
+                  <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider', bgcolor: '#FFFBEB' }}>
+                    <Alert severity="warning" sx={{ mb: 2, borderRadius: 2 }}>
+                      <Typography variant="body2">
+                        The 15-year has the lowest net cost, but its payment may not fit typical guidelines at your income.
+                        Paying about <strong>{formatCurrency(extraAlt.extraMonthly)}</strong>/month extra on the 30-year
+                        (total P&amp;I {formatCurrency(extraAlt.totalPiPayment)}) may pay the loan off in about{' '}
+                        <strong>{(extraAlt.payoffMonths / 12).toFixed(1)} years</strong>
+                        {extraPayoffLabel(extraAlt.payoffMonths)} and save roughly{' '}
+                        <strong>{formatCurrency(extraAlt.interestSaved)}</strong> in interest versus the scheduled 30-year.
+                        You can skip extras if cash is tight — a 15-year note would not allow that.
+                      </Typography>
+                    </Alert>
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs: 6, sm: 3 }}>
+                        <MetricCard label="30-yr scheduled" value={formatCurrency(extraAlt.thirtyYearPayment)} sublabel="P&I / month" />
+                      </Grid>
+                      <Grid size={{ xs: 6, sm: 3 }}>
+                        <MetricCard label="Extra principal" value={formatCurrency(extraAlt.extraMonthly)} sublabel="optional / month" color="warning" />
+                      </Grid>
+                      <Grid size={{ xs: 6, sm: 3 }}>
+                        <MetricCard label="15-yr payment" value={formatCurrency(extraAlt.fifteenYearPayment)} sublabel="required P&I" color="warning" />
+                      </Grid>
+                      <Grid size={{ xs: 6, sm: 3 }}>
+                        <MetricCard label="Interest saved" value={formatCurrency(extraAlt.interestSaved)} sublabel="vs scheduled 30-year" color="success" />
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                </ResultsSection>
+              )}
 
               {/* ARM rate-path scenarios */}
               <ResultsSection
@@ -541,7 +773,7 @@ export default function LoanTimelineCalculator() {
                       The Bottom Line
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'primary.dark' }}>
-                      {result.summary} Net cost counts what you actually spend (interest and fees) rather than just the payment size, so higher-payment options like the 15-year get credit for the equity they build.
+                      {result.summary} Net cost counts interest and fees, not just the payment size. A cheaper lifetime cost is not automatically the right pick if the payment may not fit typical guidelines. These labels are educational — not a qualification result.
                     </Typography>
                   </Box>
                 </Stack>

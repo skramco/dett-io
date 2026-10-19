@@ -198,7 +198,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     slug: 'loan-timeline',
     title: 'Best Mortgage for Your Timeline - ARM vs Fixed vs Points Calculator | Dett',
     description:
-      'Find the best loan for how long you plan to stay. Compare 30-year fixed, discount points, ARM (named rate paths and Monte Carlo range), and 15-year options by true net cost.',
+      'Find the best loan for how long you plan to stay. Compare 30-year fixed, discount points, ARM, and 15-year options by net cost and whether the payment may fit typical income guidelines.',
     keywords: [
       'best mortgage for my timeline',
       'ARM vs fixed rate calculator',

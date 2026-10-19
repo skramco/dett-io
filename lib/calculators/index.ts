@@ -26,7 +26,13 @@ export {
   getWorstCaseRatePath,
   ARM_RATE_PATH_ASSUMPTIONS,
 } from './loanTimeline';
-export type { LoanTimelineResult, TimelineScenario, WorstCaseStep } from './loanTimeline';
+export type {
+  LoanTimelineResult,
+  TimelineScenario,
+  WorstCaseStep,
+  RecommendationBadge,
+  FifteenYearAlternative,
+} from './loanTimeline';
 
 // Category 3: Refinancing & Equity
 export { calculateCashOutRefi } from './cashOutRefi';

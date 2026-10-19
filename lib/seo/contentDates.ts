@@ -20,7 +20,7 @@ export const calculatorLastUpdated: Record<string, string> = {
   refinance: '2026-10-18',
   'cash-out-refi': '2026-10-18',
   'recast-vs-refi': '2026-10-18',
-  'loan-timeline': '2026-10-18',
+  'loan-timeline': '2026-10-19',
   payoff: '2026-10-18',
   'interest-sensitivity': '2026-10-18',
   amortization: '2026-10-18',

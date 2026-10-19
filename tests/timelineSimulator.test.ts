@@ -52,6 +52,7 @@ describe('loan-timeline ARM path (ENG-324)', () => {
     const naiveFlatPaid = monthlyPayment(360000, 5.75, 360) * 84;
 
     expect(num(armRow.totalPaid)).toBeGreaterThan(naiveFlatPaid + 9000);
+    expect(String(result.details.lowestCostOption)).not.toMatch(/ARM/);
     expect(String(result.details.bestOption)).not.toMatch(/ARM/);
     expect(result.insights.join(' ')).toMatch(/7\.75%/);
     expect(result.insights.join(' ')).toMatch(/2,522/);

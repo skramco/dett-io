@@ -1,4 +1,4 @@
-import { formatCurrency } from '../format';
+import { formatCurrency, formatSignedCurrency } from '../format';
 import type { LoanTimelineInputs, CalculatorResult } from './types';
 import {
   monthlyPayment,
@@ -6,6 +6,13 @@ import {
   armAdjustedRate,
   remainingBalance,
   breakEvenMonths,
+  monthlyHousingPayment,
+  frontEndDtiPercent,
+  backEndDtiPercent,
+  classifyAffordability,
+  extraMonthlyToPayoffIn,
+  simulateExtraMonthlyPayoff,
+  type AffordabilityBand,
 } from './mortgageMath';
 import {
   createRng,
@@ -13,6 +20,8 @@ import {
   percentile,
   shareWhere,
 } from './monteCarlo';
+
+export type RecommendationBadge = 'most-affordable' | 'lowest-total-cost' | 'balanced';
 
 export interface TimelineScenario {
   option: string;
@@ -27,10 +36,32 @@ export interface TimelineScenario {
   principalPaid: number;
   /** Payments + upfront cost − principal paid down. Interest + fees actually spent. */
   netCost: number;
+  /** Full housing payment (PITI + PMI/MI + HOA when provided). */
+  housingPayment: number;
+  principalAndInterest: number;
+  frontEndDti: number;
+  backEndDti: number;
+  /** P&I as a share of gross monthly income. */
+  paymentShareOfIncome: number;
+  /** Housing payment minus the 30-year par housing payment. */
+  paymentVsBaseline: number;
+  affordabilityBand: AffordabilityBand;
+  badges: RecommendationBadge[];
+}
+
+export interface FifteenYearAlternative {
+  extraMonthly: number;
+  totalPiPayment: number;
+  payoffMonths: number;
+  interestSaved: number;
+  thirtyYearPayment: number;
+  fifteenYearPayment: number;
 }
 
 export interface LoanTimelineResult extends CalculatorResult {
   scenarios: TimelineScenario[];
+  /** Set only when the 15-year is cheapest but may not fit typical guidelines. */
+  fifteenYearAlternative: FifteenYearAlternative | null;
   /** Year-by-year ARM expected vs named/worst-case paths plus Monte Carlo band (full term). */
   armSchedule: Array<{
     year: number;
@@ -388,6 +419,13 @@ function normalizeInputs(inputs: LoanTimelineInputs) {
   const lenderCreditRate = inputs.lenderCreditRate ?? parRate;
   const buydownType = inputs.buydownType ?? 'none';
   const fifteenYearRate = inputs.fifteenYearRate ?? parRate - 0.5;
+  const monthlyGrossIncome = Math.max(0, inputs.monthlyGrossIncome ?? 0);
+  const otherMonthlyDebts = Math.max(0, inputs.otherMonthlyDebts ?? 0);
+  const targetMonthlySavings = Math.max(0, inputs.targetMonthlySavings ?? 0);
+  const homePrice = Math.max(0, inputs.homePrice ?? 0);
+  const propertyTaxAnnual = Math.max(0, inputs.propertyTaxAnnual ?? 0);
+  const homeInsuranceAnnual = Math.max(0, inputs.homeInsuranceAnnual ?? 0);
+  const hoaFees = Math.max(0, inputs.hoaFees ?? 0);
   return {
     ...inputs,
     parRate,
@@ -398,7 +436,120 @@ function normalizeInputs(inputs: LoanTimelineInputs) {
     lenderCreditRate,
     buydownType,
     fifteenYearRate,
+    monthlyGrossIncome,
+    otherMonthlyDebts,
+    targetMonthlySavings,
+    homePrice,
+    propertyTaxAnnual,
+    homeInsuranceAnnual,
+    hoaFees,
   };
+}
+
+function roundDti(value: number): number {
+  return Math.round(value * 10) / 10;
+}
+
+function attachAffordability(
+  scenario: Omit<TimelineScenario, 'housingPayment' | 'principalAndInterest' | 'frontEndDti' | 'backEndDti' | 'paymentShareOfIncome' | 'paymentVsBaseline' | 'affordabilityBand' | 'badges'>,
+  ctx: {
+    loanAmount: number;
+    housingExtras: {
+      annualPropertyTax: number;
+      annualInsurance: number;
+      monthlyHoa: number;
+      homeValue: number;
+      creditScore?: number;
+    };
+    monthlyGrossIncome: number;
+    otherMonthlyDebts: number;
+    targetMonthlySavings: number;
+    baselineHousingPayment: number;
+    hasIncome: boolean;
+  }
+): TimelineScenario {
+  const housing = monthlyHousingPayment({
+    loanAmount: ctx.loanAmount,
+    annualRatePercent: scenario.rate,
+    termMonths: scenario.termYears * 12,
+    principalAndInterest: scenario.initialPayment,
+    annualPropertyTax: ctx.housingExtras.annualPropertyTax,
+    annualInsurance: ctx.housingExtras.annualInsurance,
+    monthlyHoa: ctx.housingExtras.monthlyHoa,
+    homeValue: ctx.housingExtras.homeValue,
+    creditScore: ctx.housingExtras.creditScore,
+  });
+  const frontEndDti = roundDti(frontEndDtiPercent(housing.total, ctx.monthlyGrossIncome));
+  const backEndDti = roundDti(
+    backEndDtiPercent(housing.total, ctx.otherMonthlyDebts, ctx.monthlyGrossIncome)
+  );
+  const remaining = ctx.monthlyGrossIncome - housing.total - ctx.otherMonthlyDebts;
+  return {
+    ...scenario,
+    housingPayment: Math.round(housing.total),
+    principalAndInterest: Math.round(housing.principalAndInterest),
+    frontEndDti,
+    backEndDti,
+    paymentShareOfIncome: roundDti(
+      frontEndDtiPercent(housing.principalAndInterest, ctx.monthlyGrossIncome)
+    ),
+    paymentVsBaseline: Math.round(housing.total - ctx.baselineHousingPayment),
+    affordabilityBand: ctx.hasIncome
+      ? classifyAffordability({
+          frontEndDti,
+          backEndDti,
+          remainingAfterObligations: remaining,
+          targetMonthlySavings: ctx.targetMonthlySavings,
+        })
+      : 'unknown',
+    badges: [],
+  };
+}
+
+function assignRecommendationBadges(
+  scenarios: TimelineScenario[],
+  hasIncome: boolean
+): {
+  mostAffordable: TimelineScenario | null;
+  lowestTotalCost: TimelineScenario;
+  balanced: TimelineScenario | null;
+  recommended: TimelineScenario | null;
+} {
+  const lowestTotalCost = scenarios.reduce((best, current) =>
+    current.netCost < best.netCost ? current : best
+  );
+
+  if (!hasIncome) {
+    return { mostAffordable: null, lowestTotalCost, balanced: null, recommended: null };
+  }
+
+  lowestTotalCost.badges.push('lowest-total-cost');
+
+  const affordable = scenarios.filter((s) => s.affordabilityBand !== 'not-recommended');
+  if (affordable.length === 0) {
+    return { mostAffordable: null, lowestTotalCost, balanced: null, recommended: null };
+  }
+
+  const mostAffordable = affordable.reduce((best, current) =>
+    current.housingPayment < best.housingPayment ||
+    (current.housingPayment === best.housingPayment && current.netCost < best.netCost)
+      ? current
+      : best
+  );
+  mostAffordable.badges.push('most-affordable');
+
+  const comfortable = affordable.filter((s) => s.affordabilityBand === 'comfortable');
+  const pool = comfortable.length > 0 ? comfortable : affordable;
+  const balanced = pool.reduce((best, current) =>
+    current.netCost < best.netCost ||
+    (current.netCost === best.netCost && current.housingPayment < best.housingPayment)
+      ? current
+      : best
+  );
+  if (!balanced.badges.includes('balanced')) balanced.badges.push('balanced');
+
+  const recommended = balanced.affordabilityBand === 'not-recommended' ? null : balanced;
+  return { mostAffordable, lowestTotalCost, balanced, recommended };
 }
 
 export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineResult {
@@ -421,6 +572,14 @@ export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineR
     armLifetimeCap,
     expectedIndexRate,
     fifteenYearRate,
+    monthlyGrossIncome,
+    otherMonthlyDebts,
+    targetMonthlySavings,
+    homePrice,
+    propertyTaxAnnual,
+    homeInsuranceAnnual,
+    hoaFees,
+    creditScore,
   } = normalizeInputs(inputs);
 
   const termMonths = loanTerm * 12;
@@ -513,6 +672,35 @@ export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineR
   const netCostOf = (totalPaid: number, upfrontCost: number, balance: number) =>
     Math.round(totalPaid) + upfrontCost - (loanAmount - Math.round(balance));
 
+  const hasIncome = monthlyGrossIncome > 0;
+  const housingExtras = {
+    annualPropertyTax: propertyTaxAnnual,
+    annualInsurance: homeInsuranceAnnual,
+    monthlyHoa: hoaFees,
+    homeValue: homePrice,
+    creditScore,
+  };
+  const baselineHousing = monthlyHousingPayment({
+    loanAmount,
+    annualRatePercent: parRate,
+    termMonths,
+    principalAndInterest: par.payment,
+    annualPropertyTax: propertyTaxAnnual,
+    annualInsurance: homeInsuranceAnnual,
+    monthlyHoa: hoaFees,
+    homeValue: homePrice,
+    creditScore,
+  });
+  const affordabilityCtx = {
+    loanAmount,
+    housingExtras,
+    monthlyGrossIncome,
+    otherMonthlyDebts,
+    targetMonthlySavings,
+    baselineHousingPayment: baselineHousing.total,
+    hasIncome,
+  };
+
   const buildScenario = (
     option: string,
     rate: number,
@@ -524,18 +712,21 @@ export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineR
     const roundedBalance = Math.round(sim.balance);
     const roundedPaid = Math.round(sim.totalPaid);
     const principalPaid = loanAmount - roundedBalance;
-    return {
-      option,
-      rate,
-      termYears,
-      upfrontCost,
-      initialPayment: Math.round(initialPayment),
-      maxPaymentDuringHold: Math.round(sim.maxPayment ?? initialPayment),
-      totalPaidDuringHold: roundedPaid,
-      remainingBalance: roundedBalance,
-      principalPaid: Math.round(principalPaid),
-      netCost: roundedPaid + upfrontCost - principalPaid,
-    };
+    return attachAffordability(
+      {
+        option,
+        rate,
+        termYears,
+        upfrontCost,
+        initialPayment: Math.round(initialPayment),
+        maxPaymentDuringHold: Math.round(sim.maxPayment ?? initialPayment),
+        totalPaidDuringHold: roundedPaid,
+        remainingBalance: roundedBalance,
+        principalPaid: Math.round(principalPaid),
+        netCost: roundedPaid + upfrontCost - principalPaid,
+      },
+      affordabilityCtx
+    );
   };
 
   const scenarios: TimelineScenario[] = [
@@ -564,9 +755,9 @@ export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineR
     );
   }
 
-  const bestOption = scenarios.reduce((best, current) =>
-    current.netCost < best.netCost ? current : best
-  );
+  const picks = assignRecommendationBadges(scenarios, hasIncome);
+  const lowestCostOption = picks.lowestTotalCost;
+  const recommended = picks.recommended;
 
   const pointsBreakEven = breakEvenMonths(pointsCost, par.payment - points.payment);
   const pointsMonthlySavings = Math.round(par.payment) - Math.round(points.payment);
@@ -577,9 +768,26 @@ export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineR
 
   const insights: string[] = [];
 
-  insights.push(
-    `For a ${expectedYearsInHome}-year stay, net cost (payments + upfront − equity built) matters more than the rate. Best option: ${bestOption.option} at ${formatCurrency(bestOption.netCost)}.`
-  );
+  if (!hasIncome) {
+    insights.push(
+      `For a ${expectedYearsInHome}-year stay, net cost (payments + upfront − equity built) is lowest on the ${lowestCostOption.option} at ${formatCurrency(lowestCostOption.netCost)}. Enter your gross monthly income before treating any option as a recommendation — a lower lifetime cost can still mean a payment that may not fit typical guidelines.`
+    );
+  } else if (!recommended) {
+    insights.push(
+      `Every option here has a back-end DTI above 50% of your ${formatCurrency(monthlyGrossIncome)} gross monthly income, which sits outside typical guideline ranges. That is not a denial or qualification result — consider a lower price, a larger down payment, or paying down other debts. The lowest net cost is still ${lowestCostOption.option} at ${formatCurrency(lowestCostOption.netCost)}.`
+    );
+  } else if (
+    lowestCostOption.affordabilityBand === 'not-recommended' ||
+    (lowestCostOption.option === '15-Year Fixed' && lowestCostOption.affordabilityBand !== 'comfortable')
+  ) {
+    insights.push(
+      `The ${lowestCostOption.option} has the lowest net cost at ${formatCurrency(lowestCostOption.netCost)}, but its payment may not fit typical guidelines (back-end DTI ${lowestCostOption.backEndDti}%). Among options that may fit, the balanced pick is ${recommended.option} at ${formatCurrency(recommended.housingPayment)}/month.`
+    );
+  } else {
+    insights.push(
+      `Among options that may fit typical guidelines for a ${expectedYearsInHome}-year stay, the balanced pick is ${recommended.option}. Lowest total cost is ${lowestCostOption.option} at ${formatCurrency(lowestCostOption.netCost)}; most affordable payment is ${picks.mostAffordable?.option ?? recommended.option}. This is educational, not a qualification result.`
+    );
+  }
 
   if (expectedYearsInHome <= armFixedPeriod) {
     insights.push(
@@ -641,9 +849,34 @@ export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineR
   }
 
   const fifteenScenario = scenarios.find((s) => s.option === '15-Year Fixed')!;
+  const thirtyPar = scenarios.find((s) => s.option === `${loanTerm}-Year Fixed (Par)`)!;
   insights.push(
-    `The 15-year fixed costs ${formatCurrency(fifteenScenario.initialPayment)}/month but builds ${formatCurrency(fifteenScenario.principalPaid)} of equity by the time you move — the highest of any option.`
+    `The 15-year fixed costs ${formatCurrency(fifteenScenario.initialPayment)}/month (${formatSignedCurrency(fifteenScenario.paymentVsBaseline)} vs the ${loanTerm}-year) but builds ${formatCurrency(fifteenScenario.principalPaid)} of equity by the time you move — the highest of any option.`
   );
+
+  const fifteenIsCheapestUnaffordable =
+    hasIncome &&
+    fifteenScenario.option === lowestCostOption.option &&
+    fifteenScenario.affordabilityBand !== 'comfortable' &&
+    thirtyPar.affordabilityBand !== 'not-recommended';
+
+  let fifteenYearAlternative: FifteenYearAlternative | null = null;
+  if (fifteenIsCheapestUnaffordable) {
+    const extraMonthly = extraMonthlyToPayoffIn(loanAmount, parRate, termMonths, 15 * 12);
+    const accelerated = simulateExtraMonthlyPayoff(loanAmount, parRate, termMonths, extraMonthly);
+    fifteenYearAlternative = {
+      extraMonthly: Math.round(extraMonthly),
+      totalPiPayment: Math.round(par.payment + extraMonthly),
+      payoffMonths: accelerated.payoffMonths,
+      interestSaved: Math.round(accelerated.interestSaved),
+      thirtyYearPayment: Math.round(par.payment),
+      fifteenYearPayment: Math.round(fifteen.payment),
+    };
+    const payoffYears = (accelerated.payoffMonths / 12).toFixed(1);
+    insights.push(
+      `The 15-year is cheapest on net cost but its payment may not fit typical guidelines. A ${loanTerm}-year with about ${formatCurrency(extraMonthly)} extra principal per month (total P&I ${formatCurrency(par.payment + extraMonthly)}) may pay off in about ${payoffYears} years and save roughly ${formatCurrency(accelerated.interestSaved)} of interest versus the scheduled ${loanTerm}-year — with the flexibility to skip extras if cash is tight.`
+    );
+  }
 
   const armSchedule = armExpected.schedule.map((p, i) => ({
     year: p.year,
@@ -764,7 +997,25 @@ export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineR
     });
   }
 
-  const summary = `For a ${expectedYearsInHome}-year stay, ${bestOption.option} has the lowest net cost at ${formatCurrency(bestOption.netCost)} (payments + upfront costs − equity built).`;
+  const scenarioByOption = Object.fromEntries(scenarios.map((s) => [s.option, s]));
+  for (const row of chartRows) {
+    const match = scenarioByOption[row.option as string];
+    if (!match) continue;
+    row.housingPayment = match.housingPayment;
+    row.frontEndDti = match.frontEndDti;
+    row.backEndDti = match.backEndDti;
+    row.paymentVsBaseline = match.paymentVsBaseline;
+    row.affordabilityBand = match.affordabilityBand;
+  }
+
+  let summary: string;
+  if (!hasIncome) {
+    summary = `For a ${expectedYearsInHome}-year stay, ${lowestCostOption.option} has the lowest net cost at ${formatCurrency(lowestCostOption.netCost)}. Enter income to see which options may fit typical affordability guidelines.`;
+  } else if (!recommended) {
+    summary = `No option here may fit typical DTI guidelines at ${formatCurrency(monthlyGrossIncome)}/month gross income. ${lowestCostOption.option} still has the lowest net cost at ${formatCurrency(lowestCostOption.netCost)} — that is a cost fact, not a recommendation.`;
+  } else {
+    summary = `For a ${expectedYearsInHome}-year stay, the balanced pick is ${recommended.option} at ${formatCurrency(recommended.housingPayment)}/month. ${lowestCostOption.option} has the lowest net cost at ${formatCurrency(lowestCostOption.netCost)}.`;
+  }
 
   return {
     summary,
@@ -773,13 +1024,33 @@ export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineR
       expectedYearsInHome,
       expectedMoveYear: expectedYearsInHome,
       yearsToHold: expectedYearsInHome,
-      bestOption: bestOption.option,
-      bestNetCost: bestOption.netCost,
-      bestTotalCost: bestOption.netCost,
-      bestInitialPayment: bestOption.initialPayment,
-      bestPayment: bestOption.initialPayment,
-      bestBalance: bestOption.remainingBalance,
-      bestTotalPaid: bestOption.totalPaidDuringHold,
+      bestOption: recommended?.option ?? '',
+      bestNetCost: lowestCostOption.netCost,
+      bestTotalCost: lowestCostOption.netCost,
+      bestInitialPayment: (recommended ?? lowestCostOption).initialPayment,
+      bestPayment: (recommended ?? lowestCostOption).initialPayment,
+      bestBalance: (recommended ?? lowestCostOption).remainingBalance,
+      bestTotalPaid: (recommended ?? lowestCostOption).totalPaidDuringHold,
+      lowestCostOption: lowestCostOption.option,
+      mostAffordableOption: picks.mostAffordable?.option ?? '',
+      balancedOption: picks.balanced?.option ?? '',
+      recommendedOption: recommended?.option ?? '',
+      hasIncomeForRecommendation: hasIncome ? 1 : 0,
+      monthlyGrossIncome,
+      otherMonthlyDebts,
+      targetMonthlySavings,
+      fifteenYearFrontEndDti: fifteenScenario.frontEndDti,
+      fifteenYearBackEndDti: fifteenScenario.backEndDti,
+      fifteenYearHousingPayment: fifteenScenario.housingPayment,
+      fifteenYearPaymentVsBaseline: fifteenScenario.paymentVsBaseline,
+      thirtyYearFrontEndDti: thirtyPar.frontEndDti,
+      thirtyYearBackEndDti: thirtyPar.backEndDti,
+      thirtyYearHousingPayment: thirtyPar.housingPayment,
+      fifteenYearUnaffordable: fifteenYearAlternative ? 1 : 0,
+      extraMonthlyToApproxFifteen: fifteenYearAlternative?.extraMonthly ?? 0,
+      extraTotalPiPayment: fifteenYearAlternative?.totalPiPayment ?? 0,
+      extraPayoffMonths: fifteenYearAlternative?.payoffMonths ?? 0,
+      extraInterestSaved: fifteenYearAlternative?.interestSaved ?? 0,
       fixedPayment: Math.round(par.payment),
       parPayment: Math.round(par.payment),
       parEndingBalance: parEnding,
@@ -830,5 +1101,6 @@ export function calculateLoanTimeline(inputs: LoanTimelineInputs): LoanTimelineR
     insights,
     scenarios,
     armSchedule,
+    fifteenYearAlternative,
   };
 }
