@@ -140,6 +140,22 @@ export interface LoanTimelineInputs {
   armLifetimeCap: number;
   expectedIndexRate: number;
   fifteenYearRate?: number;
+  /** Gross monthly income — required before any option is recommended. */
+  monthlyGrossIncome?: number;
+  /** Recurring monthly debts excluding the mortgage (optional). */
+  otherMonthlyDebts?: number;
+  /** Optional target savings / emergency cushion reserved each month. */
+  targetMonthlySavings?: number;
+  /** Home value used for PMI and, with tax rate inputs, PITI. */
+  homePrice?: number;
+  /** Annual property tax in dollars (included in housing payment when set). */
+  propertyTaxAnnual?: number;
+  /** Annual homeowners insurance in dollars. */
+  homeInsuranceAnnual?: number;
+  /** Monthly HOA dues. */
+  hoaFees?: number;
+  /** Credit score for PMI estimate when homePrice is set. */
+  creditScore?: number;
 }
 
 // Category 3: Refinancing & Equity

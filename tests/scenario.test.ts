@@ -152,6 +152,29 @@ describe('mapProfileToInputs', () => {
     expect(mapped.mortgagePayment).toBeUndefined();
   });
 
+  it('maps income, debts, and housing costs onto loan-timeline affordability fields', () => {
+    const defaults = {
+      loanAmount: 360000,
+      monthlyGrossIncome: 0,
+      otherMonthlyDebts: 0,
+      homePrice: 0,
+      propertyTaxAnnual: 0,
+      homeInsuranceAnnual: 0,
+      hoaFees: 0,
+      creditScore: 740,
+      parRate: 6.75,
+    };
+    const mapped = mapProfileToInputs(defaults, profile);
+    expect(mapped.monthlyGrossIncome).toBe(12500);
+    expect(mapped.otherMonthlyDebts).toBe(650);
+    expect(mapped.homePrice).toBe(500000);
+    expect(mapped.propertyTaxAnnual).toBe(5500);
+    expect(mapped.homeInsuranceAnnual).toBe(2100);
+    expect(mapped.hoaFees).toBe(75);
+    expect(mapped.creditScore).toBe(760);
+    expect(mapped.loanAmount).toBe(400000);
+  });
+
   it('does not overwrite current-loan refinance fields', () => {
     const defaults = {
       currentBalance: 320000,

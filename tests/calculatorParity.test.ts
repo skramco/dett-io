@@ -583,7 +583,9 @@ describe('loan-timeline (ENG-324)', () => {
       const equity = 400000 - balance;
       expect(num(row.netCost)).toBeCloseTo(totalPaid + closing - equity, 0);
     }
-    expect(result.details.bestOption).toBeTruthy();
+    expect(result.details.lowestCostOption).toBeTruthy();
+    expect(result.details.bestOption).toBe('');
+    expect(result.details.hasIncomeForRecommendation).toBe(0);
     expect(num(result.details.bestNetCost)).toBe(
       Math.min(...result.scenarios.map((row) => row.netCost))
     );

@@ -155,6 +155,23 @@ export function mapProfileToInputs<T extends object>(
     }
   }
 
+  if (
+    'otherMonthlyDebts' in defaultsRec &&
+    typeof profile.monthlyDebts === 'number' &&
+    !skipKey(urlParams, 'otherMonthlyDebts')
+  ) {
+    result.otherMonthlyDebts = profile.monthlyDebts;
+  }
+
+  if (
+    'propertyTaxAnnual' in defaultsRec &&
+    !skipKey(urlParams, 'propertyTaxAnnual') &&
+    typeof profile.propertyTaxRate === 'number' &&
+    typeof profile.homePrice === 'number'
+  ) {
+    result.propertyTaxAnnual = Math.round(profile.homePrice * (profile.propertyTaxRate / 100));
+  }
+
   return result as Partial<T>;
 }
 
@@ -204,6 +221,9 @@ export function mapInputsToProfile(
   if ('monthlyDebts' in inputs) {
     const debts = asFiniteNumber(inputs.monthlyDebts);
     if (debts != null) next.monthlyDebts = debts;
+  } else if ('otherMonthlyDebts' in inputs) {
+    const debts = asFiniteNumber(inputs.otherMonthlyDebts);
+    if (debts != null) next.monthlyDebts = debts;
   } else if ('otherDebts' in inputs) {
     const splitTotal =
       (asFiniteNumber(inputs.carPayments) ?? 0) +
@@ -243,7 +263,8 @@ export function mapInputsToProfile(
   if (creditScore != null) next.creditScore = creditScore;
 
   const propertyTaxRate = asFiniteNumber(inputs.propertyTaxRate);
-  const propertyTax = asFiniteNumber(inputs.propertyTax);
+  const propertyTax =
+    asFiniteNumber(inputs.propertyTax) ?? asFiniteNumber(inputs.propertyTaxAnnual);
   if (propertyTaxRate != null) {
     next.propertyTaxRate = propertyTaxRate;
   } else if (propertyTax != null && homePrice != null && homePrice > 0) {

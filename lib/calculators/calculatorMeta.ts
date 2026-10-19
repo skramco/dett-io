@@ -18,7 +18,7 @@ export const calculatorMeta: Record<string, CalculatorMeta> = {
   refinance: { lastUpdated: '2026-10-18' },
   'cash-out-refi': { lastUpdated: '2026-10-18' },
   'recast-vs-refi': { lastUpdated: '2026-10-18' },
-  'loan-timeline': { lastUpdated: '2026-10-18' },
+  'loan-timeline': { lastUpdated: '2026-10-19' },
   payoff: { lastUpdated: '2026-10-18' },
   'interest-sensitivity': { lastUpdated: '2026-10-18' },
   amortization: { lastUpdated: '2026-10-18' },

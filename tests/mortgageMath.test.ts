@@ -15,8 +15,12 @@ import {
   frontEndDtiPercent,
   loanAmountFromPayment,
   ltvPercent,
+  monthlyHousingPayment,
   monthlyPayment,
   monthlyPmiAmount,
+  extraMonthlyToPayoffIn,
+  simulateExtraMonthlyPayoff,
+  classifyAffordability,
   monthsToReachLtv,
   remainingBalance,
   simulateBiweeklyPayoff,
@@ -160,6 +164,72 @@ describe('DTI helpers', () => {
   it('returns 0 instead of dividing by zero income', () => {
     expect(frontEndDtiPercent(2800, 0)).toBe(0);
     expect(backEndDtiPercent(2800, 800, 0)).toBe(0);
+  });
+});
+
+describe('monthlyHousingPayment', () => {
+  it('sums P&I, tax, insurance, HOA, and PMI from the shared helpers', () => {
+    const pi = monthlyPayment(360000, 6.75, 360);
+    const housing = monthlyHousingPayment({
+      loanAmount: 360000,
+      annualRatePercent: 6.75,
+      termMonths: 360,
+      annualPropertyTax: 4800,
+      annualInsurance: 1440,
+      monthlyHoa: 150,
+      homeValue: 400000,
+      creditScore: 740,
+    });
+    const pmi = monthlyConventionalPmi(360000, 400000, 740);
+    expect(housing.principalAndInterest).toBeCloseTo(pi, 6);
+    expect(housing.monthlyPropertyTax).toBeCloseTo(400, 6);
+    expect(housing.monthlyInsurance).toBeCloseTo(120, 6);
+    expect(housing.monthlyHoa).toBe(150);
+    expect(housing.monthlyPmi).toBeCloseTo(pmi, 6);
+    expect(housing.total).toBeCloseTo(pi + 400 + 120 + 150 + pmi, 6);
+  });
+
+  it('omits PMI and escrow when those inputs are not provided', () => {
+    const pi = monthlyPayment(360000, 6.75, 360);
+    const housing = monthlyHousingPayment({
+      loanAmount: 360000,
+      annualRatePercent: 6.75,
+      termMonths: 360,
+    });
+    expect(housing.total).toBeCloseTo(pi, 6);
+    expect(housing.monthlyPmi).toBe(0);
+  });
+});
+
+describe('classifyAffordability', () => {
+  it('labels ≤28% front-end and ≤43% back-end as comfortable', () => {
+    expect(classifyAffordability({ frontEndDti: 28, backEndDti: 43 })).toBe('comfortable');
+  });
+
+  it('labels 43–50% back-end as stretch and >50% as not recommended', () => {
+    expect(classifyAffordability({ frontEndDti: 30, backEndDti: 47 })).toBe('stretch');
+    expect(classifyAffordability({ frontEndDti: 28, backEndDti: 51 })).toBe('not-recommended');
+  });
+
+  it('treats a savings cushion shortfall as stretch', () => {
+    expect(
+      classifyAffordability({
+        frontEndDti: 25,
+        backEndDti: 36,
+        remainingAfterObligations: 200,
+        targetMonthlySavings: 500,
+      })
+    ).toBe('stretch');
+  });
+});
+
+describe('extra monthly payoff', () => {
+  it('sizes extra principal so a 30-year loan pays off in 15 years', () => {
+    const extra = extraMonthlyToPayoffIn(360000, 6.75, 360, 180);
+    const result = simulateExtraMonthlyPayoff(360000, 6.75, 360, extra);
+    expect(extra).toBeGreaterThan(500);
+    expect(result.payoffMonths).toBe(180);
+    expect(result.interestSaved).toBeGreaterThan(0);
   });
 });
 

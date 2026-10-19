@@ -216,6 +216,169 @@ export function backEndDtiPercent(
     : 0;
 }
 
+/**
+ * Typical-guideline bands used for educational affordability labels.
+ * These are not underwriting overlays and must never be described as
+ * qualification or approval.
+ */
+export const FRONT_END_DTI_COMFORTABLE_PERCENT = 28;
+export const BACK_END_DTI_COMFORTABLE_PERCENT = 43;
+export const BACK_END_DTI_STRETCH_PERCENT = 50;
+
+export type AffordabilityBand = 'comfortable' | 'stretch' | 'not-recommended' | 'unknown';
+
+export function classifyAffordability(params: {
+  frontEndDti: number;
+  backEndDti: number;
+  remainingAfterObligations?: number;
+  targetMonthlySavings?: number;
+}): AffordabilityBand {
+  const {
+    frontEndDti,
+    backEndDti,
+    remainingAfterObligations = Number.POSITIVE_INFINITY,
+    targetMonthlySavings = 0,
+  } = params;
+
+  if (backEndDti > BACK_END_DTI_STRETCH_PERCENT) return 'not-recommended';
+
+  const savingsGap =
+    targetMonthlySavings > 0 && remainingAfterObligations < targetMonthlySavings;
+  if (
+    backEndDti > BACK_END_DTI_COMFORTABLE_PERCENT ||
+    frontEndDti > FRONT_END_DTI_COMFORTABLE_PERCENT ||
+    savingsGap
+  ) {
+    return 'stretch';
+  }
+  return 'comfortable';
+}
+
+export interface MonthlyHousingPaymentInput {
+  loanAmount: number;
+  annualRatePercent: number;
+  termMonths: number;
+  /** Override P&I (ARM/buydown current payment) instead of recomputing. */
+  principalAndInterest?: number;
+  annualPropertyTax?: number;
+  annualInsurance?: number;
+  monthlyHoa?: number;
+  homeValue?: number;
+  creditScore?: number;
+  /** Manual monthly PMI; when omitted, estimated from LTV × credit when homeValue is set. */
+  monthlyPmi?: number;
+}
+
+export interface MonthlyHousingPaymentBreakdown {
+  principalAndInterest: number;
+  monthlyPropertyTax: number;
+  monthlyInsurance: number;
+  monthlyHoa: number;
+  monthlyPmi: number;
+  total: number;
+}
+
+/**
+ * Full monthly housing payment: P&I + property tax + insurance + PMI/MI + HOA.
+ * Tax, insurance, HOA, and PMI are included when provided (or estimable).
+ */
+export function monthlyHousingPayment(
+  input: MonthlyHousingPaymentInput
+): MonthlyHousingPaymentBreakdown {
+  const principalAndInterest =
+    input.principalAndInterest ??
+    monthlyPayment(input.loanAmount, input.annualRatePercent, input.termMonths);
+  const monthlyPropertyTax = (input.annualPropertyTax ?? 0) / 12;
+  const monthlyInsurance = (input.annualInsurance ?? 0) / 12;
+  const monthlyHoa = input.monthlyHoa ?? 0;
+  let monthlyPmi = input.monthlyPmi ?? 0;
+  if (input.monthlyPmi == null && (input.homeValue ?? 0) > 0) {
+    monthlyPmi = monthlyConventionalPmi(
+      input.loanAmount,
+      input.homeValue as number,
+      input.creditScore
+    );
+  }
+  return {
+    principalAndInterest,
+    monthlyPropertyTax,
+    monthlyInsurance,
+    monthlyHoa,
+    monthlyPmi,
+    total:
+      principalAndInterest +
+      monthlyPropertyTax +
+      monthlyInsurance +
+      monthlyHoa +
+      monthlyPmi,
+  };
+}
+
+/**
+ * Extra principal per month needed to retire the loan in `targetTermMonths`
+ * at the current rate (e.g. pay a 30-year loan off in 15 years).
+ */
+export function extraMonthlyToPayoffIn(
+  principal: number,
+  annualRatePercent: number,
+  scheduledTermMonths: number,
+  targetTermMonths: number
+): number {
+  if (targetTermMonths <= 0 || targetTermMonths >= scheduledTermMonths) return 0;
+  const targetPay = monthlyPayment(principal, annualRatePercent, targetTermMonths);
+  const scheduledPay = monthlyPayment(principal, annualRatePercent, scheduledTermMonths);
+  return Math.max(0, targetPay - scheduledPay);
+}
+
+export interface AcceleratedPayoffResult {
+  extraMonthly: number;
+  payoffMonths: number;
+  totalInterest: number;
+  scheduledInterest: number;
+  interestSaved: number;
+}
+
+/** Amortize with a constant extra monthly principal payment. */
+export function simulateExtraMonthlyPayoff(
+  principal: number,
+  annualRatePercent: number,
+  termMonths: number,
+  extraMonthly: number
+): AcceleratedPayoffResult {
+  const scheduledPayment = monthlyPayment(principal, annualRatePercent, termMonths);
+  const scheduledInterest = totalInterestOverTerm(principal, annualRatePercent, termMonths);
+  const payment = scheduledPayment + Math.max(0, extraMonthly);
+  const r = toMonthlyRate(annualRatePercent);
+  let balance = principal;
+  let totalInterest = 0;
+  let month = 0;
+
+  while (balance > 0.005 && month < termMonths) {
+    month++;
+    const interest = balance * r;
+    totalInterest += interest;
+    const towardPrincipal = payment - interest;
+    if (towardPrincipal <= 0) {
+      return {
+        extraMonthly: Math.max(0, extraMonthly),
+        payoffMonths: termMonths,
+        totalInterest: scheduledInterest,
+        scheduledInterest,
+        interestSaved: 0,
+      };
+    }
+    balance = Math.max(0, balance - towardPrincipal);
+  }
+
+  return {
+    extraMonthly: Math.max(0, extraMonthly),
+    payoffMonths: month,
+    totalInterest,
+    scheduledInterest,
+    interestSaved: Math.max(0, scheduledInterest - totalInterest),
+  };
+}
+
 // ---------------------------------------------------------------------------
 // FHA
 // ---------------------------------------------------------------------------
