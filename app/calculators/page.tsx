@@ -45,6 +45,7 @@ import {
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
 import { CalculatorWizard } from '@/components/mui/calculator/CalculatorWizard';
+import { ClozableBlurb } from '@/components/mui/ClozableBlurb';
 
 const calculatorDetails = {
   affordability: {
@@ -335,6 +336,7 @@ export default function CalculatorsPage() {
               >
                 Crystal-clear calculators that show you the real numbers. Pick one and start calculating.
               </Typography>
+              <ClozableBlurb placement="calculators" />
               <Link href="/scenario" style={{ textDecoration: 'none' }}>
                 <Button
                   variant="outlined"

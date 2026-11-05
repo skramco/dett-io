@@ -2,6 +2,7 @@
 
 import { Box, Container, Typography, Grid, Stack } from '@mui/material';
 import Link from 'next/link';
+import { ClozableBlurb } from '@/components/mui/ClozableBlurb';
 
 const footerLinks = {
   calculators: [
@@ -50,6 +51,9 @@ export function Footer() {
               Free, independent mortgage calculators with documented formulas and cited data
               sources. Built by Knowe LLC — not a lender, and we don&apos;t sell leads.
             </Typography>
+            <Box sx={{ mt: 1.5 }}>
+              <ClozableBlurb placement="footer" align="left" />
+            </Box>
           </Grid>
           
           <Grid size={{ xs: 6, sm: 4, md: 2 }}>

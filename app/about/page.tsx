@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
+import { ClozableLink } from '@/components/mui/ClozableBlurb';
 
 export default function AboutPage() {
   return (
@@ -59,7 +60,9 @@ export default function AboutPage() {
               <a href="https://knowe.one" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
                 Dett.io is a Knowe LLC company
               </a>
-              . Clozable is a sibling Knowe platform; it is not required to use these calculators.
+              . <ClozableLink placement="about">Clozable</ClozableLink> is a sibling Knowe
+              platform for getting mortgage-ready — a quiet next step if you&apos;re thinking
+              about buying or refinancing. It is not required to use these calculators.
             </p>
 
             <h2>Our independence</h2>
