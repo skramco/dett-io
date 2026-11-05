@@ -35,6 +35,7 @@ import {
 } from '@mui/icons-material';
 import { Header } from '@/components/mui/Header';
 import { Footer } from '@/components/mui/Footer';
+import { ClozableBlurb } from '@/components/mui/ClozableBlurb';
 import dynamic from 'next/dynamic';
 const CalculatorWizard = dynamic(
   () => import('@/components/mui/calculator/CalculatorWizard').then((mod) => ({ default: mod.CalculatorWizard })),
@@ -178,6 +179,7 @@ export default function Home() {
                       Learn the Basics
                     </Button>
                   </Stack>
+                  <ClozableBlurb placement="home" align="inherit" />
                 </Stack>
               </Grid>
 

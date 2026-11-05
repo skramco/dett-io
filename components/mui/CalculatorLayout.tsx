@@ -437,7 +437,12 @@ export default function CalculatorLayout({ children, title, description, related
           </Container>
         )}
 
-        {/* Related Calculators, Related Guides & Clozable CTA */}
+        {/* Clozable — sits with results so it reads as a next step, not a footer promo */}
+        <Container maxWidth="lg" sx={{ pb: { xs: 2, md: 3 } }}>
+          <ClozableCTA calculatorSlug={calculatorSlug} />
+        </Container>
+
+        {/* Related Calculators, Related Guides */}
         <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 } }}>
           {relatedCalculators && relatedCalculators.length > 0 && (
             <RelatedCalculators calculators={relatedCalculators} />
@@ -446,7 +451,6 @@ export default function CalculatorLayout({ children, title, description, related
             <RelatedGuides calculatorSlug={calculatorSlug} />
           )}
           <EmbedThisCalculator slug={calculatorSlug} name={title} />
-          <ClozableCTA calculatorSlug={calculatorSlug} />
         </Container>
 
         {/* FAQ + Methodology / sources / last updated (matches FAQPage JSON-LD) */}
