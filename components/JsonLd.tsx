@@ -25,7 +25,7 @@ export function OrganizationJsonLd() {
           name: 'Dett.io',
           url: 'https://dett.io',
         },
-        sameAs: ['https://dett.io', 'https://loanknow.com'],
+        sameAs: ['https://dett.io', 'https://clozable.com'],
         contactPoint: {
           '@type': 'ContactPoint',
           email: 'legal@dett.io',

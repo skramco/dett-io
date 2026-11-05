@@ -59,7 +59,7 @@ export default function AboutPage() {
               <a href="https://knowe.one" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
                 Dett.io is a Knowe LLC company
               </a>
-              . LoanKnow is a sibling Knowe platform; it is not required to use these calculators.
+              . Clozable is a sibling Knowe platform; it is not required to use these calculators.
             </p>
 
             <h2>Our independence</h2>
