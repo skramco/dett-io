@@ -18,7 +18,7 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { RelatedCalculators } from './calculator/RelatedCalculators';
 import { RelatedGuides } from './calculator/RelatedGuides';
-import { LoanKnowCTA } from './calculator/LoanKnowCTA';
+import { ClozableCTA } from './calculator/ClozableCTA';
 import { ActionBar } from './calculator/ActionBar';
 import { ShowMeTheMath } from './calculator/ShowMeTheMath';
 import { CalculatorSeoFooter } from './calculator/CalculatorSeoFooter';
@@ -437,7 +437,7 @@ export default function CalculatorLayout({ children, title, description, related
           </Container>
         )}
 
-        {/* Related Calculators, Related Guides & LoanKnow CTA */}
+        {/* Related Calculators, Related Guides & Clozable CTA */}
         <Container maxWidth="lg" sx={{ pb: { xs: 4, md: 6 } }}>
           {relatedCalculators && relatedCalculators.length > 0 && (
             <RelatedCalculators calculators={relatedCalculators} />
@@ -446,7 +446,7 @@ export default function CalculatorLayout({ children, title, description, related
             <RelatedGuides calculatorSlug={calculatorSlug} />
           )}
           <EmbedThisCalculator slug={calculatorSlug} name={title} />
-          <LoanKnowCTA calculatorSlug={calculatorSlug} />
+          <ClozableCTA calculatorSlug={calculatorSlug} />
         </Container>
 
         {/* FAQ + Methodology / sources / last updated (matches FAQPage JSON-LD) */}

@@ -4,7 +4,7 @@
 
 Dett is a 100% free, consumer-first web application dedicated to debt education and transparent calculators. No paywalls, no lead gating, no hidden agendas.
 
-Sister site to [LoanKnow](https://loanknow.com). Both are [Knowe LLC](https://knowe.one) platforms.
+Sister site to [Clozable](https://clozable.com). Both are [Knowe LLC](https://knowe.one) platforms.
 
 ## 🎯 Project Philosophy
 
@@ -69,9 +69,9 @@ cp .env.example .env.local
 # NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 # RESEND_API_KEY=your_resend_api_key
 
-# Optional — LoanKnow CTA on calculators (defaults shown)
-# NEXT_PUBLIC_LOANKNOW_CTA_ENABLED=true
-# NEXT_PUBLIC_LOANKNOW_WAITLIST_URL=https://loanknow.com
+# Optional — Clozable CTA on calculators (defaults shown)
+# NEXT_PUBLIC_CLOZABLE_CTA_ENABLED=true
+# NEXT_PUBLIC_CLOZABLE_WAITLIST_URL=https://clozable.com
 ```
 
 ### Database Setup

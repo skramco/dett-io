@@ -2,26 +2,26 @@
 
 import { Box, Typography } from '@mui/material';
 import { trackEvent } from '@/lib/analytics';
-import { LOANKNOW_CTA_ENABLED, getLoanKnowWaitlistUrl } from '@/lib/loanknow';
+import { CLOZABLE_CTA_ENABLED, getClozableWaitlistUrl } from '@/lib/clozable';
 
-interface LoanKnowCTAProps {
+interface ClozableCTAProps {
   calculatorSlug?: string;
 }
 
 /**
- * Single-line LoanKnow mention (ENG-359). Intentionally subtle — no promo
+ * Single-line Clozable mention (ENG-359). Intentionally subtle — no promo
  * card, no forms, no contact capture — to stay consistent with dett.io's
  * "free, no signup, no sales" positioning. Hidden globally via the
- * LOANKNOW_CTA_ENABLED flag in lib/loanknow.ts (ENG-337).
+ * CLOZABLE_CTA_ENABLED flag in lib/clozable.ts (ENG-337).
  */
-export function LoanKnowCTA({ calculatorSlug }: LoanKnowCTAProps) {
-  if (!LOANKNOW_CTA_ENABLED) return null;
+export function ClozableCTA({ calculatorSlug }: ClozableCTAProps) {
+  if (!CLOZABLE_CTA_ENABLED) return null;
 
-  const waitlistUrl = getLoanKnowWaitlistUrl(calculatorSlug);
+  const waitlistUrl = getClozableWaitlistUrl(calculatorSlug);
 
   const handleClick = () => {
     trackEvent('cta_click', {
-      cta_label: 'loanknow_waitlist',
+      cta_label: 'clozable_waitlist',
       calculator_slug: calculatorSlug,
       link_url: waitlistUrl,
     });
@@ -45,7 +45,7 @@ export function LoanKnowCTA({ calculatorSlug }: LoanKnowCTAProps) {
           },
         }}
       >
-        LoanKnow is coming soon →
+        Clozable is coming soon →
       </Typography>
     </Box>
   );
