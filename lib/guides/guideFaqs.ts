@@ -73,6 +73,28 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
     { question: 'What credit score do I need for FHA vs conventional?', answer: 'FHA requires a minimum 580 credit score for 3.5% down (500 for 10% down). Conventional loans typically require 620+ but offer the best rates at 740+.' },
     { question: 'Does FHA mortgage insurance go away?', answer: 'For loans with less than 10% down, FHA mortgage insurance (MIP) lasts the entire life of the loan. For 10%+ down, it drops off after 11 years. Conventional PMI drops off at 20% equity.' },
   ],
+  'va-funding-fee-and-waiver': [
+    {
+      question: 'How is the VA funding fee calculated?',
+      answer:
+        'VA sets the fee as a percentage of the loan amount (home price minus down payment on purchases). For purchases, rates depend on down payment tiers (under 5%, 5–9.99%, and 10%+) and whether it is your first or a subsequent use of your VA loan benefit. Cash-out refinances use flat first-use or subsequent-use rates. IRRRLs use a flat 0.5%. Dett\'s VA calculator uses the same rate table published on VA.gov effective April 7, 2023.',
+    },
+    {
+      question: 'Who is exempt from the VA funding fee?',
+      answer:
+        'VA.gov lists exemptions including veterans receiving VA compensation for a service-connected disability, those eligible for that compensation but receiving retirement or active-duty pay instead, eligible surviving spouses receiving Dependency and Indemnity Compensation (DIC), borrowers with certain pre-discharge proposed ratings before closing, and active-duty service members who provide Purple Heart evidence by closing. Exemption is documented at closing — not assumed automatically.',
+    },
+    {
+      question: 'Can I finance the VA funding fee into my loan?',
+      answer:
+        'Yes. VA allows you to add the funding fee to the loan balance and pay it over time, or pay it in cash at closing. On purchase loans, only the funding fee may be financed into the loan amount; other closing costs are generally paid separately unless covered by seller credits or lender pricing. Financing the fee raises the total loan and monthly principal and interest slightly.',
+    },
+    {
+      question: 'Does a larger down payment lower the VA funding fee?',
+      answer:
+        'On purchase loans, yes — putting at least 5% down moves the fee from 2.15% to 1.5% on first use, and from 3.3% to 1.5% on subsequent use. At 10% down or more, the purchase fee is 1.25% for both first and subsequent use. Cash-out refinances do not get a down-payment discount; IRRRLs stay at 0.5% regardless of equity.',
+    },
+  ],
   'what-are-closing-costs': [
     { question: 'How much are closing costs on a house?', answer: 'Closing costs typically range from 2-5% of the purchase price. On a $300,000 home, expect $6,000-$15,000 in total closing costs including lender fees, title insurance, appraisal, and prepaid items.' },
     { question: 'Who pays closing costs, buyer or seller?', answer: 'Both. Buyers typically pay 2-5% and sellers pay 6-10% (mostly real estate commissions). In buyer-friendly markets, sellers may agree to cover some of the buyer closing costs.' },
