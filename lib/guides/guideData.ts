@@ -95,14 +95,24 @@ export const guides: Guide[] = [
   },
   {
     slug: 'afford-house-100k-salary',
-    title: 'Can I Afford a House on a $100K Salary?',
-    description: 'On a $100,000 salary, you can afford a home in the $300,000 to $430,000 range with a max housing payment of about $2,333/month. Here\'s how to optimize your purchase.',
+    title: 'How Much House Can I Afford on a $100,000 Salary?',
+    description:
+      'The honest answer depends on your debts, down payment, taxes, and rate — not a single multiple of your salary. Here\'s a worked example you can adjust.',
     category: 'salary',
     readTime: '7 min',
     calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
-      { name: 'Best Loan for My Timeline', href: '/calculators/loan-timeline' },
+      {
+        name: 'How Much House Can I Afford?',
+        href: '/calculators/affordability?annualIncome=100000&monthlyDebts=400&downPayment=40000&interestRate=7.11&loanTerm=30&propertyTaxRate=1.2&homeInsuranceAnnual=1800&hoaFees=0&creditScore=740',
+      },
+      {
+        name: 'True Monthly Mortgage Cost',
+        href: '/calculators/mortgage-cost?homePrice=340500&downPayment=40000&interestRate=7.11&loanTerm=30&propertyTax=4086&homeInsurance=1800&hoaFees=0&creditScore=740&pmi=0',
+      },
+      {
+        name: 'DTI Calculator',
+        href: '/calculators/dti?monthlyGrossIncome=8333&mortgagePayment=2021&propertyTax=4086&homeInsurance=1800&hoaFees=0&carPayments=0&studentLoans=0&creditCardMinimums=0&personalLoans=0&childSupport=0&otherDebts=400',
+      },
     ],
   },
   {

@@ -40,9 +40,31 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
     { question: 'What is the best down payment at $90K income?', answer: '10-15% is the sweet spot. It reduces PMI costs significantly without requiring the full 20% ($65,000) that many buyers at this level find difficult to save.' },
   ],
   'afford-house-100k-salary': [
-    { question: 'How much house can I afford on $100K salary?', answer: 'On a $100,000 salary, you can typically afford a home in the $350,000 to $450,000 range, with a maximum housing payment of about $2,333/month at 28% DTI.' },
-    { question: 'What mortgage can I get on $100K income?', answer: 'With good credit and minimal debt, typical lending guidelines support a mortgage of $330,000-$420,000. The exact amount depends on your DTI ratio, credit score, and down payment.' },
-    { question: 'Is $100K a good salary to buy a house?', answer: 'Yes, $100K provides strong buying power. You have access to competitive conventional loan terms and can comfortably afford homes in the mid-$300s to low-$400s in most U.S. markets.' },
+    {
+      question: 'How much house can I afford on a $100,000 salary?',
+      answer:
+        'It depends on your other monthly debts, down payment, local taxes and insurance, and the interest rate a lender actually offers you. In Dett\'s worked example — $100,000 income, $400 a month in other debts, a $40,000 down payment, and an illustrative 7.11% 30-year rate — the mid-range estimate is about $340,500 with a full monthly housing cost of about $2,600. A more conservative estimate is about $307,236 with a $2,333 payment. These are estimates, not a loan offer or a decision on a loan.',
+    },
+    {
+      question: 'Do car payments or student loans change how much house I can afford?',
+      answer:
+        'Yes. Lenders look at back-end debt-to-income: housing costs plus other monthly debt payments, divided by gross monthly income. In this example, $400 a month in other debts caps the mid-range housing payment at $2,600 instead of $3,000, which lowers the mid-range home price from about $390,396 to about $340,500.',
+    },
+    {
+      question: 'Is the 28/36 rule a legal limit?',
+      answer:
+        'No. The 28/36 guideline is a long-used underwriting rule of thumb, not a law. The Consumer Financial Protection Bureau explains that debt-to-income is one way lenders measure ability to repay, and that different loan products and lenders use different DTI limits. A payment that fits a guideline may still be tight once taxes, utilities, maintenance, and savings are included.',
+    },
+    {
+      question: 'Should I buy at the top of the range a lender might consider?',
+      answer:
+        'Not automatically. In this example, the top-of-guideline price is about $405,655 with a full housing payment of about $3,183 — 38% of gross income for housing alone. HUD has long treated housing costs above 30% of income as a cost burden. A larger payment can also leave less room for an emergency fund, retirement savings, and repairs. Use the mid-range or conservative estimate if you want more breathing room, and compare the payment to your take-home pay, not just your gross salary.',
+    },
+    {
+      question: 'Does this estimate include property taxes, insurance, and PMI?',
+      answer:
+        'Yes. The full monthly housing cost in this calculator includes principal and interest, property taxes, homeowners insurance, HOA dues if you enter them, and private mortgage insurance when the down payment is under 20%. It does not include utilities, maintenance, furnishings, or income taxes. Actual taxes and insurance vary by property and location.',
+    },
   ],
   'afford-house-120k-salary': [
     { question: 'How much house can I afford on $120K?', answer: 'On a $120,000 salary, you can afford a home in the $400,000 to $525,000 range. Your 28% DTI housing budget is about $2,800/month.' },

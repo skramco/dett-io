@@ -3,6 +3,7 @@
 import { formatCurrency } from '@/lib/format';
 
 import { Box, Alert, Typography } from '@mui/material';
+import { AffordHouse100K } from '@/lib/guides/content/AffordHouse100K';
 
 function SalaryTable({ salary, monthly, maxHome28, maxHome36, downPayment5, downPayment10, downPayment20 }: {
   salary: string; monthly: string; maxHome28: string; maxHome36: string;
@@ -360,46 +361,6 @@ function AffordHouse90K() {
 
       <h2>The Bottom Line</h2>
       <p>$90K gives you genuine buying power in most U.S. markets. The smartest move is to buy comfortably below your maximum — aim for a payment that's 25-28% of gross income, not 35%. The financial flexibility you preserve is worth more than the extra square footage.</p>
-    </>
-  );
-}
-
-function AffordHouse100K() {
-  return (
-    <>
-      <h2>The Quick Answer</h2>
-      <p>On a $100,000 salary, you can likely afford a home in the <strong>$350,000 to $450,000</strong> range. At this income level, you have access to competitive loan products and can comfortably handle a substantial mortgage.</p>
-
-      <h2>Your Numbers at a Glance</h2>
-      <SalaryTable salary="$100,000" monthly="$8,333" maxHome28="$375,000" maxHome36="$450,000" downPayment5="$18,750" downPayment10="$37,500" downPayment20="$75,000" />
-
-      <h2>The $100K Advantage</h2>
-      <p>At $100K, your 28% housing budget is <strong>$2,333 per month</strong>. This opens up a wide range of homes in most markets. You're also more likely to qualify for the best interest rates, which can save tens of thousands over the life of your loan.</p>
-
-      <h2>Should You Buy More House or Invest the Difference?</h2>
-      <p>This is the key question at $100K. You could:</p>
-      <ul>
-        <li><strong>Buy a $375K home</strong> and invest the monthly savings. If you can afford $2,333/mo but your payment is $1,900, that's $433/mo into investments.</li>
-        <li><strong>Buy a $425K home</strong> and build equity in a more valuable asset. Real estate appreciation on a $425K home is more impactful than on a $375K home.</li>
-        <li><strong>Buy a $350K home</strong> and pay it off aggressively. Extra payments on a smaller mortgage can save you 10+ years and $100K+ in interest.</li>
-      </ul>
-
-      <Callout>There's no universally "right" answer. It depends on your local market, investment knowledge, risk tolerance, and life plans. Run the scenarios with our calculators.</Callout>
-
-      <h2>Points and Rate Buydowns</h2>
-      <p>At this price range, buying points starts to make real financial sense. On a $375K home:</p>
-      <Box component="table">
-        <thead><tr><th>Strategy</th><th>Upfront Cost</th><th>Monthly Savings</th><th>Break-Even</th></tr></thead>
-        <tbody>
-          <tr><td>Par rate (6.75%)</td><td>$0</td><td>—</td><td>—</td></tr>
-          <tr><td>1 point (6.5%)</td><td>$3,375</td><td>$52/mo</td><td>65 months</td></tr>
-          <tr><td>2 points (6.25%)</td><td>$6,750</td><td>$104/mo</td><td>65 months</td></tr>
-        </tbody>
-      </Box>
-      <p>If you plan to stay 7+ years, buying points is usually worth it. If you might move or refinance sooner, keep your cash.</p>
-
-      <h2>The Bottom Line</h2>
-      <p>$100K gives you excellent buying power and flexibility. The biggest risk at this level isn't qualifying — it's overbuying. Stick to a payment that leaves room for savings, investments, and life.</p>
     </>
   );
 }
