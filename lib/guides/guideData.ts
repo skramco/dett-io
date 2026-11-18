@@ -8,89 +8,17 @@ export interface Guide {
 }
 
 export const guides: Guide[] = [
-  // Salary-based
   {
-    slug: 'afford-house-40k-salary',
-    title: 'Can I Afford a House on a $40K Salary?',
-    description: 'On a $40,000 salary, you can afford a home in the $120,000 to $170,000 range using FHA or USDA loans with 3.5% or 0% down. Here\'s the full breakdown of what lenders look for and how to make it work.',
+    slug: 'how-much-house-can-i-afford-by-salary',
+    title: 'How Much House Can I Afford on My Salary?',
+    description:
+      "Salary-band estimates from $40K to $200K using Dett's affordability calculator math, illustrative 7.11% PMMS rate (week of Nov 12, 2026), and common DTI guidelines. Estimates only — not a loan offer.",
     category: 'salary',
-    readTime: '6 min',
+    readTime: '8 min',
     calculators: [
       { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'FHA Loan Calculator', href: '/calculators/fha' },
-      { name: 'Down Payment Strategy', href: '/calculators/down-payment' },
-    ],
-  },
-  {
-    slug: 'afford-house-50k-salary',
-    title: 'Can I Afford a House on a $50K Salary?',
-    description: 'On a $50,000 salary, you can afford a home in the $150,000 to $215,000 range. Your max monthly housing payment is about $1,167 using the 28% DTI rule. Here\'s what to expect.',
-    category: 'salary',
-    readTime: '6 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'FHA Loan Calculator', href: '/calculators/fha' },
       { name: 'DTI Calculator', href: '/calculators/dti' },
-    ],
-  },
-  {
-    slug: 'afford-house-60k-salary',
-    title: 'Can I Afford a House on a $60K Salary?',
-    description: 'On a $60,000 salary, you can afford a home in the $180,000 to $260,000 range with a max housing payment of about $1,400/month. Here\'s how loan type and down payment affect your budget.',
-    category: 'salary',
-    readTime: '6 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
       { name: 'Down Payment Strategy', href: '/calculators/down-payment' },
-      { name: 'DTI Calculator', href: '/calculators/dti' },
-    ],
-  },
-  {
-    slug: 'afford-house-65k-salary',
-    title: 'Can I Afford a House on a $65K Salary?',
-    description: 'On a $65,000 salary, you can afford a home in the $195,000 to $280,000 range. Your max monthly payment is about $1,517 at the 28% DTI threshold. Here\'s how to stretch your budget.',
-    category: 'salary',
-    readTime: '6 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
-      { name: 'FHA Loan Calculator', href: '/calculators/fha' },
-    ],
-  },
-  {
-    slug: 'afford-house-75k-salary',
-    title: 'Can I Afford a House on a $75K Salary?',
-    description: 'On a $75,000 salary, you can afford a home in the $225,000 to $325,000 range with a max housing payment of about $1,750/month. Here\'s the real cost including taxes, insurance, and PMI.',
-    category: 'salary',
-    readTime: '7 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
-      { name: 'Down Payment Strategy', href: '/calculators/down-payment' },
-    ],
-  },
-  {
-    slug: 'afford-house-80k-salary',
-    title: 'Can I Afford a House on an $80K Salary?',
-    description: 'On an $80,000 salary, you can afford a home in the $240,000 to $345,000 range. Your max housing payment is about $1,867/month. Here\'s what lenders look for and how to maximize your budget.',
-    category: 'salary',
-    readTime: '6 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'PMI Calculator', href: '/calculators/pmi' },
-      { name: 'Closing Cost Estimator', href: '/calculators/closing-costs' },
-    ],
-  },
-  {
-    slug: 'afford-house-90k-salary',
-    title: 'Can I Afford a House on a $90K Salary?',
-    description: 'On a $90,000 salary, you can afford a home in the $270,000 to $390,000 range with a max housing payment of about $2,100/month. Here\'s how to use that buying power wisely.',
-    category: 'salary',
-    readTime: '6 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'Best Loan for My Timeline', href: '/calculators/loan-timeline' },
-      { name: 'PMI Calculator', href: '/calculators/pmi' },
     ],
   },
   {
@@ -113,65 +41,6 @@ export const guides: Guide[] = [
         name: 'DTI Calculator',
         href: '/calculators/dti?monthlyGrossIncome=8333&mortgagePayment=2021&propertyTax=4086&homeInsurance=1800&hoaFees=0&carPayments=0&studentLoans=0&creditCardMinimums=0&personalLoans=0&childSupport=0&otherDebts=400',
       },
-    ],
-  },
-  {
-    slug: 'afford-house-120k-salary',
-    title: 'Can I Afford a House on a $120K Salary?',
-    description: 'On a $120,000 salary, you can afford a home in the $360,000 to $515,000 range with a max housing payment of about $2,800/month. Here\'s where the line is between smart buy and overstretch.',
-    category: 'salary',
-    readTime: '6 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'DTI Calculator', href: '/calculators/dti' },
-      { name: 'Down Payment Strategy', href: '/calculators/down-payment' },
-    ],
-  },
-  {
-    slug: 'afford-house-125k-salary',
-    title: 'Can I Afford a House on a $125K Salary?',
-    description: 'On a $125,000 salary, you can afford a home in the $375,000 to $540,000 range with a max housing payment of about $2,917/month. The gap between smart buy and overstretch is smaller than you think.',
-    category: 'salary',
-    readTime: '6 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
-      { name: 'DTI Calculator', href: '/calculators/dti' },
-    ],
-  },
-  {
-    slug: 'afford-house-150k-salary',
-    title: 'Can I Afford a House on a $150K Salary?',
-    description: 'On a $150,000 salary, you can afford a home in the $450,000 to $650,000 range with a max housing payment of about $3,500/month. High income doesn\'t guarantee easy approval — here\'s what to watch for.',
-    category: 'salary',
-    readTime: '6 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'Closing Cost Estimator', href: '/calculators/closing-costs' },
-      { name: 'Best Loan for My Timeline', href: '/calculators/loan-timeline' },
-    ],
-  },
-  {
-    slug: 'afford-house-175k-salary',
-    title: 'Can I Afford a House on a $175K Salary?',
-    description: 'On a $175,000 salary, you can afford a home in the $525,000 to $755,000 range with a max housing payment of about $4,083/month. Here\'s how to avoid overbuying and build wealth instead.',
-    category: 'salary',
-    readTime: '6 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'Best Loan for My Timeline', href: '/calculators/loan-timeline' },
-    ],
-  },
-  {
-    slug: 'afford-house-200k-salary',
-    title: 'Can I Afford a House on a $200K Salary?',
-    description: 'On a $200,000 salary, you can afford a home in the $600,000 to $860,000 range with a max housing payment of about $4,667/month. Here\'s how to maximize your position with jumbo loans, tax strategy, and smart budgeting.',
-    category: 'salary',
-    readTime: '7 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
-      { name: 'Closing Cost Estimator', href: '/calculators/closing-costs' },
     ],
   },
   // Decision articles
