@@ -58,7 +58,7 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
     {
       question: 'Should I buy at the top of the range a lender might consider?',
       answer:
-        'Not automatically. In this example, the top-of-guideline price is about $405,655 with a full housing payment of about $3,183 — 38% of gross income for housing alone. If that payment would not leave room in your take-home pay for savings and repairs, it does not fit this budget. The conservative or mid-range estimate is the more cautious place to start.',
+        'Not automatically. In this example, the top-of-guideline price is about $405,655 with a full housing payment of about $3,183 — 38% of gross income for housing alone. HUD has long treated housing costs above 30% of income as a cost burden. If that payment would not leave room in your take-home pay for savings and repairs, it does not fit this budget. The conservative or mid-range estimate is the more cautious place to start.',
     },
     {
       question: 'Does this estimate include property taxes, insurance, and PMI?',

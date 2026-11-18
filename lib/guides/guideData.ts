@@ -101,9 +101,18 @@ export const guides: Guide[] = [
     category: 'salary',
     readTime: '7 min',
     calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
-      { name: 'DTI Calculator', href: '/calculators/dti' },
+      {
+        name: 'How Much House Can I Afford?',
+        href: '/calculators/affordability?annualIncome=100000&monthlyDebts=400&downPayment=40000&interestRate=7.11&loanTerm=30&propertyTaxRate=1.2&homeInsuranceAnnual=1800&hoaFees=0&creditScore=740',
+      },
+      {
+        name: 'True Monthly Mortgage Cost',
+        href: '/calculators/mortgage-cost?homePrice=340500&downPayment=40000&interestRate=7.11&loanTerm=30&propertyTax=4086&homeInsurance=1800&hoaFees=0&creditScore=740&pmi=0',
+      },
+      {
+        name: 'DTI Calculator',
+        href: '/calculators/dti?monthlyGrossIncome=8333&mortgagePayment=2021&propertyTax=4086&homeInsurance=1800&hoaFees=0&carPayments=0&studentLoans=0&creditCardMinimums=0&personalLoans=0&childSupport=0&otherDebts=400',
+      },
     ],
   },
   {
