@@ -16,6 +16,7 @@ export const CLOZABLE_WAITLIST_URL =
 
 export type ClozablePlacement =
   | 'calculator'
+  | 'guide'
   | 'home'
   | 'about'
   | 'footer'
@@ -23,6 +24,7 @@ export type ClozablePlacement =
 
 const UTM_MEDIUM: Record<ClozablePlacement, string> = {
   calculator: 'calculator_cta',
+  guide: 'calculator_cta',
   home: 'home_blurb',
   about: 'about_blurb',
   footer: 'footer',
@@ -71,6 +73,11 @@ export const CLOZABLE_BLURBS = {
     after: ' is next door when you want a place to start getting mortgage-ready.',
   },
   calculator: {
+    before: 'Curious what comes after the estimates? ',
+    link: 'Clozable',
+    after: ' is a calm first stop if you\u2019re getting ready to buy or refinance \u2192',
+  },
+  guide: {
     before: 'Curious what comes after the estimates? ',
     link: 'Clozable',
     after: ' is a calm first stop if you\u2019re getting ready to buy or refinance \u2192',

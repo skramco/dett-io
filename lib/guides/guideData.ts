@@ -97,7 +97,7 @@ export const guides: Guide[] = [
     slug: 'afford-house-100k-salary',
     title: 'How Much House Can I Afford on a $100,000 Salary?',
     description:
-      'The honest answer depends on your debts, down payment, taxes, and rate — not a single multiple of your salary. Here\'s a worked example you can adjust.',
+      'A worked example on a $100,000 salary lands around $307,000–$340,500 for payments that fit common DTI guidelines. Other debts, down payment, taxes, and rate can move that number. Estimates only — not a loan offer.',
     category: 'salary',
     readTime: '7 min',
     calculators: [

@@ -3,7 +3,7 @@
 import { formatCurrency } from '@/lib/format';
 
 import { Box, Alert, Typography } from '@mui/material';
-import { AffordHouse100K } from '@/lib/guides/content/AffordHouse100K';
+import { AffordHouse100K } from '@/lib/guides/AffordHouse100K';
 
 function SalaryTable({ salary, monthly, maxHome28, maxHome36, downPayment5, downPayment10, downPayment20 }: {
   salary: string; monthly: string; maxHome28: string; maxHome36: string;

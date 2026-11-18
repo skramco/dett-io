@@ -43,12 +43,12 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
     {
       question: 'How much house can I afford on a $100,000 salary?',
       answer:
-        'It depends on your other monthly debts, down payment, local taxes and insurance, and the interest rate a lender actually offers you. In Dett\'s worked example — $100,000 income, $400 a month in other debts, a $40,000 down payment, and an illustrative 7.11% 30-year rate — the mid-range estimate is about $340,500 with a full monthly housing cost of about $2,600. A more conservative estimate is about $307,236 with a $2,333 payment. These are estimates, not a loan offer or a decision on a loan.',
+        "It depends on your other monthly debts, down payment, local taxes and insurance, and the interest rate a lender actually offers you. In Dett's worked example — $100,000 income, $400 a month in other debts, a $40,000 down payment, and an illustrative 7.11% 30-year rate — the mid-range estimate is about $340,500 with a full monthly housing cost of about $2,600. A more conservative estimate is about $307,236 with a $2,333 payment. These are estimates, not a loan offer or a decision on a loan.",
     },
     {
       question: 'Do car payments or student loans change how much house I can afford?',
       answer:
-        'Yes. Lenders look at back-end debt-to-income: housing costs plus other monthly debt payments, divided by gross monthly income. In this example, $400 a month in other debts caps the mid-range housing payment at $2,600 instead of $3,000, which lowers the mid-range home price from about $390,396 to about $340,500.',
+        'Yes. Lenders look at back-end DTI: housing costs plus other monthly debt payments, divided by gross monthly income. In this example, $400 a month in other debts caps the mid-range housing payment at $2,600 instead of $3,000, which lowers the mid-range home price from about $390,396 to about $340,500. Rent and utilities usually are not counted as debts in that ratio, but they still have to be paid from your budget.',
     },
     {
       question: 'Is the 28/36 rule a legal limit?',
@@ -58,12 +58,12 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
     {
       question: 'Should I buy at the top of the range a lender might consider?',
       answer:
-        'Not automatically. In this example, the top-of-guideline price is about $405,655 with a full housing payment of about $3,183 — 38% of gross income for housing alone. HUD has long treated housing costs above 30% of income as a cost burden. A larger payment can also leave less room for an emergency fund, retirement savings, and repairs. Use the mid-range or conservative estimate if you want more breathing room, and compare the payment to your take-home pay, not just your gross salary.',
+        'Not automatically. In this example, the top-of-guideline price is about $405,655 with a full housing payment of about $3,183 — 38% of gross income for housing alone. HUD has long treated housing costs above 30% of income as a cost burden. If that payment would not leave room in your take-home pay for savings and repairs, it does not fit this budget. The conservative or mid-range estimate is the more cautious place to start.',
     },
     {
       question: 'Does this estimate include property taxes, insurance, and PMI?',
       answer:
-        'Yes. The full monthly housing cost in this calculator includes principal and interest, property taxes, homeowners insurance, HOA dues if you enter them, and private mortgage insurance when the down payment is under 20%. It does not include utilities, maintenance, furnishings, or income taxes. Actual taxes and insurance vary by property and location.',
+        'Yes. The full monthly housing cost includes principal and interest, property taxes, homeowners insurance, HOA dues if you enter them, and PMI when the down payment is under 20%. It does not include utilities, maintenance, furnishings, or income taxes. Actual taxes and insurance vary by property and location.',
     },
   ],
   'afford-house-120k-salary': [
