@@ -82,6 +82,28 @@ export const guides: Guide[] = [
   },
   // Cost articles
   {
+    slug: 'va-funding-fee-and-waiver',
+    title: 'How Is the VA Funding Fee Calculated, and When Is It Waived?',
+    description:
+      'VA funding fee rates by loan purpose, down payment tier, and first vs subsequent use — plus who qualifies for a full waiver. Worked examples match Dett\'s VA calculator and VA.gov charts (effective April 7, 2023). Estimates only.',
+    category: 'cost',
+    readTime: '8 min',
+    calculators: [
+      {
+        name: 'VA Loan Calculator',
+        href: '/calculators/va?homePrice=400000&downPaymentPercent=0&loanPurpose=purchase&firstTimeUse=true&disabilityExempt=false',
+      },
+      {
+        name: 'VA Loan Calculator (5% down)',
+        href: '/calculators/va?homePrice=400000&downPaymentPercent=5&loanPurpose=purchase&firstTimeUse=true&disabilityExempt=false',
+      },
+      {
+        name: 'VA Loan Calculator (funding fee waived)',
+        href: '/calculators/va?homePrice=400000&downPaymentPercent=0&loanPurpose=purchase&firstTimeUse=true&disabilityExempt=true',
+      },
+    ],
+  },
+  {
     slug: 'what-are-closing-costs',
     title: 'What Are Closing Costs? A Complete Breakdown',
     description: 'Closing costs are 2-5% of the purchase price and include lender fees, title insurance, appraisal, and prepaid taxes/insurance. On a $400K home, expect $8,000-$20,000. Here\'s every fee explained.',

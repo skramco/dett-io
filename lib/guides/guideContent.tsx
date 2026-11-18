@@ -3,6 +3,7 @@
 import { Box, Alert, Typography } from '@mui/material';
 import { AffordHouse100K } from '@/lib/guides/AffordHouse100K';
 import { AffordHouseBySalary } from '@/lib/guides/AffordHouseBySalary';
+import { VaFundingFeeAndWaiver } from '@/lib/guides/VaFundingFeeAndWaiver';
 
 function Callout({ children }: { children: React.ReactNode }) {
   return (
@@ -307,6 +308,7 @@ export const guideContent: Record<string, React.FC> = {
   'should-i-refinance': ShouldIRefinance,
   'rent-vs-buy-guide': RentVsBuyGuide,
   'fha-vs-conventional': FHAvsConventional,
+  'va-funding-fee-and-waiver': VaFundingFeeAndWaiver,
   'what-are-closing-costs': WhatAreClosingCosts,
   'how-much-is-pmi': HowMuchIsPMI,
   'true-monthly-mortgage-payment': TrueMonthlyPayment,
