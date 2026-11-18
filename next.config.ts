@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { SALARY_GUIDE_REDIRECT_SLUGS } from "./lib/guides/salaryGuideRedirects";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
@@ -21,12 +22,19 @@ const nextConfig: NextConfig = {
       ['timeline-simulator', 'loan-timeline'],
       ['arm-vs-fixed', 'loan-timeline'],
     ];
+    const salaryGuideRedirects = SALARY_GUIDE_REDIRECT_SLUGS.map((slug) => ({
+      source: `/guides/${slug}`,
+      destination: '/guides/how-much-house-can-i-afford-by-salary',
+      permanent: true,
+    }));
+
     return [
       {
         source: '/partners',
         destination: '/embed',
         permanent: true,
       },
+      ...salaryGuideRedirects,
       ...calculatorMerges.flatMap(([oldSlug, newSlug]) => [
         {
           source: `/calculators/${oldSlug}`,

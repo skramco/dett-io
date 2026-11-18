@@ -46,7 +46,7 @@ export const staticPageLastUpdated: Record<string, string> = {
 };
 
 /** Guide articles (content lives in lib/guides/guideContent.tsx). */
-export const guidesLastUpdated = '2026-02-16';
+export const guidesLastUpdated = '2026-11-18';
 
 /** Comparison pages (content lives in lib/comparisons/comparisonData.ts). */
 export const comparisonsLastUpdated = '2026-02-15';
