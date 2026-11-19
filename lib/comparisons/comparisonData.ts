@@ -447,7 +447,7 @@ export const comparisons: ComparisonData[] = [
       { feature: 'Extra Payments Per Year', optionA: 'Equivalent of 1 extra monthly payment', optionB: 'As much or as little as you choose' },
       { feature: 'Flexibility', optionA: 'Fixed schedule — hard to change', optionB: 'Fully flexible — change or stop anytime' },
       { feature: 'Cost', optionA: 'Third-party programs charge $300-$500 setup + fees', optionB: 'Free — just send extra with your payment' },
-      { feature: 'Interest Savings (on $360K, 6.75%, 30yr)', optionA: '~$67,000 saved, pay off ~5 years early', optionB: '~$67,000+ saved (with equivalent extra amount)' },
+      { feature: 'Illustrative interest savings ($360K at 6.75%, 30yr)', optionA: 'Biweekly-style: ~$114K saved, ~6 years early (Dett model)', optionB: '$100/mo extra: ~$67K saved, ~3.5 years early (worked example)' },
       { feature: 'Setup Required', optionA: 'Enrollment with servicer or third-party', optionB: 'None — just pay more' },
       { feature: 'Risk', optionA: 'Third-party programs may hold payments', optionB: 'No risk — you control everything' },
     ],

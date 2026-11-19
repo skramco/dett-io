@@ -152,7 +152,7 @@ function TrueMonthlyPayment() {
 
       <h2>How to Keep Your True Cost Manageable</h2>
       <ol>
-        <li><strong>Buy below your max approval.</strong> If you're approved for $400K, consider $325K-$350K. The breathing room is worth it.</li>
+        <li><strong>Buy below the top of your range.</strong> If guidelines suggest up to $400K, consider $325K–$350K so the payment still fits after taxes and maintenance.</li>
         <li><strong>Shop insurance aggressively.</strong> Homeowner's insurance rates vary dramatically. Get 5+ quotes.</li>
         <li><strong>Appeal your property tax assessment.</strong> Many homeowners overpay because they don't challenge their assessment.</li>
         <li><strong>Build a maintenance fund.</strong> Set aside 1% of your home's value per year from day one.</li>
@@ -160,7 +160,7 @@ function TrueMonthlyPayment() {
       </ol>
 
       <h2>The Bottom Line</h2>
-      <p>Your mortgage payment is just the starting point. Understanding the true monthly cost of homeownership prevents financial surprises and helps you buy a home you can actually afford — not just one a lender will approve. Use our True Monthly Mortgage Cost calculator to see every component of your real payment.</p>
+      <p>Your mortgage payment is just the starting point. Understanding the true monthly cost of homeownership prevents financial surprises and helps you buy a home that fits your budget — not only a payment that fits a guideline. Use our True Monthly Mortgage Cost calculator to see every component of your real payment.</p>
     </>
   );
 }
