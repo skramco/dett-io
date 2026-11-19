@@ -36,8 +36,8 @@ describe('salaryAffordabilityHub', () => {
     }
   });
 
-  it('lists exactly twelve legacy slugs to redirect', () => {
-    expect(SALARY_GUIDE_REDIRECT_SLUGS).toHaveLength(12);
-    expect(SALARY_GUIDE_REDIRECT_SLUGS).not.toContain('afford-house-100k-salary');
+  it('lists exactly thirteen legacy slugs to redirect', () => {
+    expect(SALARY_GUIDE_REDIRECT_SLUGS).toHaveLength(13);
+    expect(SALARY_GUIDE_REDIRECT_SLUGS).toContain('afford-house-100k-salary');
   });
 });
