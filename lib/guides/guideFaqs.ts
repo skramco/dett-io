@@ -59,14 +59,58 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
     },
   ],
   'should-i-refinance': [
-    { question: 'When should I refinance my mortgage?', answer: 'Refinance when the monthly savings exceed the costs divided by your remaining time in the home. A common rule of thumb: if you can reduce your rate by 0.75-1% or more and plan to stay 3+ years, it is likely worth it.' },
-    { question: 'How much does it cost to refinance?', answer: 'Refinancing typically costs 2-5% of the loan amount, or $4,000-$10,000 on a $200,000 loan. This includes appraisal, title insurance, origination fees, and other closing costs.' },
-    { question: 'What is the break-even point for refinancing?', answer: 'Divide your total refinancing costs by your monthly savings. For example, $6,000 in costs with $300/month savings = 20 months to break even. If you will stay longer than that, refinancing makes sense.' },
+    {
+      question: 'How do I calculate refinance break-even?',
+      answer:
+        'Divide cash closing costs by monthly principal-and-interest savings on the new loan. Example in Dett\'s guide: $5,000 costs and about $61/month savings ≈ 83 months (~7 years). Stay longer than that to recover costs on cash flow alone. Estimates only — use your Loan Estimate.',
+    },
+    {
+      question: 'Is a 0.25% rate drop worth refinancing?',
+      answer:
+        'Sometimes, but often not on cash flow alone. A small drop on a $300,000 balance might save only tens of dollars per month while closing costs stay in the thousands, stretching break-even past five years. Also check whether a new 30-year term increases lifetime interest even with a lower rate.',
+    },
+    {
+      question: 'How much does it cost to refinance?',
+      answer:
+        'The CFPB recommends comparing Loan Estimates. Common charges include origination, appraisal, title, credit report, and prepaid items. Many borrowers see roughly 2–5% of the loan amount, but your LE is the source of truth — not a rule of thumb.',
+    },
+    {
+      question: 'Should I refinance to remove PMI?',
+      answer:
+        'Maybe, if a new conventional loan without PMI lowers your total housing payment and the payment still fits your budget after taxes and insurance. Compare break-even on the refi costs versus monthly savings, and weigh that against reaching 80% LTV and requesting PMI cancellation on your current loan without refinancing.',
+    },
+    {
+      question: 'Does Dett\'s refinance calculator roll closing costs into the loan?',
+      answer:
+        'Yes — Dett models closing costs financed into the new balance by default, and still reports break-even using the cash closing-cost figure you enter. Your lender may structure costs differently; align the inputs with your LE.',
+    },
   ],
   'rent-vs-buy-guide': [
-    { question: 'Is it better to rent or buy a house?', answer: 'It depends on how long you will stay, local market conditions, and your financial situation. Generally, buying makes sense if you plan to stay 5+ years, have a stable income, and can afford the full costs of ownership.' },
-    { question: 'How long do you need to own a home for buying to make sense?', answer: 'Typically 5-7 years minimum. This allows you to recoup closing costs and build enough equity to come out ahead versus renting and investing the difference.' },
-    { question: 'Is renting throwing money away?', answer: 'No. Renting provides flexibility, zero maintenance costs, and no risk of home value decline. The key comparison is renting + investing the savings versus buying and building equity.' },
+    {
+      question: 'Is it better to rent or buy?',
+      answer:
+        'It depends on how long you will stay, local rent vs full ownership cost, and what you would do with your down payment if you rented. Dett\'s worked example (350k home, $2,200 rent, 10-year horizon) crosses over around year 10 — your numbers will differ. Use the rent vs buy calculator, not a one-size rule.',
+    },
+    {
+      question: 'How is this guide different from the rent vs buy comparison page?',
+      answer:
+        'This guide walks through a pre-filled calculator example and horizon logic. /compare/rent-vs-buy is a structured pros-and-cons comparison table. Use both: the comparison for the framework, this guide to run your scenario.',
+    },
+    {
+      question: 'How long until buying beats renting?',
+      answer:
+        'Often called the crossover year in Dett\'s calculator. It can be "Never" in expensive-buy / cheap-rent markets or under ~5 years when rent is high relative to ownership cost. Closing costs, selling costs, appreciation, rent inflation, and investment return all move the crossover.',
+    },
+    {
+      question: 'Is renting throwing money away?',
+      answer:
+        'No — rent pays for housing and flexibility. The financial question is whether buying builds more net worth than renting plus investing the down payment, after all owner costs and selling costs. Compare net worth at your planned horizon.',
+    },
+    {
+      question: 'Should I use the Freddie Mac PMMS rate in the rent vs buy calculator?',
+      answer:
+        'Dett defaults to 6.75% when no URL params are set. You can enter any illustrative rate. PMMS averages are useful references for education; they are not an offer or APR. Enter the rate you are actually modeling.',
+    },
   ],
   'fha-vs-conventional': [
     { question: 'Is FHA or conventional better?', answer: 'It depends on your credit score and down payment. FHA is better for credit scores below 680 or down payments under 5%. Conventional is better for credit scores above 700 because PMI is cheaper and drops off at 20% equity.' },
@@ -101,9 +145,31 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
     { question: 'Can I negotiate closing costs?', answer: 'Yes. Origination fees, application fees, and some third-party fees are negotiable. You can also ask for seller credits, choose a no-closing-cost loan option, or shop multiple lenders for better fees.' },
   ],
   'how-much-is-pmi': [
-    { question: 'How much does PMI cost per month?', answer: 'PMI typically costs 0.3% to 1.5% of your loan amount per year, paid monthly. On a $300,000 loan, that is $75-$375/month depending on your credit score and down payment.' },
-    { question: 'How do I get rid of PMI?', answer: 'PMI automatically drops off when your loan balance reaches 78% of the original home value. You can request removal at 80%. You can also refinance, get a new appraisal showing increased value, or make extra payments to reach 20% equity faster.' },
-    { question: 'Can I avoid PMI with less than 20% down?', answer: 'Yes. Options include piggyback loans (80/10/10), lender-paid PMI (higher rate, no separate PMI), VA loans (no PMI regardless of down payment), and some credit union programs.' },
+    {
+      question: 'How much does PMI cost per month?',
+      answer:
+        'It is usually quoted as an annual percent of the loan amount. In Dett\'s worked example — $360,000 loan, 10% down, 720 score — the model estimates about $141/month (0.47% annually). Credit score and LTV change the rate; use the PMI calculator for your inputs.',
+    },
+    {
+      question: 'When does PMI end on a conventional loan?',
+      answer:
+        'Under the Homeowners Protection Act (see CFPB guidance), PMI must automatically end around 78% LTV on the original amortization schedule. You may request cancellation near 80% LTV if you meet your servicer\'s conditions. FHA MIP follows different HUD rules.',
+    },
+    {
+      question: 'How is FHA MIP different from PMI?',
+      answer:
+        'FHA loans charge upfront and annual mortgage insurance premiums (HUD publishes rates). With less than 10% down, annual MIP often lasts for the life of the loan. Conventional PMI typically cancels at 78–80% LTV. FHA MIP usually requires refinancing to conventional to remove.',
+    },
+    {
+      question: 'Can I avoid PMI with less than 20% down?',
+      answer:
+        'Sometimes — piggyback seconds, lender-paid PMI (higher rate), VA if eligible, or putting 20% down. Each tradeoff has a different payment and cancellation path. PMI is the default on many conventional loans below 20% equity at closing.',
+    },
+    {
+      question: 'Does extra principal payment remove PMI faster?',
+      answer:
+        'Extra payments can get you to 80% LTV sooner for a cancellation request, but automatic termination at 78% LTV still follows the original value unless your servicer accepts an earlier cancellation based on appreciation and a new appraisal.',
+    },
   ],
   'true-monthly-mortgage-payment': [
     { question: 'What is included in a monthly mortgage payment?', answer: 'A full mortgage payment includes principal, interest, property taxes, homeowners insurance (PITI), plus potentially PMI, HOA fees, and supplemental costs. The true cost is typically 40-60% higher than principal and interest alone.' },

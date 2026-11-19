@@ -35,9 +35,9 @@ export const calculatorLastUpdated: Record<string, string> = {
 export const staticPageLastUpdated: Record<string, string> = {
   '/': '2026-02-15',
   '/calculators': '2026-10-18', // calculator index reflects calculator content
-  '/guides': '2026-02-16',
+  '/guides': '2026-11-19',
   '/learn': '2026-02-16',
-  '/compare': '2026-02-16',
+  '/compare': '2026-11-19',
   '/privacy': '2026-10-18',
   '/terms': '2026-10-18',
   '/about': '2026-10-18',
@@ -46,10 +46,10 @@ export const staticPageLastUpdated: Record<string, string> = {
 };
 
 /** Guide articles (content lives in lib/guides/guideContent.tsx). */
-export const guidesLastUpdated = '2026-11-18';
+export const guidesLastUpdated = '2026-11-19';
 
 /** Comparison pages (content lives in lib/comparisons/comparisonData.ts). */
-export const comparisonsLastUpdated = '2026-02-15';
+export const comparisonsLastUpdated = '2026-11-19';
 
 /** Definition / glossary pages (content lives in lib/definitions/definitionData.ts). */
 export const definitionsLastUpdated = '2026-02-16';

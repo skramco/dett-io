@@ -47,25 +47,39 @@ export const guides: Guide[] = [
   {
     slug: 'should-i-refinance',
     title: 'Should I Refinance My Mortgage?',
-    description: 'Refinancing is worth it if you can lower your rate by at least 0.75%, plan to stay past the break-even point (typically 2-4 years), and the closing costs don\'t exceed your savings. Here\'s the full framework.',
+    description:
+      'Refinance break-even is closing costs divided by monthly P&I savings — then compare how long you will keep the loan. Worked example: a 7.0% to 6.75% refi with $5,000 closing costs. CFPB sources; estimates only.',
     category: 'decision',
-    readTime: '8 min',
+    readTime: '9 min',
     calculators: [
-      { name: 'Refinance Break-Even', href: '/calculators/refinance' },
-      { name: 'Rate Sensitivity', href: '/calculators/interest-sensitivity' },
-      { name: 'Amortization Schedule', href: '/calculators/amortization' },
+      {
+        name: 'Refinance Break-Even (pre-filled)',
+        href: '/calculators/refinance?currentBalance=300000&currentRate=7&currentMonthlyPayment=1995&yearsRemaining=28&newRate=6.75&newTerm=30&closingCosts=5000',
+      },
+      { name: 'Rate Sensitivity', href: '/calculators/interest-sensitivity?loanAmount=300000&baseRate=6.75&loanTerm=30' },
+      { name: 'Amortization Schedule', href: '/calculators/amortization?loanAmount=300000&interestRate=6.75&loanTerm=30' },
     ],
   },
   {
     slug: 'rent-vs-buy-guide',
     title: 'Rent vs Buy: The Complete Guide',
-    description: 'Buying beats renting if you\'ll stay at least 5-7 years. Below that, renting is usually cheaper after closing costs, selling costs, and opportunity cost. Here\'s the honest math.',
+    description:
+      'Worked rent vs buy example with a pre-filled calculator, crossover year, and links to the comparison page. Full ownership cost vs renting plus invested down payment — not just mortgage payment vs rent.',
     category: 'decision',
-    readTime: '9 min',
+    readTime: '10 min',
     calculators: [
-      { name: 'Rent vs Buy Analysis', href: '/calculators/rent-vs-buy' },
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'True Monthly Mortgage Cost', href: '/calculators/mortgage-cost' },
+      {
+        name: 'Rent vs Buy (pre-filled)',
+        href: '/calculators/rent-vs-buy?homePrice=350000&downPayment=70000&interestRate=6.75&loanTerm=30&monthlyRent=2200&rentInflation=3&homeAppreciation=3&propertyTaxRate=1.2&homeInsuranceAnnual=1800&maintenanceRate=1&pmiRate=0.5&closingCosts=10500&sellingCosts=6&investmentReturn=7&yearsToAnalyze=10',
+      },
+      {
+        name: 'Affordability check',
+        href: '/calculators/affordability?annualIncome=95000&monthlyDebts=350&downPayment=70000&interestRate=6.75&loanTerm=30&propertyTaxRate=1.2&homeInsuranceAnnual=1800&creditScore=740',
+      },
+      {
+        name: 'True Monthly Mortgage Cost',
+        href: '/calculators/mortgage-cost?homePrice=350000&downPayment=70000&interestRate=6.75&loanTerm=30&propertyTaxRate=1.2&homeInsuranceAnnual=1800',
+      },
     ],
   },
   {
@@ -117,13 +131,20 @@ export const guides: Guide[] = [
   {
     slug: 'how-much-is-pmi',
     title: 'How Much Is PMI and How to Avoid It',
-    description: 'PMI costs $50-$450/month depending on your loan amount and credit score. It\'s required with less than 20% down and drops off at 80% LTV. Here are five strategies to eliminate it.',
+    description:
+      'What PMI costs, when it ends at 78% and 80% LTV (CFPB / Homeowners Protection Act), how FHA MIP differs (HUD), and a pre-filled calculator example on a $400,000 home with 10% down.',
     category: 'cost',
-    readTime: '6 min',
+    readTime: '9 min',
     calculators: [
-      { name: 'PMI Calculator', href: '/calculators/pmi' },
+      {
+        name: 'PMI Calculator (pre-filled)',
+        href: '/calculators/pmi?homePrice=400000&downPaymentPercent=10&loanAmount=360000&interestRate=6.75&loanTerm=30&creditScore=720&pmiType=borrower-paid',
+      },
       { name: 'Down Payment Strategy', href: '/calculators/down-payment' },
-      { name: 'Pay Off Faster', href: '/calculators/payoff' },
+      {
+        name: 'Pay Off Faster (reach 80% sooner)',
+        href: '/calculators/payoff?loanAmount=360000&interestRate=6.75&loanTerm=30&extraMonthlyPayment=200',
+      },
     ],
   },
   {
