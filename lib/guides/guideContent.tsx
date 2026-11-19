@@ -6,6 +6,11 @@ import { VaFundingFeeAndWaiver } from '@/lib/guides/VaFundingFeeAndWaiver';
 import { HowMuchIsPMI } from '@/lib/guides/HowMuchIsPMI';
 import { RentVsBuyGuide } from '@/lib/guides/RentVsBuyGuide';
 import { ShouldIRefinance } from '@/lib/guides/ShouldIRefinance';
+import { PayExtraMortgageOrInvest } from '@/lib/guides/PayExtraMortgageOrInvest';
+import { CashOutRefinancePayCreditCardDebt } from '@/lib/guides/CashOutRefinancePayCreditCardDebt';
+import { CarStudentLoansHouseAffordability } from '@/lib/guides/CarStudentLoansHouseAffordability';
+import { DebtAvalancheVsSnowball } from '@/lib/guides/DebtAvalancheVsSnowball';
+import { BalanceTransferVsPersonalLoan } from '@/lib/guides/BalanceTransferVsPersonalLoan';
 
 function Callout({ children }: { children: React.ReactNode }) {
   return (
@@ -174,4 +179,9 @@ export const guideContent: Record<string, React.FC> = {
   'what-are-closing-costs': WhatAreClosingCosts,
   'how-much-is-pmi': HowMuchIsPMI,
   'true-monthly-mortgage-payment': TrueMonthlyPayment,
+  'pay-extra-mortgage-or-invest': PayExtraMortgageOrInvest,
+  'cash-out-refinance-pay-credit-card-debt': CashOutRefinancePayCreditCardDebt,
+  'car-student-loans-house-affordability': CarStudentLoansHouseAffordability,
+  'debt-avalanche-vs-snowball': DebtAvalancheVsSnowball,
+  'balance-transfer-vs-personal-loan': BalanceTransferVsPersonalLoan,
 };
