@@ -28,10 +28,8 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
     {
       question: 'Where did the old salary pages go?',
       answer:
-        'Twelve templated salary URLs now redirect permanently to this hub. The detailed $100,000 worked example remains at /guides/afford-house-100k-salary with a live calculator and step-by-step math.',
+        'Thirteen templated salary URLs — including the former /guides/afford-house-100k-salary page — now redirect permanently to this hub. The detailed $100,000 worked example, live calculator, and step-by-step math are in the $100,000 salary section on this page (#100k).',
     },
-  ],
-  'afford-house-100k-salary': [
     {
       question: 'How much house can I afford on a $100,000 salary?',
       answer:

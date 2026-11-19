@@ -1,7 +1,6 @@
 'use client';
 
 import { Box, Alert, Typography } from '@mui/material';
-import { AffordHouse100K } from '@/lib/guides/AffordHouse100K';
 import { AffordHouseBySalary } from '@/lib/guides/AffordHouseBySalary';
 import { VaFundingFeeAndWaiver } from '@/lib/guides/VaFundingFeeAndWaiver';
 
@@ -304,7 +303,6 @@ function TrueMonthlyPayment() {
 
 export const guideContent: Record<string, React.FC> = {
   'how-much-house-can-i-afford-by-salary': AffordHouseBySalary,
-  'afford-house-100k-salary': AffordHouse100K,
   'should-i-refinance': ShouldIRefinance,
   'rent-vs-buy-guide': RentVsBuyGuide,
   'fha-vs-conventional': FHAvsConventional,
