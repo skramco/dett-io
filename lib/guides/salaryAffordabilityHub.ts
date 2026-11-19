@@ -1,4 +1,5 @@
 import { calculateAffordability } from '@/lib/calculators';
+import { monthlyPayment } from '@/lib/calculators/mortgageMath';
 import type { AffordabilityInputs } from '@/lib/calculators/types';
 
 /** Freddie Mac PMMS 30-year fixed average, week ending November 12, 2026 (estimation only). */
@@ -48,6 +49,50 @@ export function buildAffordabilityCalculatorHref(inputs: AffordabilityInputs): s
     creditScore: String(inputs.creditScore ?? 740),
   });
   return `/calculators/affordability?${params.toString()}`;
+}
+
+export function buildMortgageCostCalculatorHref(
+  inputs: AffordabilityInputs,
+  homePrice: number
+): string {
+  const annualTax = Math.round((homePrice * inputs.propertyTaxRate) / 100);
+  const params = new URLSearchParams({
+    homePrice: String(Math.round(homePrice)),
+    downPayment: String(inputs.downPayment),
+    interestRate: String(inputs.interestRate),
+    loanTerm: String(inputs.loanTerm),
+    propertyTax: String(annualTax),
+    homeInsurance: String(inputs.homeInsuranceAnnual),
+    hoaFees: String(inputs.hoaFees),
+    creditScore: String(inputs.creditScore ?? 740),
+    pmi: '0',
+  });
+  return `/calculators/mortgage-cost?${params.toString()}`;
+}
+
+export function buildDtiCalculatorHref(
+  inputs: AffordabilityInputs,
+  homePrice: number,
+  loanAmount: number
+): string {
+  const monthlyPi = Math.round(
+    monthlyPayment(loanAmount, inputs.interestRate, inputs.loanTerm * 12)
+  );
+  const annualTax = Math.round((homePrice * inputs.propertyTaxRate) / 100);
+  const params = new URLSearchParams({
+    monthlyGrossIncome: String(Math.round(inputs.annualIncome / 12)),
+    mortgagePayment: String(monthlyPi),
+    propertyTax: String(annualTax),
+    homeInsurance: String(inputs.homeInsuranceAnnual),
+    hoaFees: String(inputs.hoaFees),
+    carPayments: '0',
+    studentLoans: '0',
+    creditCardMinimums: '0',
+    personalLoans: '0',
+    childSupport: '0',
+    otherDebts: String(inputs.monthlyDebts),
+  });
+  return `/calculators/dti?${params.toString()}`;
 }
 
 export type SalaryBandRow = {

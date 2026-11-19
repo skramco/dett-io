@@ -14,20 +14,7 @@ export const guides: Guide[] = [
     description:
       "Salary-band estimates from $40K to $200K using Dett's affordability calculator math, illustrative 7.11% PMMS rate (week of Nov 12, 2026), and common DTI guidelines. Estimates only — not a loan offer.",
     category: 'salary',
-    readTime: '8 min',
-    calculators: [
-      { name: 'How Much House Can I Afford?', href: '/calculators/affordability' },
-      { name: 'DTI Calculator', href: '/calculators/dti' },
-      { name: 'Down Payment Strategy', href: '/calculators/down-payment' },
-    ],
-  },
-  {
-    slug: 'afford-house-100k-salary',
-    title: 'How Much House Can I Afford on a $100,000 Salary?',
-    description:
-      'A worked example on a $100,000 salary lands around $307,000–$340,500 for payments that fit common DTI guidelines. Other debts, down payment, taxes, and rate can move that number. Estimates only — not a loan offer.',
-    category: 'salary',
-    readTime: '7 min',
+    readTime: '10 min',
     calculators: [
       {
         name: 'How Much House Can I Afford?',
@@ -41,6 +28,7 @@ export const guides: Guide[] = [
         name: 'DTI Calculator',
         href: '/calculators/dti?monthlyGrossIncome=8333&mortgagePayment=2021&propertyTax=4086&homeInsurance=1800&hoaFees=0&carPayments=0&studentLoans=0&creditCardMinimums=0&personalLoans=0&childSupport=0&otherDebts=400',
       },
+      { name: 'Down Payment Strategy', href: '/calculators/down-payment' },
     ],
   },
   // Decision articles
