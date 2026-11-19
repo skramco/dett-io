@@ -33,6 +33,96 @@ export const guides: Guide[] = [
   },
   // Decision articles
   {
+    slug: 'pay-extra-mortgage-or-invest',
+    title: 'Should I Pay Extra on My Mortgage or Invest the Money?',
+    description:
+      'Compare prepaying principal vs investing the same cash with identical monthly outflow. Worked examples use Dett\'s payoff calculator and a 6.75% illustrative mortgage rate — not investment advice.',
+    category: 'decision',
+    readTime: '8 min',
+    calculators: [
+      {
+        name: 'Pay Off Faster (prepay vs invest)',
+        href: '/calculators/payoff?loanAmount=360000&interestRate=6.75&loanTerm=30&extraMonthlyPayment=300&investmentReturn=7',
+      },
+      {
+        name: 'Pay Off Faster (lump sum)',
+        href: '/calculators/payoff?loanAmount=360000&interestRate=6.75&loanTerm=30&lumpSumAmount=10000&lumpSumYear=3&investmentReturn=7',
+      },
+    ],
+  },
+  {
+    slug: 'cash-out-refinance-pay-credit-card-debt',
+    title: 'Is a Cash-Out Refinance Worth It to Pay Off Credit Card Debt?',
+    description:
+      'Weigh closing costs, payment shock, secured vs unsecured debt, and the risk of running cards back up. Example uses the cash-out refinance calculator — not a loan offer.',
+    category: 'decision',
+    readTime: '9 min',
+    calculators: [
+      {
+        name: 'Cash-Out Refinance (card payoff example)',
+        href: '/calculators/cash-out-refi?currentBalance=280000&currentRate=4.5&yearsRemaining=25&homeValue=500000&cashOutAmount=25000&newRate=6.75&newTerm=30&closingCosts=8000&alternativeRate=22',
+      },
+      {
+        name: 'DTI Calculator',
+        href: '/calculators/dti',
+      },
+    ],
+  },
+  {
+    slug: 'car-student-loans-house-affordability',
+    title: 'How Car Payments and Student Loans Change How Much House You Can Afford',
+    description:
+      'Auto and student loan payments count in DTI and shrink affordability. Worked examples at $100K income with prefilled DTI and affordability calculators.',
+    category: 'decision',
+    readTime: '8 min',
+    calculators: [
+      {
+        name: 'Affordability (moderate other debts)',
+        href: '/calculators/affordability?annualIncome=100000&monthlyDebts=920&downPayment=50000&interestRate=6.75&loanTerm=30&propertyTaxRate=1.2&homeInsuranceAnnual=1800&creditScore=740',
+      },
+      {
+        name: 'DTI (car, student, housing)',
+        href: '/calculators/dti?monthlyGrossIncome=8333&carPayments=450&studentLoans=350&creditCardMinimums=120&mortgagePayment=2200&propertyTax=4500&homeInsurance=1800',
+      },
+    ],
+  },
+  {
+    slug: 'debt-avalanche-vs-snowball',
+    title: 'Debt Avalanche vs. Debt Snowball: Which Payoff Order Fits You?',
+    description:
+      'Avalanche targets highest APR first; snowball clears the smallest balances for momentum. Examples use the payoff calculator for disciplined extra payments.',
+    category: 'decision',
+    readTime: '7 min',
+    calculators: [
+      {
+        name: 'Pay Off Faster (high-rate example)',
+        href: '/calculators/payoff?loanAmount=24000&interestRate=22&loanTerm=5&extraMonthlyPayment=400',
+      },
+      {
+        name: 'Pay Off Faster (mortgage habit)',
+        href: '/calculators/payoff?loanAmount=200000&interestRate=6.75&loanTerm=30&extraMonthlyPayment=200',
+      },
+    ],
+  },
+  {
+    slug: 'balance-transfer-vs-personal-loan',
+    title: 'Balance Transfer Card vs. Personal Loan for Credit Card Debt',
+    description:
+      '0% promos vs fixed installment payments: fees, deadlines, and whether the monthly payment fits your budget. DTI examples before and after consolidation.',
+    category: 'decision',
+    readTime: '8 min',
+    calculators: [
+      {
+        name: 'DTI (revolving minimums)',
+        href: '/calculators/dti?monthlyGrossIncome=7500&carPayments=350&creditCardMinimums=420',
+      },
+      {
+        name: 'DTI (personal loan payment)',
+        href: '/calculators/dti?monthlyGrossIncome=7500&carPayments=350&creditCardMinimums=0&personalLoans=355',
+      },
+    ],
+  },
+  {
     slug: 'should-i-refinance',
     title: 'Should I Refinance My Mortgage?',
     description: 'Refinancing is worth it if you can lower your rate by at least 0.75%, plan to stay past the break-even point (typically 2-4 years), and the closing costs don\'t exceed your savings. Here\'s the full framework.',

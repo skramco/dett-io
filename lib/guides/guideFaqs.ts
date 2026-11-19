@@ -93,6 +93,151 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
         'On purchase loans, yes — putting at least 5% down moves the fee from 2.15% to 1.5% on first use, and from 3.3% to 1.5% on subsequent use. At 10% down or more, the purchase fee is 1.25% for both first and subsequent use. Cash-out refinances do not get a down-payment discount; IRRRLs stay at 0.5% regardless of equity.',
     },
   ],
+  'pay-extra-mortgage-or-invest': [
+    {
+      question: 'Is paying extra on my mortgage better than investing?',
+      answer:
+        'Prepaying earns a guaranteed return equal to your mortgage interest rate (before taxes). Investing may earn more over long periods but is not guaranteed. Dett\'s payoff calculator compares both paths using the same total monthly cash outflow over the original loan term — use your own after-tax return assumption.',
+    },
+    {
+      question: 'Should I invest or pay off my mortgage when rates are below 7%?',
+      answer:
+        'There is no universal rule. If your mortgage rate is lower than your realistic after-tax investment return, investing has the mathematical edge in the calculator — but only if you actually invest the money. If you would spend the extra, prepaying builds equity instead.',
+    },
+    {
+      question: 'Does the payoff calculator include taxes on investment gains?',
+      answer:
+        'No. Investment returns in the tool are gross assumptions. Mortgage interest deductibility also depends on your tax situation. Treat the comparison as directional and talk to a tax professional for your filing status.',
+    },
+    {
+      question: 'Should I prepay before maxing out my 401(k)?',
+      answer:
+        'Many planners prioritize an employer match first because it is an immediate return. After high-interest debt and emergency savings, the prepay-vs-invest choice depends on your rate, risk tolerance, and retirement timeline — not a one-size rule.',
+    },
+    {
+      question: 'Are lump-sum prepayments handled differently than monthly extras?',
+      answer:
+        'Yes. Lump sums apply once in the year you choose in the calculator. Recasting (lowering the payment after a lump sum) is a separate servicer option the tool can illustrate when enabled; it is not automatic on every loan.',
+    },
+  ],
+  'cash-out-refinance-pay-credit-card-debt': [
+    {
+      question: 'Can I use a cash-out refinance to pay credit cards?',
+      answer:
+        'Cash-out refinances replace your mortgage with a larger loan and give you the difference in cash, which some borrowers use to pay unsecured debt. You must qualify based on income, credit, equity, and property — the CFPB explains the product, but availability is not guaranteed.',
+    },
+    {
+      question: 'Why is my mortgage payment higher after paying off cards?',
+      answer:
+        'You may reset your rate and term, finance closing costs, and add principal equal to the cash-out amount. Even with a lower APR than credit cards, spreading repayment over 30 years can raise the total mortgage payment.',
+    },
+    {
+      question: 'Is credit card debt secured after a cash-out refinance?',
+      answer:
+        'The credit card debt is paid off, but you owe more on your home. Missed mortgage payments risk foreclosure — a risk credit card debt alone does not carry in the same way.',
+    },
+    {
+      question: 'What closing costs should I expect on a cash-out refi?',
+      answer:
+        'Costs vary by lender and state but often include appraisal, title, origination, and prepaid items. Enter your estimate in Dett\'s cash-out calculator; Regulation Z requires lenders to disclose fees on the Loan Estimate and Closing Disclosure.',
+    },
+    {
+      question: 'What if I run my credit cards up again after consolidating?',
+      answer:
+        'You would owe the higher mortgage plus new card balances — a common outcome when spending habits do not change. A consolidation only helps if total debt and payments fit your budget going forward.',
+    },
+    {
+      question: 'What are alternatives to cash-out refi for card debt?',
+      answer:
+        'Balance transfers, fixed-rate personal loans, avalanche/snowball payoff plans, and nonprofit credit counseling keep debt unsecured. Compare monthly payments and total interest under each path.',
+    },
+  ],
+  'car-student-loans-house-affordability': [
+    {
+      question: 'Do car payments count in mortgage DTI?',
+      answer:
+        'Yes. Installment auto loans and leases typically count at the contractual monthly payment. Lenders use the figure on your credit report unless you document a different arrangement.',
+    },
+    {
+      question: 'How do student loans affect how much house I can afford?',
+      answer:
+        'Student loan payments count in back-end DTI. Income-driven plans may use a documented payment or a lender-specific rule when the credit report shows $0. Higher student payments leave less room for housing under common 36%–43% planning caps.',
+    },
+    {
+      question: 'Will paying off my car before buying a house help?',
+      answer:
+        'Eliminating a monthly payment lowers back-end DTI and can raise affordability estimates, but paying cash for the car uses down-payment savings. Model both in the affordability and DTI calculators.',
+    },
+    {
+      question: 'Are credit card minimums or balances used in DTI?',
+      answer:
+        'Most lenders use minimum payments. High balances may trigger additional rules depending on program. Paying down revolving debt can help if it lowers the counted minimum.',
+    },
+    {
+      question: 'What DTI do lenders use for mortgages?',
+      answer:
+        'Guidelines vary by program and compensating factors. Many conventional conversations cite 36% housing-only and roughly 43%–50% total debt ratios as planning anchors — not promises of a particular loan.',
+    },
+  ],
+  'debt-avalanche-vs-snowball': [
+    {
+      question: 'What is the debt avalanche method?',
+      answer:
+        'Pay minimums on all debts, then put all extra money toward the highest APR balance until it is gone, then move to the next highest APR. It minimizes interest paid if you stay consistent.',
+    },
+    {
+      question: 'What is the debt snowball method?',
+      answer:
+        'Pay minimums on all debts, then attack the smallest balance first for quick wins, then roll payments to the next smallest. You may pay slightly more interest than avalanche but build momentum.',
+    },
+    {
+      question: 'Which method saves more money?',
+      answer:
+        'Avalanche saves more interest when you follow it strictly because it targets expensive APRs first. The gap narrows if snowball keeps you paying extra while avalanche would fail.',
+    },
+    {
+      question: 'Can I use Dett to model avalanche with multiple cards?',
+      answer:
+        'The payoff calculator models one loan at a time. Run each debt separately or use the high-rate example as a template, then apply the same extra payment to whichever account your strategy targets this month.',
+    },
+    {
+      question: 'Should I pay credit cards or my mortgage first?',
+      answer:
+        'Usually high-APR unsecured debt before low-rate mortgage prepayment, unless you need mortgage payoff for other goals. Always keep required payments current on every account.',
+    },
+  ],
+  'balance-transfer-vs-personal-loan': [
+    {
+      question: 'When is a 0% balance transfer worth it?',
+      answer:
+        'When the transfer fee is small relative to interest you would pay, you can pay off before the promo ends, and you will not miss payments that trigger penalty APRs. Read the post-promo rate on your agreement.',
+    },
+    {
+      question: 'How is a personal loan different from a balance transfer?',
+      answer:
+        'A personal loan is fixed-term installment debt with a disclosed payment. A balance transfer moves debt to another card, often with a temporary promo rate, and may leave old cards open.',
+    },
+    {
+      question: 'Do balance transfer fees matter?',
+      answer:
+        'Yes. A typical 3%–5% fee on the amount moved adds to your cost upfront. Include it when comparing to personal loan origination fees and interest.',
+    },
+    {
+      question: 'Will consolidating cards help my mortgage DTI?',
+      answer:
+        'It can if the new fixed payment is lower than the combined minimums lenders count today — but extending term can keep you in debt longer. Model before-and-after payments in the DTI calculator.',
+    },
+    {
+      question: 'What happens if I do not pay off a 0% balance in time?',
+      answer:
+        'Remaining balances usually accrue interest at the go-to APR on the card agreement, which can erase promo savings. Budget enough monthly payment to clear the promo balance early.',
+    },
+    {
+      question: 'Should I close credit cards after consolidating?',
+      answer:
+        'Closing cards can hurt utilization and average age of accounts, but keeping them open risks new charges. Choose based on behavior, not only credit score impact.',
+    },
+  ],
   'what-are-closing-costs': [
     { question: 'How much are closing costs on a house?', answer: 'Closing costs typically range from 2-5% of the purchase price. On a $300,000 home, expect $6,000-$15,000 in total closing costs including lender fees, title insurance, appraisal, and prepaid items.' },
     { question: 'Who pays closing costs, buyer or seller?', answer: 'Both. Buyers typically pay 2-5% and sellers pay 6-10% (mostly real estate commissions). In buyer-friendly markets, sellers may agree to cover some of the buyer closing costs.' },
