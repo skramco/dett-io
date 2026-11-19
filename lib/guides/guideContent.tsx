@@ -3,107 +3,15 @@
 import { Box, Alert, Typography } from '@mui/material';
 import { AffordHouseBySalary } from '@/lib/guides/AffordHouseBySalary';
 import { VaFundingFeeAndWaiver } from '@/lib/guides/VaFundingFeeAndWaiver';
+import { HowMuchIsPMI } from '@/lib/guides/HowMuchIsPMI';
+import { RentVsBuyGuide } from '@/lib/guides/RentVsBuyGuide';
+import { ShouldIRefinance } from '@/lib/guides/ShouldIRefinance';
 
 function Callout({ children }: { children: React.ReactNode }) {
   return (
     <Alert severity="info" sx={{ my: 3, borderRadius: 2, '& .MuiAlert-message': { width: '100%' } }}>
       <Typography variant="body2" sx={{ fontWeight: 500 }}>{children}</Typography>
     </Alert>
-  );
-}
-
-function ShouldIRefinance() {
-  return (
-    <>
-      <h2>The Simple Test</h2>
-      <p>Refinancing makes sense when the savings outweigh the costs. That's it. Everything else is detail.</p>
-      <p>The two numbers you need: <strong>how much you'll save per month</strong> and <strong>how much it costs to refinance</strong>. Divide the cost by the monthly savings, and you get your break-even point in months.</p>
-
-      <h2>The Break-Even Formula</h2>
-      <Box component="table">
-        <thead><tr><th>Factor</th><th>Example</th></tr></thead>
-        <tbody>
-          <tr><td>Current payment (P&I)</td><td>$2,400/mo</td></tr>
-          <tr><td>New payment (P&I)</td><td>$2,100/mo</td></tr>
-          <tr><td>Monthly savings</td><td>$300/mo</td></tr>
-          <tr><td>Closing costs</td><td>$6,000</td></tr>
-          <tr><td><strong>Break-even</strong></td><td><strong>20 months</strong></td></tr>
-        </tbody>
-      </Box>
-      <p>If you plan to stay in your home longer than the break-even period, refinancing is likely worth it. If you might move sooner, it's probably not.</p>
-
-      <h2>When Refinancing Makes Sense</h2>
-      <ul>
-        <li><strong>Rate drop of 0.75%+:</strong> The old "1% rule" is outdated. With today's closing costs, even a 0.75% drop can be worth it if you're staying 3+ years.</li>
-        <li><strong>Removing PMI:</strong> If your home has appreciated enough to reach 80% LTV, refinancing can eliminate PMI and lower your payment.</li>
-        <li><strong>Switching from ARM to fixed:</strong> If your ARM's fixed period is ending and rates are reasonable, locking in a fixed rate provides certainty.</li>
-        <li><strong>Shortening your term:</strong> Going from 30 to 15 years dramatically reduces total interest, though your monthly payment will increase.</li>
-      </ul>
-
-      <h2>When Refinancing Doesn't Make Sense</h2>
-      <ul>
-        <li><strong>You're moving soon.</strong> If you can't recoup closing costs before you sell, you'll lose money.</li>
-        <li><strong>You're far into your loan.</strong> If you're 20 years into a 30-year mortgage, most of your payment is already going to principal. Refinancing restarts the clock.</li>
-        <li><strong>You're extending the term.</strong> Refinancing from a 30-year (with 25 years left) into a new 30-year lowers your payment but adds 5 years of payments.</li>
-        <li><strong>The rate difference is small.</strong> A 0.25% drop on a $200K loan saves about $30/month. With $5,000 in closing costs, that's a 14-year break-even.</li>
-      </ul>
-
-      <Callout>Don't just compare monthly payments. Compare total cost over the remaining life of your current loan vs the new loan. A lower payment with a longer term can cost you more overall.</Callout>
-
-      <h2>Hidden Costs to Watch For</h2>
-      <ol>
-        <li><strong>Origination fees:</strong> 0.5-1% of the loan amount</li>
-        <li><strong>Appraisal:</strong> $400-600 (required for most refis)</li>
-        <li><strong>Title insurance:</strong> $500-1,500</li>
-        <li><strong>Prepaid interest:</strong> Interest from closing date to first payment</li>
-        <li><strong>Escrow padding:</strong> Lenders may require a new escrow cushion</li>
-      </ol>
-
-      <h2>The Bottom Line</h2>
-      <p>Refinancing is a math problem, not an emotional one. Calculate your break-even, compare total costs, and make the decision based on how long you'll keep the loan. Use our Refinance Break-Even calculator to run your specific numbers.</p>
-    </>
-  );
-}
-
-function RentVsBuyGuide() {
-  return (
-    <>
-      <h2>The Honest Answer</h2>
-      <p>It depends. That's not a cop-out — it genuinely depends on your market, timeline, financial situation, and life plans. Anyone who says "buying is always better" or "renting is throwing money away" is oversimplifying.</p>
-
-      <h2>When Buying Makes Sense</h2>
-      <ul>
-        <li><strong>You're staying 5+ years.</strong> The transaction costs of buying and selling (typically 8-10% combined) mean you need time to build enough equity and appreciation to come out ahead.</li>
-        <li><strong>Your local rent-to-price ratio favors buying.</strong> If annual rent is more than 5% of the home's purchase price, buying starts to look attractive.</li>
-        <li><strong>You want stability.</strong> Fixed-rate mortgages lock in your housing cost. Rent increases every year.</li>
-        <li><strong>You'll actually maintain the home.</strong> Homeownership includes maintenance costs (1-2% of home value per year). If you'd neglect repairs, you'll lose money.</li>
-      </ul>
-
-      <h2>When Renting Makes Sense</h2>
-      <ul>
-        <li><strong>You might move in 1-3 years.</strong> Transaction costs will eat any equity you build.</li>
-        <li><strong>Your market is overpriced.</strong> In some cities, renting and investing the difference beats buying by a wide margin.</li>
-        <li><strong>You value flexibility.</strong> Job changes, relationship changes, lifestyle changes — renting lets you adapt quickly.</li>
-        <li><strong>You'd be house-poor.</strong> If buying means draining your savings and maxing your budget, renting while you build a stronger financial position is smarter.</li>
-      </ul>
-
-      <h2>The Math Most People Get Wrong</h2>
-      <p>The "rent is throwing money away" argument ignores several things:</p>
-      <ol>
-        <li><strong>Mortgage interest is also "thrown away."</strong> In the first years of a 30-year mortgage, 70-80% of your payment goes to interest, not equity.</li>
-        <li><strong>Opportunity cost of the down payment.</strong> $60,000 invested in the S&P 500 has historically returned 7-10% annually. That's $4,200-$6,000/year in potential returns.</li>
-        <li><strong>Hidden costs of ownership:</strong> Property taxes, insurance, maintenance, HOA fees, and repairs add 30-50% on top of your mortgage payment.</li>
-        <li><strong>Home appreciation isn't guaranteed.</strong> National averages are 3-4% per year, but individual markets can be flat or negative for years.</li>
-      </ol>
-
-      <Callout>The best comparison isn't "rent vs mortgage payment." It's "total cost of renting (including invested savings) vs total cost of owning (including all hidden costs and opportunity costs)."</Callout>
-
-      <h2>The 5-Year Rule</h2>
-      <p>A simple heuristic: if you're staying less than 5 years, renting usually wins. If you're staying more than 7 years, buying usually wins. Between 5-7 years is the gray zone where the details matter.</p>
-
-      <h2>The Bottom Line</h2>
-      <p>Don't let social pressure or conventional wisdom make this decision for you. Run the actual numbers for your specific situation. Our Rent vs Buy calculator accounts for all the variables — appreciation, rent inflation, investment returns, tax benefits, and transaction costs.</p>
-    </>
   );
 }
 
@@ -209,50 +117,6 @@ function WhatAreClosingCosts() {
   );
 }
 
-function HowMuchIsPMI() {
-  return (
-    <>
-      <h2>What PMI Costs</h2>
-      <p>Private Mortgage Insurance (PMI) typically costs <strong>0.3% to 1.5% of your loan amount per year</strong>, paid monthly. The exact rate depends on your credit score, down payment, and loan amount.</p>
-      <Box component="table">
-        <thead><tr><th>Credit Score</th><th>5% Down</th><th>10% Down</th><th>15% Down</th></tr></thead>
-        <tbody>
-          <tr><td>760+</td><td>0.30%</td><td>0.20%</td><td>0.15%</td></tr>
-          <tr><td>720-759</td><td>0.45%</td><td>0.30%</td><td>0.20%</td></tr>
-          <tr><td>680-719</td><td>0.65%</td><td>0.45%</td><td>0.30%</td></tr>
-          <tr><td>640-679</td><td>0.90%</td><td>0.65%</td><td>0.45%</td></tr>
-          <tr><td>620-639</td><td>1.20%</td><td>0.90%</td><td>0.65%</td></tr>
-        </tbody>
-      </Box>
-      <p>On a $300,000 loan with 5% down and a 720 credit score, PMI would cost about $1,283/year or <strong>$107/month</strong>.</p>
-
-      <h2>When PMI Drops Off</h2>
-      <p>For conventional loans, PMI is removed in two ways:</p>
-      <ul>
-        <li><strong>Automatic removal at 78% LTV:</strong> Your lender must cancel PMI when your loan balance reaches 78% of the original home value, based on the amortization schedule.</li>
-        <li><strong>Request removal at 80% LTV:</strong> You can request cancellation when you reach 80% LTV. This can happen faster if your home has appreciated.</li>
-      </ul>
-
-      <Callout>FHA loans are different. If you put less than 10% down on an FHA loan, MIP stays for the entire life of the loan. The only way to remove it is to refinance into a conventional loan.</Callout>
-
-      <h2>5 Strategies to Avoid or Eliminate PMI</h2>
-      <ol>
-        <li><strong>Put 20% down.</strong> The most straightforward way. No PMI, period. But it requires significant savings.</li>
-        <li><strong>Piggyback loan (80/10/10).</strong> Take a first mortgage for 80%, a second mortgage (HELOC) for 10%, and put 10% down. No PMI on the first mortgage, though the HELOC has a higher rate.</li>
-        <li><strong>Lender-paid PMI (LPMI).</strong> The lender pays PMI in exchange for a higher interest rate. Good if you plan to stay long-term, since the higher rate is permanent.</li>
-        <li><strong>Make extra payments.</strong> Pay down your principal faster to reach 80% LTV sooner. Even $200/month extra can shave years off your PMI.</li>
-        <li><strong>Get a new appraisal.</strong> If your home has appreciated significantly, a new appraisal showing 80%+ equity can trigger PMI removal — even if your payment schedule hasn't reached that point yet.</li>
-      </ol>
-
-      <h2>Is PMI Always Bad?</h2>
-      <p>Not necessarily. PMI lets you buy a home with less than 20% down. If home prices are rising 5% per year and you're paying 0.5% in PMI, you're still building equity faster than you're paying insurance. The key is whether the total cost of homeownership (including PMI) makes sense compared to renting and saving for a larger down payment.</p>
-
-      <h2>The Bottom Line</h2>
-      <p>PMI is a cost, not a penalty. It's the price of buying sooner with less money down. For many buyers, paying PMI for a few years is worth it to start building equity now rather than waiting years to save 20%. Use our PMI Calculator to see your exact cost and when it drops off.</p>
-    </>
-  );
-}
-
 function TrueMonthlyPayment() {
   return (
     <>
@@ -288,7 +152,7 @@ function TrueMonthlyPayment() {
 
       <h2>How to Keep Your True Cost Manageable</h2>
       <ol>
-        <li><strong>Buy below your max approval.</strong> If you're approved for $400K, consider $325K-$350K. The breathing room is worth it.</li>
+        <li><strong>Buy below the top of your range.</strong> If guidelines suggest up to $400K, consider $325K–$350K so the payment still fits after taxes and maintenance.</li>
         <li><strong>Shop insurance aggressively.</strong> Homeowner's insurance rates vary dramatically. Get 5+ quotes.</li>
         <li><strong>Appeal your property tax assessment.</strong> Many homeowners overpay because they don't challenge their assessment.</li>
         <li><strong>Build a maintenance fund.</strong> Set aside 1% of your home's value per year from day one.</li>
@@ -296,7 +160,7 @@ function TrueMonthlyPayment() {
       </ol>
 
       <h2>The Bottom Line</h2>
-      <p>Your mortgage payment is just the starting point. Understanding the true monthly cost of homeownership prevents financial surprises and helps you buy a home you can actually afford — not just one a lender will approve. Use our True Monthly Mortgage Cost calculator to see every component of your real payment.</p>
+      <p>Your mortgage payment is just the starting point. Understanding the true monthly cost of homeownership prevents financial surprises and helps you buy a home that fits your budget — not only a payment that fits a guideline. Use our True Monthly Mortgage Cost calculator to see every component of your real payment.</p>
     </>
   );
 }

@@ -134,9 +134,30 @@ export default function ComparisonLayout({ data }: ComparisonLayoutProps) {
           <Typography variant="h3" component="h2" sx={{ mb: 3, fontSize: { xs: 22, md: 28 } }}>
             Overview
           </Typography>
-          <Typography variant="body1" color="text.secondary" data-speakable sx={{ mb: 6, maxWidth: 800, lineHeight: 1.8 }}>
+          <Typography variant="body1" color="text.secondary" data-speakable sx={{ mb: data.workedExample ? 3 : 6, maxWidth: 800, lineHeight: 1.8 }}>
             {data.overview}
           </Typography>
+
+          {data.workedExample && (
+            <Paper
+              elevation={0}
+              sx={{
+                p: { xs: 2.5, md: 3 },
+                mb: 6,
+                borderRadius: 3,
+                bgcolor: '#EBF5FF',
+                border: '1px solid #dbeafe',
+                maxWidth: 800,
+              }}
+            >
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5, color: '#196bc0' }}>
+                Worked example
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8 }}>
+                {data.workedExample}
+              </Typography>
+            </Paper>
+          )}
 
           {/* Comparison Table */}
           <Typography variant="h3" component="h2" sx={{ mb: 3, fontSize: { xs: 22, md: 28 } }}>
@@ -308,7 +329,7 @@ export default function ComparisonLayout({ data }: ComparisonLayoutProps) {
           <Grid container spacing={3} sx={{ mb: 6 }}>
             {data.relatedCalculators.map((calc, i) => (
               <Grid key={i} size={{ xs: 12, sm: 4 }}>
-                <Link href={`/calculators/${calc.slug}`} style={{ textDecoration: 'none' }}>
+                <Link href={calc.href ?? `/calculators/${calc.slug}`} style={{ textDecoration: 'none' }}>
                   <Paper
                     elevation={0}
                     sx={{

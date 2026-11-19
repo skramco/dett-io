@@ -25,8 +25,10 @@ export interface ComparisonData {
   whenToChooseA: string;
   whenToChooseB: string;
   bottomLine: string;
-  relatedCalculators: { name: string; slug: string; why: string }[];
+  relatedCalculators: { name: string; slug: string; why: string; href?: string }[];
   faq: { question: string; answer: string }[];
+  /** Optional narrative worked example (comparison pages). */
+  workedExample?: string;
 }
 
 export const comparisons: ComparisonData[] = [
@@ -153,7 +155,10 @@ export const comparisons: ComparisonData[] = [
     keywords: ['15 year vs 30 year mortgage', '15 or 30 year mortgage', '15 year vs 30 year mortgage calculator', 'should I get a 15 or 30 year mortgage', '15 year mortgage rates'],
     optionAName: '15-Year Mortgage',
     optionBName: '30-Year Mortgage',
-    overview: 'A 15-year mortgage has higher monthly payments but saves you tens of thousands in interest and builds equity twice as fast. A 30-year mortgage keeps payments affordable but costs significantly more over time. The right choice depends on your monthly budget, financial goals, and risk tolerance.',
+    overview:
+      'The tradeoff is monthly payment vs total interest. On a $360,000 loan at Dett\'s illustrative 6.75% rate (calculator default, not an offer), principal and interest runs about $3,186/month on a 15-year loan versus about $2,335/month on a 30-year — roughly $851 more per month for the shorter term. Total interest over the full term is about $213,000 on 15 years versus about $481,000 on 30 years, a difference of about $268,000. A 15-year loan only makes sense if that higher payment still fits your income, other debts, taxes, and insurance — not because it saves interest in the abstract.',
+    workedExample:
+      'Worked example at 6.75% on a $360,000 loan (no taxes/insurance): 15-year P&I ≈ $3,186/month with ≈ $213,400 in total interest; 30-year P&I ≈ $2,335/month with ≈ $480,600 in total interest. On $8,333/month gross income ($100,000/year), a 28% housing-only guideline is about $2,333 — the 15-year payment is above that line before taxes or PMI, while the 30-year payment is near it. That does not make either loan "right" automatically; it shows why lenders may emphasize DTI and why you should run your own budget. Open the pre-filled amortization links below for both terms, or add extra principal on a 30-year in Pay Off Faster to mimic a shorter payoff.',
     comparisonTable: [
       { feature: 'Monthly Payment (on $360K at 6.75%)', optionA: '~$3,181/mo', optionB: '~$2,335/mo' },
       { feature: 'Total Interest Paid', optionA: '~$212,500', optionB: '~$480,600' },
@@ -190,18 +195,54 @@ export const comparisons: ComparisonData[] = [
       { text: 'Slower equity building' },
       { text: 'Still making payments for 30 years' },
     ],
-    whenToChooseA: 'Choose a 15-year mortgage if you can comfortably afford the higher payment (it should be no more than 25% of your gross income), you want to be mortgage-free sooner, and you\'re already contributing to retirement accounts. It\'s ideal for borrowers in their 40s-50s who want to enter retirement debt-free.',
-    whenToChooseB: 'Choose a 30-year mortgage if you want lower required payments, plan to invest the difference, or need the flexibility. Many financial advisors suggest taking a 30-year and making extra payments when possible — you get the safety of low required payments with the option to accelerate.',
-    bottomLine: 'The 30-year mortgage with disciplined extra payments offers the best of both worlds: low required payments for safety, with the ability to pay it off faster when cash flow allows. However, if you have the discipline and income, a 15-year mortgage guarantees the interest savings. Use our extra payment calculator to see how a 30-year with extra payments compares to a straight 15-year.',
+    whenToChooseA:
+      'Choose a 15-year mortgage only if the full housing payment (P&I plus taxes, insurance, PMI, HOA) fits your budget alongside other debts and savings — not only because total interest is lower. The CFPB explains debt-to-income as one measure lenders use; a payment you cannot sustain is not a fit even if the rate is attractive.',
+    whenToChooseB:
+      'Choose a 30-year mortgage when you need a lower required payment to fit your budget, want flexibility to prepay when cash flow allows, or are still building reserves. You can add voluntary extra principal later; the required payment stays the lower 30-year amount.',
+    bottomLine:
+      'Lower total interest on a 15-year loan is real, but only matters if you can comfortably make the higher payment every month for 15 years. If the 15-year payment would strain your budget, a 30-year with disciplined extra payments when you can afford them may match your cash flow better — run both in the amortization and payoff calculators with your income and debts.',
     relatedCalculators: [
-      { name: 'Pay Off Faster', slug: 'payoff', why: 'See how extra payments on a 30-year compare to a 15-year' },
-      { name: 'Amortization Schedule', slug: 'amortization', why: 'Compare month-by-month breakdowns for both terms' },
-      { name: 'Best Loan for My Timeline', slug: 'loan-timeline', why: 'Find the best term based on your plans' },
+      {
+        name: 'Amortization — 15-year (pre-filled)',
+        slug: 'amortization',
+        why: '$360k at 6.75% over 15 years',
+        href: '/calculators/amortization?loanAmount=360000&interestRate=6.75&loanTerm=15&extraMonthlyPayment=0',
+      },
+      {
+        name: 'Amortization — 30-year (pre-filled)',
+        slug: 'amortization',
+        why: '$360k at 6.75% over 30 years',
+        href: '/calculators/amortization?loanAmount=360000&interestRate=6.75&loanTerm=30&extraMonthlyPayment=0',
+      },
+      {
+        name: 'Pay Off Faster',
+        slug: 'payoff',
+        why: 'Extra principal on a 30-year vs a straight 15-year',
+        href: '/calculators/payoff?loanAmount=360000&interestRate=6.75&loanTerm=30&extraMonthlyPayment=851',
+      },
+      { name: 'DTI Calculator', slug: 'dti', why: 'See whether the 15-year payment fits with your income and debts' },
     ],
     faq: [
-      { question: 'How much do you save with a 15-year mortgage?', answer: 'On a $360,000 loan, a 15-year mortgage saves approximately $268,000 in total interest compared to a 30-year. The exact savings depend on your interest rate and loan amount.' },
-      { question: 'Can I get a 20-year or 25-year mortgage instead?', answer: 'Yes, some lenders offer 20-year and 25-year terms as a middle ground. You can also take a 30-year mortgage and make extra payments to effectively create any payoff timeline you want.' },
-      { question: 'Is it better to invest the difference or pay off the mortgage faster?', answer: 'If your mortgage rate is below your expected investment return (historically 7-10% for stocks), investing the difference may build more wealth. However, paying off your mortgage provides a guaranteed return equal to your interest rate and the psychological benefit of being debt-free.' },
+      {
+        question: 'How much more is a 15-year payment than a 30-year?',
+        answer:
+          'Illustrative example only: $360,000 at 6.75% is about $3,186/month P&I on 15 years versus about $2,335/month on 30 years — about $851 more per month before taxes or insurance. Your rate and loan size change the gap.',
+      },
+      {
+        question: 'How much interest does a 15-year mortgage save?',
+        answer:
+          'In the same illustrative example, total P&I interest is about $213,400 over 15 years versus about $480,600 over 30 years — about $267,000 less on the shorter term if you keep the loan to maturity at 6.75%.',
+      },
+      {
+        question: 'Should I take a 15-year loan if I can barely afford the payment?',
+        answer:
+          'Generally no — if the payment does not fit your budget with room for maintenance and savings, the interest savings do not help you stay current. Compare DTI and true monthly cost; a 30-year with optional extra payments may fit better.',
+      },
+      {
+        question: 'Can I mimic a 15-year while keeping a 30-year loan?',
+        answer:
+          'Yes — pay extra principal each month. In Dett\'s calculator, adding about $851/month extra on a $360,000 30-year at 6.75% targets a similar payoff speed to a 15-year schedule, but you can stop extras if income drops.',
+      },
     ],
   },
   {
@@ -397,13 +438,16 @@ export const comparisons: ComparisonData[] = [
     keywords: ['biweekly vs extra payments', 'biweekly mortgage payments', 'extra mortgage payments', 'biweekly vs monthly extra payments', 'pay off mortgage faster'],
     optionAName: 'Biweekly Payments',
     optionBName: 'Monthly Extra Payments',
-    overview: 'Both strategies accelerate your mortgage payoff, but they work differently. Biweekly payments split your monthly payment in half and pay every two weeks — resulting in 26 half-payments (13 full payments) per year instead of 12. Monthly extra payments add a fixed amount to each payment. The math is nearly identical, but the execution and costs can differ significantly.',
+    overview:
+      'Both strategies send extra money to principal and cut interest. Biweekly schedules pay half your payment every two weeks (26 half-payments per year — one extra monthly payment\'s worth). Monthly extras add a set amount each month you choose. Third-party biweekly plans often charge fees; monthly extras you control are free. See the worked example for what an extra $100/month does on a typical $360,000 loan at 6.75%.',
+    workedExample:
+      'Worked example: $360,000 balance, 6.75% rate, 30-year term, with an extra $100/month to principal (Dett Pay Off Faster defaults otherwise). Base P&I ≈ $2,335/month. With $100 extra, Dett estimates about $67,200 in interest saved versus minimum payments, payoff about 3.5 years sooner (roughly 26.5 years instead of 30). That is less than a full biweekly-equivalent (~$195/month DIY) but easy to start or stop. Open the pre-filled payoff calculator link below.',
     comparisonTable: [
       { feature: 'How It Works', optionA: 'Pay half your payment every 2 weeks (26 payments/year)', optionB: 'Add extra amount to your regular monthly payment' },
       { feature: 'Extra Payments Per Year', optionA: 'Equivalent of 1 extra monthly payment', optionB: 'As much or as little as you choose' },
       { feature: 'Flexibility', optionA: 'Fixed schedule — hard to change', optionB: 'Fully flexible — change or stop anytime' },
       { feature: 'Cost', optionA: 'Third-party programs charge $300-$500 setup + fees', optionB: 'Free — just send extra with your payment' },
-      { feature: 'Interest Savings (on $360K, 6.75%, 30yr)', optionA: '~$67,000 saved, pay off ~5 years early', optionB: '~$67,000+ saved (with equivalent extra amount)' },
+      { feature: 'Illustrative interest savings ($360K at 6.75%, 30yr)', optionA: 'Biweekly-style: ~$114K saved, ~6 years early (Dett model)', optionB: '$100/mo extra: ~$67K saved, ~3.5 years early (worked example)' },
       { feature: 'Setup Required', optionA: 'Enrollment with servicer or third-party', optionB: 'None — just pay more' },
       { feature: 'Risk', optionA: 'Third-party programs may hold payments', optionB: 'No risk — you control everything' },
     ],
@@ -432,15 +476,36 @@ export const comparisons: ComparisonData[] = [
     ],
     whenToChooseA: 'Choose biweekly only if your lender offers a free biweekly program (no third-party fees) and you get paid biweekly. Never pay a third-party company for biweekly payment processing — it\'s a waste of money.',
     whenToChooseB: 'Monthly extra payments are almost always the better choice. You get the same interest savings with zero fees and complete flexibility. The DIY approach is to divide your monthly payment by 12 and add that amount as extra principal each month — this exactly replicates a biweekly schedule.',
-    bottomLine: 'Skip the biweekly payment programs and their fees. Instead, divide your monthly mortgage payment by 12 and add that amount as extra principal each month. You\'ll get identical results for free. For example, if your payment is $2,335, add $195/month extra to principal. Use Pay Off Faster to see the exact savings.',
+    bottomLine:
+      'Skip paid biweekly processors when you can add principal yourself. For a $2,335/month payment, dividing by 12 gives about $195/month — the free DIY equivalent of one extra payment per year. Even $100/month extra on a $360,000 loan at 6.75% saves tens of thousands in interest in Dett\'s model. Use Pay Off Faster to scale the extra amount.',
     relatedCalculators: [
-      { name: 'Pay Off Faster', slug: 'payoff', why: 'See biweekly savings, the free DIY alternative, and any extra payment amount' },
-      { name: 'Amortization Schedule', slug: 'amortization', why: 'See your accelerated payoff month by month' },
+      {
+        name: 'Pay Off Faster — $100/month extra',
+        slug: 'payoff',
+        why: 'Worked example on a $360k loan at 6.75%',
+        href: '/calculators/payoff?loanAmount=360000&interestRate=6.75&loanTerm=30&extraMonthlyPayment=100',
+      },
+      {
+        name: 'Pay Off Faster — DIY biweekly equivalent',
+        slug: 'payoff',
+        why: 'About $195/month extra (1/12 of P&I)',
+        href: '/calculators/payoff?loanAmount=360000&interestRate=6.75&loanTerm=30&extraMonthlyPayment=195',
+      },
+      { name: 'Amortization Schedule', slug: 'amortization', why: 'Month-by-month principal after extras', href: '/calculators/amortization?loanAmount=360000&interestRate=6.75&loanTerm=30&extraMonthlyPayment=100' },
     ],
     faq: [
-      { question: 'Are biweekly mortgage payments worth it?', answer: 'The concept is worth it — making the equivalent of one extra payment per year saves significant interest. But paying a third-party company to do it is not worth it. You can achieve the same result for free by adding 1/12 of your payment as extra principal each month.' },
-      { question: 'How much does one extra payment per year save?', answer: 'On a $360,000 loan at 6.75% for 30 years, one extra payment per year saves approximately $67,000 in interest and pays off the loan about 5 years early.' },
-      { question: 'Should I pay extra on my mortgage or invest?', answer: 'If your mortgage rate is above 5-6%, paying extra is a guaranteed return at that rate. If your rate is below 4%, investing in index funds (historically 7-10% returns) may build more wealth. Use Pay Off Faster to compare both scenarios.' },
+      {
+        question: 'What does an extra $100 a month do to my mortgage?',
+        answer:
+          'Illustrative example only: on $360,000 at 6.75% for 30 years, Dett estimates about $67,200 in interest saved and payoff about 3.5 years earlier versus minimum payments. Your loan size and rate change the outcome.',
+      },
+      { question: 'Are biweekly mortgage payments worth it?', answer: 'The extra-payment concept can save interest, but third-party biweekly programs that charge fees usually are not. A free DIY approach adds 1/12 of your payment to principal each month — the same math without enrollment fees.' },
+      { question: 'How much does one extra payment per year save?', answer: 'On a $360,000 loan at 6.75% for 30 years, Dett\'s true-biweekly / DIY-13th-payment model saves on the order of $114,000 in interest and about 6 years vs minimum payments — your servicer must actually apply extras to principal.' },
+      {
+        question: 'Should I pay extra on my mortgage or invest?',
+        answer:
+          'Extra principal earns a return equal to your mortgage rate (guaranteed). Investing may earn more or less over time. Pay Off Faster includes a prepay-vs-invest comparison at the return rate you enter — not a recommendation either way.',
+      },
     ],
   },
 ];
