@@ -155,7 +155,7 @@ export default function LoanTimelineCalculator() {
         `Assumes you move in year ${stayYears} — actual plans and future rates will differ`,
         `Affordability labels use typical educational DTI ranges (front-end ~28% comfortable; back-end ≤43% comfortable, 43–50% stretch, >50% outside common ranges) and are not a qualification result`,
       ]}
-      title="Best Loan for My Timeline"
+      title="Which Loan Fits My Timeline?"
       description="Compare fixed-rate, discount points, ARM, and 15-year options based on how long you plan to stay — then filter by whether the payment may fit typical income guidelines. Models ARM adjustments across named rate paths and a Monte Carlo range."
       relatedCalculators={[
         { slug: 'interest-sensitivity', name: 'Rate Sensitivity' },

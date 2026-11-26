@@ -101,7 +101,7 @@ export const EMBED_CALCULATORS: EmbedCalculator[] = [
   },
   {
     slug: 'loan-timeline',
-    name: 'Best Loan for My Timeline',
+    name: 'Which Loan Fits My Timeline?',
     shortName: 'Loan Timeline',
     category: 'Comparison',
     description: 'Fixed vs points vs ARM vs 15-year for how long you will stay.',
@@ -240,9 +240,9 @@ export const EMBED_AUDIENCES: EmbedAudience[] = [
     title: 'For Brokers & Loan Officers',
     eyebrow: 'Mortgage brokers & LOs',
     tagline: 'Clients run the numbers before they call you.',
-    body: 'Refinance, DTI, and Best Loan for My Timeline turn your website into a resource hub. People show up pre-educated, and you never pay for another lead-gen widget.',
+    body: 'Refinance, DTI, and Which Loan Fits My Timeline? turn your website into a resource hub. People show up pre-educated, and you never pay for another lead-gen widget.',
     suggestedSlugs: ['refinance', 'dti', 'loan-timeline'],
-    suggestedLabel: 'Refinance, DTI, Best Loan for My Timeline',
+    suggestedLabel: 'Refinance, DTI, Which Loan Fits My Timeline?',
   },
   {
     id: 'lenders',

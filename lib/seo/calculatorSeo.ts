@@ -196,11 +196,11 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
   },
   'loan-timeline': {
     slug: 'loan-timeline',
-    title: 'Best Mortgage for Your Timeline - ARM vs Fixed vs Points Calculator | Dett',
+    title: 'Which Loan Fits Your Timeline? - ARM vs Fixed vs Points Calculator | Dett',
     description:
-      'Find the best loan for how long you plan to stay. Compare 30-year fixed, discount points, ARM, and 15-year options by net cost and whether the payment may fit typical income guidelines.',
+      'See which loan may fit how long you plan to stay. Compare 30-year fixed, discount points, ARM, and 15-year options by net cost and whether the payment may fit typical income guidelines.',
     keywords: [
-      'best mortgage for my timeline',
+      'which loan fits my timeline',
       'ARM vs fixed rate calculator',
       'mortgage points calculator',
       'should I buy points on my mortgage',
@@ -221,7 +221,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
       { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
     ],
     jsonLd: {
-      name: 'Best Loan for My Timeline Calculator',
+      name: 'Which Loan Fits My Timeline? Calculator',
       description:
         'Compare fixed-rate, discount points, ARM, and 15-year mortgage options by net cost over your expected stay, with named ARM rate paths, Monte Carlo ranges, and cap-driven worst-case modeling.',
       applicationCategory: 'FinanceApplication',
@@ -425,7 +425,7 @@ export const calculatorSeoConfigs: Record<string, CalculatorSeoConfig> = {
     ],
     relatedCalculators: [
       { slug: 'refinance', name: 'Should I Refinance?' },
-      { slug: 'loan-timeline', name: 'Best Loan for My Timeline' },
+      { slug: 'loan-timeline', name: 'Which Loan Fits My Timeline?' },
       { slug: 'mortgage-cost', name: 'True Monthly Mortgage Cost' },
     ],
     jsonLd: {

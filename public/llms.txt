@@ -16,7 +16,7 @@ Dett.io is a free mortgage education platform built by Knowe LLC. It provides 20
 - [PMI Calculator](https://dett.io/calculators/pmi): PMI costs and when it drops off
 - [DTI Calculator](https://dett.io/calculators/dti): Debt-to-income ratio analysis for mortgage qualification
 - [Closing Cost Estimator](https://dett.io/calculators/closing-costs): Estimate closing costs by loan type and location
-- [Best Loan for My Timeline](https://dett.io/calculators/loan-timeline): Compare fixed, points, ARM (with rate cap modeling), and 15-year options for your timeline
+- [Which Loan Fits My Timeline?](https://dett.io/calculators/loan-timeline): Compare fixed, points, ARM (with rate cap modeling), and 15-year options for your timeline
 - [Pay Off Faster](https://dett.io/calculators/payoff): Extra payments, lump sums, and biweekly strategies — years saved and interest avoided
 - [Amortization Schedule](https://dett.io/calculators/amortization): Month-by-month payment breakdown
 - [Rate Sensitivity Calculator](https://dett.io/calculators/interest-sensitivity): See how rate changes affect your payment

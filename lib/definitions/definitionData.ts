@@ -129,7 +129,7 @@ export const definitions: Definition[] = [
     relatedTerms: ['interest-rate', 'origination-fee', 'discount-points'],
     relatedCalculators: [
       { name: 'True Monthly Mortgage Cost', slug: 'mortgage-cost' },
-      { name: 'Best Loan for My Timeline', slug: 'loan-timeline' },
+      { name: 'Which Loan Fits My Timeline?', slug: 'loan-timeline' },
       { name: 'Refinance Calculator', slug: 'refinance' },
     ],
     faq: [
@@ -227,7 +227,7 @@ export const definitions: Definition[] = [
     example: 'Loan: $360,000. Rate without points: 6.75%. One point ($3,600) lowers rate to 6.5%. Monthly savings: $58. Break-even: $3,600 ÷ $58 = 62 months (5.2 years). If you keep the loan 30 years, you save $17,280 after the cost of the point.',
     relatedTerms: ['apr', 'interest-rate', 'closing-costs'],
     relatedCalculators: [
-      { name: 'Best Loan for My Timeline', slug: 'loan-timeline' },
+      { name: 'Which Loan Fits My Timeline?', slug: 'loan-timeline' },
       { name: 'Rate Sensitivity Calculator', slug: 'interest-sensitivity' },
       { name: 'Refinance Calculator', slug: 'refinance' },
     ],
@@ -266,7 +266,7 @@ export const definitions: Definition[] = [
     slug: 'va-loan',
     term: 'VA Loan',
     shortDefinition: 'A VA loan is a mortgage guaranteed by the Department of Veterans Affairs, available to eligible veterans and active-duty service members. VA loans require zero down payment and have no monthly mortgage insurance.',
-    fullExplanation: 'VA loans are widely considered the best mortgage product available — for those who qualify. Backed by the Department of Veterans Affairs, these loans offer zero down payment, no monthly mortgage insurance, competitive interest rates (typically 0.25-0.5% below conventional), and no loan limits for borrowers with full entitlement. Instead of monthly MI, VA loans charge a one-time funding fee (1.25-3.3% of the loan amount) that can be rolled into the loan. The funding fee is waived entirely for veterans with service-connected disabilities. VA loans are available to veterans, active-duty service members, National Guard and Reserve members (with qualifying service), and surviving spouses of veterans who died in service or from a service-connected disability. VA loans can only be used for primary residences.',
+    fullExplanation: 'For eligible veterans and service members, VA loans are backed by the Department of Veterans Affairs and often offer among the most favorable terms available — zero down payment, no monthly mortgage insurance, competitive interest rates (typically 0.25-0.5% below conventional), and no loan limits for borrowers with full entitlement. Instead of monthly MI, VA loans charge a one-time funding fee (1.25-3.3% of the loan amount) that can be rolled into the loan. The funding fee is waived entirely for veterans with service-connected disabilities. VA loans are available to veterans, active-duty service members, National Guard and Reserve members (with qualifying service), and surviving spouses of veterans who died in service or from a service-connected disability. VA loans can only be used for primary residences.',
     keyFacts: [
       'Zero down payment required',
       'No monthly mortgage insurance',
