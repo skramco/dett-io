@@ -226,12 +226,12 @@ export default function MethodologyPage() {
 
             <h2>Rate-path and Monte Carlo scenarios</h2>
             <p>
-              Two calculators — <Link href="/calculators/loan-timeline">Best Loan for My Timeline</Link> (ARM
+              Two calculators — <Link href="/calculators/loan-timeline">Which Loan Fits My Timeline?</Link> (ARM
               option) and <Link href="/calculators/rent-vs-buy">Rent vs Buy</Link> — no longer rest on a single
               expected line plus a best/base/worst trio. They show a <strong>range of paths</strong>,
               with every assumption on the page and here.
             </p>
-            <h3 style={{ fontSize: 18, fontWeight: 700, marginTop: 16, marginBottom: 8 }}>ARM (Best Loan for My Timeline)</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginTop: 16, marginBottom: 8 }}>ARM (Which Loan Fits My Timeline?)</h3>
             <ul>
               <li>
                 <strong>Named index paths.</strong> After the fixed period, we hold the index at your

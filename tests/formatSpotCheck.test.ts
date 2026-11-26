@@ -96,7 +96,7 @@ describe('calculator result-surface formatting (ENG-333)', () => {
     expect(result.summary).toMatch(/\$\d{1,3}(?:,\d{3})+/);
   });
 
-  it('Best Loan for My Timeline summary formats net cost as whole dollars', () => {
+  it('Which Loan Fits My Timeline? summary formats net cost as whole dollars', () => {
     const result = calculateLoanTimeline({
       loanAmount: 360000,
       loanTerm: 30,

@@ -18,7 +18,7 @@ export { calculateAffordability } from './affordability';
 export { calculateDownPayment } from './downPayment';
 export { calculateRentVsBuy, RENT_VS_BUY_SCENARIO_ASSUMPTIONS } from './rentVsBuy';
 
-// Category 2: Rate & Structure — merged "Best Loan for My Timeline"
+// Category 2: Rate & Structure — merged "Which Loan Fits My Timeline?"
 export {
   calculateLoanTimeline,
   getArmProductName,

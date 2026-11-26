@@ -9,9 +9,9 @@ Six overlapping calculators were merged into two stronger tools:
 | Extra Payment Impact | `/calculators/extra-payment` | **Pay Off Faster** — `/calculators/payoff` |
 | Acceleration Planner | `/calculators/acceleration` | **Pay Off Faster** — `/calculators/payoff` |
 | Biweekly Payments | `/calculators/biweekly` | **Pay Off Faster** — `/calculators/payoff` |
-| Points & Buydown | `/calculators/points-buydown` | **Best Loan for My Timeline** — `/calculators/loan-timeline` |
-| Decision Timeline Simulator | `/calculators/timeline-simulator` | **Best Loan for My Timeline** — `/calculators/loan-timeline` |
-| ARM vs Fixed | `/calculators/arm-vs-fixed` | **Best Loan for My Timeline** — `/calculators/loan-timeline` |
+| Points & Buydown | `/calculators/points-buydown` | **Which Loan Fits My Timeline?** — `/calculators/loan-timeline` |
+| Decision Timeline Simulator | `/calculators/timeline-simulator` | **Which Loan Fits My Timeline?** — `/calculators/loan-timeline` |
+| ARM vs Fixed | `/calculators/arm-vs-fixed` | **Which Loan Fits My Timeline?** — `/calculators/loan-timeline` |
 
 ## Product decision: redirects, not thin pages
 
@@ -49,7 +49,7 @@ Rationale:
 - **Points & temporary buydowns (ENG-325):** net cost includes remaining
   balance, and 1-0 / 2-1 / 3-2-1 buydowns are modeled (note rate stays at par;
   unused subsidy is credited if you leave mid-buydown).
-- **Honest comparison metric:** "Best Loan for My Timeline" ranks options by
+- **Honest comparison metric:** "Which Loan Fits My Timeline?" ranks options by
   *net cost* (payments + upfront costs − principal paid down) rather than total
   payments, so high-payment/high-equity options like the 15-year fixed are
   compared fairly.
@@ -65,7 +65,7 @@ Rationale:
 - **Shareable URLs (ENG-344):** both pages restore inputs from the query string
   via `useUrlInputs`.
 - **Scenario prefill (ENG-346):** both pages call `useScenarioPrefill`. Pay Off
-  Faster maps loan amount / rate / term; Best Loan for My Timeline maps
+  Faster maps loan amount / rate / term; Which Loan Fits My Timeline? maps
   `parRate` and keeps ARM / 15-year / points sibling rates at the same spread.
 - **Biweekly servicer note (ENG-350):** Pay Off Faster warns that many servicers
   reject half-payments or a true biweekly schedule, and points users to the

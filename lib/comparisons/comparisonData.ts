@@ -136,9 +136,9 @@ export const comparisons: ComparisonData[] = [
     ],
     whenToChooseA: 'Choose an ARM if you plan to sell or refinance within 5-7 years, you\'re confident rates will stay flat or decline, or the initial savings are significant enough to offset the risk. Military families, corporate relocators, and people buying starter homes are common ARM candidates.',
     whenToChooseB: 'Choose a fixed rate if you plan to stay in the home for 10+ years, you want predictable payments, or you\'re buying your forever home. Fixed rates are also better when rates are historically low — you lock in the low rate permanently.',
-    bottomLine: 'In most rate environments, a fixed-rate mortgage is the safer choice for long-term homeowners. ARMs make sense when you have a clear exit timeline (selling or refinancing) within the initial fixed period. Use Best Loan for My Timeline to model your specific scenario with actual rate caps.',
+    bottomLine: 'In most rate environments, a fixed-rate mortgage is the safer choice for long-term homeowners. ARMs make sense when you have a clear exit timeline (selling or refinancing) within the initial fixed period. Use Which Loan Fits My Timeline? to model your specific scenario with actual rate caps.',
     relatedCalculators: [
-      { name: 'Best Loan for My Timeline', slug: 'loan-timeline', why: 'Model rate adjustments and find the best option for how long you\'ll stay' },
+      { name: 'Which Loan Fits My Timeline?', slug: 'loan-timeline', why: 'Model rate adjustments and compare options for how long you\'ll stay' },
       { name: 'Rate Sensitivity Calculator', slug: 'interest-sensitivity', why: 'See how rate changes affect your payment' },
     ],
     faq: [
@@ -376,7 +376,7 @@ export const comparisons: ComparisonData[] = [
     keywords: ['VA vs FHA vs conventional', 'VA loan vs FHA loan', 'VA vs conventional loan', 'which loan type is best', 'compare mortgage types'],
     optionAName: 'VA Loan',
     optionBName: 'FHA / Conventional',
-    overview: 'VA loans are the best mortgage product available — if you qualify. With zero down payment, no mortgage insurance, and competitive rates, VA loans save eligible veterans and service members tens of thousands of dollars. FHA and conventional loans serve borrowers who don\'t have VA eligibility, each with their own tradeoffs.',
+    overview: 'For eligible borrowers, VA loans often carry the most favorable terms among common loan types — zero down payment, no mortgage insurance, and competitive rates. FHA and conventional loans serve borrowers who don\'t have VA eligibility, each with their own tradeoffs.',
     comparisonTable: [
       { feature: 'Down Payment', optionA: '0% (zero down)', optionB: 'FHA: 3.5% | Conv: 3-20%' },
       { feature: 'Mortgage Insurance', optionA: 'None (VA funding fee instead)', optionB: 'FHA: MIP for life | Conv: PMI until 80% LTV' },

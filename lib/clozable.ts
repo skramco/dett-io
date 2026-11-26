@@ -65,7 +65,7 @@ export const CLOZABLE_BLURBS = {
   home: {
     before: 'When the numbers start to click, ',
     link: 'Clozable',
-    after: ' is the best place to start getting ready to buy or refinance.',
+    after: ' is a calm first stop if you\u2019re getting ready to buy or refinance.',
   },
   calculators: {
     before: 'Run the numbers here first. ',

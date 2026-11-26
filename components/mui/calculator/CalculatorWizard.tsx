@@ -202,7 +202,7 @@ const wizardSteps: Record<string, WizardStep> = {
           title: "ARM vs Fixed Analysis",
           description: "Compare the risk and reward of adjustable-rate vs fixed-rate mortgages.",
           calculators: [
-            { name: "Best Loan for My Timeline", href: "/calculators/loan-timeline", why: "Model real ARM rate adjustments and compare total costs" },
+            { name: "Which Loan Fits My Timeline?", href: "/calculators/loan-timeline", why: "Model real ARM rate adjustments and compare total costs" },
             { name: "Rate Sensitivity", href: "/calculators/interest-sensitivity", why: "See how rate changes affect your payment" },
           ],
         },
@@ -216,7 +216,7 @@ const wizardSteps: Record<string, WizardStep> = {
           title: "Points & Rate Analysis",
           description: "Decide whether buying points, taking lender credits, or paying par rate is best.",
           calculators: [
-            { name: "Best Loan for My Timeline", href: "/calculators/loan-timeline", why: "See if points break even before you move" },
+            { name: "Which Loan Fits My Timeline?", href: "/calculators/loan-timeline", why: "See if points break even before you move" },
             { name: "Rate Sensitivity", href: "/calculators/interest-sensitivity", why: "See how each rate change affects your payment" },
           ],
         },
@@ -230,7 +230,7 @@ const wizardSteps: Record<string, WizardStep> = {
           title: "Timeline-Based Decision",
           description: "Your optimal loan structure depends on how long you plan to keep the home.",
           calculators: [
-            { name: "Best Loan for My Timeline", href: "/calculators/loan-timeline", why: "Compare fixed, points, ARM, and 15-year options for your timeline" },
+            { name: "Which Loan Fits My Timeline?", href: "/calculators/loan-timeline", why: "Compare fixed, points, ARM, and 15-year options for your timeline" },
             { name: "Should I Refinance?", href: "/calculators/refinance", why: "See if refinancing makes sense at your timeline" },
           ],
         },

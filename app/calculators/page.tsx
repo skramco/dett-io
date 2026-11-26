@@ -231,7 +231,7 @@ const calculatorCategories = [
     calculators: [
       {
         id: "loan-timeline",
-        name: "Best Loan for My Timeline",
+        name: "Which Loan Fits My Timeline?",
         description: "Compare fixed, points, ARM, and 15-year options — with ARM rate-path Monte Carlo — for how long you'll stay.",
         icon: Schedule,
         href: "/calculators/loan-timeline",
