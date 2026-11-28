@@ -42,6 +42,8 @@ const categoryColors: Record<string, { bg: string; fg: string }> = {
 
 export function GuideLayout({ guide, children }: GuideLayoutProps) {
   const colors = categoryColors[guide.category] || categoryColors.salary;
+  const datePublished = guide.datePublished ?? '2026-02-13';
+  const dateModified = guide.dateModified ?? datePublished;
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -49,7 +51,8 @@ export function GuideLayout({ guide, children }: GuideLayoutProps) {
         title={guide.title}
         description={guide.description}
         slug={guide.slug}
-        datePublished="2026-02-13"
+        datePublished={datePublished}
+        dateModified={dateModified}
         readTime={guide.readTime}
       />
       {guideFaqs[guide.slug] && (

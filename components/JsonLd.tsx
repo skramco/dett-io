@@ -102,12 +102,14 @@ export function ArticleJsonLd({
   description,
   slug,
   datePublished,
+  dateModified = datePublished,
   readTime,
 }: {
   title: string;
   description: string;
   slug: string;
   datePublished: string;
+  dateModified?: string;
   readTime: string;
 }) {
   return (
@@ -119,7 +121,7 @@ export function ArticleJsonLd({
         description,
         url: `https://dett.io/guides/${slug}`,
         datePublished,
-        dateModified: datePublished,
+        dateModified,
         author: {
           '@type': 'Organization',
           name: 'Dett.io',

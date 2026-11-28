@@ -35,7 +35,7 @@ export const calculatorLastUpdated: Record<string, string> = {
 export const staticPageLastUpdated: Record<string, string> = {
   '/': '2026-02-15',
   '/calculators': '2026-10-18', // calculator index reflects calculator content
-  '/guides': '2026-11-19',
+  '/guides': '2026-11-28',
   '/learn': '2026-02-16',
   '/compare': '2026-11-19',
   '/privacy': '2026-10-18',
@@ -45,7 +45,10 @@ export const staticPageLastUpdated: Record<string, string> = {
   '/embed': '2026-10-18',
 };
 
-/** Guide articles (content lives in lib/guides/guideContent.tsx). */
+/**
+ * Fallback lastmod for guide articles that do not set Guide.dateModified.
+ * The down payment guide sets its own date on the Guide record.
+ */
 export const guidesLastUpdated = '2026-11-19';
 
 /** Comparison pages (content lives in lib/comparisons/comparisonData.ts). */
