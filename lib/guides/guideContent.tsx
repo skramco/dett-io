@@ -11,6 +11,8 @@ import { CashOutRefinancePayCreditCardDebt } from '@/lib/guides/CashOutRefinance
 import { CarStudentLoansHouseAffordability } from '@/lib/guides/CarStudentLoansHouseAffordability';
 import { DebtAvalancheVsSnowball } from '@/lib/guides/DebtAvalancheVsSnowball';
 import { BalanceTransferVsPersonalLoan } from '@/lib/guides/BalanceTransferVsPersonalLoan';
+import { HowMuchShouldIPutDown } from '@/lib/guides/HowMuchShouldIPutDown';
+import { DOWN_PAYMENT_GUIDE_SLUG } from '@/lib/guides/downPaymentGuideExample';
 
 function Callout({ children }: { children: React.ReactNode }) {
   return (
@@ -184,4 +186,5 @@ export const guideContent: Record<string, React.FC> = {
   'car-student-loans-house-affordability': CarStudentLoansHouseAffordability,
   'debt-avalanche-vs-snowball': DebtAvalancheVsSnowball,
   'balance-transfer-vs-personal-loan': BalanceTransferVsPersonalLoan,
+  [DOWN_PAYMENT_GUIDE_SLUG]: HowMuchShouldIPutDown,
 };

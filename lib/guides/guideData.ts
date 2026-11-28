@@ -1,3 +1,12 @@
+import {
+  DOWN_PAYMENT_EXAMPLE_DTI_HREF,
+  DOWN_PAYMENT_EXAMPLE_HREF,
+  DOWN_PAYMENT_GUIDE_DESCRIPTION,
+  DOWN_PAYMENT_GUIDE_REVIEWED_ISO,
+  DOWN_PAYMENT_GUIDE_SLUG,
+  DOWN_PAYMENT_GUIDE_TITLE,
+} from '@/lib/guides/downPaymentGuideExample';
+
 export interface Guide {
   slug: string;
   title: string;
@@ -5,6 +14,10 @@ export interface Guide {
   category: 'salary' | 'decision' | 'cost';
   readTime: string;
   calculators: { name: string; href: string }[];
+  /** ISO publication date for Article JSON-LD. Omit to keep the original guide batch date. */
+  datePublished?: string;
+  /** ISO date for Article JSON-LD dateModified. Omit to match datePublished. */
+  dateModified?: string;
 }
 
 export const guides: Guide[] = [
@@ -170,6 +183,25 @@ export const guides: Guide[] = [
       { name: 'FHA Loan Calculator', href: '/calculators/fha' },
       { name: 'PMI Calculator', href: '/calculators/pmi' },
       { name: 'DTI Calculator', href: '/calculators/dti' },
+    ],
+  },
+  {
+    slug: DOWN_PAYMENT_GUIDE_SLUG,
+    title: DOWN_PAYMENT_GUIDE_TITLE,
+    description: DOWN_PAYMENT_GUIDE_DESCRIPTION,
+    category: 'decision',
+    readTime: '9 min',
+    datePublished: DOWN_PAYMENT_GUIDE_REVIEWED_ISO,
+    dateModified: DOWN_PAYMENT_GUIDE_REVIEWED_ISO,
+    calculators: [
+      {
+        name: 'Down Payment Strategy (labeled example)',
+        href: DOWN_PAYMENT_EXAMPLE_HREF,
+      },
+      {
+        name: 'DTI check (10% example)',
+        href: DOWN_PAYMENT_EXAMPLE_DTI_HREF,
+      },
     ],
   },
   // Cost articles

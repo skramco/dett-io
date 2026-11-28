@@ -1,3 +1,5 @@
+import { DOWN_PAYMENT_GUIDE_SLUG, downPaymentGuideFaqs } from '@/lib/guides/downPaymentGuideExample';
+
 export interface GuideFaq {
   question: string;
   answer: string;
@@ -314,6 +316,7 @@ export const guideFaqs: Record<string, GuideFaq[]> = {
         'Extra payments can get you to 80% LTV sooner for a cancellation request, but automatic termination at 78% LTV still follows the original value unless your servicer accepts an earlier cancellation based on appreciation and a new appraisal.',
     },
   ],
+  [DOWN_PAYMENT_GUIDE_SLUG]: downPaymentGuideFaqs,
   'true-monthly-mortgage-payment': [
     { question: 'What is included in a monthly mortgage payment?', answer: 'A full mortgage payment includes principal, interest, property taxes, homeowners insurance (PITI), plus potentially PMI, HOA fees, and supplemental costs. The true cost is typically 40-60% higher than principal and interest alone.' },
     { question: 'How much are property taxes on a house?', answer: 'Property taxes vary widely by location, typically 0.5% to 2.5% of home value per year. On a $350,000 home, expect $1,750-$8,750/year or $146-$729/month.' },
